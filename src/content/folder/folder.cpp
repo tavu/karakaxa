@@ -1,0 +1,170 @@
+#include"folder.h"
+
+#include<QTableView>
+#include<KIcon>
+#include<KDirModel>
+#include<KDirLister>
+#include"myFileSystemModel.h"
+#include<player.h>
+#include"../treeViewDelegate.h"
+
+#include<KFileItemDelegate>
+#include"folderProxyModel.h"
+
+using namespace player;
+#define DIRECTORYM "inode/directory"
+folderContent::folderContent(QWidget *parent)
+        :abstractContent(parent)
+{
+    navigatorModel = new KFilePlacesModel(this);
+    navigator = new KUrlNavigator(navigatorModel,KUrl( QDir::home().path() ),this);
+
+    model = new myFileSystemModel(this);
+
+    model->dirLister()->setMimeFilter(player::config.files()<<DIRECTORYM);
+
+    proxyM=new folderProxyModel(this);
+    proxyM->setSourceModel(model);
+
+    view=new myTreeView(this,"Folder view");
+    view->setModel(proxyM);
+
+    view->setRatingColumn(DIRCOLUMN+RATING);
+
+    toolBar=new KToolBar(this);
+    toolBar->setToolButtonStyle( Qt::ToolButtonIconOnly );
+//     toolBar->setIconDimensions( 16 );
+
+    //add navigation actions
+    backAction = new QAction( KIcon( "go-previous" ),"go back", this );
+    toolBar->addAction( backAction );
+    connect( backAction, SIGNAL( triggered( bool) ), this, SLOT( back() ) );
+
+
+    forwardAction = new QAction( KIcon( "go-next" ),"go forward", this );
+    toolBar->addAction( forwardAction );
+    connect( forwardAction, SIGNAL( triggered( bool) ), this, SLOT( forward() ) );
+
+    upAction = new QAction( KIcon( "go-up" ),"go up", this );
+    toolBar->addAction( upAction );
+    connect( upAction, SIGNAL( triggered( bool) ), this, SLOT( up() ) );
+
+    QVBoxLayout *layout = new QVBoxLayout();
+
+
+
+    layout->addWidget(navigator);
+    QFrame *f=new QFrame(this);
+    f->setFrameShape(QFrame::HLine);
+    layout->addWidget(f);
+
+    layout->addWidget(toolBar);
+    layout->addWidget(view);
+
+    setLayout(layout);
+
+    connect(view,SIGNAL(clicked ( const QModelIndex) ),this,SLOT(setDir(const QModelIndex) ) );
+
+    connect(navigator,SIGNAL(urlChanged (KUrl) ),this,SLOT(cd(KUrl) ) );
+
+//       navigator->setUrl(QDir::homePath());
+
+//      cd(QDir::homePath());
+
+    connect(qApp,SIGNAL(aboutToQuit() ),this,SLOT(writeSettings() ) );
+    readSettings();
+}
+
+const QList<QString> folderContent::getChildren()
+{
+    QList<QString> l;
+    return l;
+}
+
+QString folderContent::name() const
+{
+    return QString(tr("Folder") );
+}
+
+
+void folderContent::setDir(const QModelIndex index)
+{
+// //      if(view->selectedIndexes().size()>1)
+//      {
+// // 	  return ;
+//      }
+
+    QModelIndex i=proxyM->mapToSource(index);
+//
+//      if( model->isDir(i) )
+// 	  navigator->setUrl( KUrl(model->filePath(i) ) );
+//
+//
+
+
+    KFileItem item = model->itemForIndex(i);
+    if (item.isDir())
+    {
+        navigator->setUrl( item.url() );
+    }
+//      navigator->setUrl(url);
+
+
+}
+
+void folderContent::cd(KUrl url)
+{
+
+
+
+//      QString placesUrl=url.toLocalFile();
+//      if( placesUrl.startsWith( "file://" ) )
+//                 placesUrl = placesUrl.replace( "file://", QString() );
+
+//      qDebug()<<"DDDDDDDDDDD";
+//      QModelIndex i=model->index(placesUrl );
+//      qDebug()<<"DDDDDDDDDDD";
+//       qDebug()<<i;
+
+//      model->setRootPath ( placesUrl );
+
+//      i=proxyM->mapFromSource(i);
+    model->dirLister()->openUrl(url);
+//      qDebug()<<i;
+//         view->setRootIndex(i );
+//      qDebug()<<"edoo";
+}
+
+void folderContent::up()
+{
+    navigator->goUp();
+}
+
+void folderContent::back()
+{
+    navigator->goBack();
+}
+
+void folderContent::forward()
+{
+    navigator->goForward();
+}
+
+void folderContent::writeSettings()
+{
+
+    QSettings settings(QSettings::IniFormat,QSettings::UserScope,"player.org","player");
+
+    settings.beginGroup("folderContent");
+    settings.setValue("dir", QVariant(navigator->url()) );
+    settings.endGroup();
+}
+
+void folderContent::readSettings()
+{
+
+    QSettings settings(QSettings::IniFormat,QSettings::UserScope,"player.org","player");
+    settings.beginGroup("folderContent");
+    navigator->setUrl(settings.value("dir").toUrl() );
+    settings.endGroup();
+}

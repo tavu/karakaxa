@@ -1,0 +1,3 @@
+qmake -project
+cat qmakeadd >>*.pro
+qmake *.pro
