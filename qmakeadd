@@ -12,3 +12,6 @@ CONFIG += link_pkgconfig
 PKGCONFIG += taglib taglib-extras
 #QT += qt3support
 TARGET = player
+OBJECTS_DIR=build
+
+MOC_DIR=build/moc
