@@ -31,13 +31,13 @@ void nplDelegate::paint ( QPainter * painter, const QStyleOptionViewItem & optio
     {
         if (option.state & QStyle::State_Selected)
         {
-            painter->setPen(option.palette.linkVisited());
-            painter->setBrush(option.palette.linkVisited());
+            painter->setPen(option.palette.linkVisited().color());
+            painter->setBrush(option.palette.linkVisited().color());
         }
         else
         {
-            painter->setPen(option.palette.highlight());
-            painter->setBrush(option.palette.highlight());
+            painter->setPen(option.palette.highlight().color());
+            painter->setBrush(option.palette.highlight().color());
         }
 
         font.setBold(true);
@@ -52,7 +52,7 @@ void nplDelegate::paint ( QPainter * painter, const QStyleOptionViewItem & optio
     }
     else if (option.state & QStyle::State_Selected)
     {
-        painter->setPen(option.palette.highlightedText());
+        painter->setPen(option.palette.highlightedText().color());
     }
 
     painter->setFont(font);

@@ -5,6 +5,7 @@
 #include<QMutex>
 #include<QSqlQuery>
 #include<QSqlError>
+#include<QSqlRecord>
 // #include<player.h>
 #include"playerNamespace.h"
 

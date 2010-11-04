@@ -181,10 +181,10 @@ void editTrackContent::save()
         file->setGenre(genreL->text() );
     }
 
-    if (commentL->text().compare(file->tag(COMMENT).toString())!=0 )
+    if (commentL->toPlainText().compare(file->tag(COMMENT).toString())!=0 )
     {
         qDebug()<<"edit comment";
-        file->setComment(commentL->text() );
+        file->setComment(commentL->toPlainText() );
     }
 
     return;

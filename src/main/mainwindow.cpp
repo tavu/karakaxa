@@ -4,7 +4,6 @@
 #include"nplaylistDelegate.h"
 #include<QGroupBox>
 
-#include "../content/library/songDelegate.h"
 #include "../content/library/library.h"
 #include "../content/folder/folder.h"
 #include "../content/playlist/playlistContent.h"

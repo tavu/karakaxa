@@ -5,7 +5,6 @@
 #include"albumModel.h"
 #include"songModel.h"
 #include"songView.h"
-#include"songDelegate.h"
 #include"albumWidget.h"
 #include"../myTreeView.h"
 #include"../treeViewDelegate.h"

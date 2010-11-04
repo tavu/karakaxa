@@ -4,9 +4,6 @@
 #include<QVBoxLayout>
 #include<QLabel>
 #include<QFrame>
-// #include <checkColumnBox.h>
-#include <Q3PopupMenu>
-
 #include <QCheckBox>
 #include<QButtonGroup>
 
@@ -96,7 +93,6 @@ void treeViewHeader::selectColumnW()
     f->setWindowFlags(Qt::Tool | Qt::CustomizeWindowHint| Qt::WindowCloseButtonHint  );
 
     f->setAttribute(Qt::WA_DeleteOnClose);
-    f->setIcon(0);
     f->setWindowModality(Qt::WindowModal);
     f->setLayout(layout);
     f->setWindowTitle(tr("Columns"));

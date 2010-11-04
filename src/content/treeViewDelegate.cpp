@@ -44,14 +44,14 @@ void treeViewDelegate::paint ( QPainter * painter, const QStyleOptionViewItem & 
 
     painter->setOpacity(0.8);
     pen.setWidth(1);
-    pen.setColor(player::pal.window() );
+    pen.setColor(player::pal.window().color() );
     painter->setPen(pen);
 
     painter->drawLine(option.rect.topRight(), option.rect.bottomRight());
 
     painter->setOpacity(0.1);
     pen.setWidthF(4);
-    pen.setColor(player::pal.window() );
+    pen.setColor(player::pal.window().color() );
     painter->setPen(pen);
 
     painter->drawLine(option.rect.topRight(), option.rect.bottomRight());
@@ -69,7 +69,7 @@ void treeViewDelegate::paint ( QPainter * painter, const QStyleOptionViewItem & 
 
     if (option.state & QStyle::State_Selected)
     {
-        painter->setPen(option.palette.highlightedText());
+        painter->setPen(option.palette.highlightedText().color());
     }
 
 
@@ -126,8 +126,8 @@ void treeViewDelegate::drawStar(QPainter *painter,QRect rect,int num) const
     if (num%25>0 && n!=10) 	n++;
 
     KIcon icon("favorites");
-    QPixmap activeStar=icon.pixmap();
-    activeStar=activeStar.scaledToHeight(rect.height(),Qt::SmoothTransformation);
+    QPixmap activeStar=icon.pixmap(rect.height());
+//     activeStar=activeStar.scaledToHeight(rect.height(),Qt::SmoothTransformation);
 
     QPixmap greyStar=KIconEffect().apply( activeStar, KIconEffect::ToGray, 1, QColor(), false );
 
