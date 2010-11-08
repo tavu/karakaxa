@@ -12,26 +12,30 @@ using namespace player;
 class libraryImporter :public QObject
 {
     Q_OBJECT
-public:
-    libraryImporter();
-    ~libraryImporter();
-    bool import(const QString path);
+    public:
+        libraryImporter();
+        ~libraryImporter();
+        bool import(const QString path);
 
-    void saveAlbumArt(const QString &s);
-    QString error();
+        void saveAlbumArt(const QString &s);
+        QString error();
 
-    static int n;
-private:
+        static int n;
+	void save();
+    private:
 
-    QString albumArt;
-    QSqlDatabase database;
-    QString name;
-    bool isConnected;
+        QString albumArt;
+        QSqlDatabase database;
+        QString name;
+        bool isConnected;
 
-    QMap<QString, QString> albumList;
+        QMap<QString, QString> albumList;
+        void createTmpTable();
+	QVariant getId(QVariant var,QString table);
+	QVariant getAlbumId(QVariant album,QVariant artist);
 
-signals:
-    void error(QString);
+    signals:
+        void error(QString);
 };
 
 

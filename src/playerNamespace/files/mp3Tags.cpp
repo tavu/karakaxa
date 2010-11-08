@@ -88,7 +88,7 @@ QVariant player::mp3Tags::counter() const
 
     ID3v2::PopularimeterFrame *frame=static_cast<ID3v2::PopularimeterFrame*> (*it);
 
-    err=0;
+    err=OK;
 
     return frame->counter();
 }
