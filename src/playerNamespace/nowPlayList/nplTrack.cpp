@@ -1,5 +1,13 @@
 #include"nplTrack.h"
 
+//nplClasses
+#include"nplTrack.h"
+#include"nplFile.h"
+#include"nplStream.h"
+
+
+
+
 player::nplTrack::nplTrack()
         :ok(true)
 {
@@ -24,4 +32,20 @@ QString player::nplTrack::artist()
     //in case we don't have artists
     //else we have to reimplement this function
     return QString();
+}
+
+nplTrack* player::getNplTrack(const QString url)
+{
+    nplTrack *ret=0;
+    
+    if (player::isStream(url) )
+    {
+        ret=new nplStream(url);        
+    }
+    if(isAudio(url) )
+    {
+	ret=new nplFile(url);
+    }
+    
+    return ret;
 }

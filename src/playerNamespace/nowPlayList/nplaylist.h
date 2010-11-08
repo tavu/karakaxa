@@ -4,7 +4,7 @@
 // #include"nplTrack.h"
 #include<QList>
 #include<player.h>
-#include<nplTrack.h>
+#include"nplClass.h"
 
 #include<QThread>
 
@@ -29,70 +29,70 @@ class nplaylist :public QObject
 
     friend class soundEngine;
 
-public:
-    const static int ADD;
-    const static int REMOVE;
-    const static int CLEAR;
+    public:
+	const static int ADD;
+	const static int REMOVE;
+	const static int CLEAR;
 
-    nplaylist();
-    bool append(nplTrack *tr);
-
-
-    nplTrack* getTrack(int);
-
-    void addMediaList(const QList <QUrl> &urlList,int pos);
-
-    void addMediaList(const QStringList &list,int pos);
-
-    QString url(int n);
-
-    bool isPlaying(const int pos);
-
-    bool isAudio(const QString &url);
-
-    QStringList getList();
-    int getLength();
-private:
-
-// 	  int playingTr;
-    int totalLength;
-
-    QList<nplPointer *> trackList;
-
-    nplPointer* playing;
-    QMutex mutex;
-
-    bool circle;
-
-    QString next();
-    QString playUrl(int n);
-    QString previous();
+	nplaylist();
+	bool append(nplTrack *tr);
 
 
-signals:
-    void changed(int);
+	nplTrack* getTrack(int);
 
-    void aboutToInsert(int);
-    void aboutToClear(int );
-    void aboutToRemove(int);
+	void addMediaList(const QList <QUrl> &urlList,int pos);
 
-public slots:
+	void addMediaList(const QStringList &list,int pos);
+
+	QString url(int n);
+
+	bool isPlaying(const int pos);
+
+	static bool isAudio(const QString &url);
+
+	QStringList getList();
+	int getLength();	
+    private:
+
+    // 	  int playingTr;
+	int totalLength;
+
+	QList<nplPointer *> trackList;
+
+	nplPointer* playing;
+	QMutex mutex;
+
+	bool circle;
+
+	QString next();
+	QString playUrl(int n);
+	QString previous();
 
 
-    bool addAudio(const QString &url,const uint pos);
+    signals:
+	void changed(int);
+
+	void aboutToInsert(int);
+	void aboutToClear(int );
+	void aboutToRemove(int);
+
+    public slots:
 
 
-    bool insert(int pos,nplTrack *tr);
-    void move(int from,int pos);
-    bool remove(const int);
-// 	  bool remove(QList<int> &l);
-    void clear();
-    int size();
-    void duplicate(const int pos);
+	bool addAudio(const QString &url,const uint pos);
 
-//      private slots:
 
-    //this class have the porpose of finding the file info and appending the now playlist
+	bool insert(int pos,nplTrack *tr);
+	void move(int from,int pos);
+	bool remove(const int);
+    // 	  bool remove(QList<int> &l);
+	void clear();
+	int size();
+	void duplicate(const int pos);
+
+    //      private slots:
+
+	//this class have the porpose of finding the file info and appending the now playlist
 
 
 

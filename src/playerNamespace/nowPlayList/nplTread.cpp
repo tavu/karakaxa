@@ -54,21 +54,12 @@ void nplTread::run()
 
 bool nplTread::addMedia(const QString &url)
 {
-    qDebug()<<"url"<<url;
     if (player::isDirectory(url) )
     {
         addDirectory(url);
         return true;
     }
-
-    if (player::isStream(url) )
-    {
-        qDebug()<<"stream"<<url;
-        nplTrack *t=new nplStream(url);
-        npList.insert(pos,t);
-        pos++;
-    }
-
+    
     if (player::isPlaylist(url) )
     {
         player::m3uPl m3u(url);
@@ -81,9 +72,13 @@ bool nplTread::addMedia(const QString &url)
         }
         return true;
     }
+    
+    
+    nplTrack *tr=player::getNplTrack(url);
+    npList.insert(pos,tr);
+    pos++;    
 
-    npList.addAudio(url,pos);
-    pos++;
+    
     return true;
 }
 
@@ -111,7 +106,6 @@ void nplTread::addDirectory(const QString &url)
     {
         it.next();
         info=it.fileInfo();
-        npList.addAudio(info.filePath(),pos );
-        pos++;
+	addMedia(info.filePath() );	
     }
 }

@@ -28,7 +28,7 @@ public:
     QString 	album() ;
     QString 	type() ;
     int	 	length() ;
-    int 		trackN() ;
+    int 	trackN() ;
 
 private:
 

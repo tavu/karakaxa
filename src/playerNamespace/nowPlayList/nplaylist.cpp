@@ -17,31 +17,15 @@ player::nplaylist::nplaylist()
 
 bool player::nplaylist::append(nplTrack *tr)
 {
-    mutex.lock();
-
-    if (tr->path().isNull() )
-    {
-        mutex.unlock();
-        return false;
-    }
-
-    nplPointer *p=new nplPointer(tr);
-
-    emit (aboutToInsert(trackList.size()) );
-    trackList.append(p);
-    totalLength+=tr->length();
-    emit changed(ADD);
-
-    mutex.unlock();
-
-    return true;
+    //we just call insert with pos -1.    
+    return insert(-1,tr);
 }
 
 bool player::nplaylist::insert(int pos,nplTrack *tr)
 {
     mutex.lock();
 
-    if (pos>trackList.size() )	pos=trackList.size();
+    if (pos>trackList.size()|| pos<0 )	pos=trackList.size();
 
     if (tr==0)
     {
@@ -84,8 +68,6 @@ bool player::nplaylist::remove(const int pos)
         mutex.unlock();
         return false;
     }
-
-//      nplTrack *t=trackList.at(pos);
     nplPointer *t=trackList.at(pos);
 
     emit (aboutToRemove(pos) );
@@ -101,11 +83,6 @@ bool player::nplaylist::remove(const int pos)
 
     return true;
 }
-
-// bool remove(QList<int> &l);
-// {
-//      mutex.lock();
-// }
 
 
 void player::nplaylist::duplicate(const int pos)
@@ -335,7 +312,7 @@ bool player::nplaylist::addAudio(const QString &url,const uint pos)
         return false;
     }
 
-    nplTrack *t=new nplFile(url);
+    nplTrack *t=new player::nplFile(url);
 
     if ( !t->isOk() )
     {
@@ -361,6 +338,7 @@ int player::nplaylist::getLength()
 {
     return totalLength;
 }
+
 
 
 

@@ -1,16 +1,6 @@
 #ifndef  PLAYER_NAMESPACE_H
 #define  PLAYER_NAMESPACE_H
-/*
-#include"database/database.h"
-#include"engine.h"
-#include"coverWidget.h"
-#include"content/contentHandler.h"
-// #include"content/abstractContent.h"
 
-#include"config/config.h"
-#include"nowPlayList/nplaylist.h"
-*/
-// #include"files/filesNamespace.h"
 #include<QString>
 #include<QPalette>
 #include"files/tagsTable.h"
@@ -37,32 +27,32 @@ class decoration;
 //      class myPointer;
 
 
-extern database 			db;
-extern nplaylist 			npList;
+extern database 		db;
+extern nplaylist 		npList;
 extern soundEngine 		engine;
 extern contentHandler 		*contentHandlr;
 extern PlayerConfigure 		config;
 
 extern QPalette			pal;
-extern pStatusBar			statusBar;
-extern decoration 			decor;
+extern pStatusBar		statusBar;
+extern decoration 		decor;
 
 
 QString 	folder(QString path) ;
 QString 	titleFromPath(const QString &path);
 QString 	prettyLength(int l);
 QString 	prettySize(int n);
-QString	tagName(player::tagsEnum t);
+QString		tagName(player::tagsEnum t);
 int     	tagSize(player::tagsEnum t);
-bool   	isStream(const QString s);
-bool   	isStream(const QUrl url);
-bool 	isDirectory(const QString &url);
-bool	isPlaylist(const QString &url);
-bool 	isAudio(const QString &url);
+bool   		isStream(const QString s);
+bool   		isStream(const QUrl url);
+bool 		isDirectory(const QString &url);
+bool		isPlaylist(const QString &url);
+bool 		isAudio(const QString &url);
 
 QString 	format(QString path);
-//      void 	toSqlSafe(QString &s);
-void 	editTrack(const QString &s);
+
+void 		editTrack(const QString &s);
 };
 
 
