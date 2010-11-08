@@ -190,14 +190,12 @@ void albumTrack::albumActivated(const QModelIndex &n)
 
 void albumTrack::play(const QModelIndex index)
 {
-    qDebug()<<"play";
     npList.clear();
     QList <QUrl> urlList;
     for (int i=0;i<trackM->rowCount();i++)
     {
         npList.addAudio(trackM->url(i).toLocalFile(),i );
     }
-//      npList.addAudio(urlList,0);
-//      sleep(1);
+    
     engine.play(index.row() );
 }
