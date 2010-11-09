@@ -8,7 +8,7 @@ QT += sql
 LIBS += -lkdecore -lkdeui -lkfile
 
 CONFIG += link_pkgconfig 
-#CONFIG += debug
+CONFIG += debug
 PKGCONFIG += taglib taglib-extras
 #QT += qt3support
 TARGET = player
