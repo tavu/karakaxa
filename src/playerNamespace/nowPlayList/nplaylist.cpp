@@ -5,57 +5,46 @@
 #include"nplFile.h"
 #include<KMimeType>
 
-#define test std::cout<<"playlist test"<<std::endl;
-
 using namespace player;
 player::nplaylist::nplaylist()
         :QObject()
 {
-    playing=0;
+//     playing;
     circle=true;
 }
 
-bool player::nplaylist::append(nplTrack *tr)
-{
-    //we just call insert with pos -1.    
-    return insert(-1,tr);
-}
-
-bool player::nplaylist::insert(int pos,nplTrack *tr)
+bool player::nplaylist::insert(int pos,nplPointer tr)
 {
     mutex.lock();
 
     if (pos>trackList.size()|| pos<0 )	pos=trackList.size();
 
-    if (tr==0)
+    if (tr.isNull())
     {
         mutex.unlock();
         return false;
-    }
-
-    nplPointer *p=new nplPointer(tr);
+    }	  
     emit (aboutToInsert(pos) );
 
-    trackList.insert (pos,p);
-    totalLength+=tr->length();
+    trackList.insert (pos,tr);
+    totalLength+=tr->tag(LENGTH).toInt();
 
     emit changed(ADD);
-
 
     mutex.unlock();
     return true;
 }
 
-nplTrack* player::nplaylist::getTrack(int pos)
+nplPointer player::nplaylist::getTrack(int pos)
 {
-    nplTrack *ret=0;
+    nplPointer ret;
     mutex.lock();
     if ( pos >= trackList.size() )
     {
         mutex.unlock();
         return  ret ;
     }
-    ret= trackList.at(pos)->data();
+    ret= trackList.at(pos);
     mutex.unlock();
     return    ret;
 }
@@ -68,17 +57,19 @@ bool player::nplaylist::remove(const int pos)
         mutex.unlock();
         return false;
     }
-    nplPointer *t=trackList.at(pos);
+//     nplPointer t;
+//     nplPointer t=trackList.takeAt(pos);
 
     emit (aboutToRemove(pos) );
-    trackList.removeAt(pos);
-    totalLength-=t->data()->length();
+//     trackList.removeAt(pos);
+    nplPointer t=trackList.takeAt(pos);
+//     totalLength-=t->tag(LENGTH).toInt();
     emit changed(REMOVE);
 
-    if (t==playing)	playing=0;
+    if (t==playing)	playing.clear();
 
-    delete t;
-
+//     delete t;
+    t.clear();
     mutex.unlock();
 
     return true;
@@ -87,42 +78,49 @@ bool player::nplaylist::remove(const int pos)
 
 void player::nplaylist::duplicate(const int pos)
 {
-    mutex.lock();
-
-    if (pos>=trackList.size() )
+    QString u=url(pos);
+    if(u.isEmpty() )
     {
-        mutex.unlock();
-        return ;
+	return ;
     }
-
-    nplPointer *p=trackList.at(pos);
-
-    nplPointer *n=new nplPointer(*p);
-
-    emit (aboutToInsert(pos) );
-
-    trackList.insert (pos+1,n);
-    totalLength+=n->data()->length();
-
-    emit changed(ADD);
-
-    mutex.unlock();
+    insert(pos+1,nplTrack::getNplTrack(u) );
+//     mutex.lock();
+// 
+//     if (pos>=trackList.size() )
+//     {
+//         mutex.unlock();
+//         return ;
+//     }
+// 
+//     nplPointer p=trackList.at(pos);
+// 
+//     nplPointer *n=new nplPointer(*p);
+// 
+//     emit (aboutToInsert(pos) );
+// 
+//     trackList.insert (pos+1,n);
+//     totalLength+=n->data()->tag(LENGTH).toInt();
+// 
+//     emit changed(ADD);
+// 
+//     mutex.unlock();
 }
 
 void player::nplaylist::clear()
 {
     mutex.lock();
-    QList<nplPointer*>::iterator it;
-
+//     QList<nplPointer>::iterator it;
+// 
+//     int size=trackList.size()-1;
+//     emit(aboutToClear(size) );
+// 
+//     //mutex prevend from accesing the deleted data
+//     for (it= trackList.begin(); it != trackList.end(); ++it)
+//     {
+//         delete *it;
+//     }
     int size=trackList.size()-1;
     emit(aboutToClear(size) );
-
-    //mutex prevend from accesing the deleted data
-    for (it= trackList.begin(); it != trackList.end(); ++it)
-    {
-        delete *it;
-    }
-
     trackList.clear();
     totalLength=0;
     emit changed(CLEAR);
@@ -179,11 +177,11 @@ QString player::nplaylist::url(int n)
         return QString();
     }
 
-    nplPointer *p=trackList.at(n);
+    nplPointer p=trackList.at(n);
 
-    nplTrack *t=p->data();
+//      nplTrack *t=p.data();
     mutex.unlock();
-    return t->path();
+    return p->path();
 }
 
 QString player::nplaylist::playUrl(int n)
@@ -197,7 +195,7 @@ QString player::nplaylist::playUrl(int n)
     }
 
     playing=trackList.at(n);
-    ret=playing->data()->path();
+    ret=playing->path();
     mutex.unlock();
     return ret;
 }
@@ -213,7 +211,7 @@ QString player::nplaylist::next()
         if (trackList.size()>=1)
         {
             playing=trackList.at(0);
-            ret=playing->data()->path();
+            ret=playing->path();
             mutex.unlock();
             return ret;
         }
@@ -228,7 +226,7 @@ QString player::nplaylist::next()
         {
 
             playing=trackList.at(0);
-            ret=playing->data()->path();
+            ret=playing->path();
             mutex.unlock();
             return ret;
         }
@@ -238,7 +236,7 @@ QString player::nplaylist::next()
     }
 
     playing=trackList.at(pos);
-    ret=playing->data()->path();
+    ret=playing->path();
     mutex.unlock();
     return ret;
 }
@@ -249,12 +247,7 @@ QString player::nplaylist::previous()
 
     int k=trackList.indexOf(playing,0);
     QString ret;
-    if (k==-1)
-    {
-        mutex.unlock();
-        return ret;
-    }
-
+    
     k--;
     if (k<0 )
     {
@@ -264,7 +257,7 @@ QString player::nplaylist::previous()
 
     playing=trackList.at(k);
     mutex.unlock();
-    ret=playing->data()->path();
+    ret=playing->path();
     return ret;
 }
 
@@ -279,7 +272,7 @@ bool player::nplaylist::isPlaying(const int pos)
         return false;
     }
 
-    nplPointer *t=trackList.at(pos);
+    nplPointer t=trackList.at(pos);
 
     if ( t==playing)
     {
@@ -297,42 +290,24 @@ QStringList player::nplaylist::getList()
 {
     QStringList list;
 
-    foreach(nplPointer *t,trackList)
+    foreach(nplPointer t,trackList)
     {
-        list<<t->data()->path();
+        list<<t->path();
     }
     return list;
 }
 
-bool player::nplaylist::addAudio(const QString &url,const uint pos)
-{
-    if (!isAudio(url) )
-    {
-        qDebug()<<"not audio";
-        return false;
-    }
-
-    nplTrack *t=new player::nplFile(url);
-
-    if ( !t->isOk() )
-    {
-        return false;
-    }
-
-    return insert(pos,t);
-}
-
-bool player::nplaylist::isAudio(const QString &url)
-{
-    KMimeType::Ptr type = KMimeType::findByUrl(url );
-
-    QStringList l=config.files();
-    if (l.contains(type->name() ) )
-    {
-        return true;
-    }
-    return false;
-}
+// bool player::nplaylist::isAudio(const QString &url)
+// {
+//     KMimeType::Ptr type = KMimeType::findByUrl(url );
+// 
+//     QStringList l=config.files();
+//     if (l.contains(type->name() ) )
+//     {
+//         return true;
+//     }
+//     return false;
+// }
 
 int player::nplaylist::getLength()
 {

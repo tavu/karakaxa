@@ -39,14 +39,16 @@ QVariant myFileSystemModel::data(const QModelIndex &index, int role) const
 
         if (!f->onCache((player::tagsEnum)filde) )
         {
+	    audioFile::releaseAudioFile(f);
             return QVariant();
         }
         QVariant var=f->tag( (player::tagsEnum)filde);
-
+	audioFile::releaseAudioFile(f);
         if (filde==LENGTH)
         {
             return prettyLength(var.toInt());
         }
+        
         return var;
     }
     return QVariant();

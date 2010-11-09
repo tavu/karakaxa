@@ -28,13 +28,10 @@ public:
 
 protected:
     QPoint startPos;
-    QMenu *menu;
     treeViewDelegate *delegate;
 
     virtual void mouseMoveEvent(QMouseEvent *event);
     virtual void performDrag();
-    virtual void createMenu();
-    virtual void contextMenuEvent(QContextMenuEvent *e);
 
 
 private:

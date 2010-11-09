@@ -6,6 +6,7 @@ songView::songView(QWidget *parent,QString name)
         :myTreeView(parent,name)
 {
     createMenu();
+    connect(this,SIGNAL(doubleClicked  ( const QModelIndex) ),this,SLOT(play(const QModelIndex) ) );
 }
 
 void songView::contextMenuEvent(QContextMenuEvent *e)
@@ -50,4 +51,16 @@ void songView::fileEdit()
     }
 }
 
+void songView::play(const QModelIndex index)
+{
+    npList.clear();
+    QList <QUrl> urlList;
+    const songModel *Model=static_cast<const songModel*>(model() );
+    for (int i=0;i<Model->rowCount();i++)
+    {
+        npList.insert(i ,nplTrack::getNplTrack(Model->url(i).toLocalFile()) );
+    }
+    
+    engine.play(index.row() );
+}
 

@@ -52,8 +52,6 @@ public slots:
     void albumActivated(const QModelIndex &n);
     void update();
 
-private slots:
-    void play(const QModelIndex);
 };
 
 #endif

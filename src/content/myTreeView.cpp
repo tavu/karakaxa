@@ -116,31 +116,6 @@ void myTreeView::performDrag()
     drag->exec(Qt::CopyAction);
 }
 
-void myTreeView::contextMenuEvent(QContextMenuEvent *e)
-{
-    if (indexAt(e->pos()).isValid() )
-    {
-        menu->popup( e->globalPos() );
-    }
-}
-
-void myTreeView::createMenu()
-{
-    append=new QAction(tr("&Queue track"),this);
-    edit=new QAction(tr("Edit"),this);
-    editTr=new QAction(tr("&Edit track details"),this);
-    delet=new QAction(tr("&Delete"),this);
-
-    menu=new QMenu(this);
-    menu->addAction(append);
-    menu->addAction(edit);
-    menu->addAction(delet);
-    menu->addSeparator();
-    menu->addAction(editTr);
-
-    connect(edit,SIGNAL(triggered()),this,SLOT(fileEdit() ) );
-}
-
 void myTreeView::setModel ( QAbstractItemModel * model )
 {
     QTreeView::setModel(model);

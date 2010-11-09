@@ -80,8 +80,8 @@ void treeViewDelegate::paint ( QPainter * painter, const QStyleOptionViewItem & 
         if (!var.isNull() )
         {
             drawStar(painter,option.rect,index.data().toInt() );
-            painter->restore();
         }
+        painter->restore();
         return;
     }
 

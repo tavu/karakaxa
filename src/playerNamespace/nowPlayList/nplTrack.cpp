@@ -13,28 +13,12 @@ player::nplTrack::nplTrack()
 {
 }
 
-int player::nplTrack::trackN()
+player::nplTrack::~nplTrack()
 {
-    //in case we don't have the track number
-    //else we have to reimplement this function
-    return 0;
 }
 
-int player::nplTrack::length()
-{
-    //in case we don't know the length
-    //else we have to reimplement this function
-    return 0;
-}
 
-QString player::nplTrack::artist()
-{
-    //in case we don't have artists
-    //else we have to reimplement this function
-    return QString();
-}
-
-nplTrack* player::getNplTrack(const QString url)
+nplPointer player::nplTrack::getNplTrack(const QString url)
 {
     nplTrack *ret=0;
     
@@ -47,5 +31,17 @@ nplTrack* player::getNplTrack(const QString url)
 	ret=new nplFile(url);
     }
     
-    return ret;
+    return nplPointer(ret);    
 }
+
+QVariant player::nplTrack::tag(tagsEnum t)
+{
+    if(t==TITLE)
+    {
+	return QVariant(title() );
+    }
+    
+    return QVariant();
+}
+
+

@@ -74,7 +74,7 @@ bool nplTread::addMedia(const QString &url)
     }
     
     
-    nplTrack *tr=player::getNplTrack(url);
+    nplPointer tr=player::nplTrack::getNplTrack(url);
     npList.insert(pos,tr);
     pos++;    
 

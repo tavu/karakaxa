@@ -16,7 +16,7 @@ Every track is represented by a nplTrack poinder.
 nplaylist deletes tha poinder on removeTrack
 NEVER delete it outside.
 */
-
+// typedef QSharedPointer<nplTrack> nplPointer;
 
 namespace player
 {
@@ -25,7 +25,7 @@ class nplaylist :public QObject
 {
     Q_OBJECT
 
-    typedef QSharedPointer<nplTrack> nplPointer;
+    
 
     friend class soundEngine;
 
@@ -35,31 +35,23 @@ class nplaylist :public QObject
 	const static int CLEAR;
 
 	nplaylist();
-	bool append(nplTrack *tr);
 
-
-	nplTrack* getTrack(int);
-
+	nplPointer getTrack(int pos);
 	void addMediaList(const QList <QUrl> &urlList,int pos);
-
 	void addMediaList(const QStringList &list,int pos);
-
 	QString url(int n);
-
 	bool isPlaying(const int pos);
-
-	static bool isAudio(const QString &url);
-
 	QStringList getList();
-	int getLength();	
+	int getLength();
+	
     private:
 
     // 	  int playingTr;
 	int totalLength;
 
-	QList<nplPointer *> trackList;
+	QList<nplPointer> trackList;
 
-	nplPointer* playing;
+	nplPointer playing;
 	QMutex mutex;
 
 	bool circle;
@@ -78,21 +70,12 @@ class nplaylist :public QObject
 
     public slots:
 
-
-	bool addAudio(const QString &url,const uint pos);
-
-
-	bool insert(int pos,nplTrack *tr);
+	bool insert(int pos,nplPointer tr);
 	void move(int from,int pos);
 	bool remove(const int);
-    // 	  bool remove(QList<int> &l);
 	void clear();
 	int size();
 	void duplicate(const int pos);
-
-    //      private slots:
-
-	//this class have the porpose of finding the file info and appending the now playlist
 
 
 
