@@ -29,13 +29,18 @@ void scrolText::paintEvent(QPaintEvent *event)
     QPainter painter(this);
     painter.setFont (font);
 
-    painter.drawText(rect(),Qt::AlignLeft|Qt::TextSingleLine,_text);
+    painter.drawText(rect () ,Qt::AlignLeft|Qt::TextSingleLine,_text);
 
 }
 
 QSize scrolText::sizeHint()
 {
     QFontMetrics f(font);
+//     return QSize(100,10);
+    if(_text.isEmpty())
+    {
+	return f.size(Qt::TextSingleLine,"A");
+    }
     return f.size(Qt::TextSingleLine,_text);
 }
 

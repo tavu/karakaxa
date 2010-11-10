@@ -1,4 +1,3 @@
-#include <QApplication>
 #include"mainwindow.h"
 
 #include<player.h>
@@ -11,6 +10,9 @@
 
 QObject keef;
 using namespace player;
+
+#define VERSION "0.5"
+
 int main(int argc, char *argv[])
 {
 //      QSqlDatabase p=player::db.getDatabase();
@@ -20,37 +22,15 @@ int main(int argc, char *argv[])
 //      app.setApplicationName("Media Player");
 
 
-    KAboutData aboutData(
-        // The program name used internally.
-        "tutorial1",
-        // The message catalog name
-        // If null, program name is used instead.
-        0,
-        // A displayable program name string.
-        ki18n("Tutorial 1"),
-        // The program version string.
-        "1.0",
-        // Short description of what the app does.
-        ki18n("Displays a KMessageBox popup"),
-        // The license this code is released under
-        KAboutData::License_GPL,
-        // Copyright Statement
-        ki18n("(c) 2007"),
-        // Optional text shown in the About box.
-        // Can contain any information desired.
-        ki18n("Some text..."),
-        // The program homepage string.
-        "http://example.com/",
-        // The bug report email address
-        "submit@bugs.kde.org"
-    );
-
-
+    KAboutData aboutData("player",NULL,ki18n("player"),VERSION);
+//ki18n("A new music player"),KLocalizedString(),KAboutData::License_GPL
 
 
     KCmdLineArgs::init( argc, argv, &aboutData );
-    QApplication app(argc,argv);
-
+//     QApplication app(argc,argv);
+    KApplication app;
+    app.setApplicationName("player");
+    app.setOrganizationName("player");
     mainWindow *pl=new mainWindow();
 
     pl->show();

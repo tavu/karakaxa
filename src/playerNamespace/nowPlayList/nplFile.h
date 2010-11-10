@@ -17,8 +17,9 @@ class nplFile :public nplTrack
 
 	QString		title() ;
 	QString 	path() ;
-	QString 	type() ;
+	int	 	type() ;
 	int	 	length() ;
+	QString 	cover();
 	
 	QVariant	tag(tagsEnum);
 	

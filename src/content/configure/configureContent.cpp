@@ -17,7 +17,7 @@ configureContent::configureContent(QWidget *parent)
     l->setFont(font);
 
     QVBoxLayout *layout = new QVBoxLayout();
-    sList=database::getLibraryFolders();
+    sList=db.getLibraryFolders();
     libconfInit();
 
     chBox=new QCheckBox("remember playlist on exit",this);

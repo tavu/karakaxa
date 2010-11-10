@@ -1,22 +1,36 @@
 #include"database.h"
+#include<QApplication>
 // #include<player.h>
 #include<player.h>
 player::database::database()
-        :QObject()
+        :QObject(),
+	isConnected(false)
+// 	db(QSqlDatabase::addDatabase("QMYSQL3") )
 {
-    createConnection();
+//     createConnection();
 }
 
 bool player::database::createConnection()
 {
+    QSettings settings(qApp->organizationName(),"database");
+    QString dbName=settings.value("database").toString();
+    QString dbUser=settings.value("user").toString();
+    QString pass=settings.value("pass").toString();
+    
+    if(dbName.isEmpty())
+    {
+	return false;
+    }
+    
     db.setHostName("localhost");
-    db.setDatabaseName("karakaxa");
-    db.setUserName("root");
-    db.setPassword("mstn");
+    db.setDatabaseName(dbName);
+    db.setUserName(dbUser);
+    db.setPassword(pass);
 
     if (!db.open())
     {
-        QMessageBox::critical(0, QObject::tr("Database Error"),db.lastError().text() );
+//         QMessageBox::critical(0, QObject::tr("Database Error"),db.lastError().text() );
+	statusBar.showMessage(tr("Database Error")+db.lastError().text());
         return false;
     }
     return true;
@@ -70,7 +84,7 @@ const QSqlQuery player::database::artist(QString search)
 }
 
 
-bool player::database::isConnected=false;
+// bool player::database::isConnected=false;
 
 QSqlDatabase player::database::db=QSqlDatabase::addDatabase("QMYSQL");
 
@@ -96,7 +110,7 @@ QSqlDatabase player::database::clone(const QString &s)
 
 player::database::~database()
 {
-    db.close();
+    if(isConnected)	db.close();
     db=QSqlDatabase();
 }
 

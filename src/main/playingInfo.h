@@ -23,7 +23,7 @@ private:
     scrolText *artistT;
     scrolText *commentT;
 
-    audioFile *file;
+    nplPointer track;
 
     QLabel *l;
 

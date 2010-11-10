@@ -20,6 +20,7 @@ player::nplFile::~nplFile()
 
 int player::nplFile::length()
 {
+    if(file==0)	return 0;
     return file->tag(player::LENGTH).toInt();
 }
 
@@ -30,16 +31,24 @@ QString player::nplFile::path()
 
 QString player::nplFile::title()
 {
+    if(file==0)	return 0;
     return file->tag(player::TITLE).toString();
 }
 
-QString player::nplFile::type()
+int player::nplFile::type()
 {
-    return QString("AudioFile");
+    return NPLAUDIOFILE;
+}
+
+QString player::nplFile::cover()
+{
+    if(file==0)	return 0;
+    return file->cover();
 }
 
 QVariant player::nplFile::tag(tagsEnum t)
 {
+    if(file==0)	return 0;
     return file->tag(t);
 }
 

@@ -91,13 +91,15 @@ mainWindow::~mainWindow()
 
 inline void mainWindow::init()
 {
+    player::statusBar.init();
+    db.createConnection();
     player::engine.init();
 //      player::nowPl=new nowPlaylist();
 
 
 //      player::config=new PlayerConfigure();
 
-    player::statusBar.init();
+    
 
     player::contentHandlr=new contentHandler(conTree,conView);
 
@@ -335,7 +337,8 @@ void mainWindow::writeSettings()
 // 	  QString ini_path(getenv("HOME"));
 // 	  ini_path += "/.aman/";
 //       QSettings::setPath(QSettings::IniFormat,QSettings::SystemScope,ini_path );
-    QSettings settings(QSettings::IniFormat,QSettings::UserScope,"player.org","player");
+//     QSettings settings(QSettings::IniFormat,QSettings::UserScope,"player.org","player");
+    QSettings settings;
 
     settings.beginGroup("MainWindow");
     settings.setValue("geometry", saveGeometry());
@@ -350,12 +353,11 @@ void mainWindow::writeSettings()
 
 void mainWindow::readSettings()
 {
-//      QString ini_path(getenv("HOME"));
-//      ini_path += "/.aman/";
 
-//      QSettings::setPath(QSettings::IniFormat,QSettings::SystemScope,ini_path);
-    QSettings settings(QSettings::IniFormat,QSettings::UserScope,"player.org","player");
+//     QSettings settings(QSettings::IniFormat,QSettings::UserScope,"player.org","player");
+    QSettings settings;
     settings.beginGroup("MainWindow");
+    
     restoreGeometry(settings.value("geometry").toByteArray());
     restoreState(settings.value("state").toByteArray());
     settings.endGroup();

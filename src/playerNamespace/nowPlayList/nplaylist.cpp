@@ -12,6 +12,12 @@ player::nplaylist::nplaylist()
 //     playing;
     circle=true;
 }
+nplPointer player::nplaylist::getPlayingTrack()
+{
+    return playing;
+}
+
+
 
 bool player::nplaylist::insert(int pos,nplPointer tr)
 {

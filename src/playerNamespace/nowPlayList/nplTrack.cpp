@@ -44,4 +44,7 @@ QVariant player::nplTrack::tag(tagsEnum t)
     return QVariant();
 }
 
-
+QString player::nplTrack::cover()
+{
+    return QString();
+}

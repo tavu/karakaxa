@@ -16,7 +16,7 @@ class database :public QObject
 public:
     database();
     ~database();
-    static QSqlDatabase getDatabase();
+    QSqlDatabase getDatabase();
 // 	  static QSqlQuery getLibraryFolders();
     static QStringList getLibraryFolders();
 
@@ -35,12 +35,14 @@ public:
 
     void update();
     static void toSqlSafe(QString &s);
+    
+    bool createConnection();
 private:
 
 
     static QSqlDatabase db;
-    static bool createConnection();
-    static bool isConnected;
+    
+    bool isConnected;
 
 
 signals:

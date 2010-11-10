@@ -43,6 +43,7 @@ class nplaylist :public QObject
 	bool isPlaying(const int pos);
 	QStringList getList();
 	int getLength();
+	nplPointer getPlayingTrack();
 	
     private:
 

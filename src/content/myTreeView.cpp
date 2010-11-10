@@ -164,7 +164,8 @@ void myTreeView::writeSettings()
     {
         return ;
     }
-    QSettings settings(QSettings::IniFormat,QSettings::UserScope,"player.org","player");
+//     QSettings settings(QSettings::IniFormat,QSettings::UserScope,"player.org","player");
+    QSettings settings;
 
     settings.beginGroup(objectName());
     settings.setValue("state", QVariant(header()->saveState()) );
@@ -173,7 +174,8 @@ void myTreeView::writeSettings()
 
 void myTreeView::readSettings()
 {
-    QSettings settings(QSettings::IniFormat,QSettings::UserScope,"player.org","player");
+  QSettings settings;
+//     QSettings settings(QSettings::IniFormat,QSettings::UserScope,"player.org","player");
     settings.beginGroup(objectName());
     header()->restoreState(settings.value("state").toByteArray());
     settings.endGroup();
