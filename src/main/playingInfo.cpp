@@ -3,47 +3,44 @@
 #include<QVBoxLayout>
 #include<KToolBar>
 #include<KIcon>
+#include <QGridLayout>
 #define ICONZISE QSize(35,35)
 playingInfo::playingInfo(QWidget *parent)
         :QWidget(parent)
 {
-
-//      file=0;
-//      setSizePolicy(QSizePolicy::Ignored,QSizePolicy::Ignored);
     cover=new player::coverWidget(this);
     cover->setSize(90,110);
-
-//      l=new QLabel(this);
-
-
-
+    stars=new starWidget(this);
+    stars->setFixedHeight(20);
+    
     QHBoxLayout *hLayout=new QHBoxLayout();
     QVBoxLayout *vLayout=new QVBoxLayout();
-
+    QVBoxLayout *layout=new QVBoxLayout();
 
     titleT=new scrolText(this);
     titleT->setBold(true);
     albumT= new scrolText(this);
     artistT= new scrolText(this);
     commentT= new scrolText(this);
-//      titleL=new QLabel(this);
-//      titleL->setWordWrap(true);
-//      albumL=new QLabel(this);
-//      artistL=new QLabel(this);
-//      commentL=new QLabel(this);
-
-    vLayout->addWidget(titleT);
-    vLayout->addWidget(albumT);
-    vLayout->addWidget(artistT);
-    vLayout->addWidget(commentT);
-//      vLayout->addWidget(toolBar);
 
     hLayout->addWidget(cover);
+    vLayout->addWidget(stars);
+    vLayout->addWidget(commentT);
     hLayout->addLayout(vLayout);
-
-    setLayout(hLayout);
-//      setFixedHeight(50);
-    setMinimumWidth(200);
+    
+    layout->addLayout(hLayout);
+    layout->addWidget(titleT);
+    layout->addWidget(albumT);
+    layout->addWidget(artistT);
+    layout->addStretch();
+    
+    
+//      hLayout->addWidget(cover);
+//      hLayout->addLayout(vLayout);
+     
+     
+    setLayout(layout);
+//      setFixedHeight(50);    
 //      update("/media/D/music/BLACK n WHITE - Escucha Lo/02 Escucha Lo.mp3");
     connect(&engine,SIGNAL(trackChanged(QString) ),this,SLOT(update(QString)) );
 }
@@ -68,6 +65,7 @@ void playingInfo::getInfo()
     commentT->setText(track->tag(COMMENT).toString() );
 
     cover->setCover(track->cover() );
+    stars->setRating(track->tag(RATING).toInt());
 //      l->setPixmap(file->cover() );
 
 }

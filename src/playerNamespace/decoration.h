@@ -53,7 +53,24 @@ public:
     {
         return playIcon;
     }
-
+    inline KIcon muted()
+    {
+	return KIcon("audio-volume-muted");
+    }
+    inline KIcon volumeHigh()
+    {
+	return KIcon("audio-volume-high");
+    }
+    inline KIcon volumeMedium()
+    {
+	return KIcon("audio-volume-medium");
+    }
+    inline KIcon volumeLow()
+    {
+	return KIcon("audio-volume-low");
+    }
+    
+    
     QPixmap cover(const QString &path);
 
 private:
@@ -73,3 +90,5 @@ private:
 
 };//namespace
 #endif
+
+

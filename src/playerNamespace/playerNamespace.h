@@ -24,6 +24,7 @@ class tagsTable;
 class m3up;
 class pStatusBar;
 class decoration;
+class starWidget;
 //      class myPointer;
 
 

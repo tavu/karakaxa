@@ -11,21 +11,20 @@
 // #include "../content/visualization/visualization.h"
 // #include<contentAdder.h>
 #include<QToolButton>
+#include"volumeBar.h"
+
 #define ICONZISE QSize(40,40)
 
-#define CONF_PATH() ( QString ini_path(getenv("HOME")); \
-				ini_path += "/.aman/"; )
 using namespace player;
 
-#define test qDebug()<<"test";
+// #define test qDebug()<<"test";
 
 mainWindow::mainWindow()
         :QMainWindow()
 {
     QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
     QTextCodec::setCodecForTr(QTextCodec::codecForName ("UTF-8"));
-//      qDebug()<<"AAAAAAA";
-//      QPalette p=palette();
+
     pal=palette();
     pal.setColor(QPalette::Base,pal.color(QPalette::Window) );
 //      pal.setColor(QPalette::Window,QColor(175,194,237) );
@@ -57,10 +56,8 @@ mainWindow::mainWindow()
     setStatusBar(player::statusBar.statusBar() );
 
     addToolBar ( Qt::TopToolBarArea,toolBar);
-    test
 
     lockDock();
-    test
 
     //signals
 
@@ -215,24 +212,18 @@ void mainWindow::nplViewInit()
 }
 
 void mainWindow::toolBarInit()
-{
-//      KToolBar *toolBarS=new KToolBar(this);
+{ 
     toolBar=new KToolBar(this);
 
     QPalette p=QApplication::palette();
 
-//      p.setColor(QPalette::Base,p.color(QPalette::Window) );
-
     toolBar->setPalette(p);
     toolBar->setAutoFillBackground(true);
-//      toolBar->setPalette(QApplication::palette());
-
 
     toolBar->setObjectName("buttonsToolBar");
     toolBar->setToolButtonStyle( Qt::ToolButtonIconOnly );
     toolBar->setIconSize(ICONZISE );
 //      toolBar->setMovable(true);
-//       toolBar->setIconSize(QSize(30,30) );
 
     previousAction = new QAction(  decor.previous() ,"play previous", this );
     toolBar->addAction( previousAction );
@@ -245,16 +236,15 @@ void mainWindow::toolBarInit()
     nextAction = new QAction(  decor.next(),"play next", this );
     toolBar->addAction( nextAction );
     connect(nextAction,SIGNAL(triggered( bool)),&engine,SLOT(next() ) );
-
-
-    volume = new Phonon::VolumeSlider(engine.getAudio(),this );
-    volume->setFixedWidth(150);
-    volume->setMuteVisible(false);
+    
     slider = new Phonon::SeekSlider(this);
-
     slider->setMediaObject(engine.getMediaObject() );
     slider->setIconVisible(false);
-
+    toolBar->addWidget(slider);
+    
+    volumeBar *v=new volumeBar(this);
+    v->setFixedWidth(150);
+    toolBar->addWidget(v);
 //      QVBoxLayout *vLayout = new QVBoxLayout();
 //      QHBoxLayout *hLayout = new QHBoxLayout();
 
@@ -270,8 +260,7 @@ void mainWindow::toolBarInit()
 
 //      QWidget *w=new QWidget(this);
 //      w->setLayout(vLayout);
-    toolBar->addWidget(slider);
-    toolBar->addWidget(volume);
+    
 //      toolBarS->addWidget(slider);
 //      addToolBar ( Qt::BottomToolBarArea,toolBarS);
 //      slider = new Phonon::SeekSlider(this);
@@ -283,6 +272,7 @@ void mainWindow::toolBarInit()
 //      volume->setFixedWidth(120);
 //
 }
+
 
 void mainWindow::lockDock()
 {
@@ -300,8 +290,9 @@ void mainWindow::lockDock()
 //      nplViewDock->setTitleBarWidget(nplViewDockT);
 
     infoDock->setFeatures(features);
+    infoDock->setMinimumWidth(210);
     infoDock->setTitleBarWidget(infoDockT);
-
+    
 }
 
 void mainWindow::stateChanged(Phonon::State state)
@@ -353,8 +344,6 @@ void mainWindow::writeSettings()
 
 void mainWindow::readSettings()
 {
-
-//     QSettings settings(QSettings::IniFormat,QSettings::UserScope,"player.org","player");
     QSettings settings;
     settings.beginGroup("MainWindow");
     
@@ -362,11 +351,7 @@ void mainWindow::readSettings()
     restoreState(settings.value("state").toByteArray());
     settings.endGroup();
 
-//      qDebug()<<"edo";
     QStringList l=settings.value("playlist",QStringList() ).toStringList();
-//      qDebug()<<l;
-//      npList.addMediaList(l,0);
-//      qDebug()<<"edo";
 }
 
 

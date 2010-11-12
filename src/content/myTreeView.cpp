@@ -148,8 +148,10 @@ void myTreeView::fileEdit()
 }
 
 void myTreeView::setRatingColumn(const int n)
-{
-    delegate->setRatingColumn(n);
+{    
+//     header()->setResizeMode ( n, QHeaderView::Fixed );
+//     header()->resizeSection(n,rowHeight(model()->index(0,n) )*5+1 );
+    delegate->setRatingColumn(n);   
 }
 
 int myTreeView::ratingColumn() const

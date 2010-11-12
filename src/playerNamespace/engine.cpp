@@ -206,3 +206,28 @@ void player::soundEngine::newSource( const Phonon::MediaSource  s)
 
 }
 
+void player::soundEngine::setMute(bool f)
+{
+    //due to a bug we don't use setMute from audioOutput but we set the volume to zero
+    static qreal v;
+    if(f)
+    {
+	v=audioOutput->volume();    
+	audioOutput->setVolume(0);
+    }
+    else
+    {
+	audioOutput->setVolume(v);
+    }
+    _isMuted=f;
+}
+
+void player::soundEngine::muteToggle()
+{
+    setMute(!_isMuted);
+}
+
+bool player::soundEngine::isMuted()
+{
+    return _isMuted;
+}

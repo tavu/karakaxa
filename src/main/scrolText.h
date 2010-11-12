@@ -11,13 +11,14 @@ public:
     scrolText(QWidget *parent=0);
     inline QString text();
 
-    QSize sizeHint();
+    QSize sizeHint() const;
     void setBold(bool);
 private:
     QString _text;
     QFont font;
     void paintEvent(QPaintEvent *event);
-
+    QSize sHint;
+    
 public slots:
     void setText(QString s);
 

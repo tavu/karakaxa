@@ -7,28 +7,28 @@ using namespace player;
 class playingInfo :public QWidget
 {
     Q_OBJECT
-public:
-    playingInfo(QWidget *parent=0);
+    public:
+	playingInfo(QWidget *parent=0);
 
-private:
-    player::coverWidget *cover;
+    private:
+	player::coverWidget *cover;
+	player::starWidget *stars;
+    // 	  QLabel *titleL;
+    // 	  QLabel *artistL;
+    // 	  QLabel *albumL;
+    // 	  QLabel *commentL;
 
-// 	  QLabel *titleL;
-// 	  QLabel *artistL;
-// 	  QLabel *albumL;
-// 	  QLabel *commentL;
+	scrolText *titleT;
+	scrolText *albumT;
+	scrolText *artistT;
+	scrolText *commentT;
 
-    scrolText *titleT;
-    scrolText *albumT;
-    scrolText *artistT;
-    scrolText *commentT;
+	nplPointer track;
 
-    nplPointer track;
+	QLabel *l;
 
-    QLabel *l;
-
-public slots:
-    void update(QString path);
-    void getInfo();
+    public slots:
+	void update(QString path);
+	void getInfo();
 };
 #endif

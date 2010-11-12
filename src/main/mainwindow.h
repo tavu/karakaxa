@@ -49,11 +49,12 @@ private:
     QAction *playAction;
     QAction *nextAction;
     QAction *previousAction;
-
+    QAction *volumeAction;
+    
+    
     Phonon::SeekSlider *slider;
     QLabel *timeLabel;
-    QLabel *progressLabel;
-    Phonon::VolumeSlider *volume;
+    QLabel *progressLabel;    
 
 //  	  sound *sd;
     QWidget * viewport;
