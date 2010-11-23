@@ -35,37 +35,45 @@ QString player::nplStream::title()
     return titleS;
 }
 
-QString player::nplStream::album()
+// void player::nplStream::getMetaData()
+// {
+//     QStringList l=engine.getMediaObject()->metaData("TITLE");
+//     if (l.isEmpty() )
+//     {
+//         titleS=QObject::tr("Stream: ")+url.host();
+//     }
+//     else
+//     {
+//         titleS=l.at(0);
+//         qDebug()<<"MO "<<titleS;
+//     }
+// 
+//     l=engine.getMediaObject()->metaData("ALBUM");
+//     if (l.isEmpty() )
+//     {
+//         albumS=url.url();
+//     }
+//     else
+//     {
+//         albumS=l.at(0);
+//         qDebug()<<"MO "<<albumS;
+//     }
+// }
+
+QVariant player::nplStream::tag(tagsEnum t)
 {
-    return albumS;
+    if(t==TITLE)
+    {
+	return QVariant(title());
+    }
+    else if(t==ALBUM)
+    {
+	return QVariant(albumS);
+    }
+    return QVariant();
 }
 
-void player::nplStream::getMetaData()
+int player::nplStream::type()
 {
-    QStringList l=engine.getMediaObject()->metaData("TITLE");
-    if (l.isEmpty() )
-    {
-        titleS=QObject::tr("Stream: ")+url.host();
-    }
-    else
-    {
-        titleS=l.at(0);
-        qDebug()<<"MO "<<titleS;
-    }
-
-    l=engine.getMediaObject()->metaData("ALBUM");
-    if (l.isEmpty() )
-    {
-        albumS=url.url();
-    }
-    else
-    {
-        albumS=l.at(0);
-        qDebug()<<"MO "<<albumS;
-    }
-}
-
-QString player::nplStream::type()
-{
-    return QString("Stream");
+    return NPLSTREAM;
 }

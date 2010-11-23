@@ -12,19 +12,12 @@ editTrackContent::editTrackContent(QString url,QWidget *parent)
 {
     file=audioFile::getAudioFile(url);
 
-//       if(!file->getError().isNull)
-//      {
-// 	 return;
-//      }
-//
     path=new QLineEdit(file->getPath(),this);
     path->setContextMenuPolicy(Qt::NoContextMenu);
-//      path.setText(file->getPath() );
-//      path.setTextInteractionFlags(Qt::TextBrowserInteraction);
-//      path.setWordWrap(true);
-//      cw->setSize(SIZE);
-    cw=new player::coverWidget(file->cover(),this);
-    cw->setSize(SIZE);
+
+    cw=new player::coverWidget(this);
+    cw->setSize(decor.coverSize());
+    cw->setCover(file->cover());
 
     infoInit();
     tagInit();
@@ -40,8 +33,9 @@ editTrackContent::editTrackContent(QString url,QWidget *parent)
 
     vLayout->addWidget(tagW);
     vLayout->addWidget(path);
-    vLayout->addWidget(buttons);
-
+    vLayout->addWidget(buttons,Qt::AlignLeft);
+    vLayout->addStretch();
+    
     setLayout(vLayout);
 
 
@@ -56,14 +50,8 @@ QString editTrackContent::name() const
 
 editTrackContent::~editTrackContent()
 {
-//       delete file;
-    audioFile::releaseAudioFile(file);
 
-//      delete titleL;
-//      delete albumL;
-//      delete leadArtistL;
-//      delete commentL;
-//      delete composerL;
+    audioFile::releaseAudioFile(file);
 }
 
 void editTrackContent::tagInit()
@@ -75,21 +63,17 @@ void editTrackContent::tagInit()
 
     titleL=new QLineEdit(file->tag(TITLE,audioFile::DEFAULTF & ~audioFile::TITLEFP).toString(),this );
     albumL=new QLineEdit(file->tag(ALBUM,audioFile::ONFILE).toString(),this );
-    leadArtistL=new QLineEdit(file->tag(LEAD_ARTIST).toString(),this );
-    commentL=new QTextEdit(file->tag(COMMENT).toString(),this );
-    composerL=new QLineEdit(file->tag(COMPOSER).toString(),this );
-    genreL=new QLineEdit(file->tag(GENRE).toString(),this );
+    artistL=new QLineEdit(file->tag(ARTIST,audioFile::ONFILE).toString(),this );
+    leadArtistL=new QLineEdit(file->tag(LEAD_ARTIST,audioFile::ONFILE).toString(),this );
+    commentL=new QTextEdit(file->tag(COMMENT,audioFile::ONFILE).toString(),this );
+    composerL=new QLineEdit(file->tag(COMPOSER,audioFile::ONFILE).toString(),this );
+    genreL=new QLineEdit(file->tag(GENRE,audioFile::ONFILE).toString(),this );
     yearL=new QSpinBox(this );
     trackL=new QSpinBox(this );
 
-    yearL->setValue(file->tag(YEAR).toInt() );
-    trackL->setValue(file->tag(TRACK).toInt() );
+    yearL->setValue(file->tag(YEAR,audioFile::ONFILE).toInt() );
+    trackL->setValue(file->tag(TRACK,audioFile::ONFILE).toInt() );
 
-//      QFormLayout *form2 = new QFormLayout();
-    QFormLayout *form3 = new QFormLayout();
-
-//      form2->addRow(tr("Track: "),trackL);
-    form3->addRow(tr("Year: "),yearL);
     year.setText(tr("Year:") );
 
     QHBoxLayout *hLayout=new QHBoxLayout();
@@ -102,6 +86,7 @@ void editTrackContent::tagInit()
     form->addRow(tr("Title: "),titleL);
     form->addRow(tr("Album: "),albumL);
     form->addRow(tr("Genre "),genreL);
+    form->addRow(tr("Artist: "),artistL);
     form->addRow(tr("Lead Artist: "),leadArtistL);
     form->addRow(tr("Composer: "),composerL);
     form->addRow(tr("Track:"),hLayout);
@@ -160,21 +145,30 @@ void editTrackContent::save()
     if (albumL->text()!=file->tag(ALBUM).toString() )
     {
         qDebug()<<"edit album";
+// 	qDebug()<<file->tag(ALBUM).toString()<<"	"<<albumL->text();
         file->setAlbum(albumL->text() );
     }
 
-    if (leadArtistL->text().compare(file->tag(LEAD_ARTIST).toString() )!=0)
+    if (artistL->text().compare(file->tag(ARTIST).toString() )!=0)
+    {
+        qDebug()<<"edit artist";
+        file->setArtist(artistL->text() );
+    }
+    
+    
+    if (QString::compare(leadArtistL->text(),file->tag(LEAD_ARTIST).toString() )!=0)
     {
         qDebug()<<"edit leadArtist";
         file->setLeadArtist(leadArtistL->text() );
     }
+
 
     if (composerL->text().compare(file->tag(COMPOSER).toString() )!=0)
     {
         qDebug()<<"edit composer";
         file->setComposer(composerL->text() );
     }
-
+    
     if (genreL->text()!=file->tag(GENRE).toString() )
     {
         qDebug()<<"edit genre";
@@ -186,8 +180,6 @@ void editTrackContent::save()
         qDebug()<<"edit comment";
         file->setComment(commentL->toPlainText() );
     }
-
-    return;
 }
 
 void editTrackContent::clicked(QAbstractButton * button)

@@ -5,6 +5,7 @@
 player::coverWidget::coverWidget(QString s ,QWidget * parent, Qt::WindowFlags f  )
         :QWidget(parent,f),
         fixedSize(150,170)
+//         fixedSize(90,110)
 {
 //      setFixedSize(90,100 );
     setCover(s);
@@ -21,6 +22,7 @@ player::coverWidget::coverWidget(QWidget * parent, Qt::WindowFlags f  )
 
 void player::coverWidget::setSize(QSize s)
 {
+  fixedSize=s;
     if (pic.isNull() )
     {
         return ;
@@ -28,7 +30,6 @@ void player::coverWidget::setSize(QSize s)
 
     picScaled=pic.scaled(s,Qt::KeepAspectRatio,Qt::SmoothTransformation);
     setFixedSize(picScaled.size() );
-    fixedSize=s;
 }
 
 void player::coverWidget::setSize(int x,int y)

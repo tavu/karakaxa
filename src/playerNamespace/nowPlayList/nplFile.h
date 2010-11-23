@@ -9,30 +9,25 @@ namespace player
 {
 class nplFile :public nplTrack
 {
-public:
+    public:
 
-    nplFile(QString s);
+	nplFile(QString s);
 
-    ~nplFile();
-// 	  QString 	artist;
-// 	  QString 	title;
-// 	  QString 	album;
-// 	  QString	path;
-// 	  int		trackN;
-// 	  int		length;
-// 	  bool		onDatabase;
+	~nplFile();
 
-    QString	title() ;
-    QString 	path() ;
-    QString 	artist() ;
-    QString 	album() ;
-    QString 	type() ;
-    int	 	length() ;
-    int 		trackN() ;
+	QString		title() ;
+	QString 	path() ;
+	int	 	type() ;
+	int	 	length() ;
+	QString 	cover();
+	
+	QVariant	tag(tagsEnum);
+	
+	audioFile*	getAudioFile();
 
-private:
+    private:
 
-    audioFile *file;
+	audioFile *file;
 
 };
 };

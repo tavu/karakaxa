@@ -47,3 +47,4 @@ void artistModel::queryChange ()
 {
 
 }
+

@@ -13,38 +13,70 @@ namespace player
 class database :public QObject
 {
     Q_OBJECT
-public:
-    database();
-    ~database();
-    static QSqlDatabase getDatabase();
-// 	  static QSqlQuery getLibraryFolders();
-    static QStringList getLibraryFolders();
+    public:
+	database();
+	~database();
+	QSqlDatabase getDatabase();
+    // 	  static QSqlQuery getLibraryFolders();
+	QStringList getLibraryFolders();
 
 
-    const QString error();
-    QSqlDatabase clone(const QString &s);
-    QStringList getArtists(const QString &path);
+	const QString error();
+	QSqlDatabase clone(const QString &s);
+	QStringList getArtists(const QString &path);
+	
+	
 
-    int trackViewHideValues();
-    const QSqlQuery artist();
-    const QSqlQuery artist(QString search);
-    const QString trackTable();
+	int trackViewHideValues();
+	const QSqlQuery artist();
+	const QSqlQuery artist(QString search);
+	const QString trackTable();
 
-    QSqlQuery albumQuery(QString artist);
-    QSqlQuery albumQuery(QString artist,QString search);
+	void addLibraryFolder(QString s);
+	void removeLibraryFolder(QString s);
+	
+	
+	QSqlQuery albumQuery(QString artist);
+	QSqlQuery albumQuery(QString artist,QString search);
 
-    void update();
-    static void toSqlSafe(QString &s);
-private:
+	void update();
+	
+	
+	static void toSqlSafe(QString &s);	
+	bool createConnection();
+	void readSettings();
+	void writeSettings();
+	
+// 	
+	inline QString dataBName()
+	{
+	    return dbName;
+	}
+	
+	inline QString dataBUser()
+	{
+	    return dbUser;
+	}
+	
+	inline QString dataBPass()
+	{
+	    return dbPass;
+	}
+	void init();
+	bool dBConnect(QString n,QString u,QString p);
+	
+  private:
+
+	QSqlDatabase db;
+	QString dbName;
+	QString dbUser;
+	QString dbPass;
+	
+	bool isConnected;
 
 
-    static QSqlDatabase db;
-    static bool createConnection();
-    static bool isConnected;
-
-
-signals:
-    void changed();
+    signals:
+	void changed();
 };
 
 }

@@ -18,7 +18,8 @@ myTreeView::myTreeView(QWidget *parent,QString name)
 {
 //      header =new treeViewHeader(this);
     setHeader(new treeViewHeader(this));
-
+    setUniformRowHeights(true);
+    
     delegate=new treeViewDelegate(this);
     setItemDelegate(delegate);
 
@@ -116,31 +117,6 @@ void myTreeView::performDrag()
     drag->exec(Qt::CopyAction);
 }
 
-void myTreeView::contextMenuEvent(QContextMenuEvent *e)
-{
-    if (indexAt(e->pos()).isValid() )
-    {
-        menu->popup( e->globalPos() );
-    }
-}
-
-void myTreeView::createMenu()
-{
-    append=new QAction(tr("&Queue track"),this);
-    edit=new QAction(tr("Edit"),this);
-    editTr=new QAction(tr("&Edit track details"),this);
-    delet=new QAction(tr("&Delete"),this);
-
-    menu=new QMenu(this);
-    menu->addAction(append);
-    menu->addAction(edit);
-    menu->addAction(delet);
-    menu->addSeparator();
-    menu->addAction(editTr);
-
-    connect(edit,SIGNAL(triggered()),this,SLOT(fileEdit() ) );
-}
-
 void myTreeView::setModel ( QAbstractItemModel * model )
 {
     QTreeView::setModel(model);
@@ -173,7 +149,9 @@ void myTreeView::fileEdit()
 }
 
 void myTreeView::setRatingColumn(const int n)
-{
+{    
+//     header()->setResizeMode ( n, QHeaderView::Fixed );
+//     header()->resizeSection(n,delegate->itemHeigh()*5+1 );
     delegate->setRatingColumn(n);
 }
 
@@ -189,7 +167,7 @@ void myTreeView::writeSettings()
     {
         return ;
     }
-    QSettings settings(QSettings::IniFormat,QSettings::UserScope,"player.org","player");
+    QSettings settings;
 
     settings.beginGroup(objectName());
     settings.setValue("state", QVariant(header()->saveState()) );
@@ -198,7 +176,7 @@ void myTreeView::writeSettings()
 
 void myTreeView::readSettings()
 {
-    QSettings settings(QSettings::IniFormat,QSettings::UserScope,"player.org","player");
+    QSettings settings;
     settings.beginGroup(objectName());
     header()->restoreState(settings.value("state").toByteArray());
     settings.endGroup();

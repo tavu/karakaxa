@@ -70,6 +70,7 @@ QVariant player::audioFile::tag(tagsEnum t,short int f)
         if (recFlag)
         {
             select();
+	    return record.value(t+TRV_HIDE); 
         }
     }
 
@@ -164,11 +165,14 @@ bool player::audioFile::setArtist (const QString &s)
     table[ARTIST]=QVariant(s);
     flags[ARTIST]=true;
 
-    if ( fileToDb::setArtist(file->getPath(),s,tag(ALBUM,ONDATAB).toString() )==fileToDb::DBERR)
+    if ( fileToDb::setArtist(file->getPath(),s,tag(ALBUM,ONDATAB|DBCACHE).toString() )==fileToDb::DBERR)
     {
         mutex.unlock();
         return false;
     }
+    
+    qDebug()<<"AMMMMAAN";
+    
 
     mutex.unlock();
     return true;

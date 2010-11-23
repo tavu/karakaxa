@@ -14,21 +14,13 @@ player::nplFile::nplFile(QString s)
 
 player::nplFile::~nplFile()
 {
+  qDebug()<<"deleting nplFile";
     audioFile::releaseAudioFile(file);
-}
-
-QString player::nplFile::artist()
-{
-    QString s=file->tag(player::LEAD_ARTIST).toString();
-    if (s.isEmpty() )
-    {
-        s=file->tag(player::ARTIST).toString();
-    }
-    return s;
 }
 
 int player::nplFile::length()
 {
+    if(file==0)	return 0;
     return file->tag(player::LENGTH).toInt();
 }
 
@@ -39,20 +31,28 @@ QString player::nplFile::path()
 
 QString player::nplFile::title()
 {
+    if(file==0)	return 0;
     return file->tag(player::TITLE).toString();
 }
 
-QString player::nplFile::album()
+int player::nplFile::type()
 {
-    return file->tag(player::ALBUM).toString();
+    return NPLAUDIOFILE;
 }
 
-int player::nplFile::trackN()
+QString player::nplFile::cover()
 {
-    return file->tag(player::TRACK).toInt();
+    if(file==0)	return 0;
+    return file->cover();
 }
 
-QString player::nplFile::type()
+QVariant player::nplFile::tag(tagsEnum t)
 {
-    return QString("AudioFile");
+    if(file==0)	return 0;
+    return file->tag(t);
+}
+
+audioFile* player::nplFile::getAudioFile()
+{
+    return file;
 }

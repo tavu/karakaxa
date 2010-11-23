@@ -5,21 +5,24 @@
 class songView :public myTreeView
 {
     Q_OBJECT
-public:
-    songView(QWidget *parent=0,QString name=QString("LibraryView"));
+    public:
+	songView(QWidget *parent=0,QString name=QString("LibraryView"));
 
-private:
-    void contextMenuEvent(QContextMenuEvent *e);
-    QMenu *menu;
+    private:
+	void contextMenuEvent(QContextMenuEvent *e);
+	QMenu *menu;
 
-    inline void createMenu();
-    //actions
-    QAction *append;
-    QAction *edit;
-    QAction *delet;
-    QAction *editTr;
+	inline void createMenu();
+	//actions
+	QAction *append;
+	QAction *edit;
+	QAction *delet;
+	QAction *editTr;
 
-private slots:
-    void fileEdit();
+    private slots:
+	void fileEdit();
+    
+  public slots:
+      void play(const QModelIndex index);
 };
 #endif

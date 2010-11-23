@@ -135,12 +135,25 @@ QString queryGrt::albums(QString artist)
 
 QString queryGrt::albums(QString artist,QString s)
 {
-    QString ret("select distinct artist_album.album,artist_album.image,artist_album.id from artist_album inner join trackView on artist='%1' AND %2");
+    QString ret("select distinct artist_album.album,artist_album.image,artist_album.id from artist_album inner join trackView on artist_album.id=trackView.album_id and artist_album.artist='%1' AND %2");
     player::database::toSqlSafe(artist);
     ret=ret.arg(artist);
     ret=ret.arg(s);
     return ret;
 }
+
+QString queryGrt::artist()
+{
+    QString ret("select distinct artist_album.artist from artist_album order by artist_album.artist asc");
+    return ret;
+}
+QString queryGrt::artist(const QString &s)
+{
+    QString ret("select distinct artist_album.artist from artist_album inner join trackView on artist_album.id=trackView.album_id AND %2 order by artist_album.artist asc");
+    ret=ret.arg(s);
+    return ret;
+}
+
 
 // QString queryGrt::tracks()
 // {

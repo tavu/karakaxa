@@ -26,56 +26,57 @@
 class mainWindow :public QMainWindow
 {
     Q_OBJECT
-public:
-    mainWindow();
-    ~mainWindow();
-private:
+    public:
+	mainWindow();
+	~mainWindow();
+    private:
 
-    KToolBar *toolBar;
-    nplaylistView *nplView;
-    contentTree *conTree;
-    QStackedWidget *conView;
+	KToolBar *toolBar;
+	nplaylistView *nplView;
+	contentTree *conTree;
+	QStackedWidget *conView;
 
-    QDockWidget 	*conTreeDock;
-    QDockWidget 	*conViewDock;
-    QDockWidget 	*nplViewDock;
-    QDockWidget      *infoDock;
+	QDockWidget 	*conTreeDock;
+	QDockWidget 	*conViewDock;
+	QDockWidget 	*nplViewDock;
+	QDockWidget      *infoDock;
 
-    QWidget  *conTreeDockT;
-    QWidget  *conViewDockT;
-    QWidget  *nplViewDockT;
-    QWidget  *infoDockT;
-    //for the toolBar
-    QAction *playAction;
-    QAction *nextAction;
-    QAction *previousAction;
+	QWidget  *conTreeDockT;
+	QWidget  *conViewDockT;
+	QWidget  *nplViewDockT;
+	QWidget  *infoDockT;
+	//for the toolBar
+	QAction *playAction;
+	QAction *nextAction;
+	QAction *previousAction;
+	QAction *volumeAction;
+	
+	
+	Phonon::SeekSlider *slider;
+	QLabel *timeLabel;
+	QLabel *progressLabel;    
 
-    Phonon::SeekSlider *slider;
-    QLabel *timeLabel;
-    QLabel *progressLabel;
-    Phonon::VolumeSlider *volume;
+    //  	  sound *sd;
+	QWidget * viewport;
 
-//  	  sound *sd;
-    QWidget * viewport;
+	QPalette pal;
+	//fuctions
+	inline void init();
+	inline void toolBarInit();
+	inline void nplViewInit();
+	inline void conTreeInit();
+	inline void conViewInit();
+	inline void defaultContent();
+	inline void infoInit();
 
-    QPalette pal;
-    //fuctions
-    inline void init();
-    inline void toolBarInit();
-    inline void nplViewInit();
-    inline void conTreeInit();
-    inline void conViewInit();
-    inline void defaultContent();
-    inline void infoInit();
+	void lockDock();
 
-    void lockDock();
+	void writeSettings();
+	void readSettings();
 
-    void writeSettings();
-    void readSettings();
-
-    void closeEvent(QCloseEvent *event);
-public slots:
-    void stateChanged(Phonon::State state);
+	void closeEvent(QCloseEvent *event);
+    public slots:
+	void stateChanged(Phonon::State state);
 
 
 };

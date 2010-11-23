@@ -5,8 +5,12 @@
 #include<QHBoxLayout>
 #include <QGridLayout>
 #include<QProgressBar>
+#include<QLineEdit>
 configureContent::configureContent(QWidget *parent)
-        :abstractContent(parent)
+        :abstractContent(parent),
+        dbNameS(QObject::tr("database Name:")),
+	dbUserS(QObject::tr("User:")),
+	dbPassS(QObject::tr("password:"))
 {
     QLabel *l=new QLabel(this);
 //
@@ -17,7 +21,7 @@ configureContent::configureContent(QWidget *parent)
     l->setFont(font);
 
     QVBoxLayout *layout = new QVBoxLayout();
-    sList=database::getLibraryFolders();
+//     sList=db.getLibraryFolders();
     libconfInit();
 
     chBox=new QCheckBox("remember playlist on exit",this);
@@ -38,22 +42,11 @@ QString configureContent::name() const
 void configureContent::libconfInit()
 {
     groupB=new QGroupBox(this);
-//      groupB->setFlat(true);
-
-//      QVBoxLayout *gl = new QVBoxLayout(groupB);
-// //      groupB->setAlignment(Qt::AlignLeft);
-//
-    groupB->setTitle("Library Folders");
-//
-//      QHBoxLayout *hlayout = new QHBoxLayout(groupB);
-//      QVBoxLayout *vlayout = new QVBoxLayout();
-//
-//
+    groupB->setTitle("Library");
     listV=new QListView(this);
-    model=new QStringListModel(sList,this);
+    model=new QStringListModel(db.getLibraryFolders(),this);
     listV->setModel(model);
-//
-//
+
     QPushButton *addFolder=new QPushButton(KIcon("list-add"),tr("Add Folder"),this);
     QPushButton *removeFolder=new QPushButton(KIcon("list-remove"),tr("Remove Folder"),this);
     scanB=new QPushButton(tr("Scan"),this);
@@ -66,42 +59,84 @@ void configureContent::libconfInit()
     bar=new QProgressBar(this);
     bar->setFixedWidth(200);
     bar->hide();
-//      vlayout->addWidget(addFolder);
-//      vlayout->addWidget(removeFolder);
-//      vlayout->addStretch();
-//
-//      hlayout->addWidget(listV);
-//      hlayout->addLayout(layout);
-//      gl->setContentsMargins(0,0,0,0);
-//
-//      groupB->setMaximumHeight(400);
-//      groupB->setMaximumSize(400,400);
-//      layout->addWidget(l);
 
-//      QHBoxLayout *hlayout = new QHBoxLayout();
-    QBoxLayout *hlayout=new QBoxLayout(QBoxLayout::LeftToRight);
-    hlayout->addWidget(scanB);
-    hlayout->addWidget(cancelB);
-    hlayout->addStretch();
-    hlayout->addWidget(&info);
-    hlayout->addWidget(bar);
+    dbNameL = new QLineEdit(db.dataBName(),this);    
+    dbUserL = new QLineEdit(db.dataBUser(),this);
+    dbPassL = new QLineEdit(db.dataBPass(),this);
+    
+    dbNameL->setMinimumWidth(150);
+    dbUserL->setMinimumWidth(150);
+    dbPassL->setMinimumWidth(150);
+    
+    DbButtons=new QDialogButtonBox(QDialogButtonBox::Apply|QDialogButtonBox::Cancel,Qt::Horizontal,this);
+    
+//     QBoxLayout *hlayout=new QBoxLayout(QBoxLayout::LeftToRight);
+//     hlayout->addWidget(scanB);
+//     hlayout->addWidget(cancelB);
+//     hlayout->addStretch();
+//     hlayout->addWidget(&info);
+//     hlayout->addWidget(bar);
+// 
+// 
+//     QGridLayout *gl=new QGridLayout(groupB);
+//     gl->addWidget(&dbNameS,0,0);
+//     gl->addWidget(dbNameL,0,1);
+//     
+//     
+//     gl->addWidget(listV,0,2,3,1);
+//     gl->addWidget(addFolder,0,3);
+//     gl->addWidget(removeFolder,1,3);
+//     gl->addLayout(hlayout,4,0);
+//     gl->addWidget(&scanInf,4,1);
 
-
-    QGridLayout *gl=new QGridLayout(groupB);
-    gl->addWidget(listV,0,0,3,1);
-    gl->addWidget(addFolder,0,1);
-    gl->addWidget(removeFolder,1,1);
-    gl->addLayout(hlayout,4,0);
-    gl->addWidget(&l,4,1);
-
-
-//      gl->addWidget(bar,4,1);
-//      gl->addWidget(scanB,4,0);
-//      gl->addWidget(bar,4,1);
-
-
+     QGridLayout *gl=new QGridLayout(groupB);
+     gl->addWidget(&dbNameS,0,0);
+     gl->addWidget(dbNameL,0,1);
+     gl->addWidget(&dbUserS,1,0);
+     gl->addWidget(dbUserL,1,1);
+     gl->addWidget(&dbPassS,2,0);
+     gl->addWidget(dbPassL,2,1);
+     gl->addWidget(DbButtons,3,1);
+     
+     gl->addWidget(listV,0,2,3,2);
+     gl->addWidget(addFolder,3,2);
+     gl->addWidget(removeFolder,3,3);
+    
+     gl->setRowMinimumHeight(4,45);
+     gl->addWidget(scanB,5,0);
+     gl->addWidget(cancelB,5,1);
+     gl->addWidget(&scanInf,5,2,Qt::AlignRight);
+     gl->addWidget(bar,5,3);
+     gl->addWidget(&info,6,3,Qt::AlignRight);
+     
+     
+     
+     gl->setColumnStretch(0,0);     
+     gl->setColumnStretch(1,1);     
+     gl->setColumnStretch(2,2);     
+     gl->setColumnStretch(3,2);
+     gl->setRowMinimumHeight(6,15);
+    
+    
+    groupB->setLayout(gl);
+    
+    
     connect(scanB,SIGNAL(clicked() ),this,SLOT(scan()));
     connect(addFolder,SIGNAL(clicked() ),this,SLOT(addLibraryFolder() ) );
+    connect(removeFolder,SIGNAL(clicked() ),this,SLOT(removeLibraryFolder() ) );
+    connect(DbButtons, SIGNAL(clicked(QAbstractButton* ) ), this, SLOT(DbButtonClicked(QAbstractButton*) ));
+}
+
+void configureContent::DbButtonClicked(QAbstractButton *button)
+{       
+    if (DbButtons->buttonRole(button)==QDialogButtonBox::ApplyRole)
+    {
+        db.dBConnect(dbNameL->text(),dbUserL->text(),dbPassL->text());
+    }
+
+    dbNameL->setText(db.dataBName());
+    dbUserL->setText(db.dataBUser());
+    dbPassL->setText(db.dataBPass());
 }
 
 void configureContent::scan()
@@ -111,7 +146,7 @@ void configureContent::scan()
     cancelB->setDisabled(false);
     bar->setRange(0,0);
     bar->show();
-    l.setText("Starting..");
+    scanInf.setText("Starting..");
     scThread=new scanTread();
 
     connect(scThread,SIGNAL(itemsNum(const int)),this,SLOT(prepare(const int)), Qt::QueuedConnection );
@@ -128,27 +163,25 @@ void configureContent::scan()
 void configureContent::prepare(const int num)
 {
     bar->setMaximum(num);
-    l.setText("Scanning..");
+    scanInf.setText("Scanning..");
 
 }
 
 void configureContent::scanDone()
 {
     scThread->disconnect();
-//      delete scThread;
     scanB->setDisabled(false);
     cancelB->setDisabled(true);
 
     QString s("Imported %1 files");
     if (scThread->isStoped() )
     {
-// 	  bar->setDisabled(true);
-        l.setText("Canceled");
+        scanInf.setText("Canceled");
     }
     else
     {
         bar->setValue(bar->maximum() );
-        l.setText("completed");
+        scanInf.setText("completed");
     }
     info.setText(s.arg(QString::number( scThread->importedNum() ) ) );
     delete scThread;
@@ -159,6 +192,20 @@ void configureContent::addLibraryFolder()
     QFileDialog *dialog=new QFileDialog(this);
     dialog->setFileMode(QFileDialog::Directory);
     dialog->setOption(QFileDialog::ShowDirsOnly);
-    dialog->show();
+    dialog->exec();
+    
+    QStringList l=dialog->selectedFiles ();
+    qDebug()<<l;
+    if(l.isEmpty())
+    {
+	return;
+    }
+    db.addLibraryFolder(l.at(0) );
+    model->setStringList(db.getLibraryFolders());
 }
 
+void configureContent::removeLibraryFolder()
+{    
+    db.removeLibraryFolder(listV->currentIndex().data().toString() );    
+    model->setStringList(db.getLibraryFolders());
+}

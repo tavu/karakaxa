@@ -34,9 +34,9 @@ QVariant nplModel::data ( const QModelIndex & index, int role ) const
 
     if (role==Qt::DisplayRole)
     {
-        nplTrack *t=npList.getTrack(index.row() );
+        nplPointer t=npList.getTrack(index.row() );
 
-        if (t==0)	return QVariant();
+        if (t.isNull())	return QVariant();
 
         QString ret;
         if (t->path().isEmpty() )
@@ -44,14 +44,16 @@ QVariant nplModel::data ( const QModelIndex & index, int role ) const
             return QVariant();
         }
 
-        if (t->trackN()==0)
+        if (t->tag(TRACK).toInt()==0)
         {
             ret.append("    ");
         }
         else
         {
-            ret.append( QString::number(t->trackN())+" - " );
+//             ret.append( QString::number(t->tag(TRACK).toInt())+" - " );
 
+	    ret.append(t->tag(TRACK).toString()+" - " );
+	    
             if (ret.size()==4)
             {
                 ret.prepend(" " );
@@ -66,7 +68,6 @@ QVariant nplModel::data ( const QModelIndex & index, int role ) const
 
 int nplModel::rowCount ( const QModelIndex & parent ) const
 {
-//      return npList.size();
     return size;
 }
 

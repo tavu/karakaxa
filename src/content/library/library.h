@@ -11,7 +11,7 @@
 
 #include"artistWidget.h"
 #include"albumTrack.h"
-
+#include<QLinkedList>
 class library :public abstractContent
 {
     Q_OBJECT
@@ -39,6 +39,8 @@ private:
 
     QAction *scan;
     QAction *config;
+    QLinkedList<tagsEnum> searchTagL;
+    
     //functions
     void buttonInit();
     void inline toolBarInit();
@@ -49,7 +51,7 @@ public slots:
     void goToArtist();
     void goToAlbum();
 //      private slots:
-// 	  void search();
+    void search();
 };
 
 #endif

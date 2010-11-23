@@ -65,6 +65,7 @@ folderContent::folderContent(QWidget *parent)
 
     connect(view,SIGNAL(clicked ( const QModelIndex) ),this,SLOT(setDir(const QModelIndex) ) );
 
+    readSettings();
     connect(navigator,SIGNAL(urlChanged (KUrl) ),this,SLOT(cd(KUrl) ) );
 
 //       navigator->setUrl(QDir::homePath());
@@ -72,7 +73,7 @@ folderContent::folderContent(QWidget *parent)
 //      cd(QDir::homePath());
 
     connect(qApp,SIGNAL(aboutToQuit() ),this,SLOT(writeSettings() ) );
-    readSettings();
+//     readSettings();
 }
 
 const QList<QString> folderContent::getChildren()
@@ -153,9 +154,10 @@ void folderContent::forward()
 void folderContent::writeSettings()
 {
 
-    QSettings settings(QSettings::IniFormat,QSettings::UserScope,"player.org","player");
+    QSettings settings;
 
-    settings.beginGroup("folderContent");
+    settings.beginGroup("folderContent");\
+    qDebug()<<navigator->url();
     settings.setValue("dir", QVariant(navigator->url()) );
     settings.endGroup();
 }
@@ -163,8 +165,16 @@ void folderContent::writeSettings()
 void folderContent::readSettings()
 {
 
-    QSettings settings(QSettings::IniFormat,QSettings::UserScope,"player.org","player");
+    QSettings settings;
     settings.beginGroup("folderContent");
-    navigator->setUrl(settings.value("dir").toUrl() );
+    QVariant v=settings.value("dir");
+    qDebug()<<v.toUrl();
     settings.endGroup();
+    
+    if(!v.isNull() )
+    {
+	navigator->setUrl(v.toUrl() );
+    }
+    cd(navigator->url());
+
 }

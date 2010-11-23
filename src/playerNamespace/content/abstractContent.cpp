@@ -6,6 +6,9 @@ abstractContent::abstractContent(QWidget *parent)
     widgetItem=new QTreeWidgetItem ( );
 }
 
+abstractContent::~abstractContent()
+{
+}
 
 QTreeWidgetItem* abstractContent::item() const
 {

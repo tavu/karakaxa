@@ -120,6 +120,8 @@ QVariant player::mp3Tags::rating() const
     err=0;
 
     return frame->rating();
+    
+    
 }
 
 QVariant player::mp3Tags::leadArtist() const

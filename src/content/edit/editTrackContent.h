@@ -23,8 +23,8 @@ private:
     inline void  		tagInit();
     inline void  		infoInit();
 
-    QWidget 		*infoW;
-    QWidget 		*tagW;
+    QWidget 			*infoW;
+    QWidget 			*tagW;
     player::coverWidget 	*cw;
 
 
@@ -42,7 +42,7 @@ private:
 
     QLineEdit *titleL;
     QLineEdit *albumL;
-// 	  QLineEdit *artist
+    QLineEdit *artistL;
     QLineEdit *leadArtistL;
     QTextEdit *commentL;
     QLineEdit *composerL;

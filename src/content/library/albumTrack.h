@@ -9,7 +9,8 @@
 #include"../myTreeView.h"
 #include"../treeViewDelegate.h"
 #include<QPushButton>
-
+#include <QLinkedList>
+ 
 class albumTrack :public QWidget
 {
     Q_OBJECT
@@ -44,6 +45,8 @@ private:
 
     QWidget *albumW;
 
+    
+
 public slots:
     void setArtist(const QString &artist,const QString &labelS);
     void setSearch(const QString &s);
@@ -52,8 +55,6 @@ public slots:
     void albumActivated(const QModelIndex &n);
     void update();
 
-private slots:
-    void play(const QModelIndex);
 };
 
 #endif
