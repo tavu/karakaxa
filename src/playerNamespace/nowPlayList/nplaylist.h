@@ -44,7 +44,7 @@ class nplaylist :public QObject
 	QStringList getList();
 	int getLength();
 	nplPointer getPlayingTrack();
-	
+		
     private:
 
     // 	  int playingTr;
@@ -77,7 +77,7 @@ class nplaylist :public QObject
 	void clear();
 	int size();
 	void duplicate(const int pos);
-
+	void suffle();
 
 
 };

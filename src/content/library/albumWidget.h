@@ -9,8 +9,7 @@ public:
     QSize sizeHint () const;
 public slots:
     void scrollR();
-    void scrollL();
-
+    void scrollL();    
 
 protected:
     void wheelEvent(QWheelEvent *event);

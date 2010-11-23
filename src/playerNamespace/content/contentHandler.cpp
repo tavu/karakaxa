@@ -80,16 +80,19 @@ void player::contentHandler::removeContent(abstractContent *content)
     if (stack->currentWidget()==content)
     {
         QTreeWidgetItem *item;
+	abstractContent *c;
         if (! history.isEmpty() )
         {
             item=tree->itemAt(contentList.indexOf(history.last()),0);
+	    c=history.last();
         }
         else
         {
             item=tree->itemAt(0,0 );
+	    c=contentList.at(0);
         }
         tree->setCurrentItem(item);
-        stack->setCurrentWidget(history.last());
+        stack->setCurrentWidget(c);
     }
 
     tree->takeTopLevelItem(pos);

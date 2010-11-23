@@ -35,6 +35,9 @@ library::library(QWidget *parent)
     menu.addAction(scan);
     menu.addAction(config);
 
+    searchTagL<<ARTIST<<ALBUM<<TITLE;
+    
+    
     connect(scan,SIGNAL(triggered()),this,SLOT(libraryScan() ) );
 
     connect(artistV,SIGNAL(toArtist(QString , QString) ) ,this,SLOT(toAlbum(const QString &,const QString &) ) );
@@ -99,10 +102,29 @@ void library::toolBarInit()
 //     toolBar->addWidget(&s);
     toolBar->addWidget(searchLine);
 
-//     connect(searchLine,SIGNAL(editingFinished () ),this,SLOT(search() ) );
-//     connect(searchLine,SIGNAL(clearButtonClicked() ),this,SLOT(search() ) );
+    connect(searchLine,SIGNAL(editingFinished () ),this,SLOT(search() ) );
+    connect(searchLine,SIGNAL(clearButtonClicked() ),this,SLOT(search() ) );
 }
 
+void library::search()
+{
+    QString s=searchLine->text();
+    QString search;
+    if(!s.isEmpty() )
+    {
+    	QLinkedList<tagsEnum>::iterator i=searchTagL.begin();
+	QStringList searchTagsL;
+	    
+	for(i=searchTagL.begin();i!=searchTagL.end();i++)
+	{
+	  searchTagsL<<queryGrt::query(*i,queryGrt::CONTAINS,s);
+	}	
+	search=queryGrt::connectOr(searchTagsL);
+	qDebug()<<search;
+    }
+    albumTrV->setSearch(search);
+    artistV->setSearch(search);
+}
 
 void library::toAlbum(const QString &s1,const QString &s2)
 {

@@ -8,7 +8,6 @@
 #include<trackView.h>
 using namespace player;
 #define FONT_SIZE 9
-#define ITEM_SIZE 9
 #include<QPixmap>
 #include <kicon.h>
 #include <kiconeffect.h>
@@ -17,11 +16,12 @@ using namespace player;
 #include<QStyle>
 
 #include<QStylePainter>
-treeViewDelegate::treeViewDelegate(QObject *parent)
-        :QItemDelegate(parent),
-        rating(-1)
+treeViewDelegate::treeViewDelegate(QObject *parent)    
+    :QItemDelegate(parent),    
+    rating(-1),
+    ITEM_HEIGH(15)
 {
-
+//     _sizeHint=Q
 }
 
 void treeViewDelegate::paint ( QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index ) const
@@ -107,13 +107,23 @@ void treeViewDelegate::paint ( QPainter * painter, const QStyleOptionViewItem & 
 
 }
 
-// QSize treeViewDelegate::sizeHint ( const QStyleOptionViewItem & option, const QModelIndex & index ) const
-// {
-//       Q_UNUSED(option);
-// //       Q_UNUSED(index);
-//
-//       return index.data(Qt::SizeHintRole).toSize ();
-// }
+QSize treeViewDelegate::sizeHint ( const QStyleOptionViewItem & option, const QModelIndex & index ) const
+{       
+    QSize ret=QItemDelegate::sizeHint ( option,index );
+//     ret.setHeight(ITEM_HEIGH);
+    return ret;
+}
+
+int treeViewDelegate::itemHeigh() const
+{
+    return ITEM_HEIGH;
+}
+
+void treeViewDelegate::setItemHeigh(int k)
+{
+    ITEM_HEIGH=k;
+}
+
 
 void treeViewDelegate::drawStar(QPainter *painter,QRect rect,int num) const
 {

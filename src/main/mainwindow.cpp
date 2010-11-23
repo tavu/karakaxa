@@ -22,6 +22,7 @@ using namespace player;
 mainWindow::mainWindow()
         :QMainWindow()
 {
+  
     QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
     QTextCodec::setCodecForTr(QTextCodec::codecForName ("UTF-8"));
 
@@ -75,7 +76,6 @@ mainWindow::mainWindow()
 
 
     defaultContent();
-
     readSettings();
 //      writeSettings();
 }
@@ -89,7 +89,7 @@ mainWindow::~mainWindow()
 inline void mainWindow::init()
 {
     player::statusBar.init();
-    db.createConnection();
+    db.init();
     player::engine.init();
 //      player::nowPl=new nowPlaylist();
 
@@ -117,11 +117,12 @@ inline void mainWindow::infoInit()
 
 void mainWindow::conViewInit()
 {
-    conView=new QStackedWidget(this);
+    conView=new QStackedWidget(this);    
     conViewDock=new QDockWidget(this);
     conViewDock->setWindowTitle("content Dock");
     conViewDock->setObjectName("contentDock");
     conViewDock->setWidget(conView);
+
 
 
     conViewDock->setPalette(pal);
@@ -191,6 +192,9 @@ void mainWindow::nplViewInit()
     t->addAction( clearAction );
     connect(clearAction,SIGNAL(triggered( bool)),&npList,SLOT(clear() ) );
 
+    QAction *suffleAction = new QAction( KIcon("edit-clear-list"),"clear", this );
+    t->addAction( suffleAction );
+    connect(suffleAction,SIGNAL(triggered( bool)),&npList,SLOT(suffle() ) );
 
     QVBoxLayout *l=new QVBoxLayout(w);
     l->addWidget(nplView);
@@ -325,10 +329,6 @@ void mainWindow::closeEvent(QCloseEvent *event)
 
 void mainWindow::writeSettings()
 {
-// 	  QString ini_path(getenv("HOME"));
-// 	  ini_path += "/.aman/";
-//       QSettings::setPath(QSettings::IniFormat,QSettings::SystemScope,ini_path );
-//     QSettings settings(QSettings::IniFormat,QSettings::UserScope,"player.org","player");
     QSettings settings;
 
     settings.beginGroup("MainWindow");
@@ -338,7 +338,7 @@ void mainWindow::writeSettings()
 
     QStringList l=npList.getList();
     settings.setValue("playlist",QVariant(l));
-//      settings.setValue("geometry", saveGeometry());
+
 
 }
 

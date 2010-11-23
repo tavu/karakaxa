@@ -9,36 +9,47 @@
 #include<QLabel>
 #include<QProgressBar>
 #include <QCheckBox>
+#include<QDialogButtonBox>
 class configureContent :public abstractContent
 {
     Q_OBJECT
-public:
-    configureContent(QWidget *parent=0);
-    QString name() const;
-private:
-    QFileDialog 		*fDialog;
-    QListView   		*listV;
-    QStringListModel 	*model;
-    QStringList		sList;
-    QGroupBox 		*groupB;
+    public:
+	configureContent(QWidget *parent=0);
+	QString name() const;
+    private:
+	QFileDialog 		*fDialog;
+	QListView   		*listV;
+	QStringListModel	*model;
+	QStringList		sList;
+	QGroupBox 		*groupB;
 
-    QPushButton 		*scanB;
-    QPushButton 		*cancelB;
-    QProgressBar 	*bar;
-    QLabel		l;
-    QLabel		info;
-    scanTread 		*scThread;
-    QCheckBox		*chBox;
+	QPushButton 	*scanB;
+	QPushButton 	*cancelB;
+	QProgressBar 	*bar;
+	QLabel		scanInf;
+	QLabel		info;
+	scanTread 	*scThread;
+	QCheckBox	*chBox;
+
+	QDialogButtonBox *DbButtons;
+	QLineEdit	*dbNameL;
+	QLineEdit	*dbUserL;
+	QLineEdit	*dbPassL;
+	
+	QLabel 		dbNameS;
+	QLabel 		dbUserS;
+	QLabel		dbPassS;
+	
+
+	void libconfInit();
 
 
-    void libconfInit();
-
-
-private slots:
-    void addLibraryFolder();
-    void scanDone();
-    void scan();
-    void prepare(const int num);
-
+    private slots:
+	void addLibraryFolder();
+	void removeLibraryFolder();
+	void scanDone();
+	void scan();
+	void prepare(const int num);
+	void DbButtonClicked(QAbstractButton*) ;
 };
 #endif

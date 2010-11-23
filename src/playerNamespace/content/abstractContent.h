@@ -11,6 +11,7 @@ class abstractContent :public QWidget
 public:
     abstractContent(QWidget *parent=0);
 
+    virtual ~abstractContent();
 // 	  virtual const QList<QString> getChildren()=0;
 
     virtual QString name()const =0;

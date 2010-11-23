@@ -5,7 +5,9 @@ artistWidget::artistWidget(QWidget *parent)
 {
     artistM=new artistModel(this);
 
-    artistM->setQuery( player::db.artist() );
+    QSqlQuery q(queryGrt::artist(),db.getDatabase() );
+    q.exec();
+    artistM->setQuery(q);
     setModel(artistM);
     setUniformItemSizes (true);
     setIconSize(QSize(70,70));
@@ -22,4 +24,20 @@ void artistWidget::artistActivated(const QModelIndex &index)
 
     emit(toArtist(s1,s2) );
 
+}
+
+void artistWidget::setSearch(const QString &s)
+{
+    QSqlQuery q(db.getDatabase());
+    if(s.isEmpty() )
+    {	
+	q.prepare(queryGrt::artist() );
+    }
+    else
+    {
+	q.prepare(queryGrt::artist(s) );
+    }
+    
+    q.exec();
+    artistM->setQuery(q);
 }

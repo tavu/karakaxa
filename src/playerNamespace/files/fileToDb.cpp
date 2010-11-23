@@ -39,9 +39,9 @@ int player::fileToDb::setArtist (const QString path,const QString &s,const QStri
     }
 
     int artistId=q.value(0).toInt();
-    QVariant Lartist=q.value(1);
+    int LartistId=q.value(1).toInt();
     int albumId=q.value(2).toInt();
-
+    int nullArtistId=-1;
     q.prepare("CALL get_artist (?,@i) ");
     q.addBindValue( s );
 
@@ -54,21 +54,29 @@ int player::fileToDb::setArtist (const QString path,const QString &s,const QStri
         return DBERR;
 
     }
-
-    q.prepare( "update albums SET artist=@i where id=?");
-    q.addBindValue(albumId );
-
+        
+    q.prepare( "update tracks SET artist=@i where path=?");
+    q.addBindValue(path);
     if (!q.exec() )
     {
         qDebug()<<"can't set artist"<< q.lastError();
         databs.close();
         databs=QSqlDatabase();
-        QSqlDatabase::removeDatabase(path );
+        QSqlDatabase::removeDatabase(path);
         return DBERR;
 
     }
-
-    if (Lartist.isNull() )
+    
+    
+    q.prepare( "select id from leadArtists where name='' ");
+    q.exec();
+    q.next();
+    if(q.isValid())
+    {
+	nullArtistId=q.value(0).toInt();
+    }
+    
+    if(nullArtistId==LartistId)
     {
         if (!setAlbumArtist(path,s,album,q) )
         {
@@ -81,9 +89,8 @@ int player::fileToDb::setArtist (const QString path,const QString &s,const QStri
         q.prepare("delete from albums where id=?");
         q.addBindValue( albumId );
         q.exec();
+
     }
-
-
 
     //if there are more thracks on that album the databs will cansel the delete
     q.prepare("delete from artists where id=?");
@@ -166,8 +173,16 @@ int player::fileToDb::setAlbum (const QString path,const QString &s)
 
     q.prepare( "update tracks SET album=@i where path=?");
 
-    q.addBindValue(path );
-    q.exec();
+    q.addBindValue(path );       
+    if (!q.exec())
+    {
+        qDebug()<<"Setting album error: "<<databs.lastError().text();
+
+        databs.close();
+        databs=QSqlDatabase();
+        QSqlDatabase::removeDatabase(path );
+        return DBERR;
+    }
 
     //if there are more thracks on that album the databs will cansel the delete
     q.prepare("delete from albums where id=?");
@@ -323,7 +338,7 @@ int player::fileToDb::setLeadArtist (const QString path,const QString &s,const Q
         k=s;
     }
 
-    if (!setAlbumArtist(path,s,album,q) )
+    if (!setAlbumArtist(path,k,album,q) )
     {
         databs.close();
         databs=QSqlDatabase();
@@ -456,6 +471,7 @@ int player::fileToDb::setComposer (const QString path,const QString &s)
 
 bool player::fileToDb::setAlbumArtist(const QString &path,const QString &s,const QString &album,QSqlQuery &q)
 {
+    qDebug()<<album;
     q.prepare( "CALL get_album(?,?,@k)");
     q.addBindValue(album);
     q.addBindValue(s);
@@ -467,6 +483,9 @@ bool player::fileToDb::setAlbumArtist(const QString &path,const QString &s,const
 
         return false;
     }
+    q.exec("select @k");
+    q.next();
+    qDebug()<<q.value(0);
 
     q.prepare( "update tracks SET album=@k where path=?");
     q.addBindValue(path );

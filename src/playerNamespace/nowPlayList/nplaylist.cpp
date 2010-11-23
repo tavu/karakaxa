@@ -4,6 +4,7 @@
 #include"nplTread.h"
 #include"nplFile.h"
 #include<KMimeType>
+#include"../../random.cpp"
 
 using namespace player;
 player::nplaylist::nplaylist()
@@ -320,7 +321,14 @@ int player::nplaylist::getLength()
     return totalLength;
 }
 
-
+void player::nplaylist::suffle()
+{
+//         qDebug()<<"edop";
+    mutex.lock();
+    randomShuffle(trackList.begin(),trackList.size() );
+    
+    mutex.unlock();
+}
 
 
 const int player::nplaylist::ADD=1;

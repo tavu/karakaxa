@@ -18,7 +18,8 @@ myTreeView::myTreeView(QWidget *parent,QString name)
 {
 //      header =new treeViewHeader(this);
     setHeader(new treeViewHeader(this));
-
+    setUniformRowHeights(true);
+    
     delegate=new treeViewDelegate(this);
     setItemDelegate(delegate);
 
@@ -150,8 +151,8 @@ void myTreeView::fileEdit()
 void myTreeView::setRatingColumn(const int n)
 {    
 //     header()->setResizeMode ( n, QHeaderView::Fixed );
-//     header()->resizeSection(n,rowHeight(model()->index(0,n) )*5+1 );
-    delegate->setRatingColumn(n);   
+//     header()->resizeSection(n,delegate->itemHeigh()*5+1 );
+    delegate->setRatingColumn(n);
 }
 
 int myTreeView::ratingColumn() const
@@ -166,7 +167,6 @@ void myTreeView::writeSettings()
     {
         return ;
     }
-//     QSettings settings(QSettings::IniFormat,QSettings::UserScope,"player.org","player");
     QSettings settings;
 
     settings.beginGroup(objectName());
@@ -176,8 +176,7 @@ void myTreeView::writeSettings()
 
 void myTreeView::readSettings()
 {
-  QSettings settings;
-//     QSettings settings(QSettings::IniFormat,QSettings::UserScope,"player.org","player");
+    QSettings settings;
     settings.beginGroup(objectName());
     header()->restoreState(settings.value("state").toByteArray());
     settings.endGroup();

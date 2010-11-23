@@ -38,6 +38,8 @@ albumTrack::albumTrack(QWidget *parent)
     vLayout->addWidget(splitter);
     setLayout(vLayout);
 
+
+    
     connect(albumV,SIGNAL(activated ( const QModelIndex) ),this ,SLOT( albumActivated(const QModelIndex&) ) );
     
 }
@@ -167,7 +169,7 @@ void albumTrack::update()
 
 void albumTrack::setSearch(const QString &s)
 {
-    search=s;
+    search=s;        
     update();
 }
 
