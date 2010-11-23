@@ -36,6 +36,20 @@ player::audioFile::audioFile(const QString url)
 
 QVariant player::audioFile::tag(tagsEnum t,short int f)
 {
+  
+/*
+    this function return the tag info from the file.
+    it tags a flag as an argument witch specifies the place tha the tag would be red.
+    we can take the tag from the database by executing a select query(ONDATAB).
+    we can save the returned values from the query and using it without executing select again(DBCACHE).
+    we can read the tag from the file(ONFILE).that proces also save the tag on a cache.
+    at last we can use that cache to read the tag(ONCACHE).
+    
+    a flag can has a lot of values using bit OR '|'.
+    the order tha we would search for the values is DBCACHE,ONCACHE,ONDATAB,ONFILE
+    if you want another order use this function more than one with different flag.
+    
+*/
     if (t==PATH)
         return getPath();
 
@@ -99,55 +113,55 @@ bool player::audioFile::setTag(tagsEnum t,QVariant var)
 {
     switch (t)
     {
-    case LEAD_ARTIST:
-    {
-        return setLeadArtist(var.toString() );
-    }
-    case RATING:
-    {
-        return setRating(var.toInt() );
-    }
-    case COUNTER:
-    {
-        return setCounter(var.toInt() );
-    }
-    case COMPOSER:
-    {
-        return setComposer(var.toString() );
-    }
-    case TITLE:
-    {
-        return setTitle(var.toString());
-    }
-    case ALBUM:
-    {
-        return setAlbum(var.toString());
-    }
-    case ARTIST:
-    {
-        return setArtist(var.toString());
-    }
-    case GENRE:
-    {
-        return setGenre(var.toString());
-    }
-    case COMMENT:
-    {
-        return setComment(var.toString());
-    }
-    case TRACK:
-    {
-        return setTrack(var.toInt());
-    }
-    case YEAR:
-    {
-        return setYear(var.toInt() );
-    }
+	case LEAD_ARTIST:
+	{
+	    return setLeadArtist(var.toString() );
+	}
+	case RATING:
+	{
+	    return setRating(var.toInt() );
+	}
+	case COUNTER:
+	{
+	    return setCounter(var.toInt() );
+	}
+	case COMPOSER:
+	{
+	    return setComposer(var.toString() );
+	}
+	case TITLE:
+	{
+	    return setTitle(var.toString());
+	}
+	case ALBUM:
+	{
+	    return setAlbum(var.toString());
+	}
+	case ARTIST:
+	{
+	    return setArtist(var.toString());
+	}
+	case GENRE:
+	{
+	    return setGenre(var.toString());
+	}
+	case COMMENT:
+	{
+	    return setComment(var.toString());
+	}
+	case TRACK:
+	{
+	    return setTrack(var.toInt());
+	}
+	case YEAR:
+	{
+	    return setYear(var.toInt() );
+	}
 
-    default:
-    {
-        return false;
-    }
+	default:
+	{
+	    return false;
+	}
     }
 }
 bool player::audioFile::setArtist (const QString &s)
@@ -434,7 +448,7 @@ QVariant  player::audioFile::albumArtist()
     QVariant v=tag(LEAD_ARTIST);
     if ( ! (v.isNull() ) && !( v.toString().isEmpty() ) )
     {
-        return QVariant(tag(LEAD_ARTIST) );
+        return v;
     }
     else
     {
@@ -443,8 +457,6 @@ QVariant  player::audioFile::albumArtist()
         {
             return QVariant();
         }
-
-// 	  test
         return s;
     }
 }

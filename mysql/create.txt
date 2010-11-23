@@ -16,7 +16,7 @@ create table artists(
 create table albums(
      id int(10) not null auto_increment,
      name varchar(255),
-     artist int,
+     artist int(10) not null,
      image varchar(255),
      foreign key(artist) references artists(id),
      PRIMARY KEY(id),

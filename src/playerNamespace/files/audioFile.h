@@ -42,7 +42,7 @@ public:
     QString getPath();
     virtual QVariant tag(tagsEnum t,short int f=DEFAULTF);
 
-    virtual QVariant			albumArtist();
+    virtual QVariant		       albumArtist();
     virtual QString			cover();
 
     virtual bool 			setTag(tagsEnum t,QVariant var);

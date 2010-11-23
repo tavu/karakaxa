@@ -42,9 +42,9 @@ private:
 public:
 // 	       virtual /*tagsTable*/		getTagsTable();
 
-    virtual QVariant			composer() const;
+    virtual QVariant		composer() const;
     virtual QVariant 		counter( ) const;
-    virtual QVariant			rating() const;
+    virtual QVariant		rating() const;
     virtual QVariant 		leadArtist () const ;
 
 
@@ -56,7 +56,7 @@ public:
     virtual bool 			setArtists (const QStringList &l);
     virtual QStringList 		artists () const ;
 
-    virtual QVariant			tag(tagsEnum t) const;
+    virtual QVariant		tag(tagsEnum t) const;
     virtual bool			setTag(tagsEnum t,const QVariant &var);
 };//class
 };//player

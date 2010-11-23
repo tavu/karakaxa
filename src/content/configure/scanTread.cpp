@@ -23,33 +23,23 @@ void scanTread::findItemN(QString dir)
         itemNumber++;
         it.next();
     }
-    qDebug()<<itemNumber;
-    emit itemsNum(itemNumber);
 }
 
 bool scanTread::scanFolder(QDir dir)
 {
     QFileInfoList infoList=dir.entryInfoList( player::config.files());
 
-    for (int i=0;i<infoList.size();i++)
-    {
-        if (!stopped)
-        {
-            if ( !importer.import(infoList.at(i).absoluteFilePath() ) )
-            {
-// 		    player::errors.setError(importer.error());
-            }
-
-            filesImported++;
-            emit imported(filesImported);
-        }
-        else
-        {
-// 	       emit canceled(filesImported);
-            quit();
-            return true;
-        }
-    }
+     for (int i=0;i<infoList.size();i++)
+     {
+	  if(stopped)
+	  {
+	       quit();
+	       return true;
+	  }
+	  importer.import(infoList.at(i).absoluteFilePath() );
+          filesImported++;
+          emit imported(filesImported);        
+     }
 
     dir.setFilter(QDir::AllDirs|QDir::NoDotAndDotDot);
 
@@ -58,8 +48,8 @@ bool scanTread::scanFolder(QDir dir)
     for (int i=0;i<infoList.size();i++)
     {
         scanFolder(QDir( infoList.at(i).absoluteFilePath()) ) ;
-// 	       return false;
     }
+    
     return true;
 }
 
@@ -98,13 +88,16 @@ void scanTread::run()
     for (int i = 0; i<libraryF.size(); i++)
     {
         findItemN(libraryF.at(i));
-    }
+    }        
+    emit itemsNum(itemNumber);
+
 
     for (int i = 0; i<libraryF.size(); i++)
     {
         QDir dir= QDir( libraryF.at(i) );
         scanFolder(dir);
     }
+    importer.save();
 }
 
 void scanTread::stop()

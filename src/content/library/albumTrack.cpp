@@ -38,8 +38,10 @@ albumTrack::albumTrack(QWidget *parent)
     vLayout->addWidget(splitter);
     setLayout(vLayout);
 
+
+    
     connect(albumV,SIGNAL(activated ( const QModelIndex) ),this ,SLOT( albumActivated(const QModelIndex&) ) );
-    connect(trackV,SIGNAL(doubleClicked  ( const QModelIndex) ),this,SLOT(play(const QModelIndex) ) );
+    
 }
 
 void albumTrack::trackVInit()
@@ -167,7 +169,7 @@ void albumTrack::update()
 
 void albumTrack::setSearch(const QString &s)
 {
-    search=s;
+    search=s;        
     update();
 }
 
@@ -188,16 +190,3 @@ void albumTrack::albumActivated(const QModelIndex &n)
 //      trackM->setQuery(queryGrt::finish(s) );
 }
 
-void albumTrack::play(const QModelIndex index)
-{
-    qDebug()<<"play";
-    npList.clear();
-    QList <QUrl> urlList;
-    for (int i=0;i<trackM->rowCount();i++)
-    {
-        npList.addAudio(trackM->url(i).toLocalFile(),i );
-    }
-//      npList.addAudio(urlList,0);
-//      sleep(1);
-    engine.play(index.row() );
-}

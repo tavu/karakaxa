@@ -6,7 +6,7 @@ player::fileTags::fileTags(QString url)
         path(url),
         tags(0),
         properties(0),
-        err(0)
+        err(OK)
 {
     using namespace TagLib;
 //      file =new MPEG::File(path);
@@ -139,12 +139,13 @@ bool player::fileTags::setTitle(const QString &s)
 {
     using namespace TagLib;
 
-    if (tags==0 )
+    if (!isValid() )
     {
         err=INVALIDF;
         return false;
     }
 
+    err=OK;
     tags->setTitle( toTString(s) );
 
     file.save();
@@ -161,7 +162,7 @@ bool player::fileTags::setAlbum (const QString &s)
         return false;
     }
 
-    err=0;
+    err=OK;
     String ts=toTString(s);
     tags->setAlbum(ts );
 
@@ -178,7 +179,7 @@ bool player::fileTags::setArtist (const QString &s)
         return false;
     }
 
-    err=0;
+    err=OK;
     String ts=toTString(s);
     tags->setArtist(ts );
 
@@ -195,7 +196,7 @@ bool player::fileTags::setComment (const QString &s)
         return false;
     }
 
-    err=0;
+    err=OK;
     tags->setComment(toTString(s) );
     file.save();
 
@@ -211,7 +212,7 @@ bool player::fileTags::setGenre (const QString &s)
         return false;
     }
 
-    err=0;
+    err=OK;
     tags->setGenre(toTString(s) );
     file.save();
 
@@ -227,7 +228,7 @@ bool player::fileTags::setYear (const unsigned int &i)
         return false;
     }
 
-    err=0;
+    err=OK;
     tags->setYear(i);
     file.save();
 
@@ -243,7 +244,7 @@ bool player::fileTags::setTrack(const unsigned int &i)
         return false;
     }
 
-    err=0;
+    err=OK;
     tags->setTrack(i);
     file.save();
 
@@ -323,43 +324,44 @@ bool player::fileTags::setTag(tagsEnum t,const QVariant &var)
     switch (t)
     {
 
-    case TITLE:
-    {
-        return setTitle(var.toString());
-    }
-    case ALBUM:
-    {
-        return setAlbum(var.toString());
-    }
-    case ARTIST:
-    {
-        return setArtist(var.toString());
-    }
-    case GENRE:
-    {
-        return setGenre(var.toString());
-    }
-    case COMMENT:
-    {
-        return setComment(var.toString());
-    }
-    case TRACK:
-    {
-        return setTrack(var.toInt());
+	case TITLE:
+	{
+	    return setTitle(var.toString());
+	}
+	case ALBUM:
+	{
+	    return setAlbum(var.toString());
+	}
+	case ARTIST:
+	{
+	    return setArtist(var.toString());
+	}
+	case GENRE:
+	{
+	    return setGenre(var.toString());
+	}
+	case COMMENT:
+	{
+	    return setComment(var.toString());
+	}
+	case TRACK:
+	{
+	    return setTrack(var.toInt());
 
-    }
-    case YEAR:
-    {
-        return setYear(var.toInt());
-    }
-    default:
-    {
-        err=NSTAG;
-        return false;
-    }
+	}
+	case YEAR:
+	{
+	    return setYear(var.toInt());
+	}
+	default:
+	{
+	    err=NSTAG;
+	    return false;
+	}
     }
 }
 
+const int player::fileTags::OK=0;
 const int player::fileTags::NULLFILE=1;
 const int player::fileTags::INVALIDF=2;
 const int player::fileTags::WRONGFT=3;

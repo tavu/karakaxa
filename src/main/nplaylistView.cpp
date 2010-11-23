@@ -16,7 +16,6 @@ nplaylistView::nplaylistView(QWidget *parent)
 {
 
     setDragDropMode( QAbstractItemView::DragDrop );
-// 		setAlternatingRowColors(true);
     setSelectionMode(QAbstractItemView::ExtendedSelection);
     createMenu();
 
