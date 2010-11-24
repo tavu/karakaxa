@@ -7,7 +7,8 @@
 
 
 library::library(QWidget *parent)
-        :abstractContent(parent)
+        :abstractContent(parent),
+        needUpdate(-1)
 {
 
     addChild(QString(tr("Artist")));
@@ -41,14 +42,61 @@ library::library(QWidget *parent)
     connect(scan,SIGNAL(triggered()),this,SLOT(libraryScan() ) );
 
     connect(artistV,SIGNAL(toArtist(QString , QString) ) ,this,SLOT(toAlbum(const QString &,const QString &) ) );
+    
+    connect(&db,SIGNAL(updated(tagsEnum)),this,SLOT(updateQueriesSlot(tagsEnum) ) );
 
 }
+
+void library::updateQueriesSlot(tagsEnum t)
+{
+    if(!isActive())
+    {
+	needUpdate=t;
+    }
+    else
+    {
+	updateQueries(t);
+    }
+}
+
+void library::updateQueries(tagsEnum t)
+{
+    qDebug()<<"library update";
+    if(t==ARTIST||t==LEAD_ARTIST)
+    {	
+	artistV->update();
+	if(!albumTrV->update() )
+	{
+	    stack->setCurrentWidget(artistV);
+	}
+	
+    }   
+    else if(t==ALBUM)
+    {
+	if(!albumTrV->update() )
+	{
+	    stack->setCurrentWidget(artistV);
+	}
+    }
+    else
+    {
+	albumTrV->updateTrack();
+    }
+    needUpdate=-1;
+}
+
+
 
 void library::update(const int n)
 {
     if (n==0)
     {
         stack->setCurrentWidget(artistV);
+    }
+
+    if(needUpdate)
+    {
+	updateQueries((tagsEnum)needUpdate);
     }
 }
 

@@ -17,7 +17,8 @@ class albumTrack :public QWidget
 
 public:
     albumTrack(QWidget *parent=0);
-
+    void updateTrack();
+    
 private:
 
     void labelInit();
@@ -53,7 +54,7 @@ public slots:
 
 //      private slots:
     void albumActivated(const QModelIndex &n);
-    void update();
+    bool update();
 
 };
 

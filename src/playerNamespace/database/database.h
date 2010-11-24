@@ -17,15 +17,13 @@ class database :public QObject
 	database();
 	~database();
 	QSqlDatabase getDatabase();
-    // 	  static QSqlQuery getLibraryFolders();
 	QStringList getLibraryFolders();
 
 
 	const QString error();
 	QSqlDatabase clone(const QString &s);
 	QStringList getArtists(const QString &path);
-	
-	
+		
 
 	int trackViewHideValues();
 	const QSqlQuery artist();
@@ -39,7 +37,15 @@ class database :public QObject
 	QSqlQuery albumQuery(QString artist);
 	QSqlQuery albumQuery(QString artist,QString search);
 
-	void update();
+	inline void changedSig()
+	{
+	    emit(changed() );
+	}
+	
+	inline void updateSig(tagsEnum t)
+	{
+	    emit(updated(t) );
+	}
 	
 	
 	static void toSqlSafe(QString &s);	
@@ -77,6 +83,7 @@ class database :public QObject
 
     signals:
 	void changed();
+	void updated(tagsEnum);
 };
 
 }

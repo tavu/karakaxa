@@ -20,7 +20,8 @@ const short int player::audioFile::DEFAULTF=ONDATAB|DBCACHE|ONCACHE|ONFILE|TITLE
 
 player::audioFile::audioFile(const QString url)
         :recFlag(true),
-        fileSize(0)
+        fileSize(0),
+        _mutable(false)
 {
 //      record=QSqlRecord();
     table=new QVariant[FRAME_NUM];
@@ -32,6 +33,8 @@ player::audioFile::audioFile(const QString url)
     flags[PATH]=true;
 
     file=getFileTags(url);
+    
+    connect(&db,SIGNAL(changed()),this,SLOT(recordClean()) );
 }
 
 QVariant player::audioFile::tag(tagsEnum t,short int f)
@@ -185,7 +188,11 @@ bool player::audioFile::setArtist (const QString &s)
         return false;
     }
     
-    qDebug()<<"AMMMMAAN";
+    if(!_mutable )
+    {
+	db.updateSig(ARTIST);
+    }
+
     
 
     mutex.unlock();
@@ -211,6 +218,11 @@ bool player::audioFile::setAlbum(const QString &s)
     {
         mutex.unlock();
         return false;
+    }
+    
+    if(!_mutable )
+    {
+	db.updateSig(ALBUM);
     }
 
     mutex.unlock();
@@ -238,6 +250,11 @@ bool player::audioFile::setGenre(const QString &s)
         mutex.unlock();
         return false;
     }
+    if(!_mutable )
+    {
+	db.updateSig(GENRE);
+    }
+
 
     mutex.unlock();
     return true;
@@ -263,6 +280,11 @@ bool player::audioFile::setLeadArtist(const QString &s)
         mutex.unlock();
         return false;
     }
+    if(!_mutable )
+    {
+	db.updateSig(LEAD_ARTIST);
+    }
+
 
     mutex.unlock();
     return true;
@@ -288,6 +310,11 @@ bool player::audioFile::setComposer (const QString &s)
         mutex.unlock();
         return false;
     }
+    if(!_mutable )
+    {
+	db.updateSig(COMPOSER);
+    }
+
 
     mutex.unlock();
     return true;
@@ -313,6 +340,11 @@ bool player::audioFile::setTitle (const QString &s)
         mutex.unlock();
         return false;
     }
+    if(!_mutable )
+    {
+	db.updateSig(TITLE);
+    }
+
 
     mutex.unlock();
     return true;
@@ -338,6 +370,12 @@ bool player::audioFile::setComment (const QString &s)
         mutex.unlock();
         return false;
     }
+    
+    if(!_mutable )
+    {
+	db.updateSig(COMMENT);
+    }
+
 
     mutex.unlock();
     return true;
@@ -364,6 +402,12 @@ bool player::audioFile::setYear (const unsigned int &year)
         return false;
     }
 
+    if(!_mutable )
+    {
+	db.updateSig(YEAR);
+    }
+
+
     mutex.unlock();
     return true;
 }
@@ -388,6 +432,13 @@ bool player::audioFile::setTrack (const unsigned int &track)
         mutex.unlock();
         return false;
     }
+    
+    if(!_mutable )
+    {
+	db.updateSig(TRACK);
+    }
+
+
 
     mutex.unlock();
     return true;
@@ -414,6 +465,12 @@ bool player::audioFile::setRating (const unsigned int &rating)
         return false;
     }
 
+    if(!_mutable )
+    {
+	db.updateSig(RATING);
+    }
+
+
     mutex.unlock();
     return true;
 }
@@ -438,6 +495,12 @@ bool player::audioFile::setCounter(const unsigned int &num )
         mutex.unlock();
         return false;
     }
+    
+    if(!_mutable )
+    {
+	db.updateSig(COUNTER);
+    }
+
 
     mutex.unlock();
     return true;
@@ -573,6 +636,12 @@ bool player::audioFile::select()
     recFlag=true;
     return true;
 
+}
+
+void player::audioFile::recordClean()
+{
+    recFlag=true;
+    record.clear();
 }
 
 player::audioFile* player::audioFile::getAudioFile(QString path)

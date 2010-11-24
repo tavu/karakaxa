@@ -9,7 +9,8 @@ class artistWidget :public QListView
     Q_OBJECT
     public:
 	artistWidget(QWidget *parent=0);
-
+	void update();
+	
     private:
 	QString search;
 	artistModel *artistM;

@@ -14,22 +14,22 @@ namespace player
 class contentHandler :public QObject
 {
     Q_OBJECT
-public:
-    contentHandler(QTreeWidget *tree , QStackedWidget *stack);
+    public:
+	contentHandler(QTreeWidget *tree , QStackedWidget *stack);
 
-    abstractContent* content(const QModelIndex &index) const;
+	abstractContent* content(const QModelIndex &index) const;
 
-    void removeContent(abstractContent *content);
+	void removeContent(abstractContent *content);
+	bool isActive(QWidget *w);
+    private:
+	void itemChanger(QModelIndex *item);
+	QTreeWidget *tree;
+	QStackedWidget *stack;
+	QList<abstractContent * > contentList;
 
-private:
-    void itemChanger(QModelIndex *item);
-    QTreeWidget *tree;
-    QStackedWidget *stack;
-    QList<abstractContent * > contentList;
-
-    QTreeWidgetItem item;
-    QMutex mutex;
-    QList<abstractContent*>history;
+	QTreeWidgetItem item;
+	QMutex mutex;
+	QList<abstractContent*>history;
 
 
 

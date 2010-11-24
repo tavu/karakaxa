@@ -3,6 +3,8 @@
 #include<QHBoxLayout>
 #include<QFont>
 
+#include<QDebug>
+
 #define MAX_HS 20
 player::contentHandler::contentHandler(QTreeWidget *tree , QStackedWidget *stack)
         :QObject()
@@ -34,6 +36,15 @@ abstractContent* player::contentHandler::content(const QModelIndex &index) const
     return parent;
 }
 
+bool player::contentHandler::isActive(QWidget *w)
+{
+    
+    if(w==stack->currentWidget() )	return true;
+    
+    return false;
+}
+
+
 void player::contentHandler::itemChanger(const QModelIndex &index)
 {
     abstractContent *parent;
@@ -49,6 +60,7 @@ void player::contentHandler::itemChanger(const QModelIndex &index)
     {
         parent=contentList.at(index.row() );
         stack->setCurrentWidget(parent);
+	parent->update(-1);
     }
 
     history.append(parent);
@@ -93,6 +105,7 @@ void player::contentHandler::removeContent(abstractContent *content)
         }
         tree->setCurrentItem(item);
         stack->setCurrentWidget(c);
+	c->update(-1);
     }
 
     tree->takeTopLevelItem(pos);

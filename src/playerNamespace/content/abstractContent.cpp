@@ -1,4 +1,5 @@
 #include"abstractContent.h"
+#include"../player.h"
 
 abstractContent::abstractContent(QWidget *parent)
         :QWidget(parent)
@@ -23,7 +24,14 @@ void abstractContent::addChild(const QString &s)
 }
 
 void abstractContent::update(const int )
-{}
+{
+}
+
+bool abstractContent::isActive()
+{
+    return player::contentHandlr->isActive(this);
+}
+
 
 void abstractContent::showMenu(QPoint p)
 {

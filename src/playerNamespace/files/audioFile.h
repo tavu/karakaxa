@@ -15,101 +15,117 @@
 namespace player
 {
 
-class audioFile
+class audioFile :public QObject
 {
+    public:
 
-// 	  typedef myPointer<audioFile> audioFileS;
-public:
+	struct audioFileS_
+	{
+	    int used;
+	    audioFile *p;
+	};
+	typedef struct audioFileS_ audioFileS;
 
-    struct audioFileS_
-    {
-        int used;
-        audioFile *p;
-    };
-    typedef struct audioFileS_ audioFileS;
+	static const short int ONDATAB;
+	static const short int ONCACHE;
+	static const short int ONFILE;
+	static const short int TITLEFP;
+	static const short int DBCACHE;
+	static const short int DEFAULTF;
 
-    static const short int ONDATAB;
-    static const short int ONCACHE;
-    static const short int ONFILE;
-    static const short int TITLEFP;
-    static const short int DBCACHE;
-    static const short int DEFAULTF;
-
-    audioFile(const QString);
+	audioFile(const QString);
 
 
-// 	       virtual QVariant tags(tagsEnum t);
-    QString getPath();
-    virtual QVariant tag(tagsEnum t,short int f=DEFAULTF);
+    // 	       virtual QVariant tags(tagsEnum t);
+	QString getPath();
+	virtual QVariant tag(tagsEnum t,short int f=DEFAULTF);
 
-    virtual QVariant		       albumArtist();
-    virtual QString			cover();
+	virtual QVariant		       albumArtist();
+	virtual QString			cover();
 
-    virtual bool 			setTag(tagsEnum t,QVariant var);
+	virtual bool 			setTag(tagsEnum t,QVariant var);
 
-    virtual bool 			setTitle (const QString &s);
-    virtual bool 			setArtist (const QString &s);
-    virtual bool 			setAlbum (const QString &s);
-    virtual bool 			setComment (const QString &s);
-    virtual bool 			setLeadArtist (const QString &s);
-    virtual bool			setComposer(const QString &s);
-    virtual bool 			setGenre (const QString &s);
-    virtual bool 			setYear (const unsigned int &year);
-    virtual bool 			setTrack (const unsigned int &i);
-    virtual bool 			setRating(const unsigned int &rating);
-    virtual bool 			setCounter(const unsigned int &num);
+	virtual bool 			setTitle (const QString &s);
+	virtual bool 			setArtist (const QString &s);
+	virtual bool 			setAlbum (const QString &s);
+	virtual bool 			setComment (const QString &s);
+	virtual bool 			setLeadArtist (const QString &s);
+	virtual bool			setComposer(const QString &s);
+	virtual bool 			setGenre (const QString &s);
+	virtual bool 			setYear (const unsigned int &year);
+	virtual bool 			setTrack (const unsigned int &i);
+	virtual bool 			setRating(const unsigned int &rating);
+	virtual bool 			setCounter(const unsigned int &num);
 
-// 	       virtual bool			isNull() const;
-    bool				onCache(tagsEnum t);
+    // 	       virtual bool			isNull() const;
+	bool				onCache(tagsEnum t);
 
-    virtual bool 			select();
-    virtual int 			albumId();
+	virtual bool 			select();
+	virtual int 			albumId();
 
-    void				clear();
+	void				clear();
 
-    QString	folder()
-    {
-        return player::folder(getPath() );
-    }
-    int				size();
+	QString	folder()
+	{
+	    return player::folder(getPath() );
+	}
+	int				size();
 
-    inline QString format()
-    {
-        return player::format(getPath() );
-    }
+	inline QString format()
+	{
+	    return player::format(getPath() );
+	}
 
-    inline int error()
-    {
-        return file->error();
-    }
+	inline int error()
+	{
+	    return file->error();
+	}
+	
+	inline bool isMutable()
+	{
+	    //a mutable audio file does not send database updated signals when makes chnges to tags
+	    return _mutable;
+	}
+	
+	inline void setMutable()
+	{
+	    //a mutable audio file does not send database updated signals when makes chnges to tags
+	    _mutable=true;
+	}
 
 
+	static player::audioFile* getAudioFile(QString path);
+	static void releaseAudioFile(QString path);
+	static void releaseAudioFile(audioFile *file);
 
-    static player::audioFile* getAudioFile(QString path);
-    static void releaseAudioFile(QString path);
-    static void releaseAudioFile(audioFile *file);
+    private:
 
-private:
+	QSqlDatabase databs;
+	QMutex mutex;
+	bool setAlbumArtist(const QString &s,QSqlQuery &q);
+	
+	static fileTags* getFileTags(const QString path);
 
-    QSqlDatabase databs;
-    QMutex mutex;
-    bool setAlbumArtist(const QString &s,QSqlQuery &q);
+	static QMap<QString, audioFileS*> fileMap;
+	static QMutex gMutex;
 
+    protected:
+      	
+	QString	albumArt;
+	mutable QVariant *table;
+	mutable bool *flags;
+	mutable bool recFlag;
+	int fileSize;
 
-    static fileTags* getFileTags(const QString path);
+	fileTags *file;
+	QSqlRecord record;
 
-    static QMap<QString, audioFileS*> fileMap;
-    static QMutex gMutex;
+	bool _mutable;
+	
 
-protected:
-    QString	albumArt;
-    mutable QVariant *table;
-    mutable bool *flags;
-    mutable bool recFlag;
-    int fileSize;
-
-    fileTags *file;
-    QSqlRecord record;
+  protected slots:
+	
+	void recordClean();
 
 };//class
 

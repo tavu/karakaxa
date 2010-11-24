@@ -5,9 +5,7 @@
 player::database::database()
         :QObject(),
 	isConnected(false)
-// 	db(QSqlDatabase::addDatabase("QMYSQL3") )
 {
-//     createConnection();
     db=QSqlDatabase::addDatabase("QMYSQL");
 }
 
@@ -32,7 +30,6 @@ bool player::database::createConnection()
 
     if (!db.open())
     {
-//         QMessageBox::critical(0, QObject::tr("Database Error"),db.lastError().text() );
 	statusBar.showMessage(tr("Database Error")+db.lastError().text());
         return false;
     }
@@ -210,11 +207,6 @@ QStringList player::database::getArtists(const QString &path)
         l<<q.value(0).toString();
     }
     return l;
-}
-
-void player::database::update()
-{
-    emit(changed() );
 }
 
 void player::database::addLibraryFolder(QString s)

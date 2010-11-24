@@ -146,7 +146,12 @@ void albumTrack::setArtist(const QString &artist,const QString &labelS)
     update();
 }
 
-void albumTrack::update()
+void albumTrack::updateTrack()
+{
+    trackM->refresh();    
+}
+
+bool albumTrack::update()
 {
     QString query;
     if (search.isNull())
@@ -157,14 +162,19 @@ void albumTrack::update()
     {
         query=queryGrt::albums(artist,search);
     }
-//  	  if(!query.exec())
-// 	  {
-// 	       qDebug()<<"albumTrack error "<<query.lastError().text();
-// 	  }
+
     albumM->setQuery( query,db.getDatabase() );
 
-    albumActivated(albumM->index(0,0) );
-
+    if(albumM->rowCount()==0)
+    {
+      qDebug()<<"EEEEEEEEEEEE";
+	return false;
+    }
+    else
+    {
+	albumActivated(albumM->index(0,0) );
+    }
+    return true;
 }
 
 void albumTrack::setSearch(const QString &s)

@@ -8,27 +8,28 @@ class abstractContent :public QWidget
 {
     Q_OBJECT
 
-public:
-    abstractContent(QWidget *parent=0);
+    public:
+	abstractContent(QWidget *parent=0);
 
-    virtual ~abstractContent();
-// 	  virtual const QList<QString> getChildren()=0;
+	virtual ~abstractContent();
+    // 	  virtual const QList<QString> getChildren()=0;
 
-    virtual QString name()const =0;
+	virtual QString name()const =0;
 
-    virtual void update(const int );
+	virtual void update(const int );
 
-    QTreeWidgetItem* item() const;
+	QTreeWidgetItem* item() const;
 
-    void showMenu(QPoint);
-// 	  virtual int childrenNum() const;
-protected:
+	void showMenu(QPoint);
+	bool isActive();
+    // 	  virtual int childrenNum() const;
+    protected:
 
-    QMenu menu;
-    void addChild(const QString &s);
+	QMenu menu;
+	void addChild(const QString &s);
 
-private:
-    QTreeWidgetItem *widgetItem;
+    private:
+	QTreeWidgetItem *widgetItem;
 };
 
 #endif

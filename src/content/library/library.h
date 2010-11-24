@@ -15,43 +15,50 @@
 class library :public abstractContent
 {
     Q_OBJECT
-public:
-    library(QWidget *parent=0);
-    QString name() const;
-    void update(const int n);
+    public:
+	library(QWidget *parent=0);
+	QString name() const;
+	void update(const int n);
 
-private:
+    private:
 
-    QWidget *buttonWidget;
+	QWidget *buttonWidget;
 
-    artistWidget *artistV;
-    albumTrack  *albumTrV;
-    QStackedWidget *stack;
+	artistWidget *artistV;
+	albumTrack  *albumTrV;
+	QStackedWidget *stack;
 
-    QIcon playIcon;
+	QIcon playIcon;
 
-    KToolBar *toolBar;
-    QAction *backAction;
-    QAction *forwardAction;
-    KLineEdit *searchLine;
+	KToolBar *toolBar;
+	QAction *backAction;
+	QAction *forwardAction;
+	KLineEdit *searchLine;
 
-    QPushButton *refresh;
+	QPushButton *refresh;
 
-    QAction *scan;
-    QAction *config;
-    QLinkedList<tagsEnum> searchTagL;
+	QAction *scan;
+	QAction *config;
+	QLinkedList<tagsEnum> searchTagL;
+	
+	int needUpdate;
+	
+	//functions
+	void buttonInit();
+	void inline toolBarInit();
+	void updateQueries(tagsEnum);
+	
+    public slots:
+	void libraryScan();
+	void toAlbum(const QString &s1,const QString &s2);
+	void goToArtist();
+	void goToAlbum();
+    //      private slots:
+	void search();
+	
+    private slots:
+	void updateQueriesSlot(tagsEnum);
     
-    //functions
-    void buttonInit();
-    void inline toolBarInit();
-
-public slots:
-    void libraryScan();
-    void toAlbum(const QString &s1,const QString &s2);
-    void goToArtist();
-    void goToAlbum();
-//      private slots:
-    void search();
 };
 
 #endif
