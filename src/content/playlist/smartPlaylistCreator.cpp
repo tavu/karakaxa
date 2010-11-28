@@ -6,25 +6,23 @@
 #include<player.h>
 #include <QSpinBox>
 #include"smartPlaylistDelegate.h"
-using namespace::player;
+#include<QPushButton>
+
 using namespace player;
 // using namespace::smartPlaylistItem;
 smartPlaylistCreator::smartPlaylistCreator(QWidget *parent)
-        :QWidget(parent)
-//      query()
+        :QDialog(parent)
 {
-//      query
+    setWindowTitle(tr("Creating smart Playlist"));
     lineE=new QLineEdit(this);
     treeW=new QTreeWidget(this);
     treeW->setColumnCount(5);
-
-//      smartPlaylistDelegate *del=new smartPlaylistDelegate(treeW);
 
 
     buttons=new QDialogButtonBox(QDialogButtonBox::Ok|QDialogButtonBox::Cancel,Qt::Horizontal,this);
     toolBar=new KToolBar(this);
 
-    QAction *add=new QAction(KIcon("list-add"),tr("&Add"),this);
+    QPushButton *add=new QPushButton(KIcon("list-add"),tr("&Add"),this);
     QAction *removeAction=new QAction(KIcon("list-remove"),tr("&remove"),this);
 
 
@@ -32,11 +30,15 @@ smartPlaylistCreator::smartPlaylistCreator(QWidget *parent)
     tagAction=new QAction(tr("Tag"),this);
 
     addMenu=new QMenu(this);
+//     addMenu->setIcon(KIcon("list-add"));
+//     addMenu->setTitle(tr("&Add"));s
     addMenu->addAction(matchAction);
     addMenu->addAction(tagAction);
 
     add->setMenu(addMenu);
-    toolBar->addAction(add);
+    add->setFlat(true);
+    
+    toolBar->addWidget(add);
     toolBar->addAction(removeAction);
 
     QVBoxLayout *layout = new QVBoxLayout();
@@ -116,10 +118,11 @@ void smartPlaylistCreator::ok()
 {
 //      close();
     smartPlaylistItem *item=static_cast<smartPlaylistItem*>(treeW->topLevelItem(0) );
-    query=item->getQuery();
+    _query=item->getQuery();
 
-    queryGrt q;
-    query=q.finish(query);
+//     queryGrt q;
+//     _query=q.finish(_query);
+//     _query=q;
     close();
 
 }
@@ -132,12 +135,23 @@ void smartPlaylistCreator::cancel()
 void smartPlaylistCreator::closeEvent ( QCloseEvent * event )
 {
     QWidget::closeEvent(event);
-    emit(closed(query,name()) );
+    emit(closed(_query,name()) );
 }
+
+QString smartPlaylistCreator::query()
+{
+    return _query;
+}
+
 
 QString smartPlaylistCreator::name()
 {
     if (lineE->text().isEmpty() )
         return QString(tr("Unnamed") );
     return lineE->text();
+}
+
+QSize smartPlaylistCreator::sizeHint() const
+{
+    return QSize(700,600);
 }

@@ -2,11 +2,11 @@
 #include<QTextStream>
 #include<player.h>
 #include<QTextStream>
-player::m3uPl::m3uPl(QString s)
+player::m3uPl::m3uPl(const QString s)
         :file(s)
 {
     path=s;
-    qDebug()<<s;
+//     qDebug()<<s;
 
 }
 

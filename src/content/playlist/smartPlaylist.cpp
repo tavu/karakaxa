@@ -1,53 +1,69 @@
 #include"smartPlaylist.h"
 #include<KIcon>
-smartPlaylist::smartPlaylist(QTreeView *treeV,QTreeView *trackV,KToolBar *tb)
-{
-    this->treeV=treeV;
-    this->trackV=trackV;
-    this->tb=tb;
 
-    toolBar=new QToolBar("smart playlist toolbar");
+smartPlaylist::smartPlaylist(playlistContent *pl)
+    :QObject(pl),
+    current(0)
+{
+    plContent=pl;
+    trackM=new songModel(plContent->treeV);
+
+    QToolBar *toolBar=new QToolBar("smart playlist toolbar",plContent);
 
     QAction *addAction=new QAction(KIcon("list-add"),tr("&Add"),this);
     QAction *removeAction=new QAction(KIcon("list-remove"),tr("&remove"),this);
     toolBar->addAction(addAction);
     toolBar->addAction(removeAction);
+    widgetAction = plContent->toolBar->addWidget(toolBar);
 
-    model=new QStandardItemModel(this);
-
+    smModel=new smartPlaylistModel(this);            
     connect(addAction, SIGNAL(triggered()), this, SLOT(addPl() )) ;
+    
 //      connect(removeAction, SIGNAL(triggered()), this, SLOT(remove()));
+
+    widgetAction->setVisible(false);
+}
+
+void smartPlaylist::goToPlaylist(QModelIndex i) 
+{
+//      trackV->setNotHide(TITLE);     
+     trackM->setFilter(i.data(Qt::UserRole).toString());
+     plContent->trackV->setModel(trackM);
+     plContent->stack->setCurrentIndex(1);
 }
 
 smartPlaylist::~smartPlaylist()
 {
-    delete toolBar;
+//     delete toolBar;
 }
 
 void smartPlaylist::addPl()
 {
-//      t-currentIndex ()
     smartPlaylistCreator *c=new smartPlaylistCreator();
-    c->show();
-    connect(c,SIGNAL(closed(QString,QString)),this,SLOT(newPl(QString,QString) ) );
+    c->exec();
+    QString q=c->query();
+    if (q.isEmpty() )	return ;
+
+    smartPlaylistModelItem *item=new smartPlaylistModelItem(c->name(),q);
+    smModel->append(item);    
+    
+    delete c;
 }
 
-void smartPlaylist::newPl(QString query,QString name)
+
+void smartPlaylist::activate()
 {
-    if (query.isEmpty() )	return ;
-
-    QStandardItem *item = new QStandardItem(name);
-
-    model->setItem(0,0,item);
-
-    item = new QStandardItem(query);
-
-    model->setItem(0,1,item);
+    plContent->treeV->setModel(smModel);    
+    plContent->trackV->setModel(trackM);
+    widgetAction->setVisible(true);
+    plContent->stack->setCurrentIndex(current);
+    connect(plContent->treeV, SIGNAL(activated(QModelIndex)), this, SLOT(goToPlaylist(QModelIndex) )) ;
 }
 
-void smartPlaylist::start()
+void smartPlaylist::deActivate()
 {
-    treeV->setModel(model);
-    tb->addWidget(toolBar);
-//      trackV->setModel(trackM);
+    widgetAction->setVisible(false);
+    plContent->treeV->disconnect();
+    current=plContent->stack->currentIndex();
 }
+

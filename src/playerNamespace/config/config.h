@@ -12,6 +12,7 @@ public:
     PlayerConfigure();
     QStringList files();
     QStringList imagefiles();
+    QStringList playListFiles();
 private:
     QStringList supportesFilesList;
     QStringList supportedImageFiles;

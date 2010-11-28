@@ -144,6 +144,7 @@ void albumTrack::setArtist(const QString &artist,const QString &labelS)
     sLabel->setText(labelS);
     this->artist=artist;
     update();
+    albumActivated(albumM->index(0,0) );
 }
 
 void albumTrack::updateTrack()
@@ -167,12 +168,7 @@ bool albumTrack::update()
 
     if(albumM->rowCount()==0)
     {
-      qDebug()<<"EEEEEEEEEEEE";
 	return false;
-    }
-    else
-    {
-	albumActivated(albumM->index(0,0) );
     }
     return true;
 }
@@ -181,6 +177,7 @@ void albumTrack::setSearch(const QString &s)
 {
     search=s;        
     update();
+    albumActivated(albumM->index(0,0) );
 }
 
 void albumTrack::albumActivated(const QModelIndex &n)

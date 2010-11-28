@@ -53,10 +53,17 @@ void songView::fileEdit()
 
 void songView::play(const QModelIndex index)
 {
+    const trackUrl *Model=dynamic_cast<const trackUrl*>(model() );
+    
+    if(Model==0)
+    {
+	return;
+    }
+    
     npList.clear();
     QList <QUrl> urlList;
-    const songModel *Model=static_cast<const songModel*>(model() );
-    for (int i=0;i<Model->rowCount();i++)
+    
+    for (int i=0;i<model()->rowCount();i++)
     {
         npList.insert(i ,nplTrack::getNplTrack(Model->url(i).toLocalFile()) );
     }

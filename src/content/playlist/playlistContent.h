@@ -6,37 +6,41 @@
 #include<KIcon>
 #include<QStackedWidget>
 
-#include"smartPlaylist.h"
+// #include"smartPlaylist.h"
+#include"smartPlaylistModel.h"
+#include"smartPlaylistCreator.h"
+#include<songView.h>
+// #include"smartPlaylist.h"
+
+class  smartPlaylist;
+class  filePlaylist;
 class playlistContent :public abstractContent
 {
-//      Q_OBJECT
-public:
-    playlistContent(QWidget *parent=0);
-    QString name() const;
-    void update(const int n);
+      Q_OBJECT
+      public:
+	  playlistContent(QWidget *parent=0);
+	  QString name() const;
+	  void update(const int n);
+	  
+	  
+      private:
+	  smartPlaylist 	*smPl;
+	  filePlaylist		*filePl;
+	  KToolBar 		*toolBar;
+	  QAction 		*backAction;      
+	  QStackedWidget 	*stack;
 
-private:
-
-    QWidget *buttonWidget;
-
-    KToolBar *toolBar;
-// 	 KToolBar *toolBar1;
-// 	 KToolBar *toolBar2;
-
-    QAction *backAction;
-    QAction *forwardAction;
-    QStackedWidget *stack;
-
-    QTreeView *treeV;
-    QTreeView *trackV;
-
-    smartPlaylist *smartPl;
-
-    //functions
-// 	  void buttonInit();
-    void toolBarInit();
-
-    void smartInit();
+	  myTreeView 		*treeV;
+	  songView 		*trackV;
+	  
+	  short			current;
+	  void toolBarInit();
+	  
+      public slots:
+	  void back();
+	 
+    friend class smartPlaylist;
+    friend class filePlaylist;
 };
 
 #endif

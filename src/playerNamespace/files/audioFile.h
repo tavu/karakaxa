@@ -9,16 +9,14 @@
 // #include<player.h>
 #include"playerNamespace.h"
 
-// #include<myPointer.h>
-// typedef myPointer<audioFile> audioFileS;
-
 namespace player
 {
 
 class audioFile :public QObject
 {
+    Q_OBJECT
+    
     public:
-
 	struct audioFileS_
 	{
 	    int used;

@@ -27,7 +27,9 @@ void scanTread::findItemN(QString dir)
 
 bool scanTread::scanFolder(QDir dir)
 {
-    QFileInfoList infoList=dir.entryInfoList( player::config.files());
+    QStringList l;
+    l<<player::config.files()<<player::config.playListFiles();
+    QFileInfoList infoList=dir.entryInfoList( l);
 
      for (int i=0;i<infoList.size();i++)
      {
@@ -36,7 +38,16 @@ bool scanTread::scanFolder(QDir dir)
 	       quit();
 	       return true;
 	  }
-	  importer.import(infoList.at(i).absoluteFilePath() );
+	  if(player::isPlaylist(infoList.at(i).absoluteFilePath() ) )
+	  {
+	      qDebug()<<"Import playlist";
+	      importer.importPl(infoList.at(i).absoluteFilePath() );
+	  }
+	  else
+	  {
+	      importer.import(infoList.at(i).absoluteFilePath() );
+	  }
+	  
           filesImported++;
           emit imported(filesImported);        
      }

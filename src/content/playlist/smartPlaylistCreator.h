@@ -8,40 +8,42 @@
 #include<QDialogButtonBox>
 #include<QLineEdit>
 #include<QLabel>
-class smartPlaylistCreator :public QWidget
+ #include <QDialog>
+class smartPlaylistCreator :public QDialog
 {
     Q_OBJECT
-public:
-    smartPlaylistCreator(QWidget *parent=0);
-public:
-    QString name();
-private:
+    public:
+	smartPlaylistCreator(QWidget *parent=0);
+	QString name();
+	QString query();
+	QSize   sizeHint() const;
+    private:
 
-    QLineEdit *lineE;
-    QDialogButtonBox *buttons;
-    QTreeWidget *treeW;
-    KToolBar *toolBar;
+	QLineEdit *lineE;
+	QDialogButtonBox *buttons;
+	QTreeWidget *treeW;
+	KToolBar *toolBar;
 
-    QMenu *addMenu;
+	QMenu *addMenu;
 
-    QAction *matchAction;
-    QAction *tagAction;
-// 	  QAction *removeAction;
+	QAction *matchAction;
+	QAction *tagAction;
+    // 	  QAction *removeAction;
 
-    QString query;
-    void closeEvent ( QCloseEvent * event );
-private slots:
+	QString _query;
+	void closeEvent ( QCloseEvent * event );
+    private slots:
 
-    void addMatch();
-    void addTag();
-    void remove();
-    void ok();
-    void cancel();
+	void addMatch();
+	void addTag();
+	void remove();
+	void ok();
+	void cancel();
 
-    void addItem(smartPlaylistItem::Type);
+	void addItem(smartPlaylistItem::Type);
 
-signals:
-    void closed(QString,QString) ;
+    signals:
+	void closed(QString,QString) ;
 
 };
 #endif

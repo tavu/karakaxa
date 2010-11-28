@@ -36,7 +36,7 @@ library::library(QWidget *parent)
     menu.addAction(scan);
     menu.addAction(config);
 
-    searchTagL<<ARTIST<<ALBUM<<TITLE;
+    searchTagL<<ARTIST<<ALBUM<<TITLE<<LEAD_ARTIST;
     
     
     connect(scan,SIGNAL(triggered()),this,SLOT(libraryScan() ) );
@@ -62,26 +62,12 @@ void library::updateQueriesSlot(tagsEnum t)
 void library::updateQueries(tagsEnum t)
 {
     qDebug()<<"library update";
-    if(t==ARTIST||t==LEAD_ARTIST)
+    if(t==ARTIST||t==LEAD_ARTIST||t==ALBUM)
     {	
 	artistV->update();
-	if(!albumTrV->update() )
-	{
-	    stack->setCurrentWidget(artistV);
-	}
-	
+	albumTrV->update();	
     }   
-    else if(t==ALBUM)
-    {
-	if(!albumTrV->update() )
-	{
-	    stack->setCurrentWidget(artistV);
-	}
-    }
-    else
-    {
-	albumTrV->updateTrack();
-    }
+    albumTrV->updateTrack();    
     needUpdate=-1;
 }
 

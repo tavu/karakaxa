@@ -8,13 +8,13 @@
 namespace player
 {
 database 		db;
-soundEngine	engine;
-contentHandler 	*contentHandlr;
+soundEngine		engine;
+contentHandler 		*contentHandlr;
 PlayerConfigure 	config;
 nplaylist 		npList;
 QPalette		pal;
 pStatusBar		statusBar;
-decoration 	decor;
+decoration 		decor;
 };
 
 void player::editTrack(const QString &s)

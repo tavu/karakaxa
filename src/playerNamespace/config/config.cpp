@@ -15,6 +15,12 @@ QStringList player::PlayerConfigure::files()
     return  Phonon::BackendCapabilities::availableMimeTypes().filter( "audio/", Qt::CaseInsensitive )<<"*.mp3";
 }
 
+QStringList player::PlayerConfigure::playListFiles()
+{
+    QStringList l;
+    return l<<"*.m3u";
+}
+
 QStringList player::PlayerConfigure::imagefiles()
 {
     return supportedImageFiles;

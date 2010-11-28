@@ -3,31 +3,36 @@
 
 #include <QStandardItemModel>
 #include"smartPlaylistCreator.h"
+#include<myTreeView.h>
+#include"smartPlaylistModel.h"
+#include<songModel.h>
+#include"playlistContent.h"
 class smartPlaylist :public QObject
 {
     Q_OBJECT
-public:
-    smartPlaylist(QTreeView *treeV,QTreeView *trackV,KToolBar *tb);
-    ~smartPlaylist();
-// 	  trackView();
-// 	  treeView();
-// 	  KToolBar* toolBar();
+    public:
+	smartPlaylist(playlistContent *pl);
+	~smartPlaylist();
+    // 	  trackView();
+    // 	  treeView();
+    // 	  KToolBar* toolBar();
 
-private:
-    KToolBar *tb;
-    QToolBar *toolBar;
-    QStandardItemModel *model;
+    private:     
+	QAction			*widgetAction;
+	playlistContent 	*plContent;
+	smartPlaylistModel 	*smModel;
 
-    QTreeView *treeV;
-    QTreeView *trackV;
+	songModel  		*trackM;
+	short 			current;
+	
+    private slots:
+	void addPl();
 
-
-private slots:
-    void addPl();
-    void newPl(QString,QString);
-
-public slots:
-    void start();
+    public slots:
+	void activate();
+	void deActivate();
+	void goToPlaylist(QModelIndex);
+	
 };
 
 #endif

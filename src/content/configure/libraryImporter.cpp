@@ -74,7 +74,6 @@ bool libraryImporter::import(const QString path)
 
     }
 
-    qDebug()<<"Executing import";
     if (!q.exec() )
     {
         qDebug()<<"Importer error:";
@@ -111,86 +110,13 @@ bool libraryImporter::import(const QString path)
     return true;
 }
 
-
-/*
-bool libraryImporter::import(const QString path)
+bool libraryImporter::importPl(const QString path )
 {
-
-    audioFile *f=audioFile::getAudioFile(path);
-    
-    QString albumArtist;
-
-    if ( ! f->tag(LEAD_ARTIST,audioFile::ONFILE).isNull() )
-    {
-        albumArtist=f->tag(LEAD_ARTIST).toString();
-    }
-    else
-    {
-        albumArtist=f->tag(ARTIST,audioFile::ONFILE).toString();
-    }
-
-    QSqlQuery query(database);
-
-    database.transaction();
-    query.prepare("call insert_track(?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
-
-
-    query.addBindValue(albumArtist);
-
-    for (int i=0;i<FRAME_NUM-1;i++)
-    {
-        query.addBindValue( f->tag( (tagsEnum)i,audioFile::ONFILE|audioFile::TITLEFP)  );
-
-    }
-
-
-
-    if (!query.exec() )
-    {
-// 	  std::cout<<query.lastError().text().toUtf8().data()<<std::endl;
-        qDebug()<<"Importer error:Can't call insert_track";
-        qDebug()<<query.lastError().text();
-
-// 	  audioFile::releaseAudioFile(f);
-// 	  return false;
-    }
-
-    qDebug()<<"Eeeeeeeeeeeeeeeeeeeeeki";
-
-    if (!database.commit() )
-    {
-        qDebug()<<"Importer error: can't commit";
-        qDebug()<<query.lastError().text();
-
-// 	 audioFile::releaseAudioFile(f);
-// 	 return false;
-    }
-
-    if (!f->cover().isEmpty() )
-    {
-        qDebug()<<"EEki";
-        if (f->select())
-        {
-            qDebug()<<"EEDO";
-        }
-        int albumId=f->albumId();
-
-        if (albumId>=0)
-        {
-            qDebug()<<"setting albumArt";
-            player::fileToDb::setAlbumArt(albumId,f->cover());
-        }
-        else
-        {
-            qDebug()<<"null albumId";
-        }
-
-    }
-
-    audioFile::releaseAudioFile(f);
-    return true;
-} 
-*/
+    QSqlQuery q(database);
+    q.prepare("insert into playlists (path) values(?)");
+    q.addBindValue( path );
+    q.exec();
+}
 
 int libraryImporter::n=0;
 
@@ -265,13 +191,10 @@ QVariant libraryImporter::getId(QVariant var,QString table)
     q.addBindValue(var);
     q.exec();
     
-    qDebug()<<"about to go next";
     if(q.next() )      
     {
-	qDebug()<<"we went next";
         return q.value(0);
     }
-    qDebug()<<"we went next";
 	
     QString s2("insert into %1 (name) values (? )");	
     s2=s2.arg(table);
@@ -293,9 +216,7 @@ QVariant libraryImporter::getId(QVariant var,QString table)
 	qDebug()<<"select from "+table+"error";
 	qDebug()<<q.lastError().text();
     }
-    qDebug()<<"about to go next";
     q.next();
-    qDebug()<<"we went next";
            
     return q.value(0);    
 }

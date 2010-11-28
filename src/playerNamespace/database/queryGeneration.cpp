@@ -7,6 +7,10 @@ queryGrt::queryGrt()
 
 QString queryGrt::finish(QString s)
 {
+    if(s.isEmpty() )
+    {
+	return QString();
+    }
     s.prepend("select distinct * from trackView where ");
     return s;
 }
@@ -86,6 +90,7 @@ QString queryGrt::query(tagsEnum t,equal e,QString value,bool n)
             return QString();
         }
 
+	player::database::toSqlSafe(value);
         value.append('\"');
         value.prepend('\"');
     }
@@ -120,13 +125,13 @@ QString queryGrt::connectAnd(QStringList l)
 
 QString queryGrt::albums()
 {
-    QString ret("select album,image,id from artist_album");
+    QString ret("select album,image,id from artist_album order by album asc");
     return ret;
 }
 
 QString queryGrt::albums(QString artist)
 {
-    QString ret("select distinct album,image,id from artist_album where artist='%1'");
+    QString ret("select distinct album,image,id from artist_album where artist='%1' order by artist_album.album asc");
     player::database::toSqlSafe(artist);
     ret=ret.arg(artist);
     return ret;
@@ -135,7 +140,7 @@ QString queryGrt::albums(QString artist)
 
 QString queryGrt::albums(QString artist,QString s)
 {
-    QString ret("select distinct artist_album.album,artist_album.image,artist_album.id from artist_album inner join trackView on artist_album.id=trackView.album_id and artist_album.artist='%1' AND %2");
+    QString ret("select distinct artist_album.album,artist_album.image,artist_album.id from artist_album inner join trackView on artist_album.id=trackView.album_id and artist_album.artist='%1' AND %2 order by album asc");
     player::database::toSqlSafe(artist);
     ret=ret.arg(artist);
     ret=ret.arg(s);
@@ -253,7 +258,7 @@ QString queryGrt::tagToSql(tagsEnum t)
 	}
 	case LEAD_ARTIST:
 	{
-	    return QString("trackView.lead_artist" );
+	    return QString("trackView.leadArtist" );
 	}
 	case PATH:
 	{

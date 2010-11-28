@@ -313,11 +313,12 @@ void mainWindow::defaultContent()
     configureContent *c=new configureContent();
     folderContent *f=new folderContent();
 //       visualization *v=new visualization();
-//       playlistContent *pl=new playlistContent();
+    playlistContent *pl=new playlistContent();
 
     contentHandlr->addContent(l);
     contentHandlr->addContent(f);
     contentHandlr->addContent(c);
+    contentHandlr->addContent(pl);
 //       contentHandlr->addContent(v);
 }
 

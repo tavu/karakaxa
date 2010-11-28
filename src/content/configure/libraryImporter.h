@@ -16,7 +16,8 @@ class libraryImporter :public QObject
         libraryImporter();
         ~libraryImporter();
         bool import(const QString path);
-
+	bool importPl(const QString path );
+	
         void saveAlbumArt(const QString &s);
         QString error();
 
