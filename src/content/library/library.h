@@ -46,7 +46,7 @@ class library :public abstractContent
 	//functions
 	void buttonInit();
 	void inline toolBarInit();
-	void updateQueries(tagsEnum);
+	void updateQueries(int t);
 	
     public slots:
 	void libraryScan();
@@ -57,7 +57,7 @@ class library :public abstractContent
 	void search();
 	
     private slots:
-	void updateQueriesSlot(tagsEnum);
+	void updateQueriesSlot(int);
     
 };
 

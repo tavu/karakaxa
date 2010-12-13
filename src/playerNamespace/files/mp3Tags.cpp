@@ -95,6 +95,24 @@ QVariant player::mp3Tags::counter() const
 
 QVariant player::mp3Tags::rating() const
 {
+    int r=originalRating();
+    if(r==0)
+    {
+	return QVariant();
+    }
+            
+    int n=r/25;
+    if (r%25>0 && n!=10) 
+    {
+	n++;
+    }
+    return QVariant(n);
+}
+
+int player::mp3Tags::originalRating() const
+{
+  //this function gets the rating number from the mp3 file.
+  //that number is betwoin 0-255. 0 is the unrating
     using namespace TagLib;
     if (!id3v2tag)
     {
@@ -106,7 +124,7 @@ QVariant player::mp3Tags::rating() const
         {
             err=WRONGFT;
         }
-        return QVariant();
+        return 0;
     }
 
     ID3v2::FrameList fList=id3v2tag->frameList("POPM");
@@ -119,10 +137,9 @@ QVariant player::mp3Tags::rating() const
 
     err=0;
 
-    return frame->rating();
-    
-    
+    return frame->rating();        
 }
+
 
 QVariant player::mp3Tags::leadArtist() const
 {

@@ -11,14 +11,19 @@ smartPlaylist::smartPlaylist(playlistContent *pl)
     QToolBar *toolBar=new QToolBar("smart playlist toolbar",plContent);
 
     QAction *addAction=new QAction(KIcon("list-add"),tr("&Add"),this);
-    QAction *removeAction=new QAction(KIcon("list-remove"),tr("&remove"),this);
     toolBar->addAction(addAction);
-    toolBar->addAction(removeAction);
+    
+    QAction *removeAction=new QAction(KIcon("list-remove"),tr("&remove"),this);
+    toolBar->addAction(removeAction);    
+    
+    QAction *addFolderAction=new QAction(KIcon("folder-new"),tr("&new folder"),this);
+    toolBar->addAction(addFolderAction);
+    
     widgetAction = plContent->toolBar->addWidget(toolBar);
 
     smModel=new smartPlaylistModel(this);            
-    connect(addAction, SIGNAL(triggered()), this, SLOT(addPl() )) ;
-    
+    connect(addAction, SIGNAL(triggered()), this, SLOT(addPl() ));
+    connect(addFolderAction, SIGNAL(triggered()), this, SLOT(addFolder() ));
 //      connect(removeAction, SIGNAL(triggered()), this, SLOT(remove()));
 
     widgetAction->setVisible(false);
@@ -26,7 +31,17 @@ smartPlaylist::smartPlaylist(playlistContent *pl)
 
 void smartPlaylist::goToPlaylist(QModelIndex i) 
 {
-//      trackV->setNotHide(TITLE);     
+     QStandardItem *f=smModel->itemFromIndex(i);
+     if(f==0)
+     {
+	return ;
+     }
+     smartPlaylistModelItem *item=static_cast<smartPlaylistModelItem *>(f);
+     if(item->isFolder())
+     {
+	return ;
+     }
+     
      trackM->setFilter(i.data(Qt::UserRole).toString());
      plContent->trackV->setModel(trackM);
      plContent->stack->setCurrentIndex(1);
@@ -41,19 +56,45 @@ void smartPlaylist::addPl()
 {
     smartPlaylistCreator *c=new smartPlaylistCreator();
     c->exec();
-    QString q=c->query();
-    if (q.isEmpty() )	return ;
 
-    smartPlaylistModelItem *item=new smartPlaylistModelItem(c->name(),q);
-    smModel->append(item);    
+    if(c->result()==QDialog::Rejected)
+    {
+//  	return;
+    }
+    
+    smartPlaylistModelItem *item=c->item();
+    if(item==0)
+    {
+	return;
+    }
+    
+    QModelIndex i=plContent->treeV->currentIndex();
+    
+    qDebug()<<"EDOODTDO";
+    smModel->append(item,i);
     
     delete c;
 }
 
+void smartPlaylist::addFolder()
+{
+    smartPlaylistModelItem *item=new smartPlaylistModelItem("folder",true);        
+    QModelIndex i=plContent->treeV->currentIndex();
+    
+    smModel->append(item,i);
+    i=smModel->indexFromItem(item);
+    QModelIndex parent=i.parent();
+    plContent->treeV->expand(parent);
+    plContent->treeV->edit(i);
+}
+
+
+
 
 void smartPlaylist::activate()
 {
-    plContent->treeV->setModel(smModel);    
+    plContent->treeV->setModel(smModel);
+    plContent->treeV->setRootIsDecorated(true);
     plContent->trackV->setModel(trackM);
     widgetAction->setVisible(true);
     plContent->stack->setCurrentIndex(current);

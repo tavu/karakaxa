@@ -8,17 +8,25 @@
 #include<QDialogButtonBox>
 #include<QLineEdit>
 #include<QLabel>
- #include <QDialog>
+#include <QDialog>
+#include<QDomDocument>
+#include"smartPlaylistModel.h"
 class smartPlaylistCreator :public QDialog
 {
     Q_OBJECT
     public:
 	smartPlaylistCreator(QWidget *parent=0);
-	QString name();
-	QString query();
-	QSize   sizeHint() const;
+	QString 	name();
+	QString 	query();
+	QSize   	sizeHint() const;
+	QDomElement 	xml();
+	
+	
+	smartPlaylistModelItem* item();
+	
     private:
 
+	QDomElement el;
 	QLineEdit *lineE;
 	QDialogButtonBox *buttons;
 	QTreeWidget *treeW;
@@ -29,9 +37,7 @@ class smartPlaylistCreator :public QDialog
 	QAction *matchAction;
 	QAction *tagAction;
     // 	  QAction *removeAction;
-
-	QString _query;
-	void closeEvent ( QCloseEvent * event );
+	
     private slots:
 
 	void addMatch();

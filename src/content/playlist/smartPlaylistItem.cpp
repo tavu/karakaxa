@@ -6,16 +6,12 @@ smartPlaylistItem::smartPlaylistItem(QTreeWidgetItem * parent,Type t)
         spin(0),
         val(0)
 {
-
-
     if (type()==MATCHTYPE)
     {
         initMatch();
     }
     else if (type()==TAGTYPE)
     {
-// 	  setData(1,Qt::DisplayRole,QVariant(TITLE) );
-// 	  setData(2,Qt::DisplayRole,QVariant(queryGrt::EQUAL) );
         initTag();
     }
 }
@@ -26,15 +22,12 @@ smartPlaylistItem::smartPlaylistItem(QTreeWidget * parent)
         spin(0),
         val(0)
 {
-//      setData(1,Qt::DisplayRole,QVariant(queryGrt::AND) );
     if (type()==MATCHTYPE)
     {
         initMatch();
     }
     else if (type()==TAGTYPE)
     {
-// 	  setData(1,Qt::DisplayRole,QVariant(TITLE) );
-// 	  setData(2,Qt::DisplayRole,QVariant(queryGrt::EQUAL) );
         initTag();
     }
 }
@@ -71,7 +64,6 @@ void smartPlaylistItem::initTag()
 
 void smartPlaylistItem::initMatch()
 {
-//      setData(1,Qt::DisplayRole,QVariant(queryGrt::AND) );
     QFont f=font(0);
     f.setBold(true);
     setFont(0,f);
@@ -88,8 +80,6 @@ void smartPlaylistItem::initMatch()
 
 void smartPlaylistItem::setupFilde(int num)
 {
-//      box2=new QComboBox();
-
     tagsEnum t=(tagsEnum)num;
 
     if (t==YEAR||t==TRACK||t==LENGTH||t==RATING||t==COUNTER||t==BITRATE)
@@ -100,8 +90,6 @@ void smartPlaylistItem::setupFilde(int num)
         box2->addItem(tr("Greater than"),queryGrt::GREATER);
         box2->addItem(tr("Less than"),queryGrt::LESS);
 
-// 	  spin->setValue(0);
-
         if (val==0)
         {
             val=new validator();
@@ -109,19 +97,7 @@ void smartPlaylistItem::setupFilde(int num)
 
         lineE->clear();
         lineE->setValidator(val);
-
-// 	       treeWidget ()->setItemWidget(this,3,spin);
-
     }
-//      else if(t==LYRICS)
-//      {
-// 	  box2->clear();
-// 	  box2->addItem(tr("Contains"),queryGrt::CONTAINS);
-//
-// 	  lineE->setValidator(0);
-// 	  if(treeWidget ()->itemWidget(this,3)!=lineE);
-// // 	       treeWidget ()->setItemWidget(this,3,lineE);
-//      }
     else
     {
         box2->clear();
@@ -131,9 +107,6 @@ void smartPlaylistItem::setupFilde(int num)
         box2->addItem(tr("Ends with"),queryGrt::ENDS);
 
         lineE->setValidator(0);
-
-
-// 	       treeWidget ()->setItemWidget(this,3,lineE);
     }
 
 }
@@ -167,7 +140,7 @@ QString smartPlaylistItem::getQuery()
 
         bool n=ch->isChecked();
 
-        qDebug()<<t<<eq<<s<<n;
+//         qDebug()<<t<<eq<<s<<n;
         return q.query(t,eq,s,n);
     }
     if (type()==MATCHTYPE)
@@ -197,6 +170,56 @@ QString smartPlaylistItem::getQuery()
     }
 }
 
+QDomElement smartPlaylistItem::xml()
+{    
+    
+    QDomDocument doc;
+    QDomElement root;
+    bool flag=false;
+    if (type()==MATCHTYPE)
+    {
+        root=doc.createElement("group");
+         
+	if (box1->currentIndex()==0)
+        {
+            root.setAttribute("matchtype","all");
+        }
+        else
+        {
+            root.setAttribute("matchtype","any");
+        }
+        for (int i=0;i<childCount();i++)
+        {
+            smartPlaylistItem *item=static_cast<smartPlaylistItem*>(QTreeWidgetItem::child(i) );
+            QDomElement el=item->xml();
+	    //if there is not a valid childre the flag would be false and we gonna return an null element
+	    //that could happend for example if there is not any tag field
+ 	    if(!el.isNull() )
+	    {
+		flag=true;
+		qDebug()<<"element "<<el.text();
+		root.appendChild(el);
+	    }
+        }        
+    }
+    else if (type()==TAGTYPE)
+    {
+	flag=true;
+        root=doc.createElement("field");
+	root.setAttribute("tag",box1->currentIndex());
+	root.setAttribute("comparison",box2->currentIndex());
+	root.setAttribute("value",lineE->text());
+	root.setAttribute("invert",ch->isChecked());
+    
+    }
+    
+    if(flag)
+    {
+	return root;
+    }
+    
+    return QDomElement();
+}
 
 
 

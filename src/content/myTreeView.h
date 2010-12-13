@@ -13,39 +13,39 @@
 class myTreeView :public QTreeView
 {
     Q_OBJECT
-public:
+    public:
 
-    myTreeView(QWidget *parent=0,QString name=QString());
+	myTreeView(QWidget *parent=0,QString name=QString());
 
-    virtual void	setModel ( QAbstractItemModel * model );
+	virtual void	setModel ( QAbstractItemModel * model );
 
-    virtual void mousePressEvent(QMouseEvent *event);
-    virtual void setRatingColumn(const int n);
-    virtual int ratingColumn() const;
-    virtual void setNotHide(int n);
-    virtual int notHide();
-
-
-protected:
-    QPoint startPos;
-    treeViewDelegate *delegate;
-
-    virtual void mouseMoveEvent(QMouseEvent *event);
-    virtual void performDrag();
+	virtual void mousePressEvent(QMouseEvent *event);
+	virtual void setRatingColumn(const int n);
+	virtual int ratingColumn() const;
+	virtual void setNotHide(int n);
+	virtual int notHide();
 
 
-private:
-    //actions
-    QAction *append;
-    QAction *edit;
-    QAction *delet;
-    QAction *editTr;
+    protected:
+	QPoint startPos;
+	treeViewDelegate *delegate;
 
-private slots:
-    virtual void fileEdit();
+	virtual void mouseMoveEvent(QMouseEvent *event);
+	virtual void performDrag();
 
-public slots:
-    virtual void writeSettings();
-    virtual void readSettings();
+
+    private:
+	//actions
+	QAction *appendAcion;
+	QAction *editAcion;
+	QAction *deletAcion;
+	QAction *editTrAcion;
+
+    private slots:
+	virtual void fileEdit();
+
+    public slots:
+	virtual void writeSettings();
+	virtual void readSettings();
 };
 #endif

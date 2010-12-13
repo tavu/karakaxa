@@ -27,6 +27,7 @@ class smartPlaylist :public QObject
 	
     private slots:
 	void addPl();
+	void addFolder();
 
     public slots:
 	void activate();

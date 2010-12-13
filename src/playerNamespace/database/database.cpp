@@ -44,7 +44,7 @@ bool player::database::dBConnect(QString n,QString u,QString p)
     dbUser=u;
     dbPass=p;
     bool k=createConnection();
-    emit(changed() );
+    emit(changed(DBCHANGED) );
     writeSettings();
     return k;
 }
@@ -225,3 +225,4 @@ void player::database::removeLibraryFolder(QString s)
     q.exec();
 }
 
+int database::DBCHANGED=FRAME_NUM;

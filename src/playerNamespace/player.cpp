@@ -120,62 +120,66 @@ QString player::tagName(tagsEnum t)
 {
     switch (t)
     {
-    case ALBUM:
-    {
-        return QString(QObject::tr("Album") );
-    }
-    case TITLE:
-    {
-        return QString(QObject::tr("Title") );
-    }
-    case COMPOSER:
-    {
-        return QString(QObject::tr("Composer") );
-    }
-    case GENRE:
-    {
-        return QString(QObject::tr("Genre") );
-    }
-    case COMMENT:
-    {
-        return QString(QObject::tr("Comment") );
-    }
-    case TRACK:
-    {
-        return QString(QObject::tr("Track") );
-    }
-    case YEAR:
-    {
-        return QString(QObject::tr("Year") );
-    }
-    case LENGTH:
-    {
-        return QString(QObject::tr("Length") );
-    }
-    case RATING:
-    {
-        return QString(QObject::tr("Rating") );
-    }
-    case BITRATE:
-    {
-        return QString(QObject::tr("Bitrate") );
-    }
-    case LEAD_ARTIST:
-    {
-        return QString(QObject::tr("Lead artist") );
-    }
-    case ARTIST:
-    {
-        return QString(QObject::tr("Artist") );
-    }
-    case PATH:
-    {
-        return QString(QObject::tr("Path") );
-    }
-    case COUNTER:
-    {
-        return QString(QObject::tr("Played counter") );
-    }
+	case ALBUM:
+	{
+	    return QString(QObject::tr("Album") );
+	}
+	case TITLE:
+	{
+	    return QString(QObject::tr("Title") );
+	}
+	case COMPOSER:
+	{
+	    return QString(QObject::tr("Composer") );
+	}
+	case GENRE:
+	{
+	    return QString(QObject::tr("Genre") );
+	}
+	case COMMENT:
+	{
+	    return QString(QObject::tr("Comment") );
+	}
+	case TRACK:
+	{
+	    return QString(QObject::tr("Track") );
+	}
+	case YEAR:
+	{
+	    return QString(QObject::tr("Year") );
+	}
+	case LENGTH:
+	{
+	    return QString(QObject::tr("Length") );
+	}
+	case RATING:
+	{
+	    return QString(QObject::tr("Rating") );
+	}
+	case BITRATE:
+	{
+	    return QString(QObject::tr("Bitrate") );
+	}
+	case LEAD_ARTIST:
+	{
+	    return QString(QObject::tr("Lead artist") );
+	}
+	case ARTIST:
+	{
+	    return QString(QObject::tr("Artist") );
+	}
+	case PATH:
+	{
+	    return QString(QObject::tr("Path") );
+	}
+	case COUNTER:
+	{
+	    return QString(QObject::tr("Played counter") );
+	}
+	default:
+	{
+	    return QString();
+	}
     }
 }
 

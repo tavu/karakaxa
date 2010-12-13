@@ -90,18 +90,14 @@ QString folderContent::name() const
 
 void folderContent::setDir(const QModelIndex index)
 {
-// //      if(view->selectedIndexes().size()>1)
-//      {
-// // 	  return ;
-//      }
-
+    Qt::KeyboardModifiers m=QApplication::keyboardModifiers();
+    
+    if(m & Qt::ShiftModifier || m & Qt::ControlModifier )
+    {
+	return;
+    }
+    
     QModelIndex i=proxyM->mapToSource(index);
-//
-//      if( model->isDir(i) )
-// 	  navigator->setUrl( KUrl(model->filePath(i) ) );
-//
-//
-
 
     KFileItem item = model->itemForIndex(i);
     if (item.isDir())

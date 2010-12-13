@@ -48,16 +48,17 @@ public:
     virtual QVariant 		leadArtist () const ;
 
 
-    virtual bool 			setLeadArtist (const QString &s);
-    virtual bool			setComposer(const QString &s);
-    virtual bool 			setRating(const unsigned int &rating);
-    virtual bool 			setCounter(const unsigned int &num);
+    virtual bool 		setLeadArtist (const QString &s);
+    virtual bool		setComposer(const QString &s);
+    virtual bool 		setRating(const unsigned int &rating);
+    virtual bool 		setCounter(const unsigned int &num);
 
-    virtual bool 			setArtists (const QStringList &l);
-    virtual QStringList 		artists () const ;
+    virtual bool 		setArtists (const QStringList &l);
+    virtual QStringList 	artists () const ;
 
     virtual QVariant		tag(tagsEnum t) const;
-    virtual bool			setTag(tagsEnum t,const QVariant &var);
+    virtual bool		setTag(tagsEnum t,const QVariant &var);
+    virtual int			originalRating() const;
 };//class
 };//player
 #endif

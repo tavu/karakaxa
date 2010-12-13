@@ -11,9 +11,11 @@
 namespace player
 {
 class database :public QObject
-{
+{    
     Q_OBJECT
     public:
+	static int DBCHANGED;
+      
 	database();
 	~database();
 	QSqlDatabase getDatabase();
@@ -37,9 +39,9 @@ class database :public QObject
 	QSqlQuery albumQuery(QString artist);
 	QSqlQuery albumQuery(QString artist,QString search);
 
-	inline void changedSig()
+	inline void changedSig(int n=DBCHANGED)
 	{
-	    emit(changed() );
+	    emit(changed(n) );
 	}
 	
 	inline void updateSig(tagsEnum t)
@@ -82,7 +84,7 @@ class database :public QObject
 
 
     signals:
-	void changed();
+	void changed(int);
 	void updated(tagsEnum);
 };
 

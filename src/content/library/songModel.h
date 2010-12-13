@@ -8,25 +8,35 @@
 // #include<QWidget>
 #include<player.h>
 #include<trackView.h>
+#include<QSortFilterProxyModel>
 
-class songModel :public QSqlTableModel ,public trackUrl
+class songModel :public QSqlQueryModel ,public trackUrl
 {
     Q_OBJECT
+    public:
+	songModel(QWidget *parent );
+	QVariant data(const QModelIndex &item, int role) const;
+	Qt::ItemFlags flags(const QModelIndex &index) const;
 
-public:
-    songModel(QWidget *parent );
-    QVariant data(const QModelIndex &item, int role) const;
-    Qt::ItemFlags flags(const QModelIndex &index) const;
+ 	virtual void setFilter(const QString &s);
+ 	virtual void select();
+	virtual int  columnCount ( const QModelIndex & index = QModelIndex() ) const;
+	
+	virtual bool setData ( const QModelIndex & index, const QVariant & value, int role = Qt::EditRole );
+	virtual KUrl url( int row) const;
+	virtual QVariant headerData ( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const;
+	virtual void sort ( int column, Qt::SortOrder order = Qt::AscendingOrder );
+	virtual void setSort ( int column, Qt::SortOrder order );
 
-    virtual bool setData ( const QModelIndex & index, const QVariant & value, int role = Qt::EditRole );
-    virtual KUrl url( int row) const;
-    virtual QVariant headerData ( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const;
-private:
+    private:
 
-// 	  QSqlQueryModel queryM;
+     	  QSqlQueryModel queryM;
+	  QString	_filter;
+	  int 		_order;
+	  Qt::SortOrder sortO;
 
-public slots:
-    void refresh();
+    public slots:
+	void refresh();
 
 };
 

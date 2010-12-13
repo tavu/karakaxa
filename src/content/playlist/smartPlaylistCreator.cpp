@@ -8,6 +8,8 @@
 #include"smartPlaylistDelegate.h"
 #include<QPushButton>
 
+
+
 using namespace player;
 // using namespace::smartPlaylistItem;
 smartPlaylistCreator::smartPlaylistCreator(QWidget *parent)
@@ -116,31 +118,28 @@ void smartPlaylistCreator::remove()
 
 void smartPlaylistCreator::ok()
 {
-//      close();
-    smartPlaylistItem *item=static_cast<smartPlaylistItem*>(treeW->topLevelItem(0) );
-    _query=item->getQuery();
-
-//     queryGrt q;
-//     _query=q.finish(_query);
-//     _query=q;
-    close();
+//     smartPlaylistItem *item=static_cast<smartPlaylistItem*>(treeW->topLevelItem(0) );
+     close();
 
 }
+
+smartPlaylistModelItem* smartPlaylistCreator::item()
+{
+    smartPlaylistModelItem *ret=0;
+    QDomElement el=xml();
+    
+    if(!el.isNull() )
+    {
+	ret=new smartPlaylistModelItem(name() );
+	ret->setXmlElement(el);
+    }
+    return ret;
+}
+
 
 void smartPlaylistCreator::cancel()
 {
-    close();
-}
-
-void smartPlaylistCreator::closeEvent ( QCloseEvent * event )
-{
-    QWidget::closeEvent(event);
-    emit(closed(_query,name()) );
-}
-
-QString smartPlaylistCreator::query()
-{
-    return _query;
+     close();
 }
 
 
@@ -155,3 +154,26 @@ QSize smartPlaylistCreator::sizeHint() const
 {
     return QSize(700,600);
 }
+
+QDomElement smartPlaylistCreator::xml()
+{
+    smartPlaylistItem *item=static_cast<smartPlaylistItem*>(treeW->topLevelItem(0) );
+    
+    QDomElement root,el;
+    el=item->xml();
+    
+    if(!el.isNull() )
+    {
+      QDomDocument doc;
+      root= doc.createElement("generatorpreset");    
+      root.setAttribute("title",name() );
+      root.appendChild(el);      
+      doc.appendChild(root);
+
+    }          
+    
+    return root;
+}
+
+
+

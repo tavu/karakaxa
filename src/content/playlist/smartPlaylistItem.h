@@ -7,6 +7,7 @@
 #include<QSpinBox>
 #include <QValidator>
 #include <QCheckBox>
+#include<QDomElement>
 // #define MATCHTYPE 0
 // #define TAGTYPE   1
 
@@ -19,44 +20,45 @@ using namespace player;
 class smartPlaylistItem :public QObject, public QTreeWidgetItem
 {
     Q_OBJECT
-public:
-    enum Type
-    {
-        MATCHTYPE=0,
-        TAGTYPE
-    };
+    public:
+	enum Type
+	{
+	    MATCHTYPE=0,
+	    TAGTYPE
+	};
 
-    smartPlaylistItem( QTreeWidgetItem * parent,Type t);
-    smartPlaylistItem( QTreeWidget * parent);
-// 	  ~smartPlaylistItem();
-// 	  QVariant data ( int column, int role ) const;
-// 	  char type();
-// 	  void setTag();
-// 	  void setValue();
-// 	  void setFilde();
-//      private:
+	smartPlaylistItem( QTreeWidgetItem * parent,Type t);
+	smartPlaylistItem( QTreeWidget * parent);
+    // 	  ~smartPlaylistItem();
+    // 	  QVariant data ( int column, int role ) const;
+    // 	  char type();
+    // 	  void setTag();
+    // 	  void setValue();
+    // 	  void setFilde();
+    //      private:
 
-// 	  char _type;
+    // 	  char _type;
 
-// 	  QString getQuery();
+    // 	  QString getQuery();
 
-private:
-    QComboBox *box1;
-    QComboBox *box2;
-    QLineEdit *lineE;
-    QSpinBox   *spin;
-    validator  *val;
-    QCheckBox  *ch;
+    private:
+	QComboBox *box1;
+	QComboBox *box2;
+	QLineEdit *lineE;
+	QSpinBox   *spin;
+	validator  *val;
+	QCheckBox  *ch;
 
-    void initTag();
-    void initMatch();
+	void initTag();
+	void initMatch();
 
-private slots:
+    private slots:
 
-    void setupFilde(int);
-public slots:
-    QString getQuery();
-// 	  void setWidget();
+	void setupFilde(int);
+    public slots:
+	QString getQuery();
+	QDomElement xml();
+    // 	  void setWidget();
 
 
 };

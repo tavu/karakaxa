@@ -29,8 +29,9 @@ void artistWidget::artistActivated(const QModelIndex &index)
 void artistWidget::update()
 {
     QSqlQuery q= artistM->query();
-    q.exec();
-    artistM->setQuery(q );
+    QSqlQuery nq=QSqlQuery(q.executedQuery(),db.getDatabase() );
+    nq.exec();
+    artistM->setQuery(nq);
 }
 
 void artistWidget::setSearch(const QString &s)

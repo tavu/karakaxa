@@ -304,18 +304,6 @@ QStringList player::nplaylist::getList()
     return list;
 }
 
-// bool player::nplaylist::isAudio(const QString &url)
-// {
-//     KMimeType::Ptr type = KMimeType::findByUrl(url );
-// 
-//     QStringList l=config.files();
-//     if (l.contains(type->name() ) )
-//     {
-//         return true;
-//     }
-//     return false;
-// }
-
 int player::nplaylist::getLength()
 {
     return totalLength;

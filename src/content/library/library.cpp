@@ -43,11 +43,11 @@ library::library(QWidget *parent)
 
     connect(artistV,SIGNAL(toArtist(QString , QString) ) ,this,SLOT(toAlbum(const QString &,const QString &) ) );
     
-    connect(&db,SIGNAL(updated(tagsEnum)),this,SLOT(updateQueriesSlot(tagsEnum) ) );
+    connect(&db,SIGNAL(changed(int)),this,SLOT(updateQueriesSlot(int) ) );
 
 }
 
-void library::updateQueriesSlot(tagsEnum t)
+void library::updateQueriesSlot(int t)
 {
     if(!isActive())
     {
@@ -59,14 +59,24 @@ void library::updateQueriesSlot(tagsEnum t)
     }
 }
 
-void library::updateQueries(tagsEnum t)
+void library::updateQueries(int n)
 {
     qDebug()<<"library update";
-    if(t==ARTIST||t==LEAD_ARTIST||t==ALBUM)
-    {	
+    if(n==database::DBCHANGED)
+    {
 	artistV->update();
-	albumTrV->update();	
-    }   
+	albumTrV->update();
+	albumTrV->updateTrack();
+    }
+    else
+    {
+	tagsEnum t=(tagsEnum)n;
+	if(t==ARTIST||t==LEAD_ARTIST||t==ALBUM)
+	{	
+	    artistV->update();
+	    albumTrV->update();	
+	}   
+    }
     albumTrV->updateTrack();    
     needUpdate=-1;
 }

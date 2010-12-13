@@ -50,6 +50,10 @@ void myTreeView::mousePressEvent(QMouseEvent *event)
     {
         startPos = event->pos();
     }
+    else if(event->button() == Qt::RightButton)
+    {
+	
+    }
 
 
     QTreeView::mousePressEvent(event);
@@ -66,7 +70,7 @@ void myTreeView::mouseMoveEvent(QMouseEvent *event)
             //after the drag u gen no mouse released event due to a bug
             //i  create that event manualy
             QMouseEvent *e=new QMouseEvent(QEvent::MouseButtonRelease,QPoint(-1,-1),Qt::NoButton,Qt::LeftButton,Qt::NoModifier);
-            mouseReleaseEvent (  e );
+            mouseReleaseEvent (e);
         }
         else
         {

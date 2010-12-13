@@ -11,19 +11,20 @@ void randomShuffle ( RandomAccessIterator first, int size )
 {
       qDebug()<<"edoeep"<<size;
       RandomAccessIterator it,tmp;
+      it=first;
 //       iterator_traits<RandomAccessIterator>::difference_type i, n;
       for(int i=0;i<size;i++)
-      {	  
+      {	  	  
 	  int r=getRandomN(0,size-1);
 	  qDebug()<<r;
-	  tmp+=3;
-	  qDebug()<<*(tmp+3);
-	  qDebug()<<*it;
+	  tmp=first+r;
+// 	  qDebug()<<*(tmp+3);
+// 	  qDebug()<<*it;
 	  
 	  
 // 	  *it=first[r];
-// 	  qSwap(*it,tmp );
-// 	  it++;
+ 	  qSwap(*it,*tmp );
+	  it++;
       }
 	
 } 
