@@ -43,13 +43,14 @@ library::library(QWidget *parent)
 
     connect(artistV,SIGNAL(toArtist(QString , QString) ) ,this,SLOT(toAlbum(const QString &,const QString &) ) );
     
-    connect(&db,SIGNAL(changed(int)),this,SLOT(updateQueriesSlot(int) ) );
+    connect(&db,SIGNAL(updated(int)),this,SLOT(updateQueriesSlot(int) ) );
+    
 
 }
 
 void library::updateQueriesSlot(int t)
 {
-    if(!isActive())
+    if(!abstractContent::isActive())
     {
 	needUpdate=t;
     }
@@ -90,7 +91,7 @@ void library::update(const int n)
         stack->setCurrentWidget(artistV);
     }
 
-    if(needUpdate)
+    if(needUpdate!=-1)
     {
 	updateQueries((tagsEnum)needUpdate);
     }

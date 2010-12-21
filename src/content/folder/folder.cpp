@@ -10,6 +10,7 @@
 
 #include<KFileItemDelegate>
 #include"folderProxyModel.h"
+#include<QDebug>
 
 using namespace player;
 #define DIRECTORYM "inode/directory"
@@ -29,6 +30,8 @@ folderContent::folderContent(QWidget *parent)
     view=new myTreeView(this,"Folder view");
     view->setModel(proxyM);
 
+//     disconnect(0,0,view,SLOT(updateStarWidget(QModelIndex,int,int)));
+    
     view->setRatingColumn(DIRCOLUMN+RATING);
 
     toolBar=new KToolBar(this);
@@ -49,6 +52,12 @@ folderContent::folderContent(QWidget *parent)
     toolBar->addAction( upAction );
     connect( upAction, SIGNAL( triggered( bool) ), this, SLOT( up() ) );
 
+    KDirLister *dirL=model->dirLister();
+//     connect(dirL,SIGNAL(clear() ),this,SLOT(cleanup() ) );
+    
+//     connect(model,SIGNAL(updated() ),this,SLOT(cleanup() ) );
+    
+    
     QVBoxLayout *layout = new QVBoxLayout();
 
 
@@ -87,6 +96,11 @@ QString folderContent::name() const
     return QString(tr("Folder") );
 }
 
+void folderContent::cleanup()
+{
+  view->updateStarWidget(QModelIndex(),0,model->rowCount()-1);
+    qDebug()<<"rows "<<model->rowCount();
+}
 
 void folderContent::setDir(const QModelIndex index)
 {

@@ -9,7 +9,7 @@ player::coverWidget::coverWidget(QString s ,QWidget * parent, Qt::WindowFlags f 
 {
 //      setFixedSize(90,100 );
     setCover(s);
-//      qDebug()<<"CC "<<s;
+
 
 }
 

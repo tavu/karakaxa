@@ -44,7 +44,7 @@ bool player::database::dBConnect(QString n,QString u,QString p)
     dbUser=u;
     dbPass=p;
     bool k=createConnection();
-    emit(changed(DBCHANGED) );
+    emit(changed() );
     writeSettings();
     return k;
 }

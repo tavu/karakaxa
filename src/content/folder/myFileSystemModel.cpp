@@ -8,7 +8,7 @@ myFileSystemModel::myFileSystemModel(QObject *parent)
 {
     dirL=KDirModel::dirLister();
     connect(dirL,SIGNAL(newItems(const KFileItemList &) ),this,SLOT(insert(const KFileItemList &) ) );
-    connect(dirL,SIGNAL(clear() ),this,SLOT(cleanup() ) );
+//     connect(dirL,SIGNAL(clear() ),this,SLOT(cleanup() ) );
 }
 
 
@@ -20,7 +20,11 @@ int myFileSystemModel::columnCount( const QModelIndex & parent ) const
 
 QVariant myFileSystemModel::data(const QModelIndex &index, int role) const
 {
-
+    if(role==Qt::SizeHintRole)
+    {
+	return QVariant();
+    }
+  
     if (index.column()<DIRCOLUMN)
     {
         return KDirModel::data(index,role);
@@ -28,22 +32,27 @@ QVariant myFileSystemModel::data(const QModelIndex &index, int role) const
 
     if (role==Qt::DisplayRole)
     {
+	QVariant var;
         KFileItem item=itemForIndex(index);
         if (item.isDir() )	return QVariant();
 
         audioFile *f=audioFile::getAudioFile(item.url().toLocalFile() );
 
-        if (f==0)	return QVariant();
+        if (f==0)	return var;
 
         int filde=index.column()-DIRCOLUMN;
-
-        if (!f->onCache((player::tagsEnum)filde) )
-        {
-	    audioFile::releaseAudioFile(f);
-            return QVariant();
-        }
-        QVariant var=f->tag( (player::tagsEnum)filde);
+	
+        var=f->tag((tagsEnum)filde, audioFile::ONCACHE|audioFile::DBCACHE);	
+	
+	if(filde==RATING)
+	{
+	    if(var.isNull() )
+	    {
+		return f->tag(RATING);
+	    }
+	}
 	audioFile::releaseAudioFile(f);
+	
         if (filde==LENGTH)
         {
             return prettyLength(var.toInt());
@@ -83,6 +92,7 @@ void myFileSystemModel::insert(const KFileItemList &items)
             }
         }
     }
+    emit(updated() );
 }
 
 void myFileSystemModel::updateTrack(audioFile *f)

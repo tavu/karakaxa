@@ -7,7 +7,9 @@
 #include<QFontMetrics>
 #include<trackView.h>
 using namespace player;
-#define FONT_SIZE 9
+
+#define ITEM_SIZE 20
+// #define FONT_SIZE 9
 #include<QPixmap>
 #include <kicon.h>
 #include <kiconeffect.h>
@@ -19,8 +21,11 @@ using namespace player;
 treeViewDelegate::treeViewDelegate(QObject *parent)    
     :QItemDelegate(parent),    
     rating(-1),
-    ITEM_HEIGH(15)
+    ITEM_HEIGH(17),
+    FONT_SIZE(15)
 {
+  ratingPainter.setEnabled( true );
+  ratingPainter.setIcon(KIcon("favorites") );
 //     _sizeHint=Q
 }
 
@@ -75,23 +80,13 @@ void treeViewDelegate::paint ( QPainter * painter, const QStyleOptionViewItem & 
 
     if (index.column()==rating)
     {
-        QVariant var=index.data();
-
-        if (!var.isNull() )
-        {
-            drawStar(painter,option.rect,index.data().toInt() );
-        }
-        painter->restore();
+	painter->restore();
         return;
     }
 
     QRect r=option.rect;
     r.setWidth(r.width()-4);
     r.setX(r.x()+2);
-
-
-//       painter->drawText( r,Qt::AlignLeft, text);
-
 
     painter->restore();
     QPixmap pic=decoration(option,index);
@@ -102,16 +97,43 @@ void treeViewDelegate::paint ( QPainter * painter, const QStyleOptionViewItem & 
         r.setWidth(r.width()-pic.width());
         r.setX(r.x()+pic.width());
     }
-    QString text = fontMetric.elidedText(index.data(Qt::DisplayRole).toString(),Qt::ElideRight,r.width() );
+    QString text = option.fontMetrics.elidedText(index.data(Qt::DisplayRole).toString(),Qt::ElideRight,r.width() );
     painter->drawText( r,Qt::AlignLeft, text);
 
+}
+
+QWidget* treeViewDelegate::createEditor(QWidget *parent,const QStyleOptionViewItem &option,const QModelIndex &index) const
+{
+    if(index.column()==rating)
+    {
+	player::starWidget *w=new  player::starWidget(parent);
+	w->setPixmapSize(sizeHint(option,index).height());
+	connect(w,SIGNAL(ratingChanged(int) ),this, SLOT(commitEditor()));
+	return w;
+	
+    }    
+    return QItemDelegate::createEditor(parent,option,index);    
+}
+
+void treeViewDelegate::setEditorData(QWidget *editor,const QModelIndex &index) const
+{
+     if(index.column()==rating)
+     {
+	starWidget *s=static_cast<starWidget*>(editor);
+	s->setRating(index.data().toInt() );
+     }
+     QItemDelegate::setEditorData(editor,index);
 }
 
 QSize treeViewDelegate::sizeHint ( const QStyleOptionViewItem & option, const QModelIndex & index ) const
 {       
     QSize ret=QItemDelegate::sizeHint ( option,index );
-//     ret.setHeight(ITEM_HEIGH);
     return ret;
+    
+    
+    ret.setHeight(ITEM_HEIGH);
+    return ret;
+    return QSize(ITEM_SIZE,ITEM_SIZE);
 }
 
 int treeViewDelegate::itemHeigh() const
@@ -125,47 +147,16 @@ void treeViewDelegate::setItemHeigh(int k)
 }
 
 
-void treeViewDelegate::drawStar(QPainter *painter,QRect rect,int num) const
+void treeViewDelegate::setModelData(QWidget *editor,QAbstractItemModel *model,const QModelIndex &index) const
 {
-    if (num<0||num>255)
+    if (index.column() == rating) 
     {
-        return ;
-    }
-
-    int n=num/25;
-    if (num%25>0 && n!=10) 	n++;
-
-    KIcon icon("favorites");
-    QPixmap activeStar=icon.pixmap(rect.height());
-//     activeStar=activeStar.scaledToHeight(rect.height(),Qt::SmoothTransformation);
-
-    QPixmap greyStar=KIconEffect().apply( activeStar, KIconEffect::ToGray, 1, QColor(), false );
-
-    QPixmap halfStar=KIconEffect().apply( activeStar, KIconEffect::ToGray, 0.2, QColor(), false );
-
-//      activeStar=KIconEffect().apply( activeStar, KIconEffect::ToGray, 0.8, QColor(), false );
-    int i;
-    for (i=0;i<n;i+=2)
+        player::starWidget *s = qobject_cast<player::starWidget *>(editor);        
+	model->setData(index, QVariant(s->rating() ) );
+    } 
+    else 
     {
-        painter->drawPixmap(rect.x()+(i/2)*rect.height(),rect.y(),activeStar );
-    }
-
-    if (n-i==-1)
-    {
-        int x=rect.x()+(i/2)*activeStar.width();
-        int y=rect.y();
-// 	  p=p.scaled(rect.height()-4,rect.height()-4,Qt::KeepAspectRatio,Qt::SmoothTransformation);
-        painter->drawPixmap(x ,y ,activeStar.width()/2, activeStar.height() ,activeStar, 0,0,activeStar.width()/2,activeStar.height() );
-        painter->drawPixmap(x+activeStar.width()/2 ,y ,activeStar.width()/2, activeStar.height() ,greyStar, activeStar.width()/2,0,activeStar.width()/2,activeStar.height() );
-        // 	  painter->drawPixmap(rect.x()+(i/2)*activeStar.width()+activeStar.width()/2,rect.y(),activeStar.width()/2,activeStar.height(),greyStar);
-
-        i+=2;
-    }
-
-    while (i<10)
-    {
-        painter->drawPixmap(rect.x()+(i/2)*rect.height(),rect.y(),greyStar );
-        i+=2;
+        QItemDelegate::setModelData(editor, model, index);
     }
 }
 
@@ -186,41 +177,18 @@ QPixmap treeViewDelegate::decoration(const QStyleOptionViewItem &option, const Q
 
     switch (value.type())
     {
-    case QVariant::Icon:
-        pixmap =  toPixmap(option,qvariant_cast<QIcon>(value));
-        break;
+	case QVariant::Icon:
+	    pixmap =  toPixmap(option,qvariant_cast<QIcon>(value));
+	    break;
 
-    case QVariant::Pixmap:
-        pixmap = qvariant_cast<QPixmap>(value);
-        break;
+	case QVariant::Pixmap:        pixmap = qvariant_cast<QPixmap>(value);
+	    break;
 
-//          case QVariant::Color:
-//               pixmap = toPixmap(option, qvariant_cast<QColor>(value));
-//              break;
 
-    default:
-        pixmap = QPixmap();
+	default:
+	    pixmap = QPixmap();
     }
-
-    /*
-        if (!pixmap.isNull())
-        {
-            // If the item is selected, and the selection rectangle only covers the
-            // text label, blend the pixmap with the highlight color.
-            if (!option.showDecorationSelected && option.state & QStyle::State_Selected)
-            {
-                QPainter p(&pixmap);
-                QColor color = option.palette.color(QPalette::Highlight);
-                color.setAlphaF(0.5);
-                p.setCompositionMode(QPainter::CompositionMode_SourceAtop);
-                p.fillRect(pixmap.rect(), color);
-            }
-
-            // Apply the configured hover effect
-            if ((option.state & QStyle::State_MouseOver) && index.column() == KDirModel::Name)
-                pixmap = applyHoverEffect(pixmap);
-        }
-    */
+ 
     return pixmap;
 }
 
@@ -230,4 +198,10 @@ QPixmap treeViewDelegate::toPixmap(const QStyleOptionViewItem &option, const QIc
     QIcon::State state = option.state & QStyle::State_Open ? QIcon::On : QIcon::Off;
     const QSize size = icon.actualSize(option.decorationSize, mode, state);
     return icon.pixmap(size, mode, state);
+}
+
+void treeViewDelegate::commitEditor()
+{
+    player::starWidget *editor = qobject_cast<player::starWidget *>(sender());
+    emit commitData(editor);
 }

@@ -42,11 +42,14 @@ albumTrack::albumTrack(QWidget *parent)
     
     connect(albumV,SIGNAL(activated ( const QModelIndex) ),this ,SLOT( albumActivated(const QModelIndex&) ) );
     
+//     connect(trackM,SIGNAL(newQuery()),trackV ,SLOT(updateStarWidget() ) );
+
+    
 }
 
 void albumTrack::trackVInit()
 {
-    trackV=new songView(this);
+    trackV=new songView(this,"TRACKVIEW");
     trackM=new songModel(this);
 
     trackV->setRatingColumn(RATING);

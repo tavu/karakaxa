@@ -41,11 +41,13 @@ class myTreeView :public QTreeView
 	QAction *deletAcion;
 	QAction *editTrAcion;
 
-    private slots:
+    protected slots:
 	virtual void fileEdit();
+	
 
     public slots:
 	virtual void writeSettings();
 	virtual void readSettings();
+	virtual void updateStarWidget(QModelIndex parent, int start, int end);	  
 };
 #endif

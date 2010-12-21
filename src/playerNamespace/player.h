@@ -16,7 +16,7 @@
 #include"m3u.h"
 #include"pStatusBar.h"
 #include"decoration.h"
-#include"starWidget.h"
+#include"rattingWidget/starWidget.h"
 #include<QDebug>
 
 #endif

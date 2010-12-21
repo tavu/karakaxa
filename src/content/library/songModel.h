@@ -13,6 +13,7 @@
 class songModel :public QSqlQueryModel ,public trackUrl
 {
     Q_OBJECT
+    
     public:
 	songModel(QWidget *parent );
 	QVariant data(const QModelIndex &item, int role) const;
@@ -27,16 +28,21 @@ class songModel :public QSqlQueryModel ,public trackUrl
 	virtual QVariant headerData ( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const;
 	virtual void sort ( int column, Qt::SortOrder order = Qt::AscendingOrder );
 	virtual void setSort ( int column, Qt::SortOrder order );
-
     private:
 
      	  QSqlQueryModel queryM;
 	  QString	_filter;
 	  int 		_order;
 	  Qt::SortOrder sortO;
-
+	  bool doNotUpdate;
+	  	  
+	  
+	  
     public slots:
 	void refresh();
+	
+  signals:
+    void newQuery();
 
 };
 

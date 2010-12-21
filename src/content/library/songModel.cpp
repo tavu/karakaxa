@@ -8,7 +8,8 @@ using namespace player;
 songModel::songModel(QWidget *parent)
         :QSqlQueryModel(parent ),
         _order(1),
-	sortO(Qt::AscendingOrder)
+	sortO(Qt::AscendingOrder),
+	doNotUpdate(false)
 {
 //    setSourceModel(&queryM);   
 //      setSort(0,Qt::DescendingOrder);
@@ -20,6 +21,7 @@ void songModel::setFilter(const QString &s)
 {
     _filter=s;
     select();
+    
     
 //     queryM.removeColumn(0);
 }
@@ -42,7 +44,8 @@ void songModel::select()
     }
     
     setQuery(q,db.getDatabase());
-    qDebug()<<query().lastQuery();
+    
+    emit(newQuery() );
 }
 
 
@@ -83,13 +86,14 @@ QVariant songModel::data(const QModelIndex &i, int role) const
 
 int songModel::columnCount ( const QModelIndex & index ) const
 {
-    QSqlQueryModel::columnCount(index)-1;
+    return FRAME_NUM;
+    return QSqlQueryModel::columnCount(index)-1;
 }
 
 KUrl songModel::url(int row) const
 {
     QModelIndex	i=index(row,PATH);
-//     QModelIndex	index=mapToSource(i);
+    
     QString s=record(row).value(PATH).toString() ;
 
     return KUrl(s);
@@ -97,19 +101,25 @@ KUrl songModel::url(int row) const
 
 bool songModel::setData ( const QModelIndex & index, const QVariant & value, int role )
 {
-    qDebug()<<"column: "<<index.column();
     audioFile *f=audioFile::getAudioFile(url(index.row()).toLocalFile() );
 
-    if (f==0)	return false;
+    if (f==0)	return false;    
+    
+    bool b=f->setTag( (tagsEnum)index.column(),value );
 
-    return true;
+    if(b)
+    {
+	emit(dataChanged(index,index) );
+    }
+    
+    return b;
 }
 
 void songModel::refresh()
 {
-    //we need this as a slot
-    clear();
-    select();
+    //we need this as a slot    
+      clear();
+      select();      
 }
 
 
@@ -123,7 +133,11 @@ QVariant songModel::headerData ( int section, Qt::Orientation orientation, int r
 	}
 	return QVariant(tagName( (tagsEnum)section) );
     }
-    
+    if(role==Qt::DecorationRole)
+    {
+	return QVariant(decor.tagIcon( section) );
+    }
+//     return QVariant();
     return QSqlQueryModel::headerData(section,orientation,role);
 }
 

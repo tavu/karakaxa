@@ -4,6 +4,7 @@
 #include<KToolBar>
 #include<KIcon>
 #include <QGridLayout>
+#include<QGraphicsView>
 #define ICONZISE QSize(35,35)
 playingInfo::playingInfo(QWidget *parent)
         :QWidget(parent)
@@ -11,7 +12,10 @@ playingInfo::playingInfo(QWidget *parent)
     cover=new player::coverWidget(this);
     cover->setSize(90,110);
     stars=new starWidget(this);
-    stars->setFixedHeight(20);
+    stars->setFixedWidth(100);
+
+      
+//     stars->setFixedHeight(20);
     
     QHBoxLayout *hLayout=new QHBoxLayout();
     QVBoxLayout *vLayout=new QVBoxLayout();
@@ -24,6 +28,8 @@ playingInfo::playingInfo(QWidget *parent)
     commentT= new scrolText(this);
 
     hLayout->addWidget(cover);
+//     vLayout->addWidget(stars);
+//     v->show();
     vLayout->addWidget(stars);
     vLayout->addWidget(commentT);
     hLayout->addLayout(vLayout);
@@ -43,6 +49,13 @@ playingInfo::playingInfo(QWidget *parent)
 //      setFixedHeight(50);    
 //      update("/media/D/music/BLACK n WHITE - Escucha Lo/02 Escucha Lo.mp3");
     connect(&engine,SIGNAL(trackChanged(QString) ),this,SLOT(update(QString)) );
+    connect(stars,SIGNAL(ratingChanged(int) ),SLOT(setRating(int) ) );
+//     stars->show();
+}
+
+playingInfo::~playingInfo()
+{
+    delete stars;
 }
 
 void playingInfo::update(QString path)
@@ -68,4 +81,18 @@ void playingInfo::getInfo()
     stars->setRating(track->tag(RATING).toInt());
 //      l->setPixmap(file->cover() );
 
+}
+
+void playingInfo::setRating(int n)
+{
+    audioFile *f=audioFile::getAudioFile(track->path() );
+    if(f==0)
+    {
+	return;
+    }
+    if(f->setRating(n) )
+    {
+	stars->setRating(n);
+    }
+    
 }

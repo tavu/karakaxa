@@ -39,12 +39,12 @@ class database :public QObject
 	QSqlQuery albumQuery(QString artist);
 	QSqlQuery albumQuery(QString artist,QString search);
 
-	inline void changedSig(int n=DBCHANGED)
+	inline void changedSig()
 	{
-	    emit(changed(n) );
+	    emit(changed() );
 	}
 	
-	inline void updateSig(tagsEnum t)
+	inline void updateSig(int t)
 	{
 	    emit(updated(t) );
 	}
@@ -84,8 +84,8 @@ class database :public QObject
 
 
     signals:
-	void changed(int);
-	void updated(tagsEnum);
+	void changed();
+	void updated(int);
 };
 
 }

@@ -597,7 +597,7 @@ int player::fileToDb::setYear (const QString path, const unsigned int &year)
     }
 
     QSqlQuery q(databs );
-    q.prepare( "update tracks SET year=? path=?");
+    q.prepare( "update tracks SET year=? where path=?");
     q.addBindValue(QVariant(year) );
     q.addBindValue(path );
 
@@ -628,7 +628,7 @@ int player::fileToDb::setTrack (const QString path,const unsigned int &track)
     }
 
     QSqlQuery q(databs );
-    q.prepare( "update tracks SET track=? path=?");
+    q.prepare( "update tracks SET track=? where path=?");
     q.addBindValue(QVariant(track) );
     q.addBindValue(path );
 
@@ -660,7 +660,7 @@ int player::fileToDb::setRating (const QString path,const unsigned int &rating)
     }
 
     QSqlQuery q(databs );
-    q.prepare( "update tracks SET rating=? path=?");
+    q.prepare( "update tracks SET rating=? where path=?");
     q.addBindValue(QVariant(rating) );
     q.addBindValue(path);
 
@@ -692,7 +692,7 @@ int player::fileToDb::setCounter(const QString path,const unsigned int &num )
     }
 
     QSqlQuery q(databs );
-    q.prepare( "update tracks SET counter=? path=?");
+    q.prepare( "update tracks SET counter=? where path=?");
     q.addBindValue(QVariant(num) );
     q.addBindValue(path );
 

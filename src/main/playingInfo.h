@@ -9,7 +9,8 @@ class playingInfo :public QWidget
     Q_OBJECT
     public:
 	playingInfo(QWidget *parent=0);
-
+	~playingInfo();
+	
     private:
 	player::coverWidget *cover;
 	player::starWidget *stars;
@@ -30,5 +31,6 @@ class playingInfo :public QWidget
     public slots:
 	void update(QString path);
 	void getInfo();
+	void setRating(int);
 };
 #endif

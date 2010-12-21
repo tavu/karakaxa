@@ -2,9 +2,11 @@
 #define TREEVIEWDELEGATE_H
 
 #include<QItemDelegate>
+#include<kratingpainter.h>
 class treeViewDelegate :public QItemDelegate
 {
 
+    Q_OBJECT
     public:
 	treeViewDelegate(QObject * parent = 0 );
 	virtual void	paint ( QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index ) const;
@@ -13,8 +15,11 @@ class treeViewDelegate :public QItemDelegate
 	void setItemHeigh(int k);
 	virtual void setRatingColumn(const int n);
 	int ratingColumn() const;
+	QWidget* createEditor(QWidget *parent,const QStyleOptionViewItem &option,const QModelIndex &index) const;
+	void setEditorData(QWidget *editor,const QModelIndex &index) const;
+	void setModelData(QWidget *editor,QAbstractItemModel *model,const QModelIndex &index) const;
     private:
-	void drawStar(QPainter *painter,QRect rect,int num) const;
+	int mouseMoveEvent ( QRect r) const;
 	int rating;
 
 	QPixmap decoration(const QStyleOptionViewItem &option, const QModelIndex &index) const;
@@ -22,7 +27,13 @@ class treeViewDelegate :public QItemDelegate
       
 	
 	int ITEM_HEIGH;
+	int FONT_SIZE;
 	QSize _sizeHint;
+	
+	KRatingPainter ratingPainter;
+	
+    private slots:
+      void commitEditor();
 };
 
 #endif

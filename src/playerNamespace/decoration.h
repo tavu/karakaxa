@@ -4,6 +4,7 @@
 #include<QPalette>
 #include<KIcon>
 #include <QPixmapCache>
+#include<tagsTable.h>
 
 namespace player
 {
@@ -70,16 +71,19 @@ class decoration
 	    return KIcon("audio-volume-low");
 	}
 	
+	KIcon tagIcon(int t);
+	
 	
 	QPixmap cover(const QString &path);
 	
 	inline QSize coverSize()
 	{
-	  //scalding the pixmap is very slow.
+	  //scaling the pixmap is very slow.
 	  //that's why we scaled the images to pixSize before we save them to the cache
 	  //that makes the cache unapropriate if u want images larger than pixsize.
 	    return pixSize;
 	}
+	void init();
 	
     private:
 	QPalette pal;
@@ -93,6 +97,9 @@ class decoration
 	KIcon pauseIcon;
 	KIcon playIcon;
 
+	KIcon icons[FRAME_NUM];
+	KIcon defaultIcon;
+	
 	QSize pixSize;
 };
 

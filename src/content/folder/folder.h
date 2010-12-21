@@ -55,6 +55,12 @@ public slots:
     void back();
     void forward();
     void setDir(const QModelIndex index);
+    
+  private slots:
+    void cleanup();
+    
+
+    
 };
 
 #endif

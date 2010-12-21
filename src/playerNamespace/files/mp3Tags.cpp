@@ -96,10 +96,6 @@ QVariant player::mp3Tags::counter() const
 QVariant player::mp3Tags::rating() const
 {
     int r=originalRating();
-    if(r==0)
-    {
-	return QVariant();
-    }
             
     int n=r/25;
     if (r%25>0 && n!=10) 
@@ -342,7 +338,13 @@ bool player::mp3Tags::setComposer (const QString &s)
     return true;
 }
 
-bool player::mp3Tags::setRating(const unsigned int &num)
+bool player::mp3Tags::setRating( int num)
+{
+    num*=25;
+    return setOriginalRating(num);
+}
+
+bool player::mp3Tags::setOriginalRating(const unsigned int &num)
 {
     using namespace TagLib;
 

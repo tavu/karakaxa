@@ -123,7 +123,9 @@ void myTreeView::performDrag()
 
 void myTreeView::setModel ( QAbstractItemModel * model )
 {
-    QTreeView::setModel(model);
+    qDebug()<<"starssssssssssssss";
+    QTreeView::setModel(model);   
+    connect(model,SIGNAL(rowsInserted ( const QModelIndex, int, int )),this ,SLOT(updateStarWidget(QModelIndex, int, int) ) );
 }
 
 
@@ -205,4 +207,19 @@ int myTreeView::notHide()
         return h->notHide();
     }
     return -2;
+}
+
+void myTreeView::updateStarWidget(QModelIndex parent, int start, int end)
+{    
+    for(int i=start;i<=end;i++)
+    {
+	QModelIndex item=model()->index(i,ratingColumn(),parent );
+	bool b;
+	item.data().toInt(&b);
+	
+	if(b)
+	{
+	    openPersistentEditor(item);
+	}
+    }
 }

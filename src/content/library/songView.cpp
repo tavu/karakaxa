@@ -4,6 +4,7 @@
 class editTrack;
 songView::songView(QWidget *parent,QString name)
         :myTreeView(parent,name)
+// 	stars(0)
 {
     createMenu();
     connect(this,SIGNAL(doubleClicked  ( const QModelIndex) ),this,SLOT(play(const QModelIndex) ) );
@@ -19,20 +20,35 @@ void songView::contextMenuEvent(QContextMenuEvent *e)
 
 inline void songView::createMenu()
 {
-    append=new QAction(tr("&Queue track"),this);
-    edit=new QAction(tr("Edit"),this);
-    editTr=new QAction(tr("&Edit track details"),this);
-    delet=new QAction(tr("&Delete"),this);
+    appendAction=new QAction(tr("&Queue track"),this);
+    editAction=new QAction(tr("Edit"),this);
+    editTrAction=new QAction(tr("&Edit track details"),this);
+    deletAction=new QAction(tr("&Delete"),this);
 
     menu=new QMenu(this);
-    menu->addAction(append);
-    menu->addAction(edit);
-    menu->addAction(delet);
+    menu->addAction(appendAction);
+    menu->addAction(editAction);
+    menu->addAction(deletAction);
     menu->addSeparator();
-    menu->addAction(editTr);
+    menu->addAction(editTrAction);
 
-    connect(editTr,SIGNAL(triggered()),this,SLOT(fileEdit() ) );
+    connect(editTrAction,SIGNAL(triggered()),this,SLOT(fileEdit() ) );
+    connect(editAction,SIGNAL(triggered()),this,SLOT(openEditor() ) );
 }
+
+void songView::openEditor()
+{
+    QModelIndexList list=selectedIndexes();
+//     foreach(QModelIndex item,list)
+//     {
+// 	edit(item);
+//     }
+
+      qDebug()<<currentIndex();
+      QModelIndex i=currentIndex();
+      edit(i);
+}
+
 
 void songView::fileEdit()
 {
@@ -70,4 +86,5 @@ void songView::play(const QModelIndex index)
     
     engine.play(index.row() );
 }
+
 

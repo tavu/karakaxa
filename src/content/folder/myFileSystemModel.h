@@ -30,5 +30,8 @@ private slots:
     void insert(const KFileItemList &items);
     void cleanup();
 
+    
+  signals:
+    void updated();
 };
 #endif

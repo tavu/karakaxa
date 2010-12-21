@@ -280,6 +280,10 @@ bool player::audioFile::setLeadArtist(const QString &s)
         mutex.unlock();
         return false;
     }
+    if(!record.isEmpty() )
+    {
+	record.setValue(TRV_HIDE+LEAD_ARTIST,QVariant(s) );
+    }
     if(!_mutable )
     {
 	db.updateSig(LEAD_ARTIST);
@@ -309,6 +313,11 @@ bool player::audioFile::setComposer (const QString &s)
     {
         mutex.unlock();
         return false;
+    }
+     
+    if(!record.isEmpty() )
+    {
+	record.setValue(TRV_HIDE+COMPOSER,QVariant(s) );
     }
     if(!_mutable )
     {
@@ -340,6 +349,12 @@ bool player::audioFile::setTitle (const QString &s)
         mutex.unlock();
         return false;
     }
+     
+    if(!record.isEmpty() )
+    {
+	record.setValue(TRV_HIDE+TITLE,QVariant(s) );
+    }
+    
     if(!_mutable )
     {
 	db.updateSig(TITLE);
@@ -371,6 +386,12 @@ bool player::audioFile::setComment (const QString &s)
         return false;
     }
     
+     
+    if(!record.isEmpty() )
+    {
+	record.setValue(TRV_HIDE+COMMENT,QVariant(s) );
+    }
+    
     if(!_mutable )
     {
 	db.updateSig(COMMENT);
@@ -400,6 +421,12 @@ bool player::audioFile::setYear (const unsigned int &year)
     {
         mutex.unlock();
         return false;
+    }
+    
+     
+    if(!record.isEmpty() )
+    {
+	record.setValue(TRV_HIDE+YEAR,QVariant(year) );
     }
 
     if(!_mutable )
@@ -433,6 +460,12 @@ bool player::audioFile::setTrack (const unsigned int &track)
         return false;
     }
     
+     
+    if(!record.isEmpty() )
+    {
+	record.setValue(TRV_HIDE+TRACK,QVariant(track) );
+    }
+    
     if(!_mutable )
     {
 	db.updateSig(TRACK);
@@ -464,6 +497,12 @@ bool player::audioFile::setRating (const unsigned int &rating)
         mutex.unlock();
         return false;
     }
+    qDebug()<<"DDFSG";
+    if(!record.isEmpty() )
+    {
+	record.setValue(TRV_HIDE+RATING,QVariant(rating) );
+    }    
+    
 
     if(!_mutable )
     {
@@ -495,6 +534,12 @@ bool player::audioFile::setCounter(const unsigned int &num )
         mutex.unlock();
         return false;
     }
+    
+      
+    if(!record.isEmpty() )
+    {
+	record.setValue(TRV_HIDE+COUNTER,QVariant(num) );
+    } 
     
     if(!_mutable )
     {

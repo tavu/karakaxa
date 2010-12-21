@@ -38,8 +38,13 @@ abstractContent* player::contentHandler::content(const QModelIndex &index) const
 
 bool player::contentHandler::isActive(QWidget *w)
 {
-    
-    if(w==stack->currentWidget() )	return true;
+    qDebug()<<w;
+      qDebug()<<stack->currentWidget();
+    if(w==stack->currentWidget() )
+    {
+      ;
+      return true;
+    }
     
     return false;
 }

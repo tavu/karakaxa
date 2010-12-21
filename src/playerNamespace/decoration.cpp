@@ -8,15 +8,40 @@ player::decoration::decoration()
         playIcon( "media-playback-start" ),
         nextIcon( "media-skip-forward" ),
         pauseIcon( "media-playback-pause" ),
-        pixSize(170,150)
+        pixSize(170,150),
+        defaultIcon("/home/tavu/player/trunk/data/music.png")
 {
-//      pal=palette();
+    icons[ARTIST]=KIcon("/home/tavu/src/player/data/artist.png");
+    icons[ALBUM]=KIcon("/home/tavu/src/player/data/album.png");
+    icons[RATING]=KIcon("rating");
+}
+
+KIcon player::decoration::tagIcon(int t)
+{
+    if(t>=FRAME_NUM)
+    {
+	return defaultIcon;
+    }
+    KIcon i=icons[t];
+    if(i.isNull() )
+    {
+	return defaultIcon;
+    }
+    return i;
+}
+
+
+
+
+void player::decoration::init()
+{
+    pal=palette();
     pal.setColor(QPalette::Base,pal.color(QPalette::Window) );
     pal.setColor(QPalette::AlternateBase,QColor(171,193,219) );
     pal.setColor(QPalette::Window,QColor(171,193,219) );
-
-
+    
 }
+
 
 QPixmap player::decoration::cover(const QString &path)
 {
