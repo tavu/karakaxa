@@ -3,7 +3,7 @@ INCLUDEPATH +=/usr/include/taglib
 
 QT += phonon
 QT += sql
-
+QT += xml
 
 LIBS += -lkdecore -lkdeui -lkfile 
 
