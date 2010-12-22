@@ -756,5 +756,5 @@ void player::audioFile::releaseAudioFile(audioFile *file)
     releaseAudioFile(s);
 }
 
-QMap<QString, player::audioFile::audioFileS*> player::audioFile::fileMap;
+QHash<QString, player::audioFile::audioFileS*> player::audioFile::fileMap;
 QMutex player::audioFile::gMutex;

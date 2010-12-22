@@ -3,6 +3,7 @@
 #include"fileTags.h"
 #include<QSqlDatabase>
 #include<QMutex>
+#include <QHash>
 #include<QSqlQuery>
 #include<QSqlError>
 #include<QSqlRecord>
@@ -104,7 +105,7 @@ class audioFile :public QObject
 	
 	static fileTags* getFileTags(const QString path);
 
-	static QMap<QString, audioFileS*> fileMap;
+	static QHash<QString, audioFileS*> fileMap;
 	static QMutex gMutex;
 
     protected:

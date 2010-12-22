@@ -3,12 +3,13 @@
 #define DIRCOLUMN 7
 using namespace player;
 myFileSystemModel::myFileSystemModel(QObject *parent)
-        :KDirModel(parent),
+        :KDirModel(parent),        
         trackUrl()
 {
+    thr.iter=thr.fileList.end();
     dirL=KDirModel::dirLister();
     connect(dirL,SIGNAL(newItems(const KFileItemList &) ),this,SLOT(insert(const KFileItemList &) ) );
-//     connect(dirL,SIGNAL(clear() ),this,SLOT(cleanup() ) );
+    connect(dirL,SIGNAL(clear() ),&thr,SLOT(cleanup() ) );
 }
 
 
@@ -19,7 +20,7 @@ int myFileSystemModel::columnCount( const QModelIndex & parent ) const
 }
 
 QVariant myFileSystemModel::data(const QModelIndex &index, int role) const
-{
+{  
     if(role==Qt::SizeHintRole)
     {
 	return QVariant();
@@ -37,21 +38,21 @@ QVariant myFileSystemModel::data(const QModelIndex &index, int role) const
         if (item.isDir() )	return QVariant();
 
         audioFile *f=audioFile::getAudioFile(item.url().toLocalFile() );
-
+	qDebug()<<"eeeeeeeeeeeeeeeeeeeeeeeee";
         if (f==0)	return var;
 
         int filde=index.column()-DIRCOLUMN;
 	
-        var=f->tag((tagsEnum)filde, audioFile::ONCACHE|audioFile::DBCACHE);	
+        var=f->tag((tagsEnum)filde, audioFile::ONCACHE|audioFile::DBCACHE );	
 	
 	if(filde==RATING)
 	{
 	    if(var.isNull() )
 	    {
-		return f->tag(RATING);
+// 		return f->tag(RATING);
 	    }
 	}
-	audioFile::releaseAudioFile(f);
+ 	audioFile::releaseAudioFile(f);
 	
         if (filde==LENGTH)
         {
@@ -74,52 +75,38 @@ QVariant myFileSystemModel::headerData ( int section, Qt::Orientation orientatio
     if (role ==Qt::DisplayRole)
     {
         return player::tagName( (tagsEnum)(section-DIRCOLUMN) );
-    }
+    }    
     return QVariant();
 }
 
 void myFileSystemModel::insert(const KFileItemList &items)
 {
+   qDebug()<<"AAAAAAAAAAAAAAAAAA";
     foreach(KFileItem item , items)
     {
         if (!item.isDir())
         {
-            audioFile *f=audioFile::getAudioFile(item.url().toLocalFile() );
-            if (f!=0)
-            {
-                fileList<<item.url().toLocalFile();
-                updateTrack(f);
-            }
+            
+            thr.fileList<<item.url().toLocalFile();
+	    audioFile *f=audioFile::getAudioFile(item.url().toLocalFile());
         }
     }
-    emit(updated() );
+    if(thr.iter==thr.fileList.end() )
+    {
+	thr.iter=thr.fileList.begin();
+    }
+    thr.start();
 }
 
-void myFileSystemModel::updateTrack(audioFile *f)
-{
-    for (int i=TAGS_START;i<FRAME_NUM;++i)
-    {
-        f->tag( (tagsEnum)i);
-    }
-}
 
 int myFileSystemModel::infoC()
 {
     return DIRCOLUMN;
 }
 
-void myFileSystemModel::cleanup()
-{
-    foreach(QString s, fileList)
-    {
-        audioFile::releaseAudioFile(s);
-    }
-    fileList.clear();
-}
 
 Qt::ItemFlags myFileSystemModel::flags ( const QModelIndex & index ) const
 {
-//       return KDirModel::flags(index);
     return KDirModel::flags(index) | Qt::ItemIsSelectable |Qt::ItemIsDragEnabled;
 }
 

@@ -52,7 +52,7 @@ folderContent::folderContent(QWidget *parent)
     toolBar->addAction( upAction );
     connect( upAction, SIGNAL( triggered( bool) ), this, SLOT( up() ) );
 
-    KDirLister *dirL=model->dirLister();
+//     KDirLister *dirL=model->dirLister();
 //     connect(dirL,SIGNAL(clear() ),this,SLOT(cleanup() ) );
     
 //     connect(model,SIGNAL(updated() ),this,SLOT(cleanup() ) );
