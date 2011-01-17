@@ -1,4 +1,0 @@
-#!/bin/bash 
-qmake -project src -o player.pro
-cat qmakeadd >>player.pro
-qmake player.pro
