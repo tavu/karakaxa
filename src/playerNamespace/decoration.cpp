@@ -1,18 +1,18 @@
 #include"decoration.h"
-#define ALBUMICON "/home/tavu/src/player/data/album.png"
+#define ALBUMICON ".data/album.png"
 
 player::decoration::decoration()
-        :albumIcon("/home/tavu/src/player/data/album.png"),
-        artistIcon("/home/tavu/src/player/data/artist.png"),
+        :albumIcon("data/album.png"),
+        artistIcon("data/artist.png"),
         previousIcon( "media-skip-backward" ),
         playIcon( "media-playback-start" ),
         nextIcon( "media-skip-forward" ),
         pauseIcon( "media-playback-pause" ),
         pixSize(170,150),
-        defaultIcon("/home/tavu/player/trunk/data/music.png")
+        defaultIcon("data/music.png")
 {
-    icons[ARTIST]=KIcon("/home/tavu/src/player/data/artist.png");
-    icons[ALBUM]=KIcon("/home/tavu/src/player/data/album.png");
+    icons[ARTIST]=KIcon("data/artist.png");
+    icons[ALBUM]=KIcon("data/album.png");
     icons[RATING]=KIcon("rating");
 }
 
