@@ -5,7 +5,6 @@
 #include<QPainter>
 #include"playerNamespace.h"
 #include<QLabel>
-#define DEFAULT "/home/tavu/src/player/data/album.png"
 
 namespace player
 {
