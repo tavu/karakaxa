@@ -1,7 +1,8 @@
 #include"coverWidget.h"
 #include<QDebug>
 #include <QLayout>
- #include <QVBoxLayout>
+#include <QVBoxLayout>
+#define DEFAULT "data/album.png"
 player::coverWidget::coverWidget(QString s ,QWidget * parent, Qt::WindowFlags f  )
         :QFrame(parent,f),
         fixedSize(150,170)
