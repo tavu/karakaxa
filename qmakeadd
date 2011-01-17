@@ -1,0 +1,17 @@
+INCLUDEPATH += /usr/include/KDE/
+INCLUDEPATH +=/usr/include/taglib
+
+QT += phonon
+QT += sql
+QT += xml
+
+LIBS += -lkdecore -lkdeui -lkfile 
+
+CONFIG += link_pkgconfig 
+CONFIG += debug
+PKGCONFIG += taglib taglib-extras
+#QT += qt3support
+TARGET = player
+OBJECTS_DIR=build
+
+MOC_DIR=build/moc

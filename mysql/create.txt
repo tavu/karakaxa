@@ -1,0 +1,285 @@
+CREATE DATABASE IF NOT EXISTS karakaxa CHARACTER SET utf8;
+use karakaxa;
+
+create table library_folders(
+     path varchar(255) not null,
+     PRIMARY KEY(path)
+)default charset=utf8 collate=utf8_general_ci TYPE=innodb;
+
+create table playlists(
+     path varchar(255) not null,
+     PRIMARY KEY(path)
+)default charset=utf8 collate=utf8_general_ci TYPE=innodb;
+
+
+create table artists(
+     id int(10) not null auto_increment,
+     name varchar(255),
+     unique(name),
+     PRIMARY KEY(id)
+)default charset=utf8 collate=utf8_general_ci TYPE=innodb;
+
+create table albums(
+     id int(10) not null auto_increment,
+     name varchar(255),
+     artist int(10) not null,
+     image varchar(255),
+     foreign key(artist) references artists(id),
+     PRIMARY KEY(id),
+     unique(name,artist)
+)default charset=utf8 collate=utf8_general_ci TYPE=innodb;
+
+create table genres(
+     id int(10) not null auto_increment,
+     name varchar(255),
+     unique(name),
+     PRIMARY KEY(id)
+)default charset=utf8 collate=utf8_general_ci TYPE=innodb;
+
+create table composers(
+     id int(10) not null auto_increment,
+     name varchar(255),
+     unique(name),
+     PRIMARY KEY(id)
+)default charset=utf8 collate=utf8_general_ci TYPE=innodb;
+
+create table tracks(
+     id int(10) not null auto_increment,
+     path 		varchar(255) not null,
+     title 		varchar(255),
+     comment 		text ,
+     lyrics 		text ,
+     tracknumber 	int,
+     lead_artist	int(10),
+     artist		int(10),
+     album 		int(10),
+     genre 		int(10),
+     composer 		int(10),
+     year 		int,
+     length 		int,
+     rating 		SMALLINT,
+     bitrate 		SMALLINT,
+     count 		int	,
+
+     
+     foreign key (album) references albums(id)
+     on delete restrict on update cascade,
+     
+     foreign key (genre) references genres(id)
+     on delete restrict on update cascade,
+
+     foreign key (lead_artist) references artists(id)
+     on delete restrict on update cascade,
+
+     foreign key (artist) references artists(id)
+     on delete restrict on update cascade,
+
+     foreign key (composer) references composers(id)
+     on delete restrict on update cascade,
+
+     unique(path),
+     PRIMARY KEY(id)
+)default charset=utf8 collate=utf8_general_ci TYPE=innodb;
+
+
+create table track_artists(
+     track int(10) not null,
+     artist int(10) not null,
+     
+     foreign key(artist) references artists(id),
+     foreign key(track) references tracks(id),
+     primary key(artist,track)
+)default charset=utf8 collate=utf8_general_ci TYPE=innodb;
+
+
+#=====================procedures=========================
+
+
+delimiter $
+create procedure insert_track
+     (
+	  IN	album_artist	varchar(255)	,
+	  
+	  IN	t_tracknumber 	int  		,
+	  IN	t_title 	varchar(255)	,
+	  IN	album_name	varchar(255)	,
+	  IN	artist_name	varchar(255)	,
+	  IN	lead_artist_name  varchar(255)	,
+	  IN	t_comment 	text 		,
+	  IN	t_genre 	varchar(255)	,
+	  IN	t_composer 	varchar(255)	,	  
+	  IN	t_length 	int		,
+	  IN	t_rating 	SMALLINT	,
+	  IN	t_bitrate 	SMALLINT	,
+	  IN	t_year 		int		,
+	  IN	t_path 		varchar(255) 	
+     )
+BEGIN
+     declare album_id		int(10);
+     declare artist_id 		int(10);
+     declare lead_artist_id 	int(10);
+     declare genre_id   	int(10);
+     declare composer_id  	int(10);
+
+     CALL  get_album(album_name ,album_artist,album_id);
+
+     CALL  get_artist(artist_name,artist_id);
+
+     CALL  get_artist(lead_artist_name,lead_artist_id);     
+     
+     CALL  get_genre(t_genre,genre_id);
+
+     CALL  get_composer(t_composer,composer_id);
+
+     INSERT INTO tracks
+     (
+	  path 		,
+	  title		,
+	  composer 	,
+	  genre		,  
+	  comment 	,
+	  tracknumber	,
+	  lead_artist	,
+	  artist	,
+	  album 	,
+	  year 		,
+	  length	,
+	  rating 	,
+	  bitrate 	
+     )
+     VALUES
+     (
+	  t_path	,
+	  t_title 	,
+	  composer_id	,
+	  genre_id	,
+	  t_comment 	,
+	  t_tracknumber ,
+	  lead_artist_id,
+	  artist_id	,
+	  album_id 	,
+	  t_year	,
+	  t_length 	,
+	  t_rating 	,
+	  t_bitrate 	
+	  #'0'		
+     );
+#     ON DUPLICATE KEY UPDATE;
+     
+#     select id into id_out from tracks  where path=t_path;
+END$
+delimiter ;
+
+
+delimiter $
+CREATE PROCEDURE get_artist(IN artist_name varchar(255), OUT artist_id int(10) )
+BEGIN
+     if( artist_name is NULL)
+     then
+	  set artist_name="";
+     end if;
+
+     select id into artist_id from artists where name = artist_name;
+     if ( artist_id is null)
+     then
+	  insert into artists (name) values (artist_name );
+	  select id into artist_id from artists where name = artist_name;
+     end if;     
+END$
+delimiter ;
+
+delimiter $
+CREATE PROCEDURE get_album(IN album varchar(255),IN artist varchar(255), OUT album_id int(10) )
+BEGIN
+          
+     declare artist_id int(10);
+
+     if( album is NULL)
+     then
+	  set album="";
+     end if;
+
+     CALL get_artist(artist,artist_id);
+
+
+	  select id into album_id from albums where name = album AND albums.artist = artist_id;
+	  if ( album_id is NULL)
+	  then
+	       insert into albums (name,artist) values (album,artist_id);
+	       select id into album_id from albums where name = album AND albums.artist = artist_id;
+	  end if;
+END$
+delimiter ;
+
+delimiter $
+CREATE PROCEDURE get_genre(IN genre_name varchar(255), OUT genre_id int(10) )
+BEGIN
+     if( genre_name is NULL)
+     then
+	  set genre_name="";
+     end if;
+
+     select id into genre_id from genres where name = genre_name;
+     if ( genre_id is null)
+     then
+	  insert into genres (name) values (genre_name );
+	  select id into genre_id from genres where name = genre_name;
+     end if;
+END$
+delimiter ;
+
+delimiter $
+CREATE PROCEDURE get_composer(IN composer_name varchar(255), OUT composer_id int(10) )
+BEGIN
+     if( composer_name is NULL)
+     then
+	  set composer_name="";
+     end if;
+
+     select id into composer_id from composers where name = composer_name;
+     if ( composer_id is null)
+     then
+       insert into composers (name) values (composer_name );
+       select id into composer_id from composers where name = composer_name;
+     end if;
+
+END$
+delimiter ;
+
+create view leadArtists as select name ,id from artists;
+
+
+CREATE VIEW artist_album(artist,album,image,id) AS
+     select artists.name,albums.name,albums.image,albums.id from albums
+     inner join artists on artists.id=albums.artist;
+ 
+CREATE VIEW trackView 	AS
+     select
+	  albums.id		as album_id	,
+	  tracknumber	 			,
+	  title					,
+	  albums.name		as album	,
+	  artists.name		as artist	,
+	  leadArtists.name	as leadArtist	,
+	  comment 				,
+	  genres.name   	as genre	,
+	  composers.name 	as composer	,
+	  length				,
+	  rating 				,
+	  year 					,
+	  bitrate 				,	  
+	  path					,
+	  count					
+	  
+     from tracks,artists,albums,genres,composers,leadArtists
+	  where  tracks.lead_artist=leadArtists.id
+		 AND tracks.artist=artists.id
+		 AND tracks.album=albums.id 
+		 AND tracks.genre=genres.id 
+		 AND tracks.composer=composers.id;
+
+
+
+#insert into artists(id,name) values(1,' ');
+#insert into composers(id,name) values(1,'');
+#insert into genres(id,name) values(1,'');
