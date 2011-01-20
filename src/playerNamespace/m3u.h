@@ -74,6 +74,7 @@ class m3uPl
 	}
 
 	void load();
+	QList<audioFile*> files();
     private:
 
 	void save();

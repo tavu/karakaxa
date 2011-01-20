@@ -23,6 +23,9 @@ player::fileTags::fileTags(QString url)
     properties = file.audioProperties();
 
 }
+player::fileTags::~fileTags()
+{
+}
 
 QVariant player::fileTags::title() const
 {

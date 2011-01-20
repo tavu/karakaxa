@@ -18,11 +18,7 @@ class decoration
 	{
 	    return pal;
 	}
-	inline KIcon album()
-	{
-	    return KIcon(albumIcon);
-	}
-
+	
 	inline QPixmap albumPic()
 	{
 	    return QPixmap(albumIcon );
@@ -33,10 +29,11 @@ class decoration
 	    return KIcon(artistIcon );
 	}
 
-	inline QPixmap artistPic()
-	{
-	    return QPixmap(artistIcon );
-	}
+// 	inline QPixmap artistPic()
+// 	{
+// 	    return icons[ARTIST].pixmap(pixSize);
+// // 	    return QPixmap(artistIcon );
+// 	}
 
 	inline KIcon next()
 	{

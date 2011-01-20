@@ -12,6 +12,7 @@ artistModel::artistModel(QObject *parent)
     size.setHeight(100);
     size.setWidth(100);
     itemSize.setHeight(100);
+    artistPic=player::decor.tagIcon(ARTIST).pixmap(50,50);
 }
 
 
@@ -28,8 +29,9 @@ QVariant artistModel::data(const QModelIndex &index, int role) const
     }
     if (role==Qt::DecorationRole)
     {
+	return artistPic;
 // 	  pic=pic.scaled(size, Qt::KeepAspectRatio,Qt::SmoothTransformation);
-        return decor.artistPic();
+//         return decor.artistPic();
     }
     if (role==Qt::SizeHintRole)
     {

@@ -108,7 +108,7 @@ KUrl songModel::url(int row) const
 bool songModel::setData ( const QModelIndex & index, const QVariant & value, int role )
 {
     /*urlList conteins all urls of the selected indexes.with no dublicates.
-     * we set the dat to all of them
+     * we set the data to all of them
      */
     if(!urlList.isEmpty() )
     {
@@ -118,7 +118,7 @@ bool songModel::setData ( const QModelIndex & index, const QVariant & value, int
 	    if(f!=0)
 	    {
 		qDebug()<<u;
-		qDebug()<<f->setTag( (tagsEnum)index.column(),value );
+		f->setTag( (tagsEnum)index.column(),value );
 	    }
 	}
 	urlList.clear();
@@ -140,8 +140,8 @@ bool songModel::setData ( const QModelIndex & index, const QVariant & value, int
 void songModel::refresh()
 {
     //we need this as a slot    
-      clear();
-      select();      
+//       clear();
+//       select();      
 }
 
 

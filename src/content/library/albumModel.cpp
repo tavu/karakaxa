@@ -34,7 +34,9 @@ QVariant albumModel::data(const QModelIndex &index, int role) const
 
         if (!value.isValid()||value.isNull() )
         {
-            return decor.albumPic();
+             return decor.albumPic();
+// //  	      return decor.tagIcon(ALBUM).pixmap(itemSize);
+// 	      return QVariant();
         }
 
         QPixmap pix;
@@ -42,6 +44,7 @@ QVariant albumModel::data(const QModelIndex &index, int role) const
 
         if (pix.isNull() )
         {
+// 	    return decor.tagIcon(ALBUM).pixmap(itemSize);
             return decor.albumPic();
         }
         else

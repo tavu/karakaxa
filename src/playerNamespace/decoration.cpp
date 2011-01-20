@@ -1,19 +1,32 @@
 #include"decoration.h"
+#include"kglobal.h"
 #define ALBUMICON ".data/album.png"
+#include<KStandardDirs>
+#include<QDebug>
 
 player::decoration::decoration()
-        :albumIcon("data/album.png"),
-        artistIcon("data/artist.png"),
-        previousIcon( "media-skip-backward" ),
+//         :albumIcon("data/album.png"),
+//         artistIcon("data/artist.png"),
+        :previousIcon( "media-skip-backward" ),
         playIcon( "media-playback-start" ),
         nextIcon( "media-skip-forward" ),
         pauseIcon( "media-playback-pause" ),
-        pixSize(170,150),
-        defaultIcon("data/music.png")
+        pixSize(170,150)
+//         defaultIcon("data/music.png")
 {
-    icons[ARTIST]=KIcon("data/artist.png");
-    icons[ALBUM]=KIcon("data/album.png");
+    QString artistS=KGlobal::dirs()->findResource("data",QString("player/icons/artist.png") );
+    qDebug()<<"artist icon location "<<artistS;
+    icons[ARTIST]=KIcon(artistS);
+    
+    albumIcon=KGlobal::dirs()->findResource("data",QString("player/icons/album.png") );
+    qDebug()<<"album icon location "<<albumIcon;
+    icons[ALBUM]=KIcon(albumIcon);
+    
     icons[RATING]=KIcon("rating");
+    
+    QString defaultS=KGlobal::dirs()->findResource("data",QString("player/icons/music.png"));
+    qDebug()<<"default icon location"<<defaultS;
+    defaultIcon=KIcon(defaultS);
 }
 
 KIcon player::decoration::tagIcon(int t)

@@ -18,8 +18,8 @@ private:
 
     QSize size;
     QSize itemSize;
-
-    QSqlQuery queryList[5];
+    QPixmap artistPic;
+    
     void queryChange ();
 };
 

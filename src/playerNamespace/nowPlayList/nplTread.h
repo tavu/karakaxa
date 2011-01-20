@@ -42,8 +42,8 @@ class nplTread :public  QThread//, public QObject
 	
 	nplList list;
 	
-	
-    signals:
+    public slots:
+	void cancel();
 // 	void insert(int, nplTrack*);
 // 	void added(int);
 

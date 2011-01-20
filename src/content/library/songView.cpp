@@ -39,7 +39,7 @@ inline void songView::createMenu()
 
 void songView::openEditor()
 {
-    QModelIndexList list=selectedIndexes();
+//     QModelIndexList list=selectedIndexes();
           
     QModelIndex i=currentIndex();    
     edit(i);
@@ -75,13 +75,13 @@ void songView::play(const QModelIndex index)
 	return;
     }    
     npList.clear();
-//     QList <QUrl> urlList;
+
     nplList list;
     for (int i=0;i<model()->rowCount();i++)
     {
          list<<nplTrack::getNplTrack(Model->url(i).toLocalFile());
     }
-    npList.insert(list,0);
+    npList.insertSlot(list,0);
     
     engine.play(index.row() );
 }

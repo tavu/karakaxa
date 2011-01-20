@@ -715,13 +715,13 @@ int player::fileToDb::setCounter(const QString path,const unsigned int &num )
 
 QSqlRecord player::fileToDb::record(const QString path,int &err)
 {    
-    QSqlDatabase databs;
+    QSqlDatabase databs=db.getDatabase();
     databs=player::db.clone(path);
 
     if (!databs.open() )
     {
-        err=DBERR;
-        return QSqlRecord();
+         err=DBERR;
+         return QSqlRecord();
     }
 
     QSqlQuery q(databs );

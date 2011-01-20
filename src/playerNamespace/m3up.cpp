@@ -6,9 +6,22 @@ player::m3uPl::m3uPl(const QString s)
         :file(s)
 {
     path=s;
-//     qDebug()<<s;
-
 }
+
+QList<audioFile*> player::m3uPl::files()
+{
+    QList<audioFile*> audioL;
+    for(int i=0;i<list.size();i++)
+    {
+	audioFile *f=audioFile::getAudioFile(list.at(i) );
+	if(f!=0 && f->isValid() )
+	{
+	    audioL<<f;
+	}	
+    }
+    return audioL;
+}
+
 
 void player::m3uPl::load()
 {

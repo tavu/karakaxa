@@ -31,6 +31,7 @@ class fileTags
     //      using namespace TagLib;
     public:
 	fileTags(QString);
+	~fileTags();
 
 
     private:

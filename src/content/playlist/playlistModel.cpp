@@ -3,17 +3,14 @@
 playlistModel::playlistModel(QObject *parent)
     :QAbstractListModel(parent),
     QThread(parent),
-    pl(0),
-    audio(0)
+    pl(0)
 {
     
 }
 
 int playlistModel::rowCount ( const QModelIndex & parent ) const
 {
-    if(pl==0)	return 0;
-    
-    return pl->size();
+    return files.size();
 }
 
 int playlistModel::columnCount ( const QModelIndex & parent ) const
@@ -32,7 +29,7 @@ QVariant playlistModel::data(const QModelIndex & index, int role ) const
     
     if( role == Qt::DisplayRole)
     {
-	return audio[index.row()]->tag( (tagsEnum)index.column(),flag );
+	return files.at(index.row() )->tag( (tagsEnum)index.column(),flag );
     }
     
     return QVariant();    
@@ -59,34 +56,54 @@ void playlistModel::setPlPath(const QString &s)
     {
 	terminate();
 	
-	for(int i=0;i<pl->size();i++)
+	int end=files.size();
+	for(int i=0;i<end;i++)
 	{
-	    audioFile::releaseAudioFile(audio[i]);
+	    audioFile::releaseAudioFile(files.at(0));
 	}	
 	delete pl;
     }
-    
+        
     pl=new m3uPl(s);
+  
     pl->load();
+    beginResetModel();
+    files=pl->files();
+    endResetModel();        
     
-    audio=new audioFile* [ pl->size() ];
-    
-    for(int i=0;i<pl->size();i++)
-    {
-	audio[i]=audioFile::getAudioFile(pl->item(i) );
-    }
     start();    
 }
 
 void playlistModel::run()
 {
+
     for(int j=0;j<pl->size();j++)
     {
 	for (int i=TAGS_START;i<FRAME_NUM;++i)
 	{
-	    audio[j]->tag( (tagsEnum)i);
+	    files.at(j)->tag( (tagsEnum)i);
 	}
     }    
 }
 
+KUrl playlistModel::url(int row) const
+{
+    if(row>=files.size() )
+    {
+	return KUrl();
+    }
+    
+    return KUrl(files.at(row)->getPath() );
+}
+
+Qt::ItemFlags playlistModel::flags(const QModelIndex &index) const
+{
+
+    if (index.column()==BITRATE||index.column()==LENGTH||index.column()==COUNTER)
+    {
+        return Qt::ItemIsDragEnabled|Qt::ItemIsEnabled|Qt::ItemIsSelectable;
+    }
+
+    return Qt::ItemIsDragEnabled|Qt::ItemIsEnabled|Qt::ItemIsSelectable|Qt::ItemIsEditable;
+}
 

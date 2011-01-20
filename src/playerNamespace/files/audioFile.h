@@ -33,7 +33,7 @@ class audioFile :public QObject
 	static const short int DEFAULTF;
 
 	audioFile(const QString);
-
+	virtual ~audioFile();
 
     // 	       virtual QVariant tags(tagsEnum t);
 	QString getPath();
@@ -117,7 +117,7 @@ class audioFile :public QObject
 	    {
 		*err=file->error();
 	    }
-	    mutex.unlock();
+// 	    mutex.unlock();
 	    return var;
 	}
       

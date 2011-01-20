@@ -114,6 +114,7 @@ void player::nplaylist::clear()
 //     {
 //         delete *it;
 //     }    
+    emit(cancelThreads() );
     model->beginResetModel ();
     trackList.clear();
     totalLength=0;

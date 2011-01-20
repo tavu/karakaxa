@@ -39,6 +39,12 @@ player::audioFile::audioFile(const QString url)
     connect(&db,SIGNAL(changed()),this,SLOT(recordClean()) );
 }
 
+player::audioFile::~audioFile()
+{
+    delete file;
+}
+
+
 QVariant player::audioFile::tag(tagsEnum t, const short int f, int *err, short int* r)
 {
   
@@ -55,7 +61,7 @@ QVariant player::audioFile::tag(tagsEnum t, const short int f, int *err, short i
     if you want another order use this function more than one with different flag.
     
 */
-    mutex.lock();
+//     mutex.lock();
     if (t==PATH)
         return tagRet(getPath(),TITLEFP,err,r) ;
 
@@ -195,15 +201,14 @@ bool player::audioFile::setArtist (const QString &s)
         mutex.unlock();
         return false;
     }
-    
+
+    mutex.unlock();
+
     if(!_mutable )
     {
 	db.updateSig(ARTIST);
     }
-
     
-
-    mutex.unlock();
     return true;
 }
 
@@ -228,12 +233,14 @@ bool player::audioFile::setAlbum(const QString &s)
         return false;
     }
     
+    mutex.unlock();
+    
     if(!_mutable )
     {
 	db.updateSig(ALBUM);
     }
 
-    mutex.unlock();
+    
     return true;
 }
 

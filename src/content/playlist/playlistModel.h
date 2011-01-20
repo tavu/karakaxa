@@ -4,8 +4,9 @@
 #include<QAbstractListModel>
 #include<player.h>
 #include<QThread>
+#include<trackUrl.h>
 using namespace player;
-class playlistModel :public QAbstractListModel ,QThread 
+class playlistModel :public QAbstractListModel ,QThread ,trackUrl
 {      
     public:
 	playlistModel(QObject* parent = 0);
@@ -15,6 +16,10 @@ class playlistModel :public QAbstractListModel ,QThread
 	void setPlPath(const QString &s);
 	virtual QVariant headerData ( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const;
 	void contextMenuEvent(QContextMenuEvent *e);
+	
+	virtual KUrl url(int row) const;
+	virtual Qt::ItemFlags flags ( const QModelIndex & index ) const;
+	
 // 	void plPath(const QString &s)
 // 	{
 // 	    if(pl==0)	return QString();
@@ -24,7 +29,7 @@ class playlistModel :public QAbstractListModel ,QThread
 	
     private:
 	player::m3uPl *pl;
-	audioFile **audio;
+	QList<audioFile*> files;
 	
 	void run();
 	  

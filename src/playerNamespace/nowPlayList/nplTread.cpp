@@ -24,7 +24,12 @@ nplTread::nplTread()
     statusBar.addPermanentWidget(w);
 
     connect(this,SIGNAL(finished() ),this ,SLOT(deleteLater () ),Qt::QueuedConnection );
+//     connect(&npList,SIGNAL(cancelThreads()),this ,SLOT(cancel() ),Qt::QueuedConnection );
+}
 
+void nplTread::cancel()
+{
+    canceled=true;
 }
 
 
@@ -43,6 +48,10 @@ void nplTread::run()
 	{
 	    addMedia(url.toLocalFile() );
 	}
+	else
+	{
+	    return ;
+	}
 	
     }
 
@@ -51,6 +60,10 @@ void nplTread::run()
 	if(!canceled)
 	{
 	    addMedia(url);
+	}	
+	else
+	{
+	    return ;
 	}
     }
     
@@ -87,7 +100,7 @@ void nplTread::addPlaylist(const QString& url)
 {
     player::m3uPl m3u(url);
     m3u.load();	
-    for (int i=0;i<m3u.size();i++)    
+    for (int i=0;i<m3u.size() && !canceled;i++)    
     {            
       addSingleFile(m3u.item(i));
     }
@@ -130,16 +143,17 @@ void nplTread::addDirectory(const QString &url)
     QFileInfo info;
     while (it.hasNext() && !canceled )
     {
+	qDebug()<<"ffffffffff "<<info.filePath();
         it.next();
         info=it.fileInfo();
 	
-	if(player::isDirectory(info.filePath() ) )
-	{
-	    addDirectory(info.filePath() );
-	}
-	else if(player::isAudio(info.filePath()) )
+	if(player::isAudio(info.filePath()) )
 	{
 	    addSingleFile(info.filePath());
+	}	
+	else if(player::isDirectory(info.filePath() ) )
+	{
+	    addDirectory(info.filePath() );
 	}
     }
 }

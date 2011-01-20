@@ -151,6 +151,7 @@ player::database::~database()
 {
     if(db.isOpen())	db.close();
     db=QSqlDatabase();
+    QSqlDatabase::removeDatabase(db.databaseName() );
 }
 
 QSqlQuery player::database::albumQuery(QString artist)

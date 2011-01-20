@@ -74,6 +74,7 @@ class nplaylist :public QObject
     signals:
 	void insertSig(nplList,int );
 	void removeSig(const int);
+	void cancelThreads();
 
     public slots:
 
@@ -85,7 +86,6 @@ class nplaylist :public QObject
 	void duplicate(const int pos);
 	void suffle();
 
-    private slots:
 	void insertSlot(nplList list,int pos);
 	void removeSlot(const int);
 };
