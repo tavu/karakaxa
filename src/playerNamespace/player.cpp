@@ -235,9 +235,16 @@ QVariant player::pretyTag(QVariant var, tagsEnum t)
 	}
 	return prettyLength(var.toInt() );
     }
-    if( (t==YEAR || t==BITRATE || t==TRACK) && var.toInt()==0)
+    if(t==YEAR || t==BITRATE || t==TRACK)
     {
-	return QVariant();
+	if(var.toInt()==0 )
+	{
+	    return QVariant();
+	}
+	else
+	{
+	    return var;
+	}
     }
     if(t==RATING || COUNTER)
     {

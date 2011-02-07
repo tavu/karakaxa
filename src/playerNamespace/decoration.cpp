@@ -82,3 +82,44 @@ QPixmap player::decoration::cover(const QString &path)
 
     return pm;
 }
+
+QPixmap player::decoration::decorationPixmap(const QStyleOptionViewItem &option, const QModelIndex &index)
+{
+    const QVariant value = index.model()->data(index, Qt::DecorationRole);
+    QPixmap pixmap;
+
+    switch (value.type())
+    {
+	case QVariant::Icon:
+	    pixmap =  toPixmap(option,qvariant_cast<QIcon>(value),index);
+	    break;
+
+	case QVariant::Pixmap:        pixmap = qvariant_cast<QPixmap>(value);
+	    break;
+
+
+	default:
+	    pixmap = QPixmap();
+    }
+ 
+    return pixmap;
+}
+
+QPixmap player::decoration::toPixmap(const QStyleOptionViewItem &option, const QIcon &icon,const QModelIndex &index)
+{
+    QIcon::Mode mode   = option.state & QStyle::State_Enabled ? QIcon::Normal : QIcon::Disabled;
+    QIcon::State state = option.state & QStyle::State_Open ? QIcon::On : QIcon::Off;
+    QSize s=option.decorationSize;
+    
+    if(s.isEmpty())
+    {
+	int h=option.rect.height();
+	s=QSize(h,h);
+    }
+
+//     int h=option.rect
+//     s=QSize(h,h);
+    
+    const QSize size = icon.actualSize(s, mode, state);
+    return icon.pixmap(size, mode, state);
+}

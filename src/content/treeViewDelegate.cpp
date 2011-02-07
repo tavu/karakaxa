@@ -14,7 +14,6 @@ using namespace player;
 #include <kicon.h>
 #include <kiconeffect.h>
 #include <QVariant>
-
 #include<QStyle>
 
 #include<QStylePainter>
@@ -26,7 +25,6 @@ treeViewDelegate::treeViewDelegate(QObject *parent)
 {
   ratingPainter.setEnabled( true );
   ratingPainter.setIcon(KIcon("favorites") );
-//     _sizeHint=Q
 }
 
 void treeViewDelegate::paint ( QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index ) const
@@ -89,7 +87,7 @@ void treeViewDelegate::paint ( QPainter * painter, const QStyleOptionViewItem & 
     r.setX(r.x()+2);
 
     painter->restore();
-    QPixmap pic=decoration(option,index);
+    QPixmap pic=player::decor.decorationPixmap(option,index);
 
     if (!pic.isNull() )
     {
@@ -101,6 +99,7 @@ void treeViewDelegate::paint ( QPainter * painter, const QStyleOptionViewItem & 
     if(!var.isNull() )
     {
 	QString text = option.fontMetrics.elidedText(var.toString(),Qt::ElideRight,r.width() );
+	text=text.simplified();
 	painter->drawText( r,Qt::AlignLeft|Qt::AlignVCenter, text);
     }
 //     style()->drawItemText(painter,r,Qt::AlignLeft|Qt::AlignVCenter,option.palette,true,text);
@@ -168,44 +167,6 @@ void treeViewDelegate::setRatingColumn(const int n)
 int treeViewDelegate::ratingColumn() const
 {
     return rating;
-}
-
-QPixmap treeViewDelegate::decoration(const QStyleOptionViewItem &option, const QModelIndex &index) const
-{
-    const QVariant value = index.model()->data(index, Qt::DecorationRole);
-    QPixmap pixmap;
-
-    switch (value.type())
-    {
-	case QVariant::Icon:
-	    pixmap =  toPixmap(option,qvariant_cast<QIcon>(value),index);
-	    break;
-
-	case QVariant::Pixmap:        pixmap = qvariant_cast<QPixmap>(value);
-	    break;
-
-
-	default:
-	    pixmap = QPixmap();
-    }
- 
-    return pixmap;
-}
-
-QPixmap treeViewDelegate::toPixmap(const QStyleOptionViewItem &option, const QIcon &icon,const QModelIndex &index) const
-{
-    QIcon::Mode mode   = option.state & QStyle::State_Enabled ? QIcon::Normal : QIcon::Disabled;
-    QIcon::State state = option.state & QStyle::State_Open ? QIcon::On : QIcon::Off;
-    QSize s=option.decorationSize;
-    
-//      if(s.height()==-1)
-    {
-	int h=sizeHint(option,index).height();
-	s=QSize(h,h);
-    }
-    
-    const QSize size = icon.actualSize(s, mode, state);
-    return icon.pixmap(size, mode, state);
 }
 
 void treeViewDelegate::commitEditor()

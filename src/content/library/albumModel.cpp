@@ -20,11 +20,8 @@ QVariant albumModel::data(const QModelIndex &index, int role) const
     if (role==Qt::DisplayRole||role==Qt::ToolTipRole)
     {
         QVariant value = QSqlQueryModel::data(index, Qt::DisplayRole);
-        if (value.toString().isEmpty() )
-        {
-            return QVariant("Unown album");
-        }
-        return value;
+	
+	return player::pretyTag(value,ALBUM);
     }
 
     if (role==Qt::DecorationRole)

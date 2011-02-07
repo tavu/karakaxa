@@ -5,7 +5,8 @@
 #include<KIcon>
 #include <QPixmapCache>
 #include<tagsTable.h>
-
+#include<QStyleOptionViewItem>
+#include<QModelIndex>
 namespace player
 {
 
@@ -28,12 +29,6 @@ class decoration
 	{
 	    return KIcon(artistIcon );
 	}
-
-// 	inline QPixmap artistPic()
-// 	{
-// 	    return icons[ARTIST].pixmap(pixSize);
-// // 	    return QPixmap(artistIcon );
-// 	}
 
 	inline KIcon next()
 	{
@@ -82,6 +77,8 @@ class decoration
 	}
 	void init();
 	
+	static QPixmap decorationPixmap(const QStyleOptionViewItem &option, const QModelIndex &index);
+	static QPixmap toPixmap(const QStyleOptionViewItem &option, const QIcon &icon,const QModelIndex &index);
     private:
 	QPalette pal;
 

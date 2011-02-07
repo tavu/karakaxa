@@ -7,6 +7,7 @@
 #include"../treeViewHeader.h"
 #include"albumWidget.h"
 #include"songView.h"
+#include"albumDelegate.h"
 
 albumTrack::albumTrack(QWidget *parent)
         :QWidget(parent)
@@ -84,8 +85,8 @@ void albumTrack::albumVInit()
     albumV=new albumWidget(this);
     albumM=new albumModel(this);
 
-//     QItemDelegate *del=new QItemDelegate(this);
-//     albumV->setItemDelegate(del);
+    albumDelegate *del=new albumDelegate(this);
+    albumV->setItemDelegate(del);
     
     albumV->setModel(albumM);
 

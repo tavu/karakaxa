@@ -21,9 +21,9 @@ class treeViewDelegate :public QItemDelegate
     private:
 	int rating;
 
-	QPixmap decoration(const QStyleOptionViewItem &option, const QModelIndex &index) const;
+/*	QPixmap decoration(const QStyleOptionViewItem &option, const QModelIndex &index) const;
 	QPixmap toPixmap(const QStyleOptionViewItem& option, const QIcon& icon, const QModelIndex &index) const;
-      
+ */     
 	
 	int ITEM_HEIGH;
 	int FONT_SIZE;

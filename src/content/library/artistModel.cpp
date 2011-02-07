@@ -22,10 +22,8 @@ QVariant artistModel::data(const QModelIndex &index, int role) const
     if (role==Qt::DisplayRole)
     {
         QVariant value = QSqlQueryModel::data(index, role);
-        if (value.toString().isEmpty() )
-        {
-            return QVariant("Unown Artist");
-        }
+
+        return player::pretyTag(value,ARTIST);
     }
     if (role==Qt::DecorationRole)
     {

@@ -16,7 +16,7 @@
 #include<KConfig>
 #include<KConfigGroup>
 
-#define ICONZISE QSize(40,40)
+#define ICONZISE QSize(35,35)
 
 using namespace player;
 
@@ -32,7 +32,8 @@ mainWindow::mainWindow()
   
     QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
     QTextCodec::setCodecForTr(QTextCodec::codecForName ("UTF-8"));
-
+    setIconSize(ICONZISE);
+    
     pal=palette();
     pal.setColor(QPalette::Base,pal.color(QPalette::Window) );
 //     pal.setColor(QPalette::Link,QColor(0,0,255) );
@@ -58,17 +59,33 @@ mainWindow::mainWindow()
 
     toolBarInit();
     
-     QDockWidget *w=new QDockWidget(this);
-     w->setWidget(toolBar);
 
-
+     
+     QWidget *ww=new QWidget(this);
+     QVBoxLayout *v=new QVBoxLayout();
+     
+     QFrame *f=new QFrame(this);
+     QHBoxLayout *h=new QHBoxLayout(this);
+     h->addWidget(toolBar);
+     toolBar->setPalette(pal);
+     f->setLayout(h);
+     f->setFrameShape(QFrame::StyledPanel);
+     f->setFrameShadow(QFrame::Raised);
+     f->setPalette(pal);
+     f->setAutoFillBackground(true);
+     v->addWidget(f);
+     v->addWidget(conView);
+     ww->setLayout(v);
+     conView->setAutoFillBackground(true);
+//      conView->setPalette(pal);
+     setCentralWidget(ww); 
+     toolBar->setAutoFillBackground(false);
 
      addDockWidget ( Qt::LeftDockWidgetArea, infoDock,Qt::Horizontal);
      addDockWidget ( Qt::LeftDockWidgetArea, conTreeDock,Qt::Vertical);
-     addDockWidget ( Qt::LeftDockWidgetArea, w, Qt::Horizontal );
+     addDockWidget ( Qt::LeftDockWidgetArea, conViewDock, Qt::Horizontal );
 //      addDockWidget ( Qt::LeftDockWidgetArea, conViewDock, Qt::Horizontal );
      
-      addDockWidget ( Qt::LeftDockWidgetArea, conViewDock, Qt::Vertical );
      addDockWidget ( Qt::LeftDockWidgetArea, nplViewDock, Qt::Horizontal );
 
      
@@ -146,13 +163,17 @@ inline void mainWindow::infoInit()
 
 void mainWindow::conViewInit()
 {
-    conView=new QStackedWidget(this);    
+    conView=new QStackedWidget(this);   
+    conView->setFrameStyle(QFrame::StyledPanel);
+    conView->setFrameShadow(QFrame::Raised);
     conViewDock=new QDockWidget(this);
     conViewDock->setWindowTitle("content Dock");
     conViewDock->setObjectName("contentDock");
-    conViewDock->setWidget(conView);
+//     conViewDock->setWidget(conView);
 
 
+
+    conView->setPalette(pal);
 
     conViewDock->setPalette(pal);
 
@@ -267,8 +288,8 @@ void mainWindow::toolBarInit()
 
     QPalette p=QApplication::palette();
 
-    toolBar->setPalette(p);
-    toolBar->setAutoFillBackground(true);
+//     toolBar->setPalette(p);
+//     toolBar->setAutoFillBackground(true);
 
     toolBar->setObjectName("buttonsToolBar");
     toolBar->setToolButtonStyle( Qt::ToolButtonIconOnly );

@@ -1,10 +1,12 @@
 #include"artistWidget.h"
-
+#include"artistDelegate.h"
 artistWidget::artistWidget(QWidget *parent)
         :QListView(parent)
 {
     artistM=new artistModel(this);
-
+    artistDelegate *del=new artistDelegate(this);
+    setItemDelegate(del);
+    
     QSqlQuery q(queryGrt::artist(),db.getDatabase() );
     q.exec();
     artistM->setQuery(q);
