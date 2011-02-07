@@ -29,6 +29,7 @@ class mainWindow :public QMainWindow
     public:
 	mainWindow();
 	~mainWindow();
+	    
     private:
 
 	KToolBar 	*toolBar;

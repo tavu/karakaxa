@@ -102,7 +102,7 @@ class audioFile :public QObject
 
 	static player::audioFile* getAudioFile(QString path);
 	static void releaseAudioFile(QString path);
-	static void releaseAudioFile(audioFile *file);
+	static void releaseAudioFile(audioFile *file);	
 
     private:
 	
@@ -125,7 +125,7 @@ class audioFile :public QObject
 	int defult;
 	QSqlDatabase databs;
 	QMutex mutex;
-	bool setAlbumArtist(const QString &s,QSqlQuery &q);
+// 	bool setAlbumArtist(const QString &s,QSqlQuery &q);
 	
 	static fileTags* getFileTags(const QString path);
 

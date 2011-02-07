@@ -8,13 +8,14 @@
 #include<QCommonStyle>
 #define ICONZISE QSize(15,15)
 playingInfo::playingInfo(QWidget *parent)
-        :QWidget(parent)
+        :QFrame(parent)
 {
  
     cover=new player::coverWidget(this);
     cover->setSize(90,110);
+//     cover->setFixedSize(100,110);
 //     cover->setFrameShape(QFrame::StyledPanel);
-    cover->setFrameShadow(QFrame::Raised);
+//     cover->setFrameShadow(QFrame::Sunken);
     
     stars=new starWidget(this);
     stars->setMaximumWidth(100);    
@@ -38,14 +39,15 @@ playingInfo::playingInfo(QWidget *parent)
     QFormLayout *formLayout=new QFormLayout();    
     formLayout->addRow(stars);
     formLayout->addRow(commentIcon,commentT);
-     QHBoxLayout *hLayout=new QHBoxLayout();
-     hLayout->addWidget(cover);
+    QHBoxLayout *hLayout=new QHBoxLayout();
+    hLayout->addWidget(cover);
     hLayout->addLayout(formLayout);
     hLayout->addStretch();
     
      hLayout->setContentsMargins(0,0,0,0);
      QWidget *w =new QWidget(this);
      w->setLayout(hLayout);
+     w->setFixedHeight(100);
 //     
 //      layout->addLayout(hLayout);
 //      layout->addWidget(titleT);
@@ -85,8 +87,15 @@ playingInfo::playingInfo(QWidget *parent)
     connect(&engine,SIGNAL(trackChanged(QString) ),this,SLOT(update(QString)) );
     connect(stars,SIGNAL(ratingChanged(int) ),SLOT(setRating(int) ) );
     
-    
+//     setSizePolicy(QSizePolicy::Preferred,QSizePolicy::Preferred);
 }
+
+QSize playingInfo::sizeHint() const
+{
+    return QSize(200,170);
+}
+
+
 
 playingInfo::~playingInfo()
 {
@@ -109,7 +118,7 @@ void playingInfo::getInfo()
 
     titleT->setText(track->tag(TITLE).toString() );
     albumT->setText(track->tag(ALBUM).toString() );
-    artistT->setText(track->tag(LEAD_ARTIST).toString() );
+    artistT->setText(track->tag(ARTIST).toString() );
     commentT->setText(track->tag(COMMENT).toString() );
 
      cover->setCover(track->cover() );

@@ -12,7 +12,9 @@ player::coverWidget::coverWidget(QString s ,QWidget * parent, Qt::WindowFlags f 
     label=new QLabel(this);
     setCover(s);
     QVBoxLayout *l=new QVBoxLayout(this);
+//     l->addStretch();
     l->addWidget(label);
+    l->addStretch();
     l->setContentsMargins(0,0,0,0);
     setLayout(l);
   
@@ -26,6 +28,7 @@ player::coverWidget::coverWidget(QWidget * parent, Qt::WindowFlags f  )
     setCover();
     QVBoxLayout *l=new QVBoxLayout(this);
     l->addWidget(label);
+    l->addStretch();
     setLayout(l);
 }
 

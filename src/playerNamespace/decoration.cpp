@@ -24,6 +24,15 @@ player::decoration::decoration()
     
     icons[RATING]=KIcon("rating");
     
+    QString commentIcon=KGlobal::dirs()->findResource("data",QString("player/icons/comment.png") );
+    icons[COMMENT]=KIcon(commentIcon);
+    
+    QString trackIcon=KGlobal::dirs()->findResource("data",QString("player/icons/track.png") );
+    icons[TRACK]=KIcon(trackIcon);
+    
+    QString lengthIcon=KGlobal::dirs()->findResource("data",QString("player/icons/clock.png") );
+    icons[LENGTH]=KIcon(lengthIcon);
+    
     QString defaultS=KGlobal::dirs()->findResource("data",QString("player/icons/music.png"));
     qDebug()<<"default icon location"<<defaultS;
     defaultIcon=KIcon(defaultS);

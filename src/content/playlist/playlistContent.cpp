@@ -10,10 +10,15 @@ playlistContent::playlistContent(QWidget *parent)
     treeV=new myTreeView(this);
     treeV->setFrameShape(QFrame::StyledPanel);
     treeV->setUniformRowHeights(false);
-
+    
     treeV->setHeaderHidden(true);
-    trackV=new songView(this);
+    
+    trackV=new songView(this,"playlistView");
+//     trackV->setRatingColumn(RATING);
+    trackV->setEditTriggers(QAbstractItemView::SelectedClicked);
+    trackV->setNotHide(TITLE);
     trackV->setFrameShape(QFrame::StyledPanel);
+    
     treeV->setRootIsDecorated(true);
     
     treeModel=new myStandardModel(this);
@@ -84,13 +89,8 @@ playlistContent::playlistContent(QWidget *parent)
 
 void playlistContent::removeSlot()
 {
-//     qDebug()<<"ori "<<treeV->currentIndex();
     QModelIndex index=proxyM->mapToSource(treeV->currentIndex());
-//     index=treeV->currentIndex();
-    qDebug()<<"row Index "<<index;
-    treeModel->removeRow(index.row(),index.parent());
-    
-//     treeModel->remove(treeV->currentIndex());
+    treeModel->removeRow(index.row(),index.parent());    
 }
 
 
@@ -276,9 +276,6 @@ void playlistContent::contextMenuSlot(QModelIndex in)
 	{	
 	    menu->addAction(removeAction);
 	}
-
-	
-	
     }
     
     if(treeModel->head(index)==plHead)
@@ -294,7 +291,7 @@ void playlistContent::contextMenuSlot(QModelIndex in)
 
 void playlistContent::save()
 {
-  qDebug()<<"saving";
+    qDebug()<<"saving";
     QDomDocument doc;
     QDomElement root=doc.createElement("smartPlaylist");
 //     root.appendChild(smHead->xml() );

@@ -21,6 +21,7 @@ class nplFile :public nplTrack
 	int	 	length() ;
 	QString 	cover();
 	
+	QVariant	artist();	
 	QVariant	tag(tagsEnum);
 	
 	audioFile*	getAudioFile();

@@ -3,6 +3,7 @@
 #include<QRegExp>
 #include<QObject>
 #include<KMimeType>
+#include<QLinkedList>
 
 
 namespace player
@@ -15,6 +16,7 @@ nplaylist 		npList;
 QPalette		pal;
 pStatusBar		statusBar;
 decoration 		decor;
+QLinkedList<audioFile*>	audioFiles;
 };
 
 void player::editTrack(const QString &s)
@@ -45,7 +47,7 @@ QString player::prettyLength(int l)
     {
         s.prepend(QString::number(hour)+':');
     }
-
+    
     return s;
 }
 
@@ -221,3 +223,30 @@ int player::tagSize(tagsEnum t)
     }
     }
 }
+
+
+QVariant player::pretyTag(QVariant var, tagsEnum t)
+{
+    if (t==LENGTH )
+    {
+	if ( var.toInt()==0)
+	{
+		return QVariant();
+	}
+	return prettyLength(var.toInt() );
+    }
+    if( (t==YEAR || t==BITRATE || t==TRACK) && var.toInt()==0)
+    {
+	return QVariant();
+    }
+    if(t==RATING || COUNTER)
+    {
+	return var;
+    }
+    else
+    {
+	QString s=var.toString();
+	return QVariant(s);
+    }
+}
+

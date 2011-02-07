@@ -5,6 +5,7 @@
 smplaylistItem::smplaylistItem(const QString &text)
   :myStandardItem(text)
 {
+    setIcon(decor.tagIcon(-1));
 }
 
 void smplaylistItem::generateQuery() const

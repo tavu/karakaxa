@@ -7,6 +7,7 @@ playlistItem::playlistItem(const QString &p)
   path(p)
 {
     setText(player::titleFromPath(p));
+    setIcon(KIcon("audio-x-generic") );
 }
 
 int playlistItem::type() const

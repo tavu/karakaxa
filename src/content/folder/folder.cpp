@@ -108,6 +108,9 @@ void folderContent::cleanup()
 
 void folderContent::setDir(const QModelIndex index)
 {
+    qDebug()<<index;
+    qDebug()<<"URL "<<proxyM->mapToSource(index).data(URL_ROLE);
+  
     Qt::KeyboardModifiers m=QApplication::keyboardModifiers();
     
     if(m & Qt::ShiftModifier || m & Qt::ControlModifier )
@@ -122,7 +125,6 @@ void folderContent::setDir(const QModelIndex index)
     {
         navigator->setUrl( item.url() );
     }
-//      navigator->setUrl(url);
 }
 
 void folderContent::cd(KUrl url)

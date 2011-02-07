@@ -5,6 +5,9 @@
 #include<QPalette>
 #include"files/tagsTable.h"
 #include"nowPlayList/nplClass.h"
+
+#define URL_ROLE Qt::UserRole+2
+
 namespace player
 {
 
@@ -38,6 +41,8 @@ extern QPalette			pal;
 extern pStatusBar		statusBar;
 extern decoration 		decor;
 
+//an audio file list for many porposes
+extern QLinkedList<audioFile*>	audioFiles;
 
 QString 	folder(QString path) ;
 QString 	titleFromPath(const QString &path);
@@ -54,6 +59,7 @@ bool 		isAudio(const QString &url);
 QString 	format(QString path);
 
 void 		editTrack(const QString &s);
+QVariant	pretyTag(QVariant var,tagsEnum t);
 };
 
 

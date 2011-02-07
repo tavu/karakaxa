@@ -33,7 +33,6 @@ void player::m3uPl::load()
     }
 
     QTextStream in(&file);
-    QChar c;
     while (!in.atEnd())
     {
         QString line = in.readLine();

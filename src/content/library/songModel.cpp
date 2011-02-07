@@ -62,33 +62,22 @@ Qt::ItemFlags songModel::flags(const QModelIndex &index) const
 }
 
 QVariant songModel::data(const QModelIndex &i, int role) const
-{
+{  
+    QModelIndex in=QSqlQueryModel::index(i.row(),i.column()+1);
+    QVariant value = QSqlQueryModel::data(in, role);
   
-//     if(role==Qt::DisplayRole)
+    if(role==Qt::DisplayRole)
     {
-	QModelIndex in=QSqlQueryModel::index(i.row(),i.column()+1);
-	QVariant value = QSqlQueryModel::data(in, role);
-
-	if (in.column()==TRACK+1 && value.toInt()==0)
-	{
-	    return QVariant();
-	}
-	if (in.column()==LENGTH+1 )
-	{
-	    if ( value.toInt()==0)
-	    {
-		return QVariant();
-	    }
-	    return prettyLength(value.toInt() );
-	}
-	if(in.column()==YEAR+1  && value.toInt()==0)
-	{
-	    return QVariant();
-	}
-	  
-	return value;
+	return player::pretyTag(value,(tagsEnum)(in.column()-1) );
     }
-    return QVariant();
+    else if(role==URL_ROLE)
+    {
+	QString s=record(in.row()).value(PATH).toString();
+	KUrl u(s);
+	return QVariant(u);
+    }
+    
+    return value;
 }
 
 int songModel::columnCount ( const QModelIndex & index ) const
@@ -101,7 +90,7 @@ KUrl songModel::url(int row) const
     QModelIndex	i=index(row,PATH);
     
     QString s=record(row).value(PATH).toString() ;
-
+    
     return KUrl(s);
 }
 
@@ -110,18 +99,13 @@ bool songModel::setData ( const QModelIndex & index, const QVariant & value, int
     /*urlList conteins all urls of the selected indexes.with no dublicates.
      * we set the data to all of them
      */
-    if(!urlList.isEmpty() )
+    if(!player::audioFiles.isEmpty() )
     {
-	foreach(KUrl u,urlList)
-	{	    
-	    audioFile *f=audioFile::getAudioFile(u.toLocalFile() );
-	    if(f!=0)
-	    {
-		qDebug()<<u;
-		f->setTag( (tagsEnum)index.column(),value );
-	    }
+	foreach(audioFile* f,player::audioFiles)
+	{
+	    f->setTag( (tagsEnum)index.column(),value );
 	}
-	urlList.clear();
+	player::audioFiles.clear();
     }
     else
     {

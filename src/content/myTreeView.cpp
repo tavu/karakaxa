@@ -12,6 +12,7 @@
 #define test qDebug()<<"TEEEST";
 #include<KApplication>
 #include<QSettings>
+#include<player.h>
 
 // class editTrack;
 myTreeView::myTreeView(QWidget *parent,QString name)
@@ -85,26 +86,22 @@ void myTreeView::mouseMoveEvent(QMouseEvent *event)
 
 void myTreeView::performDrag()
 {
-
     QModelIndexList list=selectedIndexes();
-
+    
     if (list.isEmpty() )	return;
-
-    const trackUrl *model=dynamic_cast<const trackUrl*>(list.at(0).model() );
-
-    if (model==0)
-    {
-        return ;
-    }
-
+    
     QList<QUrl> urls;
     qSort(list.begin(), list.end());
     QModelIndexList::const_iterator it=list.begin();
 
     while (it!=list.end() )
     {
-        int r=(*it).row();
-        urls.append(model->url(it->row())  );
+	int r=(*it).row();
+	QUrl u=it->data(URL_ROLE).toUrl();
+	if(u.isValid() )
+	{
+	    urls.append(u);
+	}
 
         while ( it!=list.end() && (*it).row()==r )
         {
@@ -112,13 +109,13 @@ void myTreeView::performDrag()
         }
 
     }
-
+    
     QMimeData *mimeData = new QMimeData;
     mimeData->setUrls(urls);
 
     QDrag *drag = new QDrag(this);
     drag->setMimeData(mimeData);
-    drag->setPixmap(QPixmap("audio-x-generic") );
+    drag->setPixmap(QPixmap(decor.tagIcon(-1).pixmap(48,48)) );
 
     drag->exec(Qt::CopyAction);
 }
@@ -135,12 +132,13 @@ void myTreeView::setModel ( QAbstractItemModel * model )
 
 void myTreeView::fileEdit()
 {
+  /*
     QModelIndexList list=selectedIndexes();
 
     if (list.isEmpty() )	return;
 
-    const trackUrl *model=dynamic_cast<const trackUrl*>(list.at(0).model() );
-    if (model==0)
+    trackUrl *mod=dynamic_cast<trackUrl*>(model() );
+    if (mod==0)
     {
         return ;
     }
@@ -153,9 +151,18 @@ void myTreeView::fileEdit()
     {
         if (i.column()==0)
         {
-            player::editTrack(model->url(i.row()).toLocalFile() );
+            player::editTrack(mod->url(i.row()).toLocalFile() );
         }
     }
+    */
+  
+    QModelIndex index=currentIndex();
+    QUrl u=index.data(URL_ROLE).toUrl();
+    
+    if(u.isValid())
+    {
+	player::editTrack(u.toLocalFile() );
+    }  
 }
 
 void myTreeView::contextMenuEvent(QContextMenuEvent *e)
@@ -242,23 +249,52 @@ void myTreeView::commitData ( QWidget * editor )
   qDebug()<<"editttt";
   
   
-  trackUrl *m=dynamic_cast<trackUrl*>(model());
-    
-    if(m!=0)
+//     trackUrl *m=dynamic_cast<trackUrl*>(model());
+//     
+//     if(m!=0)
+//     {
+// 	QModelIndexList list=selectedIndexes();
+// 
+// 	if (!list.isEmpty() )
+// 	{
+// 	    foreach(QModelIndex i,list)
+// 	    {
+// 		if (i.column()==list.at(0).column() )
+// 		{
+// 		    m->urlList<<m->url(i.row());
+// 		}
+// 	    }
+// 	}
+//     }
+//     QTreeView::commitData(editor);
+   
+    player::audioFiles.clear();
+    QModelIndexList list=selectedIndexes();
+    if (!list.isEmpty() )	
     {
-	QModelIndexList list=selectedIndexes();
-
-	if (!list.isEmpty() )
-	{
-	    foreach(QModelIndex i,list)
-	    {
-		if (i.column()==list.at(0).column() )
+	foreach(QModelIndex i,list)	
+	{	
+	    if (i.column()==list.at(0).column() )	
+	    {	
+		QUrl u=i.data(URL_ROLE).toUrl();
+		if(u.isValid() )
 		{
-		    m->urlList<<m->url(i.row());
+		    audioFile *f=audioFile::getAudioFile(u.toLocalFile());
+		    if(f!=0 && f->isValid() )
+		    {
+			player::audioFiles.append(f);
+		    }
 		}
 	    }
 	}
     }
-    QTreeView::commitData(editor);
     
+    QTreeView::commitData(editor);
+}
+
+void myTreeView::closeEditor ( QWidget * editor, QAbstractItemDelegate::EndEditHint hint )
+{
+    qDebug()<<"closing editor";
+    player::audioFiles.clear();
+    QTreeView::closeEditor(editor,hint);   
 }

@@ -49,6 +49,7 @@ class myTreeView :public QTreeView
 	virtual void writeSettings();
 	virtual void readSettings();
 	virtual void updateStarWidget(QModelIndex parent, int start, int end);
+	virtual void closeEditor ( QWidget * editor, QAbstractItemDelegate::EndEditHint hint );
 	
     signals:
 	void showContextMenu(QModelIndex);

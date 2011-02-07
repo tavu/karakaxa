@@ -24,6 +24,14 @@ player::nplFile::nplFile(QString s)
     
 }
 
+QVariant nplFile::artist()
+{
+    if(file==0)	return QVariant();
+    
+    return file->albumArtist();
+}
+
+
 player::nplFile::~nplFile()
 {
   qDebug()<<"deleting nplFile";

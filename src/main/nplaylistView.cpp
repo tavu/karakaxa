@@ -85,7 +85,7 @@ void nplaylistView::performDrag()
 
     QDrag *drag = new QDrag(this);
     drag->setMimeData(mimeData);
-    drag->setPixmap(decor.tagIcon(-1).pixmap(20,20) );
+    drag->setPixmap(decor.tagIcon(-1).pixmap(48,48) );
 
     drag->exec(Qt::MoveAction);
 //      QItemSelectionModel *sm=selectionModel();

@@ -2,7 +2,7 @@
 
 playlistModel::playlistModel(QObject *parent)
     :QAbstractListModel(parent),
-    QThread(parent),
+     QThread(parent),
     pl(0)
 {
     
@@ -28,8 +28,15 @@ QVariant playlistModel::data(const QModelIndex & index, int role ) const
     static int flag=audioFile::DBCACHE|audioFile::ONCACHE|audioFile::TITLEFP;
     
     if( role == Qt::DisplayRole)
+    {      
+	QVariant var=files.at(index.row() )->tag( (tagsEnum)index.column(),flag );
+	return player::pretyTag(var,(tagsEnum)index.column() );
+	
+    }    
+    else if(role==URL_ROLE)
     {
-	return files.at(index.row() )->tag( (tagsEnum)index.column(),flag );
+	KUrl u(files.at(index.row() )->getPath() );
+	return QVariant(u);
     }
     
     return QVariant();    
@@ -45,6 +52,10 @@ QVariant playlistModel::headerData ( int section, Qt::Orientation orientation, i
     {
 	return player::tagName((tagsEnum) section);
     }
+    if(role==Qt::DecorationRole)
+    {
+	return decor.tagIcon(section);
+    }
     
     return QVariant();
 }
@@ -54,46 +65,62 @@ void playlistModel::setPlPath(const QString &s)
 {    
     if(pl!=0)
     {
-	terminate();
-	
-	int end=files.size();
-	for(int i=0;i<end;i++)
-	{
-	    audioFile::releaseAudioFile(files.at(0));
-	}	
-	delete pl;
-    }
+ 	terminate();
+ 	beginResetModel();
+ 	int end=files.size();
+ 	for(int i=0;i<end;i++)
+ 	{
+ 	    audioFile::releaseAudioFile(files.at(i));
+ 	}	
+ 	delete pl;
+     }
+     else
+     {
+	beginResetModel();
+     }
         
     pl=new m3uPl(s);
   
     pl->load();
     beginResetModel();
     files=pl->files();
+    qDebug()<<files.size();
     endResetModel();        
     
-    start();    
+    if(pl->size()>files.size() )
+    {
+	statusBar.showMessage(QObject::tr("Some media coud not be shown"));
+    }
+    else if(files.isEmpty() )
+    {
+	statusBar.showMessage(QObject::tr("Empty playlist"));
+    }
+    
+    start();
 }
 
 void playlistModel::run()
 {
-
-    for(int j=0;j<pl->size();j++)
-    {
-	for (int i=TAGS_START;i<FRAME_NUM;++i)
-	{
-	    files.at(j)->tag( (tagsEnum)i);
-	}
-    }    
+ 
+     for(int j=0;j<files.size();j++)
+     {
+ 	for (int i=TAGS_START;i<FRAME_NUM;++i)
+ 	{
+ 	    files.at(j)->tag( (tagsEnum)i);
+ 	}
+     }    
 }
 
 KUrl playlistModel::url(int row) const
 {
-    if(row>=files.size() )
+    qDebug()<<"row "<<row;
+    if(row>=files.size() ||row<0 )
     {
-	return KUrl();
+ 	return KUrl();
     }
-    
-    return KUrl(files.at(row)->getPath() );
+    KUrl u=KUrl(files.at(row)->getPath() );
+    qDebug()<<u;
+    return u;
 }
 
 Qt::ItemFlags playlistModel::flags(const QModelIndex &index) const

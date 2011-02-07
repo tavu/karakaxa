@@ -2,7 +2,7 @@
 #include<QDebug>
 player::pStatusBar::pStatusBar(QWidget *parent)
         :QObject(parent),
-        timeOut(5000)
+        timeOut(7000)
 {
 
 }

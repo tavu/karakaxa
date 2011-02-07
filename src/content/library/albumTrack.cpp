@@ -31,8 +31,6 @@ albumTrack::albumTrack(QWidget *parent)
     splitter->addWidget(trackV);
     
     splitter->setMidLineWidth(5);
-//      splitter->setStretchFactor(0,1);
-//      splitter->setStretchFactor(1,0);
     QList<int> l;
     l<<100<<200;
     splitter->setSizes(l);
@@ -40,8 +38,6 @@ albumTrack::albumTrack(QWidget *parent)
     vLayout->addLayout(hLayout);
     vLayout->addWidget(splitter);
     setLayout(vLayout);
-
-
     
     connect(albumV,SIGNAL(activated ( const QModelIndex) ),this ,SLOT( albumActivated(const QModelIndex&) ) );
     
@@ -88,6 +84,9 @@ void albumTrack::albumVInit()
     albumV=new albumWidget(this);
     albumM=new albumModel(this);
 
+//     QItemDelegate *del=new QItemDelegate(this);
+//     albumV->setItemDelegate(del);
+    
     albumV->setModel(albumM);
 
     albumV->setVerticalScrollMode(QAbstractItemView::ScrollPerItem);
@@ -105,12 +104,10 @@ void albumTrack::albumVInit()
 
     albumV->setWrapping(false);
     albumV->setWordWrap(true);
-//      albumV->setTextElideMode(Qt::ElideNone);
     albumV->setSizePolicy(QSizePolicy::Ignored,QSizePolicy::Ignored);
 
     QSizePolicy p;
     p.setHorizontalPolicy(QSizePolicy::Ignored);
-//      albumV->setSizePolicy(p);
 
     leftB=new QPushButton(this);
     leftB->setFixedWidth(20);

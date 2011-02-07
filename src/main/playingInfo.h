@@ -4,12 +4,13 @@
 #include<QLabel>
 #include"scrolText.h"
 using namespace player;
-class playingInfo :public QWidget
+class playingInfo :public QFrame
 {
     Q_OBJECT
     public:
 	playingInfo(QWidget *parent=0);
 	~playingInfo();
+	virtual QSize sizeHint() const;
 	
     private:
 	player::coverWidget *cover;

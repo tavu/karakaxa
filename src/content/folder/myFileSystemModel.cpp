@@ -20,10 +20,10 @@ int myFileSystemModel::columnCount( const QModelIndex & parent ) const
 }
 
 QVariant myFileSystemModel::data(const QModelIndex &index, int role) const
-{  
-    if(role==Qt::SizeHintRole)
+{ 
+    if(role == URL_ROLE)
     {
-	return QVariant();
+	return QVariant(itemForIndex(index).url() );
     }
   
     if (index.column()<DIRCOLUMN)
@@ -44,13 +44,13 @@ QVariant myFileSystemModel::data(const QModelIndex &index, int role) const
 	
         var=f->tag((tagsEnum)filde, audioFile::ONCACHE|audioFile::DBCACHE );	
 	
-	if(filde==RATING)
-	{
-	    if(var.isNull() )
-	    {
-// 		return f->tag(RATING);
-	    }
-	}
+// 	if(filde==RATING)
+// 	{
+// 	    if(var.isNull() )
+// 	    {
+// // 		return f->tag(RATING);
+// 	    }
+// 	}
  	audioFile::releaseAudioFile(f);
 	
         if (filde==LENGTH)
@@ -59,7 +59,8 @@ QVariant myFileSystemModel::data(const QModelIndex &index, int role) const
         }
         
         return var;
-    }
+    }        
+    
     return QVariant();
 
 }

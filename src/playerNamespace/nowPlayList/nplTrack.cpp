@@ -34,6 +34,11 @@ nplPointer player::nplTrack::getNplTrack(const QString url)
     return nplPointer(ret);    
 }
 
+nplPointer player::nplTrack::getNplTrack(const QUrl url)
+{
+    return getNplTrack(url.toLocalFile());
+}
+
 QVariant player::nplTrack::tag(tagsEnum t)
 {
     if(t==TITLE)

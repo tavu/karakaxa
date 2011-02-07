@@ -47,6 +47,7 @@ mainWindow::mainWindow()
     player::pal=pal;
     player::pal.setColor(QPalette::Base,pal.color(QPalette::Window) );
 
+    infoInit();
     conTreeInit();
     conViewInit();
 
@@ -56,20 +57,27 @@ mainWindow::mainWindow()
     nplViewInit();
 
     toolBarInit();
-    infoInit();
+    
+     QDockWidget *w=new QDockWidget(this);
+     w->setWidget(toolBar);
 
 
 
-     addDockWidget ( Qt::LeftDockWidgetArea, infoDock,Qt::Vertical);
+     addDockWidget ( Qt::LeftDockWidgetArea, infoDock,Qt::Horizontal);
      addDockWidget ( Qt::LeftDockWidgetArea, conTreeDock,Qt::Vertical);
-     addDockWidget ( Qt::LeftDockWidgetArea, conViewDock, Qt::Horizontal );
+     addDockWidget ( Qt::LeftDockWidgetArea, w, Qt::Horizontal );
+//      addDockWidget ( Qt::LeftDockWidgetArea, conViewDock, Qt::Horizontal );
+     
+      addDockWidget ( Qt::LeftDockWidgetArea, conViewDock, Qt::Vertical );
      addDockWidget ( Qt::LeftDockWidgetArea, nplViewDock, Qt::Horizontal );
 
+     
+     
     setStatusBar(player::statusBar.statusBar() );
 
-    addToolBar ( Qt::TopToolBarArea,toolBar);
+//     addToolBar ( Qt::TopToolBarArea,toolBar);
 
-    lockDock();
+//     lockDock();
 
     //signals
 
@@ -116,13 +124,22 @@ inline void mainWindow::init()
 inline void mainWindow::infoInit()
 {
     info=new playingInfo(this);
+    info->setFixedSize(200,150);
+    QWidget *w=new QWidget(this);
+    QHBoxLayout *hLayout=new QHBoxLayout();
+//     QVBoxLayout *VLayout=new QVBoxLayout();
+    hLayout->addWidget(info);
+    hLayout->addStretch();
+    w->setLayout(hLayout);
+    
+    
     infoDock=new QDockWidget(this);
-    infoDock->setWidget(info);
+    infoDock->setWidget(w);
 
     infoDock->setPalette(player::pal);
 
-     infoDock->setWindowTitle("playing track info");
-     infoDock->setObjectName("playingTrackInfodf");
+    infoDock->setWindowTitle("playing track info");
+    infoDock->setObjectName("playingTrackInfodf");
 //     infoDockT=new QWidget(this);
 
 }
@@ -147,20 +164,36 @@ void mainWindow::conTreeInit()
     conTree=new contentTree(this);
     conTree->setFrameStyle(QFrame::Raised);
     conTree->setHeaderHidden(true);
-
-//       pal=palette();
-
-//      conTree->setPalette(p);
+//     conTree->setHeaderLabel("Content");
 
     conTreeDock =new QDockWidget(this);
     conTreeDock->setWindowTitle("select content");
     conTreeDock->setObjectName("contentTree");
+
+//     QWidget *w=new QWidget(this);
+//     QFrame *f=new QFrame(this);
+//     f->setFrameStyle(QFrame::HLine);
+//     QVBoxLayout *l=new QVBoxLayout();
+// 
+//     
+//     w->setSizePolicy(QSizePolicy::Ignored,QSizePolicy::Ignored);
+//     
+//     QLabel *label=new QLabel("Content",this);
+//     
+//     l->addWidget(info);
+//     l->addWidget(f);
+//     l->addWidget(label);
+//     l->addWidget(conTree);
+// //     l->addWidget(f);
+//     
+    
+//     w->setLayout(l);
+    
     conTreeDock->setWidget(conTree);
 
-//      QPalette p;
-//      p.setColor(QPalette::Base,p.color(QPalette::Window) );
     conTreeDock->setPalette(player::pal);
-//      conTreeDockT=new QWidget(this);
+    
+
 }
 
 void mainWindow::nplViewInit()
@@ -262,32 +295,7 @@ void mainWindow::toolBarInit()
     volumeBar *v=new volumeBar(this);
     v->setFixedWidth(150);
     toolBar->addWidget(v);
-//      QVBoxLayout *vLayout = new QVBoxLayout();
-//      QHBoxLayout *hLayout = new QHBoxLayout();
 
-//       vLayout->setContentsMargins(0,0,5,0);
-//       hLayout->addWidget(toolBar);
-//       hLayout->addStretch();
-//       hLayout->addWidget(volume);
-//      hLayout->addSpacing(5);
-//      vLayout->addWidget(slider);
-//      vLayout->addLayout(hLayout);
-
-//      vLayout->addSpacing(5);
-
-//      QWidget *w=new QWidget(this);
-//      w->setLayout(vLayout);
-    
-//      toolBarS->addWidget(slider);
-//      addToolBar ( Qt::BottomToolBarArea,toolBarS);
-//      slider = new Phonon::SeekSlider(this);
-//
-//      timeLabel = new QLabel(this);
-//      progressLabel = new QLabel(this);
-//
-//      volume = new Phonon::VolumeSlider(soundEngine->getAdio() );
-//      volume->setFixedWidth(120);
-//
 }
 
 

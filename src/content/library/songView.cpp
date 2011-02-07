@@ -45,42 +45,50 @@ void songView::openEditor()
     edit(i);
 }
 
-
-
-
-
 void songView::fileEdit()
 {
     QModelIndexList list=selectedIndexes();
 
     if (list.isEmpty() )	return;
 
-    const songModel *model=static_cast<const songModel*>(list.at(0).model() );
+    trackUrl *Model=dynamic_cast<trackUrl*>(model() );
 
+    if(Model==0)
+    {
+	qDebug()<<"ah bah";
+	return ;
+    }
+    
     foreach(QModelIndex i,list)
     {
         if (i.column()==TITLE)
         {
-            player::editTrack(model->url(i.row()).toLocalFile() );
+	    KUrl u=Model->url(i.row());
+	    if(!u.isEmpty() )
+	    {
+		qDebug()<<"bah ah";
+		player::editTrack(u.toLocalFile() );
+	    }
         }
     }
 }
 
 void songView::play(const QModelIndex index)
 {
-    const trackUrl *Model=dynamic_cast<const trackUrl*>(model() );
+//     const trackUrl *Model=dynamic_cast<const trackUrl*>(model() );
     
-    if(Model==0)
+/*    if(Model==0)
     {
 	return;
-    }    
-    npList.clear();
+    }*/     
 
     nplList list;
     for (int i=0;i<model()->rowCount();i++)
     {
-         list<<nplTrack::getNplTrack(Model->url(i).toLocalFile());
+	  QModelIndex index=model()->index(i,0);
+         list<<nplTrack::getNplTrack(model()->data(index,URL_ROLE).toUrl() );
     }
+    npList.clear();
     npList.insertSlot(list,0);
     
     engine.play(index.row() );

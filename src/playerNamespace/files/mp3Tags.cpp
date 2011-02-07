@@ -2,12 +2,14 @@
 #include<QDebug>
 #include<player.h>
 player::mp3Tags::mp3Tags(QString url)
-        :fileTags(url),
+         :fileTags(url),
         id3v2tag(0)
 {
     using namespace TagLib;
-//      file =new MPEG::File(path);
+//     file =new MPEG::File(path);
 
+//     TagLib::FileRef file(url.toLocal8Bit().constData());
+    
     if (file.isNull() )
     {
         err=NULLFILE;

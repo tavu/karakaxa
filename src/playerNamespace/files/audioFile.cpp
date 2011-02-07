@@ -567,20 +567,14 @@ bool player::audioFile::setCounter(const unsigned int &num )
 
 QVariant  player::audioFile::albumArtist()
 {
-    QVariant v=tag(LEAD_ARTIST);
-    if ( ! (v.isNull() ) && !( v.toString().isEmpty() ) )
+    QString s=tag(LEAD_ARTIST).toString();
+    s.simplified();
+    if ( !s.isEmpty() )
     {
-        return v;
+        return QVariant(s);
     }
-    else
-    {
-        QString s=file->artist().toString();
-        if (s.isNull() )
-        {
-            return QVariant();
-        }
-        return s;
-    }
+
+    return file->artist();
 }
 
 QString player::audioFile::cover()
