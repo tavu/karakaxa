@@ -25,7 +25,6 @@ class myTreeView :public QTreeView
 	virtual void 	setNotHide(int n);
 	virtual int	notHide();
 
-
     protected:
 	QPoint startPos;
 	treeViewDelegate *delegate;
@@ -33,6 +32,8 @@ class myTreeView :public QTreeView
 	virtual void mouseMoveEvent(QMouseEvent *event);
 	virtual void performDrag();
 	virtual void contextMenuEvent(QContextMenuEvent *e);
+	void headerRepaint();
+	virtual void leaveEvent(QEvent*)  ;
 
     private:
 	//actions

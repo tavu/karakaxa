@@ -29,6 +29,7 @@ folderContent::folderContent(QWidget *parent)
 
     view=new myTreeView(this,"Folder view");
     view->setModel(proxyM);
+//     view->setFrameShape(QFrame::StyledPanel);
 
 //     disconnect(0,0,view,SLOT(updateStarWidget(QModelIndex,int,int)));
     
@@ -69,9 +70,9 @@ folderContent::folderContent(QWidget *parent)
 
     layout->addWidget(toolBar);
             
-    QFrame *f2=new QFrame(this);
-    f2->setFrameShape(QFrame::HLine);
-    layout->addWidget(f2);
+//     QFrame *f2=new QFrame(this);
+//     f2->setFrameShape(QFrame::HLine);
+//     layout->addWidget(f2);
     
     layout->addWidget(view);
 

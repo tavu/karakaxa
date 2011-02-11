@@ -32,7 +32,7 @@ void artistDelegate::drawDisplay(QPainter* painter, const QStyleOptionViewItem& 
     if(text.isEmpty())
     {
 	painter->setOpacity(0.5);
-	text=tr("Unown album");
+	text=tr("Uknown album");
     }
     painter->drawText( rect,Qt::AlignLeft|Qt::AlignVCenter|Qt::TextWordWrap, text);
     painter->restore();

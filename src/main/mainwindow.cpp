@@ -28,7 +28,7 @@ mainWindow::mainWindow()
   
 //    qApp->setStyleSheet("QAbstractItemView {background-color: transparent; }");
   
-  
+//     qApp->setStyleSheet("QHeaderView::section {background-color: transparent;}");
   
     QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
     QTextCodec::setCodecForTr(QTextCodec::codecForName ("UTF-8"));
@@ -41,6 +41,7 @@ mainWindow::mainWindow()
 
 //     QColor c(180,189,213);
     QColor c(180,189,213);
+//     c.setNamedColor("playerBlue");
     
     pal.setColor(QPalette::AlternateBase,c );
     pal.setColor(QPalette::Window,c );
@@ -238,7 +239,13 @@ void mainWindow::nplViewInit()
     nplView->setFrameShadow(QFrame::Raised);
     nplView->header()->setStretchLastSection(true);
     nplView->header()->setDefaultSectionSize(35);
-    nplView->header()->setResizeMode(QHeaderView::Fixed);
+    nplView->header()->setResizeMode(QHeaderView::Fixed);    
+//     p.color(QPalette::Window).setNamedColor(colorN);
+    QColor c=player::pal.color(QPalette::Base);
+    QString s=("QHeaderView::section {background-color: rgb(%1,%2,%3); }");
+    s=s.arg(QString::number(c.red() ),QString::number( c.green() ),QString::number( c.blue() ) );
+    qDebug()<<s;
+    nplView->header()->setStyleSheet(s);
     
 
     viewport = nplView->viewport();

@@ -17,7 +17,7 @@
 // class editTrack;
 myTreeView::myTreeView(QWidget *parent,QString name)
         :QTreeView(parent)
-{
+{    
 //      header =new treeViewHeader(this);
     setFrameShape(QFrame::NoFrame);
     setHeader(new treeViewHeader(this));
@@ -41,9 +41,8 @@ myTreeView::myTreeView(QWidget *parent,QString name)
         setObjectName(name);
         readSettings();
     }
-
+    setMouseTracking(true);
     connect(qApp,SIGNAL(aboutToQuit() ),this,SLOT(writeSettings() ) );
-
 
 }
 
@@ -70,18 +69,22 @@ void myTreeView::mouseMoveEvent(QMouseEvent *event)
         if (distance >= QApplication::startDragDistance())
         {
             performDrag();
-            //after the drag u gen no mouse released event due to a bug
-            //i  create that event manualy
+            //after the drag we get no mouse released event due to a bug
+            //we  create that event manualy
             QMouseEvent *e=new QMouseEvent(QEvent::MouseButtonRelease,QPoint(-1,-1),Qt::NoButton,Qt::LeftButton,Qt::NoModifier);
             mouseReleaseEvent (e);
         }
         else
         {
+	    headerRepaint();
             QTreeView::mouseMoveEvent(event);
         }
     }
     else
+    {
+	headerRepaint();
         QTreeView::mouseMoveEvent(event);
+    }    
 }
 
 void myTreeView::performDrag()
@@ -292,9 +295,34 @@ void myTreeView::commitData ( QWidget * editor )
     QTreeView::commitData(editor);
 }
 
+
 void myTreeView::closeEditor ( QWidget * editor, QAbstractItemDelegate::EndEditHint hint )
 {
     qDebug()<<"closing editor";
     player::audioFiles.clear();
     QTreeView::closeEditor(editor,hint);   
+}
+
+void myTreeView::headerRepaint()
+{
+    QModelIndex index=indexAt( viewport()->mapFromGlobal(QCursor::pos() )  );
+    
+    int mouseColumn=index.column();
+    
+    if(mouseColumn!=header()->property("highlight") )
+    {      	
+	mouseColumn=index.column();
+	header()->setProperty("highlight",QVariant(mouseColumn) );
+	QWidget * viewport = header()->viewport();
+	viewport->update();
+    }   
+}
+
+void myTreeView::leaveEvent (QEvent *) 
+{
+//       Q_UNUSED(event);
+  
+     QWidget * viewport = header()->viewport();
+     header()->setProperty("highlight",QVariant(-1) );
+     viewport->update();
 }

@@ -13,12 +13,9 @@ class treeViewHeader :public QHeaderView
 	treeViewHeader(QTreeView *parent=0);
 	~treeViewHeader();
 
-
-    // 	 virtual int sectionSizeHint(int column);
 	void setNotHide(int n);
 	int notHide();
-
-    // 	 int sectionSizeHint(int s) const;
+	QSize sizeHint() const;
 
     protected:
 	QMenu *menu;
@@ -32,12 +29,17 @@ class treeViewHeader :public QHeaderView
 
 	virtual void mousePressEvent(QMouseEvent *e);
 	virtual void createMenu();
+	void leaveEvent ( QEvent * event );
+	void enterEvent ( QEvent * event );
+	bool mouseFlag;
+	
+	QLineF *lines;
 
     protected slots:
 	void hideClickedColumn();
 	virtual void selectColumnW();
 	void toggleHideColumn(int);
-	virtual void paintSection ( QPainter * painter, const QRect & rect, int logicalIndex ) const;
+	virtual void paintSection ( QPainter * painter, const QRect & rect, int logicalIndex ) const;	
 
 };
 

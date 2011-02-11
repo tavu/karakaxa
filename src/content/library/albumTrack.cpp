@@ -44,7 +44,14 @@ albumTrack::albumTrack(QWidget *parent)
     
 //     connect(trackM,SIGNAL(newQuery()),trackV ,SLOT(updateStarWidget() ) );
 
-    
+//       trackV->setStyleSheet(    qlineargradient(x1:0, y1:0, x2:0, y2:1,stop:0 #616161, stop: 0.5 #505050,stop: 0.6 #434343, stop:1 #656565);		
+//       QString m_styleSet;
+//       m_styleSet=QString("QHeaderView::section {background-color: %1; padding-left: 4px; border: 1px solid; }");
+//       QString lineGrad=QString("qlineargradient(x1:0.5, y2:0.25, x2:0.5, y2:0.45, colorAt: 0.0 #%1,colorAt: 0.5 #%2)");
+//       lineGrad=lineGrad.arg("QColor::Blue","palette().highlight().color()");
+//       m_styleSet=m_styleSet.arg(lineGrad);
+//       trackV->setStyleSheet(m_styleSet);
+      
 }
 
 void albumTrack::trackVInit()

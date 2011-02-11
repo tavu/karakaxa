@@ -6,6 +6,7 @@
 #include<QFrame>
 #include <QCheckBox>
 #include<QButtonGroup>
+#include<QApplication>
 
 // #define notHid 1+treeV->getHideFirstsColumn()
 treeViewHeader::treeViewHeader(QTreeView *parent)
@@ -19,6 +20,12 @@ treeViewHeader::treeViewHeader(QTreeView *parent)
     setStretchLastSection(true);
     setHighlightSections(true);
     setDefaultAlignment(Qt::AlignLeft);
+    setMouseTracking(true);
+    
+    lines=new QLineF[3];
+    
+    setProperty("highlight",QVariant(-1));
+    setStyleSheet("QHeaderView::section {background-color: transparent;}");
 }
 
 void treeViewHeader::createMenu()
@@ -108,6 +115,12 @@ void treeViewHeader::toggleHideColumn(int i)
     treeV->setColumnHidden(i,!isSectionHidden(i) );
 }
 
+QSize treeViewHeader::sizeHint () const
+{
+    return QSize(25,25);
+}
+
+
 // int treeViewHeader::sectionSizeHint(int column)
 // {
 //      if(column==0)	return 30;
@@ -127,38 +140,99 @@ int treeViewHeader::notHide()
 
 treeViewHeader::~treeViewHeader()
 {
+  delete lines;
 }
 
-void treeViewHeader::paintSection ( QPainter * painter, const QRect & rect, int logicalIndex ) const
+void treeViewHeader::paintSection( QPainter * painter, const QRect & rect, int logicalIndex ) const
 {
-    QPen pen;
-    painter->save();
-    painter->setOpacity(0.8);
-    pen.setWidth(1);
-    pen.setColor(player::pal.window().color() );
-    painter->setPen(pen);
-    painter->drawLine(rect.topRight(), rect.bottomRight());
+//     painter->save();
+//     QHeaderView::paintSection(painter,rect,logicalIndex);
+//     painter->restore();
+//     return ;
   
-    painter->restore();       
-         
-//     QPixmap pic=decoration(option,index);
+    QStyleOptionHeader option;    
+    option.initFrom(this);
+    
+    QRect r=rect;
+    painter->save();
+    
+    painter->fillRect(r,QBrush( palette().window().color() ) );
+    
+    
+    QLinearGradient grad(0.5,0.25,0.5,0.45);
+    grad.setColorAt( 0.0, palette().base().color() );
+    grad.setColorAt( 0.5, palette().highlight().color() );
+    grad.setSpread(QGradient::ReflectSpread);    
+    grad.setSpread(QGradient::RepeatSpread);
+    
+    QBrush b(grad);
+    painter->setOpacity(0.2);
+    
+    QPoint p = mapFromGlobal(QCursor::pos());
+    
+    if(property("highlight").toInt()==logicalIndex || (logicalIndexAt(p)==logicalIndex && mouseFlag) )
+    {
+	painter->setOpacity(1);
+    }    
+    
+    painter->fillRect(r,b);        
+    
+    QPalette pal= static_cast<QWidget*>(parent())->palette();
+    QPen pen(pal.window().color() );
+//     QPen pen(player::pal.background().color() );
+    pen.setWidth(2);
+    painter->setPen(pen);
+    painter->setOpacity(1);
+//     painter->drawRect(r);
+    lines[0].setP1(r.bottomLeft());
+    lines[0].setP2(r.topLeft());
+    lines[1].setP1(r.topLeft());
+    lines[1].setP2(r.topRight());
+    lines[2].setP1(r.bottomLeft());
+    lines[2].setP2(r.bottomRight());
 
-//     if (!pic.isNull() )
-//     {
-//         QApplication::style()->drawItemPixmap(painter,option.rect,Qt::AlignLeft,pic );
-//         r.setWidth(r.width()-pic.width());
-//         r.setX(r.x()+pic.width());
-//     }
-//     
-//     
-// 
-//     QString text;
-//     text=model()->headerData( logicalIndex, Qt::Horizontal,Qt::DisplayRole ).toString();
-// 
-//     
-//     
-//     painter->drawText( rect,Qt::AlignLeft, text);
+    painter->drawLines(lines,3);          
     
+    painter->restore();
+    
+     r.setX(r.x()+2);
+/*    
+    QVariant var=model()->headerData(logicalIndex,Qt::Horizontal,Qt::DecorationRole);
+  
+    QIcon icon=qvariant_cast<QIcon>(var);     
+    QSize size(15,15);
+    QPixmap pic=icon.pixmap(size);
+    r.setX(r.x()+3);
+//     QPixmap pic=qvariant_cast<QPixmap>(var);
+    if (!pic.isNull() )
+    {
+	QApplication::style()->drawItemPixmap(painter,r,Qt::AlignLeft|Qt::AlignVCenter,pic );
+    }
+    r.setX(r.x()+pic.width()+7 );
+    QString text=model()->headerData( logicalIndex, Qt::Horizontal,Qt::DisplayRole ).toString();
+    painter->drawText( r,Qt::AlignLeft|Qt::AlignVCenter, text);
+    
+    if(sortIndicatorSection()==logicalIndex && isSortIndicatorShown() )
+    {
+	
+    }
+  */
+    painter->save();
     QHeaderView::paintSection(painter,rect,logicalIndex);
-    
+    painter->restore();
+}
+
+
+
+
+
+void treeViewHeader::leaveEvent ( QEvent * event )
+{
+  mouseFlag=false;
+//   update();
+}
+
+void treeViewHeader::enterEvent ( QEvent * event )
+{
+    mouseFlag=true;
 }
