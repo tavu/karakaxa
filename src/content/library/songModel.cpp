@@ -1,7 +1,8 @@
-#include<songModel.h>
+#include"songModel.h"
 #include<player.h>
 #include<QSqlRecord>
 #include"QSortFilterProxyModel"
+#include<audioFiles.h>
 // #define ARTISTSL	13
 #define ITEM_HEIGHT 20
 using namespace player;
@@ -99,18 +100,18 @@ bool songModel::setData ( const QModelIndex & index, const QVariant & value, int
     /*urlList conteins all urls of the selected indexes.with no dublicates.
      * we set the data to all of them
      */
-    if(!player::audioFiles.isEmpty() )
+    if(!audioFiles::fileList.isEmpty() )
     {
-	foreach(audioFile* f,player::audioFiles)
+	foreach(audioFile f,audioFiles::fileList)
 	{
-	    f->setTag( (tagsEnum)index.column(),value );
+	    f.setTag( (tagsEnum)index.column(),value );
 	}
-	player::audioFiles.clear();
+	audioFiles::fileList.clear();
     }
     else
     {
-	audioFile *f=audioFile::getAudioFile(url(index.column() ).toLocalFile() );
-	f->setTag((tagsEnum)index.column(),value );
+	audioFile f(url(index.column() ).toLocalFile() );
+	f.setTag((tagsEnum)index.column(),value );
     }
     
     /*it does not need to emit the dataChanged signall.

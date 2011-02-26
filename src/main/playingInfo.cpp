@@ -135,12 +135,12 @@ void playingInfo::setRating(int n)
 	return ;
     }
   
-    audioFile *f=audioFile::getAudioFile(track->path() );
+    audioFile *f=new audioFile(track->path() );
     if(f==0)
     {
 	return;
     }
-    if(f->setRating(n) )
+    if(f->setTag(RATING,n) )
     {
 	stars->setRating(n);
     }

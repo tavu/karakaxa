@@ -5,17 +5,24 @@
 #include<QLinkedList>
 #include<QString>
 #include<player.h>
-
+#include<audioFile.h>
+using namespace audioFiles;
 class loadInfoThr :public QThread
 {
-  Q_OBJECT
+  Q_OBJECT  
   public:
       loadInfoThr(QObject *parent=0);
-      QLinkedList<QString> fileList;
-      QLinkedList<QString>::iterator iter;      
+      inline void cancel()
+      {
+	canceled=true;
+      }
+
+      QLinkedList<audioFile> fileList;      
       void updateTracks();
   protected:
       void run();
+      bool canceled;            
+      QLinkedList<audioFile>::iterator iter;
       
   public slots:
       void cleanup();

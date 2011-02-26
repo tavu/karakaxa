@@ -2,6 +2,7 @@
 #include<QWheelEvent>
 #include<QScrollBar>
 #include<QDebug>
+#include "albumModel.h"
 albumWidget::albumWidget(QWidget *parent)
         :QListView(parent)
 {
@@ -34,3 +35,14 @@ QSize albumWidget::sizeHint () const
 // void albumWidget::paintEvent ( QPaintEvent * e )
 // {
 // }
+void albumWidget::resizeEvent(QResizeEvent* event)
+{
+    QListView::resizeEvent(event);
+    QSize s=rect ().size();
+    s.setHeight(s.height()-2);
+    s.setWidth(s.height());
+    
+    albumModel *m=static_cast<albumModel*>(model() );
+    m->resize(s);
+//     update();
+}

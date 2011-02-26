@@ -2,6 +2,7 @@
 #define EDITTRACK_H
 
 #include<player.h>
+#include<audioFile.h>
 #include<QLabel>
 #include <QLineEdit>
 #include <QGridLayout>
@@ -28,7 +29,7 @@ private:
     player::coverWidget 	*cw;
 
 
-    player::audioFile *file;
+    audioFiles::audioFile *file;
 
 
     QLabel lengthF;

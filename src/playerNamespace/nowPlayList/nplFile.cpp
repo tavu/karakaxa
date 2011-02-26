@@ -3,16 +3,12 @@
 player::nplFile::nplFile(QString s)
         :nplTrack()
 {
-    file=player::audioFile::getAudioFile(s);
+    file=new audioFile(s);
         
     if (file==0 )
     {
 	qDebug()<<"null file";
         ok=false;
-    }
-    else if(!file->isValid())
-    {
-	ok=false;
     }
     else
     {
@@ -34,8 +30,8 @@ QVariant nplFile::artist()
 
 player::nplFile::~nplFile()
 {
-  qDebug()<<"deleting nplFile";
-    audioFile::releaseAudioFile(file);
+   qDebug()<<"deleting nplFile";
+   delete file;
 }
 
 int player::nplFile::length()
@@ -47,7 +43,7 @@ int player::nplFile::length()
 QString player::nplFile::path()
 {
     if(file==0)	return QString();
-    return file->getPath();
+    return file->path();
 }
 
 QString player::nplFile::title()

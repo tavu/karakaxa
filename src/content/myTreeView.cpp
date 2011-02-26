@@ -2,11 +2,12 @@
 #include<QAction>
 
 #include<QHeaderView>
-
+#include<audioFiles.h>
 #include<KIcon>
 
 #include"treeViewHeader.h"
-#include"trackUrl.h"
+// #include"trackUrl.h"
+#include"../playerNamespace/files/audioFiles.h"
 #include<QDebug>
 
 #define test qDebug()<<"TEEEST";
@@ -84,7 +85,7 @@ void myTreeView::mouseMoveEvent(QMouseEvent *event)
     {
 	headerRepaint();
         QTreeView::mouseMoveEvent(event);
-    }    
+    }
 }
 
 void myTreeView::performDrag()
@@ -271,7 +272,7 @@ void myTreeView::commitData ( QWidget * editor )
 //     }
 //     QTreeView::commitData(editor);
    
-    player::audioFiles.clear();
+    audioFiles::fileList.clear();
     QModelIndexList list=selectedIndexes();
     if (!list.isEmpty() )	
     {
@@ -282,11 +283,8 @@ void myTreeView::commitData ( QWidget * editor )
 		QUrl u=i.data(URL_ROLE).toUrl();
 		if(u.isValid() )
 		{
-		    audioFile *f=audioFile::getAudioFile(u.toLocalFile());
-		    if(f!=0 && f->isValid() )
-		    {
-			player::audioFiles.append(f);
-		    }
+		    audioFile f(u.toLocalFile());
+		    audioFiles::fileList.append(f);
 		}
 	    }
 	}
@@ -299,7 +297,7 @@ void myTreeView::commitData ( QWidget * editor )
 void myTreeView::closeEditor ( QWidget * editor, QAbstractItemDelegate::EndEditHint hint )
 {
     qDebug()<<"closing editor";
-    player::audioFiles.clear();
+    audioFiles::fileList.clear();
     QTreeView::closeEditor(editor,hint);   
 }
 

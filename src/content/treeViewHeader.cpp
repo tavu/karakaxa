@@ -162,77 +162,58 @@ void treeViewHeader::paintSection( QPainter * painter, const QRect & rect, int l
     QLinearGradient grad(0.5,0.25,0.5,0.45);
     grad.setColorAt( 0.0, palette().base().color() );
     grad.setColorAt( 0.5, palette().highlight().color() );
-    grad.setSpread(QGradient::ReflectSpread);    
+//     grad.setSpread(QGradient::ReflectSpread);    
     grad.setSpread(QGradient::RepeatSpread);
     
-    QBrush b(grad);
     painter->setOpacity(0.2);
     
-    QPoint p = mapFromGlobal(QCursor::pos());
-    
-    if(property("highlight").toInt()==logicalIndex || (logicalIndexAt(p)==logicalIndex && mouseFlag) )
+    QPoint p = mapFromGlobal(QCursor::pos());    
+    if(viewport()->underMouse() )
     {
-	painter->setOpacity(1);
+	if( logicalIndexAt(p)==logicalIndex)
+	{
+ 	    painter->setOpacity(1);
+	}
+    }
+    else if(property("highlight").toInt()==logicalIndex )
+    {
+ 	painter->setOpacity(1);
     }    
     
-    painter->fillRect(r,b);        
-    
+    QBrush b(grad);    
+    painter->fillRect(r,b);            
     QPalette pal= static_cast<QWidget*>(parent())->palette();
     QPen pen(pal.window().color() );
-//     QPen pen(player::pal.background().color() );
+
     pen.setWidth(2);
     painter->setPen(pen);
     painter->setOpacity(1);
-//     painter->drawRect(r);
-    lines[0].setP1(r.bottomLeft());
-    lines[0].setP2(r.topLeft());
-    lines[1].setP1(r.topLeft());
-    lines[1].setP2(r.topRight());
-    lines[2].setP1(r.bottomLeft());
-    lines[2].setP2(r.bottomRight());
 
-    painter->drawLines(lines,3);          
-    
+    lines[0].setP1(r.topLeft());
+    lines[0].setP2(r.topRight());
+    lines[1].setP1(r.bottomLeft());
+    lines[1].setP2(r.bottomRight());
+    lines[2].setP1(r.bottomLeft() );
+    lines[2].setP2(r.topLeft());
+
+    painter->drawLines(lines,3);
     painter->restore();
     
-     r.setX(r.x()+2);
-/*    
-    QVariant var=model()->headerData(logicalIndex,Qt::Horizontal,Qt::DecorationRole);
-  
-    QIcon icon=qvariant_cast<QIcon>(var);     
-    QSize size(15,15);
-    QPixmap pic=icon.pixmap(size);
-    r.setX(r.x()+3);
-//     QPixmap pic=qvariant_cast<QPixmap>(var);
-    if (!pic.isNull() )
-    {
-	QApplication::style()->drawItemPixmap(painter,r,Qt::AlignLeft|Qt::AlignVCenter,pic );
-    }
-    r.setX(r.x()+pic.width()+7 );
-    QString text=model()->headerData( logicalIndex, Qt::Horizontal,Qt::DisplayRole ).toString();
-    painter->drawText( r,Qt::AlignLeft|Qt::AlignVCenter, text);
-    
-    if(sortIndicatorSection()==logicalIndex && isSortIndicatorShown() )
-    {
-	
-    }
-  */
+    r.setX(r.x()+2);
+
     painter->save();
     QHeaderView::paintSection(painter,rect,logicalIndex);
     painter->restore();
 }
-
-
-
-
+/*
 
 void treeViewHeader::leaveEvent ( QEvent * event )
 {
-  mouseFlag=false;
+
 //   update();
 }
 
 void treeViewHeader::enterEvent ( QEvent * event )
 {
     mouseFlag=true;
-}
+}*/

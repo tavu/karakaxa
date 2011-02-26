@@ -13,6 +13,7 @@ public slots:
 
 protected:
     void wheelEvent(QWheelEvent *event);
+    void resizeEvent(QResizeEvent* event);
 // 	  virtual void paintEvent ( QPaintEvent * e ) ;
 };
 

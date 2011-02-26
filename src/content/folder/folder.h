@@ -15,8 +15,9 @@
 #include"../myTreeView.h"
 #include<KToolBar>
 #include<KDirModel>
+#include "myFileSystemModel.h"
 // #include"folderProxyModel.h"
-#include"myFileSystemModel.h"
+// #include"myFileSystemModel.h"
 // #include <kfileplacesmodel.cpp>
 class folderContent :public abstractContent
 {
@@ -29,6 +30,7 @@ public:
 
 
 private:
+
     myFileSystemModel *model;
     KDirModel *dirModel;
     QSortFilterProxyModel  *proxyM;

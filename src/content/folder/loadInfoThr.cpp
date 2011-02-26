@@ -1,38 +1,37 @@
 #include"loadInfoThr.h"
 #include<player.h>
 loadInfoThr::loadInfoThr(QObject *parent)
-  :QThread(parent)
+  :QThread(parent),
+  canceled(false)
 {
-  setTerminationEnabled(true);
+//   setTerminationEnabled(true);
+    iter=fileList.end();
 }
 
 void loadInfoThr::run()
 {
-     updateTracks();
+     canceled=false;      
+     
+    if(iter==fileList.end() )
+    {
+	iter=fileList.begin();
+    }
+    updateTracks();
+     
 }
 
 void loadInfoThr::updateTracks()
 {
-     audioFile *f;
-     for(;iter!=fileList.end();iter++)
-     {	
- 	f=audioFile::getAudioFile(*iter);
- 	for (int i=TAGS_START;i<FRAME_NUM;++i)
- 	{
- 	    f->tag( (tagsEnum)i);
- 	}
-// 	audioFile::releaseAudioFile(f);
+
+     for(;iter!=fileList.end() && !canceled ;iter++)
+     {
+	iter->load();
      }
 
 }
 
 void loadInfoThr::cleanup()
 {
-    terminate();
-    foreach(QString s, fileList)
-    {
-        audioFile::releaseAudioFile(s);
-    }
-    fileList.clear();
+    cancel();
     iter=fileList.end();
 }

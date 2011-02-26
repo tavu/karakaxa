@@ -29,9 +29,8 @@ class treeViewHeader :public QHeaderView
 
 	virtual void mousePressEvent(QMouseEvent *e);
 	virtual void createMenu();
-	void leaveEvent ( QEvent * event );
-	void enterEvent ( QEvent * event );
-	bool mouseFlag;
+// 	void leaveEvent ( QEvent * event );
+// 	void enterEvent ( QEvent * event );
 	
 	QLineF *lines;
 

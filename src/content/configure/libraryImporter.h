@@ -2,6 +2,7 @@
 #define LIBRARYIMPORTER_H
 
 // #include"database.h"
+#include"albumEntry.h"
 #include"player.h"
 #include <QDirIterator>
 #include<QObject>
@@ -15,10 +16,10 @@ class libraryImporter :public QObject
     public:
         libraryImporter();
         ~libraryImporter();
-        bool import(const QString path);
-	bool importPl(const QString path );
+        albumEntry import(const QString &url);
+	bool importPl(const QString &path );
 	
-        void saveAlbumArt(const QString &s);
+        void saveAlbumArt(const QString& albumArt, const albumEntry& al);
         QString error();
 
         static int n;
@@ -30,7 +31,7 @@ class libraryImporter :public QObject
         QString name;
         bool isConnected;
 
-        QMap<QString, QString> albumList;
+//         QMap<int, QString> albumList;
         void createTmpTable();
 	QVariant getId(QVariant var,QString table);
 	QVariant getAlbumId(QVariant album,QVariant artist);

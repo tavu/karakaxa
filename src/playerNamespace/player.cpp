@@ -1,5 +1,5 @@
 #include<player.h>
-#include<editTrackContent.h>
+#include"../content/edit/editTrackContent.h"
 #include<QRegExp>
 #include<QObject>
 #include<KMimeType>
@@ -10,7 +10,7 @@ namespace player
 {
 database 		db;
 soundEngine		engine;
-contentHandler 		*contentHandlr;
+contentHandler 		contentHandlr;
 PlayerConfigure 	config;
 nplaylist 		npList;
 QPalette		pal;
@@ -21,8 +21,8 @@ QLinkedList<audioFile*>	audioFiles;
 
 void player::editTrack(const QString &s)
 {
-    editTrackContent *t=new editTrackContent(s);
-    player::contentHandlr->addContent(t,true);
+     editTrackContent *t=new editTrackContent(s);
+     player::contentHandlr.addContent(t,true);
 }
 
 QString player::titleFromPath(const QString &path)
@@ -94,6 +94,19 @@ bool player::isAudio(const QString &url)
     {
         return true;
     }
+    return false;
+}
+
+bool player::isImage(const QString &url)
+{
+    QString s=player::format(url);
+    
+    s=s.toUpper();    
+    if(config.imagefiles().contains(s) )
+    {
+	return true;
+    }
+    
     return false;
 }
 
@@ -225,7 +238,7 @@ int player::tagSize(tagsEnum t)
 }
 
 
-QVariant player::pretyTag(QVariant var, tagsEnum t)
+QVariant player::pretyTag(QVariant var, int t)
 {
     if (t==LENGTH )
     {
@@ -256,4 +269,15 @@ QVariant player::pretyTag(QVariant var, tagsEnum t)
 	return QVariant(s);
     }
 }
+bool player::exists(const QString &url)
+{
+    QFile f(url);
+    return f.exists();
+}
 
+void player::init()
+{
+      statusBar.init();
+      db.init();
+      engine.init();      
+}

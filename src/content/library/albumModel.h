@@ -17,9 +17,12 @@ public:
     QVariant data(const QModelIndex &item, int role) const;
     ~albumModel();
     int albumId(const int row);
+    void resize(QSize &s);
 private:
 
     QSize itemSize;
+    QSize maxSize;
+    QSize minSize;
     QIcon *artistIcon;
     QIcon *songIcon;
     QIcon *albumIcon;

@@ -4,14 +4,13 @@
 #include <QFileSystemModel>
 #include<KDirLister>
 #include<player.h>
-#include"../trackUrl.h"
 #include<QThread>
 #include<QLinkedList>
 #include"loadInfoThr.h"
 
 #define DIRCOLUMN 7
 using namespace player;
-class myFileSystemModel :public KDirModel , public trackUrl
+class myFileSystemModel :public KDirModel
 {    
     Q_OBJECT
     public:
@@ -32,6 +31,7 @@ class myFileSystemModel :public KDirModel , public trackUrl
 
     private slots:
 	void insert(const KFileItemList &items);
+	void changeData();
 	
       signals:
 	void updated();

@@ -1,12 +1,11 @@
 #ifndef TAGS_H
 #define TAGS_H
 
+#include <tagsTable.h>
+#include"audioFiles.h"
 
 #include <textidentificationframe.h>
 #include <fileref.h>
-
-#include <tagsTable.h>
-
 #include <textidentificationframe.h>
 #include <mpegfile.h>
 #include <id3v2tag.h>
@@ -14,16 +13,13 @@
 #include <popularimeterframe.h>
 #include <tag.h>
 
-// #define test std::wcout<<"test"<<std::endl;
 
 //---QT---
 #include<QObject>
 #include <QStringList>
-#include<QString>
-
 #include <tstringlist.h>
 
-namespace player
+namespace audioFiles
 {
 
 class fileTags
@@ -51,8 +47,8 @@ class fileTags
 
 
     public:
-	virtual QVariant		tag(tagsEnum t)	const;
-	virtual bool 			setTag(tagsEnum t,const QVariant &var);
+	virtual QVariant		tag(player::tagsEnum t)	const;
+	virtual bool 			setTag(player::tagsEnum,const QVariant &var);
 
 	virtual QVariant 		title () const ;
 	virtual QVariant 		artist () const ;
@@ -75,6 +71,8 @@ class fileTags
 	virtual bool 			setYear (const unsigned int &year);
 	virtual bool 			setTrack (const unsigned int &i);
 
+	virtual void 			save();
+	virtual void			getTags(audioFiles::tagRecord*);
 
 	inline bool isNull()  const
 	{
@@ -103,11 +101,11 @@ class fileTags
 	}
 
 
-	static const int NULLFILE;
-	static const int INVALIDF;
-	static const int WRONGFT;
-	static const int NSTAG;
-	static const int OK;
+// 	static const int NULLFILE;
+// 	static const int INVALIDF;
+// 	static const int WRONGFT;
+// 	static const int NSTAG;
+// 	static const int OK;
 };//class
 };//player
 #endif

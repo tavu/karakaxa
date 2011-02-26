@@ -111,7 +111,7 @@ QPixmap player::decoration::toPixmap(const QStyleOptionViewItem &option, const Q
     QIcon::State state = option.state & QStyle::State_Open ? QIcon::On : QIcon::Off;
     QSize s=option.decorationSize;
     
-    if(s.isEmpty())
+    if(s.isValid())
     {
 	int h=option.rect.height();
 	s=QSize(h,h);

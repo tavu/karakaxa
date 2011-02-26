@@ -8,85 +8,70 @@
 #include<QSqlError>
 #include<QSqlRecord>
 // #include<player.h>
+#include"audioFiles.h"
+#include"fileCache.h"
 #include"playerNamespace.h"
 
-namespace player
+namespace audioFiles
 {
 
 class audioFile :public QObject
 {
+//     using namespace audioFiles;
     Q_OBJECT
     
     public:
-	struct audioFileS_
-	{
-	    int used;
-	    audioFile *p;
-	};
-	typedef struct audioFileS_ audioFileS;
 
 	static const short int ONDATAB;
 	static const short int ONCACHE;
-	static const short int ONFILE;
+	static const short int LOAD_FILE;
 	static const short int TITLEFP;
-	static const short int DBCACHE;
+	static const short int SELECT;
 	static const short int DEFAULTF;
 
 	audioFile(const QString);
+	audioFile(const audioFiles::audioFile& f);
+	audioFile* operator=(const audioFile &f);
+	
 	virtual ~audioFile();
 
-    // 	       virtual QVariant tags(tagsEnum t);
-	QString getPath();
-	virtual QVariant tag(player::tagsEnum t,const short int f=DEFAULTF, int *err=0, short int *r=0);
+	inline QString path() const
+	{
+	    return cache->path();
+	}
+	virtual QVariant tag(int t,const short int f=DEFAULTF);
 	
-	
-
 	virtual QVariant		albumArtist();
 	virtual QString			cover();
 
-	virtual bool 			setTag(tagsEnum t,QVariant var);
-
-	virtual bool 			setTitle (const QString &s);
-	virtual bool 			setArtist (const QString &s);
-	virtual bool 			setAlbum (const QString &s);
-	virtual bool 			setComment (const QString &s);
-	virtual bool 			setLeadArtist (const QString &s);
-	virtual bool			setComposer(const QString &s);
-	virtual bool 			setGenre (const QString &s);
-	virtual bool 			setYear (const unsigned int &year);
-	virtual bool 			setTrack (const unsigned int &i);
-	virtual bool 			setRating(const unsigned int &rating);
-	virtual bool 			setCounter(const unsigned int &num);
-
-	inline virtual bool		isValid()
-	{
-	    return file->isValid();
-	}
-    // 	       virtual bool			isNull() const;
-	bool				onCache(tagsEnum t);
-
-	virtual bool 			select();
+	virtual bool 			setTag(int t,QVariant var);
+	virtual void			setTags(QList<int> tags,QList<QVariant> values);
 	virtual int 			albumId();
 
-	void				clear();
 
 	QString	folder()
 	{
-	    return player::folder(getPath() );
+	    return player::folder(path() );
 	}
+
 	int size();
 
 	inline QString format()
 	{
-	    return player::format(getPath() );
+	    return player::format(path() );
 	}
 
 	inline int error()
 	{
-	    return file->error();
+	    //return the last error
+	    return err;
 	}
-	
-	inline bool isMutable()
+	inline int status()
+	{
+	    //return an int that shows from where the last tag was loaded
+	    return stat;
+	}
+	inline bool isMutable() const
 	{
 	    //a mutable audio file does not send database updated signals when makes chnges to tags
 	    return _mutable;
@@ -97,58 +82,34 @@ class audioFile :public QObject
 	    //a mutable audio file does not send database updated signals when makes chnges to tags
 	    _mutable=true;
 	}
-	
 
+	void load();
 
-	static player::audioFile* getAudioFile(QString path);
-	static void releaseAudioFile(QString path);
-	static void releaseAudioFile(audioFile *file);	
-
-    private:
-	
-	inline QVariant tagRet(QVariant var,const short int k, int *err,short int *f)
-	{
-	    //we use that function to return from the tag.
-	    if(f!=0)
-	    {
-		*f=k;
-	    }
-	    if(err!=0)
-	    {
-		*err=file->error();
-	    }
-// 	    mutex.unlock();
-	    return var;
-	}
+    private:	
       
- 
-	int defult;
-	QSqlDatabase databs;
-	QMutex mutex;
-// 	bool setAlbumArtist(const QString &s,QSqlQuery &q);
+	bool prepareToSave();
+	void save();	
+	int err;
+	int stat;
 	
-	static fileTags* getFileTags(const QString path);
-
-	static QHash<QString, audioFileS*> fileMap;
-	static QMutex gMutex;
 
     protected:
       	
 	QString	albumArt;
-	mutable QVariant *table;
-	mutable bool *flags;
 	mutable bool recFlag;
 	int fileSize;
 
 	fileTags *file;
-	QSqlRecord record;
-
+	
+	bool saveFlag;
 	bool _mutable;
 	
-
-  protected slots:
+	mutable fileCache* cache;
 	
-	void recordClean();
+
+//    protected slots:
+	
+// 	void recordClean();
 
 };//class
 

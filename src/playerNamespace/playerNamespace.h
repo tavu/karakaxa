@@ -4,10 +4,12 @@
 #include<QString>
 #include<QPalette>
 #include"files/tagsTable.h"
+// #include"files/audioFile.h"
 #include"nowPlayList/nplClass.h"
 
 #define URL_ROLE Qt::UserRole+2
 
+// class audioFiles::audioFile;
 namespace player
 {
 
@@ -22,7 +24,7 @@ class PlayerConfigure;
 class coverWidget;
 class nplaylist;
 
-class audioFile;
+// class audioFile;
 class tagsTable;
 class m3up;
 class pStatusBar;
@@ -34,15 +36,13 @@ class starWidget;
 extern database 		db;
 extern nplaylist 		npList;
 extern soundEngine 		engine;
-extern contentHandler 		*contentHandlr;
+extern contentHandler 		contentHandlr;
 extern PlayerConfigure 		config;
 
 extern QPalette			pal;
 extern pStatusBar		statusBar;
 extern decoration 		decor;
 
-//an audio file list for many porposes
-extern QLinkedList<audioFile*>	audioFiles;
 
 QString 	folder(QString path) ;
 QString 	titleFromPath(const QString &path);
@@ -55,11 +55,14 @@ bool   		isStream(const QUrl url);
 bool 		isDirectory(const QString &url);
 bool		isPlaylist(const QString &url);
 bool 		isAudio(const QString &url);
+bool		isImage(const QString &url);
 
 QString 	format(QString path);
 
 void 		editTrack(const QString &s);
-QVariant	pretyTag(QVariant var,tagsEnum t);
+void 		init();
+QVariant	pretyTag(QVariant var,int t);
+bool		exists(const QString &url);
 };
 
 

@@ -4,24 +4,27 @@
 #include<player.h>
 albumDelegate::albumDelegate(QObject* parent): QStyledItemDelegate(parent)
 {
+    sideSpace=2;
+    topSpace=4;
     
 }
 
 void albumDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
-    QApplication::style()->drawPrimitive( QStyle::PE_PanelItemViewItem, &option, painter );
-    
+    QApplication::style()->drawPrimitive( QStyle::PE_PanelItemViewItem, &option, painter );            
+//     QPoint topLeft(
+    int f=option.fontMetrics.height()*2+8;
+    QRect r(option.rect.x()+sideSpace,option.rect.y()+topSpace,option.rect.width()-sideSpace,option.rect.height()-f);
     QPixmap pic=player::decor.decorationPixmap(option,index);
-    
-    QRect r=option.rect;
-    r.setY(r.y()+4);
+    pic=pic.scaled(r.size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    QRect rect=option.rect;    
     if (!pic.isNull() )
     {
         QApplication::style()->drawItemPixmap(painter,r,Qt::AlignTop|Qt::AlignHCenter,pic );
-        r.setY(r.y()+pic.height()+1);
+        rect.setY(r.y()+r.height()+1);
     }
     QString s=displayText(index.data(),QLocale("UTF-8") );
-    drawDisplay(painter,option,r,s);
+    drawDisplay(painter,option,rect,s);
     
 }
 

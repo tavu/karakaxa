@@ -3,14 +3,14 @@
 
 #include <QSqlTableModel>
 
-#include<trackUrl.h>
+// #include<trackUrl.h>
 
 // #include<QWidget>
 #include<player.h>
 #include<trackView.h>
 #include<QSortFilterProxyModel>
 
-class songModel :public QSqlQueryModel ,public trackUrl
+class songModel :public QSqlQueryModel 
 {
     Q_OBJECT
     

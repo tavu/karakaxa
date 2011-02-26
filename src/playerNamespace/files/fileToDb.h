@@ -34,7 +34,7 @@ public:
     static int 	setCounter(const QString path,const unsigned int &num);
     static int 	setAlbumArt(const int albumId,QString art);
 
-    static QSqlRecord record(const QString path,int &err);
+    static QSqlRecord 	record(const QString path,int &err);
     static QString	 albumArt(const int albumId,int &err);
 private:
     static bool setAlbumArtist(const QString &path,const QString &s,const QString &album,QSqlQuery &q);

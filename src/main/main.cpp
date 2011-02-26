@@ -8,8 +8,8 @@
 
 #include <unistd.h>
 
-QObject keef;
-using namespace player;
+// QObject keef;
+// using namespace player;
 
 #define VERSION "0.5"
 

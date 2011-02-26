@@ -1,7 +1,7 @@
 #include"mp3Tags.h"
 #include<QDebug>
 #include<player.h>
-player::mp3Tags::mp3Tags(QString url)
+audioFiles::mp3Tags::mp3Tags(QString url)
          :fileTags(url),
         id3v2tag(0)
 {
@@ -12,7 +12,7 @@ player::mp3Tags::mp3Tags(QString url)
     
     if (file.isNull() )
     {
-        err=NULLFILE;
+        err=NULL_FILE;
         return;
     }
 
@@ -24,11 +24,11 @@ player::mp3Tags::mp3Tags(QString url)
     }
     else
     {
-        err=WRONGFT;
+        err=WRONG_FILETYPE;
     }
 }
 
-QStringList player::mp3Tags::artists() const
+QStringList audioFiles::mp3Tags::artists() const
 {
     using namespace TagLib;
     QStringList l;
@@ -37,11 +37,11 @@ QStringList player::mp3Tags::artists() const
     {
         if (isNull() )
         {
-            err=NULLFILE;
+            err=NULL_FILE;
         }
         else
         {
-            err=WRONGFT;
+            err=WRONG_FILETYPE;
         }
         return l;
 
@@ -66,18 +66,18 @@ QStringList player::mp3Tags::artists() const
 }
 
 
-QVariant player::mp3Tags::counter() const
+QVariant audioFiles::mp3Tags::counter() const
 {
     using namespace TagLib;
     if (!id3v2tag)
     {
         if (isNull() )
         {
-            err=NULLFILE;
+            err=NULL_FILE;
         }
         else
         {
-            err=WRONGFT;
+            err=WRONG_FILETYPE;
         }
         return QVariant();
     }
@@ -95,7 +95,7 @@ QVariant player::mp3Tags::counter() const
     return frame->counter();
 }
 
-QVariant player::mp3Tags::rating() const
+QVariant audioFiles::mp3Tags::rating() const
 {
     int r=originalRating();
             
@@ -107,7 +107,7 @@ QVariant player::mp3Tags::rating() const
     return QVariant(n);
 }
 
-int player::mp3Tags::originalRating() const
+int audioFiles::mp3Tags::originalRating() const
 {
   //this function gets the rating number from the mp3 file.
   //that number is betwoin 0-255. 0 is the unrating
@@ -116,11 +116,11 @@ int player::mp3Tags::originalRating() const
     {
         if (isNull() )
         {
-            err=NULLFILE;
+            err=NULL_FILE;
         }
         else
         {
-            err=WRONGFT;
+            err=WRONG_FILETYPE;
         }
         return 0;
     }
@@ -139,7 +139,7 @@ int player::mp3Tags::originalRating() const
 }
 
 
-QVariant player::mp3Tags::leadArtist() const
+QVariant audioFiles::mp3Tags::leadArtist() const
 {
     using namespace TagLib;
 
@@ -147,11 +147,11 @@ QVariant player::mp3Tags::leadArtist() const
     {
         if (isNull() )
         {
-            err=NULLFILE;
+            err=NULL_FILE;
         }
         else
         {
-            err=WRONGFT;
+            err=WRONG_FILETYPE;
         }
         return QVariant();
     }
@@ -166,7 +166,7 @@ QVariant player::mp3Tags::leadArtist() const
     return toQString( (*it)->toString() );
 }
 
-QVariant player::mp3Tags::composer() const
+QVariant audioFiles::mp3Tags::composer() const
 {
     using namespace TagLib;
 
@@ -174,11 +174,11 @@ QVariant player::mp3Tags::composer() const
     {
         if (isNull() )
         {
-            err=NULLFILE;
+            err=NULL_FILE;
         }
         else
         {
-            err=WRONGFT;
+            err=WRONG_FILETYPE;
         }
         return QVariant();
     }
@@ -195,25 +195,25 @@ QVariant player::mp3Tags::composer() const
 }
 
 
-bool player::mp3Tags::setArtists(const QStringList &l)
+bool audioFiles::mp3Tags::setArtists(const QStringList &l)
 {
     using namespace TagLib;
     if (!id3v2tag)
     {
         if (isNull() )
         {
-            err=NULLFILE;
+            err=NULL_FILE;
         }
         else
         {
-            err=WRONGFT;
+            err=WRONG_FILETYPE;
         }
         return true;
 
     }
     if (!isValid() )
     {
-        err=INVALIDF;
+        err=INVALID_FILE;
         return false;
     }
     err=0;
@@ -243,13 +243,13 @@ bool player::mp3Tags::setArtists(const QStringList &l)
 
     frame->setText(sList );
 
-    file.save ();
+    
 
     return true;
 }
 
 
-bool player::mp3Tags::setLeadArtist (const QString &s)
+bool audioFiles::mp3Tags::setLeadArtist (const QString &s)
 {
     using namespace TagLib;
 
@@ -257,18 +257,18 @@ bool player::mp3Tags::setLeadArtist (const QString &s)
     {
         if (isNull() )
         {
-            err=NULLFILE;
+            err=NULL_FILE;
         }
         else
         {
-            err=WRONGFT;
+            err=WRONG_FILETYPE;
         }
         return false;
 
     }
     if (!isValid() )
     {
-        err=INVALIDF;
+        err=INVALID_FILE;
         return false;
     }
 
@@ -289,13 +289,13 @@ bool player::mp3Tags::setLeadArtist (const QString &s)
     }
 
     frame->setText(toTString(s) );
-    file.save();
+    
     err=0;
 
     return true;
 }
 
-bool player::mp3Tags::setComposer (const QString &s)
+bool audioFiles::mp3Tags::setComposer (const QString &s)
 {
     using namespace TagLib;
 
@@ -303,18 +303,18 @@ bool player::mp3Tags::setComposer (const QString &s)
     {
         if (isNull() )
         {
-            err=NULLFILE;
+            err=NULL_FILE;
         }
         else
         {
-            err=WRONGFT;
+            err=WRONG_FILETYPE;
         }
         return false;
 
     }
     if (!isValid() )
     {
-        err=INVALIDF;
+        err=INVALID_FILE;
         return false;
     }
     ID3v2::TextIdentificationFrame *frame;
@@ -334,19 +334,19 @@ bool player::mp3Tags::setComposer (const QString &s)
     }
 
     frame->setText(toTString(s) );
-    file.save();
+    
     err=0;
 
     return true;
 }
 
-bool player::mp3Tags::setRating( int num)
+bool audioFiles::mp3Tags::setRating( int num)
 {
     num*=25;
     return setOriginalRating(num);
 }
 
-bool player::mp3Tags::setOriginalRating(const unsigned int &num)
+bool audioFiles::mp3Tags::setOriginalRating(const unsigned int &num)
 {
     using namespace TagLib;
 
@@ -354,18 +354,18 @@ bool player::mp3Tags::setOriginalRating(const unsigned int &num)
     {
         if (isNull() )
         {
-            err=NULLFILE;
+            err=NULL_FILE;
         }
         else
         {
-            err=WRONGFT;
+            err=WRONG_FILETYPE;
         }
         return false;
 
     }
     if (!isValid() )
     {
-        err=INVALIDF;
+        err=INVALID_FILE;
         return false;
     }
 
@@ -387,12 +387,12 @@ bool player::mp3Tags::setOriginalRating(const unsigned int &num)
 
     frame->setRating(num);
 
-    file.save();
+    
 
     return true;
 }
 
-bool player::mp3Tags::setCounter(const unsigned int &num)
+bool audioFiles::mp3Tags::setCounter(const unsigned int &num)
 {
     using namespace TagLib;
 
@@ -400,18 +400,18 @@ bool player::mp3Tags::setCounter(const unsigned int &num)
     {
         if (isNull() )
         {
-            err=NULLFILE;
+            err=NULL_FILE;
         }
         else
         {
-            err=WRONGFT;
+            err=WRONG_FILETYPE;
         }
         return false;
 
     }
     if (!isValid() )
     {
-        err=INVALIDF;
+        err=INVALID_FILE;
         return false;
     }
 
@@ -433,12 +433,12 @@ bool player::mp3Tags::setCounter(const unsigned int &num)
 
     frame->setCounter(num);
 
-    file.save();
+    
     err=0;
     return true;
 }
 
-QVariant player::mp3Tags::tag(tagsEnum t) const
+QVariant audioFiles::mp3Tags::tag(player::tagsEnum t) const
 {
 
     switch (t)
@@ -494,14 +494,14 @@ QVariant player::mp3Tags::tag(tagsEnum t) const
     }
     default:
     {
-        err=NSTAG;
+        err=NS_TAG;
         return QVariant();
 
     }
     }
 }
 
-bool player::mp3Tags::setTag(tagsEnum t,const QVariant &var)
+bool audioFiles::mp3Tags::setTag(player::tagsEnum t,const QVariant &var)
 {
 
     switch (t)
@@ -548,7 +548,7 @@ bool player::mp3Tags::setTag(tagsEnum t,const QVariant &var)
     }
     default:
     {
-        err=NSTAG;
+        err=NS_TAG;
         return false;
 
     }

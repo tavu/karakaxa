@@ -4,11 +4,32 @@
 #include<QFont>
 
 #include<QDebug>
-
+#include<content/defaultContent.h>
 #define MAX_HS 20
-player::contentHandler::contentHandler(QTreeWidget *tree , QStackedWidget *stack)
+player::contentHandler::contentHandler()
         :QObject()
 {
+}
+
+void player::contentHandler::loadDefault()
+{
+
+    library *l=new library();
+    configureContent *c=new configureContent();
+    folderContent *f=new folderContent();
+    playlistContent *pl=new playlistContent();
+
+     addContent(l);
+     addContent(f);
+     addContent(pl);
+          addContent(c);
+    
+}
+
+
+void player::contentHandler::init(QTreeWidget *tree , QStackedWidget *stack)
+{
+
     this->tree=tree;
     this->stack=stack;
     connect( tree, SIGNAL( activated ( const QModelIndex & ) ) ,this, SLOT( itemChanger (const QModelIndex &) ) );
@@ -18,7 +39,9 @@ player::contentHandler::contentHandler(QTreeWidget *tree , QStackedWidget *stack
     f.setPixelSize(14);
 //      f.setBold(true);
     item.setFont(0,f);
+
 }
+
 
 abstractContent* player::contentHandler::content(const QModelIndex &index) const
 {

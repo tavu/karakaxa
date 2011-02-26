@@ -3,13 +3,13 @@
 #define DIRCOLUMN 7
 using namespace player;
 myFileSystemModel::myFileSystemModel(QObject *parent)
-        :KDirModel(parent),        
-        trackUrl()
+        :KDirModel(parent)
 {
-    thr.iter=thr.fileList.end();
+//     thr.iter=thr.fileList.end();
     dirL=KDirModel::dirLister();
     connect(dirL,SIGNAL(newItems(const KFileItemList &) ),this,SLOT(insert(const KFileItemList &) ) );
     connect(dirL,SIGNAL(clear() ),&thr,SLOT(cleanup() ) );
+    connect(&thr,SIGNAL(finished() ),this,SLOT(changeData() ) ,Qt::QueuedConnection);
 }
 
 
@@ -35,14 +35,16 @@ QVariant myFileSystemModel::data(const QModelIndex &index, int role) const
     {
 	QVariant var;
         KFileItem item=itemForIndex(index);
+	
         if (item.isDir() )	return QVariant();
 	
-        audioFile *f=audioFile::getAudioFile(item.url().toLocalFile() );	
-        if (f==0)	return var;
+	audioFile f(item.url().toLocalFile() );
+//         audioFile *f=audioFile::getAudioFile(item.url().toLocalFile() );	
+//         if (f==0)	return var;
 
         int filde=index.column()-DIRCOLUMN;
 	
-        var=f->tag((tagsEnum)filde, audioFile::ONCACHE|audioFile::DBCACHE );	
+        var=f.tag(filde, audioFile::ONCACHE|audioFile::ONDATAB );	
 	
 // 	if(filde==RATING)
 // 	{
@@ -51,14 +53,8 @@ QVariant myFileSystemModel::data(const QModelIndex &index, int role) const
 // // 		return f->tag(RATING);
 // 	    }
 // 	}
- 	audioFile::releaseAudioFile(f);
+	return player::pretyTag(var,filde);
 	
-        if (filde==LENGTH)
-        {
-            return prettyLength(var.toInt());
-        }
-        
-        return var;
     }        
     
     return QVariant();
@@ -80,19 +76,17 @@ QVariant myFileSystemModel::headerData ( int section, Qt::Orientation orientatio
 }
 
 void myFileSystemModel::insert(const KFileItemList &items)
-{
+{	
+    thr.cancel();
     foreach(KFileItem item , items)
     {
         if (!item.isDir())
         {
+// 	    files<<audioFile(item.url().toLocalFile() );
 //             fileList<<item.url().toLocalFile();
-            thr.fileList<<item.url().toLocalFile();
-	    audioFile *f=audioFile::getAudioFile(item.url().toLocalFile());
+            thr.fileList<<audioFile(item.url().toLocalFile() );
+// 	    audioFile *f=audioFile::getAudioFile(item.url().toLocalFile());
         }
-    }
-    if(thr.iter==thr.fileList.end() )
-    {
-	thr.iter=thr.fileList.begin();
     }
     thr.start();
 }
@@ -116,3 +110,13 @@ KUrl myFileSystemModel::url( int row) const
     return  itemForIndex(i).url();
 
 }
+
+void myFileSystemModel::changeData()
+{
+    QModelIndex start=index(0, DIRCOLUMN );
+    QModelIndex end=index(rowCount()-1,DIRCOLUMN+FRAME_NUM-1);
+    //we emit that signal as the thread have finished and the data have been updated
+    //we don't soure whitch data have changed so we include all data
+    emit dataChanged(start,end);
+}
+

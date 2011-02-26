@@ -10,6 +10,7 @@ playlistContent::playlistContent(QWidget *parent)
     treeV=new myTreeView(this);
     treeV->setFrameShape(QFrame::StyledPanel);
     treeV->setUniformRowHeights(false);
+    treeV->setIconSize(QSize ());
     
     treeV->setHeaderHidden(true);
     

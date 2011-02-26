@@ -1,4 +1,4 @@
-#include<albumModel.h>
+#include"albumModel.h"
 #include <QPixmap>
 
 #define IMAGE 1
@@ -7,12 +7,30 @@ using namespace player;
 albumModel::albumModel(QObject *parent)
         :QSqlQueryModel(parent)
 {
+    maxSize.setHeight(230);
+    maxSize.setWidth(230);
+
+//     minSize.setHeight(80);
+//     minSize.setHeight(80);
     itemSize.setHeight(180);
     itemSize.setWidth(180);
-
 // 	  defaultPic=new QPixmap(size);
 // 	  defaultPic->load("/home/tavu/src/player/data/album.png");
 // 	  defaultPic->scaled(size, Qt::KeepAspectRatio,Qt::SmoothTransformation);
+}
+
+void albumModel::resize(QSize &s)
+{
+    layoutAboutToBeChanged ();    
+    if (s.height()>maxSize.height() )
+    {
+	itemSize=maxSize;
+    }
+    else
+    {
+	itemSize=s;
+    }    
+    layoutChanged();
 }
 
 QVariant albumModel::data(const QModelIndex &index, int role) const
@@ -53,6 +71,7 @@ QVariant albumModel::data(const QModelIndex &index, int role) const
 
     if (role==Qt::SizeHintRole)
     {
+// 	return property("size");
         return QVariant(itemSize);
     }
 

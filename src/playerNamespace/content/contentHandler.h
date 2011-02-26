@@ -15,12 +15,13 @@ class contentHandler :public QObject
 {
     Q_OBJECT
     public:
-	contentHandler(QTreeWidget *tree , QStackedWidget *stack);
-
+	contentHandler();
+	void loadDefault();
 	abstractContent* content(const QModelIndex &index) const;
 
 	void removeContent(abstractContent *content);
 	bool isActive(QWidget *w);
+	void init(QTreeWidget *tree , QStackedWidget *stack);
     private:
 	void itemChanger(QModelIndex *item);
 	QTreeWidget *tree;

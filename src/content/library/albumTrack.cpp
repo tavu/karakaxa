@@ -112,6 +112,7 @@ void albumTrack::albumVInit()
 
     albumV->setWrapping(false);
     albumV->setWordWrap(true);
+    albumV->setMinimumHeight(80);
     albumV->setSizePolicy(QSizePolicy::Ignored,QSizePolicy::Ignored);
 
     QSizePolicy p;

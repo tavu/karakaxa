@@ -4,7 +4,9 @@
 #include<QString>
 #include"nplTrack.h"
 #include<playerNamespace.h>
+#include"files/audioFile.h"
 using namespace player;
+using namespace audioFiles;
 namespace player
 {
 class nplFile :public nplTrack

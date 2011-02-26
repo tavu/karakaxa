@@ -25,17 +25,19 @@ QVariant playlistModel::data(const QModelIndex & index, int role ) const
 	return QVariant();
     }
     
-    static int flag=audioFile::DBCACHE|audioFile::ONCACHE|audioFile::TITLEFP;
+    static int flag=audioFile::ONDATAB|audioFile::ONCACHE|audioFile::TITLEFP;
     
     if( role == Qt::DisplayRole)
     {      
-	QVariant var=files.at(index.row() )->tag( (tagsEnum)index.column(),flag );
+//       QVariant var;
+// 	audioFile f(files[ (index.row() ) ].path());
+  	QVariant var=files[ (index.row() ) ].tag( index.column(),flag );
 	return player::pretyTag(var,(tagsEnum)index.column() );
 	
     }    
     else if(role==URL_ROLE)
     {
-	KUrl u(files.at(index.row() )->getPath() );
+	KUrl u(files.at(index.row() ).path() );
 	return QVariant(u);
     }
     
@@ -67,11 +69,7 @@ void playlistModel::setPlPath(const QString &s)
     {
  	terminate();
  	beginResetModel();
- 	int end=files.size();
- 	for(int i=0;i<end;i++)
- 	{
- 	    audioFile::releaseAudioFile(files.at(i));
- 	}	
+	files.clear();	
  	delete pl;
      }
      else
@@ -82,9 +80,15 @@ void playlistModel::setPlPath(const QString &s)
     pl=new m3uPl(s);
   
     pl->load();
-    beginResetModel();
-    files=pl->files();
-    qDebug()<<files.size();
+    
+    for(int i=0;i<pl->size();i++)
+    {
+	if(player::exists(pl->item(i)) )
+	{
+// 	    audioFile f=audioFile(pl->item(i);
+	    files<<audioFile(pl->item(i) ); 
+	}	
+    }
     endResetModel();        
     
     if(pl->size()>files.size() )
@@ -102,25 +106,10 @@ void playlistModel::setPlPath(const QString &s)
 void playlistModel::run()
 {
  
-     for(int j=0;j<files.size();j++)
+     for(int i=0;i<files.size();i++)
      {
- 	for (int i=TAGS_START;i<FRAME_NUM;++i)
- 	{
- 	    files.at(j)->tag( (tagsEnum)i);
- 	}
+ 	files[i].load();
      }    
-}
-
-KUrl playlistModel::url(int row) const
-{
-    qDebug()<<"row "<<row;
-    if(row>=files.size() ||row<0 )
-    {
- 	return KUrl();
-    }
-    KUrl u=KUrl(files.at(row)->getPath() );
-    qDebug()<<u;
-    return u;
 }
 
 Qt::ItemFlags playlistModel::flags(const QModelIndex &index) const

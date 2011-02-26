@@ -1,4 +1,4 @@
-#include<artistModel.h>
+#include"artistModel.h"
 #include <QPixmap>
 #include<QTextCodec>
 #include<QIcon>

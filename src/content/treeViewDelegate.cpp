@@ -39,25 +39,27 @@ void treeViewDelegate::paint ( QPainter * painter, const QStyleOptionViewItem & 
         painter->fillRect(option.rect,player::pal.window());
         painter->restore();
     }
-
-
+    
     QPen pen;
 
-    pen.setWidthF(1.5);
+//     pen.setWidthF(1.5);
 
     painter->setOpacity(0.8);
     pen.setWidth(1);
     pen.setColor(player::pal.window().color() );
     painter->setPen(pen);
 
-    painter->drawLine(option.rect.topRight(), option.rect.bottomRight());
+    QPointF up(option.rect.topRight().x(),option.rect.topRight().y() );
+    QPointF down(option.rect.bottomRight().x(),option.rect.bottomRight().y() );
+    
+    painter->drawLine(up,down);
 
     painter->setOpacity(0.1);
     pen.setWidthF(4);
     pen.setColor(player::pal.window().color() );
     painter->setPen(pen);
 
-    painter->drawLine(option.rect.topRight(), option.rect.bottomRight());
+    painter->drawLine(up,down);
 
     painter->restore();
     painter->save();

@@ -3,13 +3,13 @@
 #include"nplaylistModel.h"
 #include"nplaylistDelegate.h"
 #include<QGroupBox>
-
+#include<QString>
+#include <QTextCodec>
+#include<QApplication>
 #include "../content/library/library.h"
 #include "../content/folder/folder.h"
-#include "../content/playlist/playlistContent.h"
-#include "../content/configure/configureContent.h"
-// #include "../content/visualization/visualization.h"
-// #include<contentAdder.h>
+// #include "../content/playlist/playlistContent.h"
+// #include "../content/configure/configureContent.h"
 #include<QToolButton>
 #include"volumeBar.h"
 
@@ -55,6 +55,9 @@ mainWindow::mainWindow()
 
 
     init();
+//     contentHandlr
+     contentHandlr.init(conTree,conView);
+     contentHandlr.loadDefault();
 
     nplViewInit();
 
@@ -112,7 +115,7 @@ mainWindow::mainWindow()
 
 
     readSettings();
-    defaultContent();
+     defaultContent();
 
 //      writeSettings();
 }
@@ -123,21 +126,21 @@ mainWindow::~mainWindow()
 
 }
 
-inline void mainWindow::init()
-{
-    player::statusBar.init();
-    db.init();
-    player::engine.init();
-//      player::nowPl=new nowPlaylist();
-
-
-//      player::config=new PlayerConfigure();
-
-    
-
-    player::contentHandlr=new contentHandler(conTree,conView);
-
-}
+// inline void mainWindow::init()
+// {
+//     player::statusBar.init();
+//     db.init();
+//     player::engine.init();
+// //      player::nowPl=new nowPlaylist();
+// 
+// 
+// //      player::config=new PlayerConfigure();
+// 
+//     
+// 
+//     player::contentHandlr=new contentHandler(conTree,conView);
+// 
+// }
 
 inline void mainWindow::infoInit()
 {
@@ -358,17 +361,15 @@ void mainWindow::stateChanged(Phonon::State state)
 
 void mainWindow::defaultContent()
 {
-    library *l=new library();
-    configureContent *c=new configureContent();
-    folderContent *f=new folderContent();
-//       visualization *v=new visualization();
-    playlistContent *pl=new playlistContent();
-
-    contentHandlr->addContent(l);
-    contentHandlr->addContent(f);
-    contentHandlr->addContent(c);
-    contentHandlr->addContent(pl);
-//       contentHandlr->addContent(v);
+//      library *l=new library();
+// //      configureContent *c=new configureContent();
+//      folderContent *f=new folderContent();
+// //     playlistContent *pl=new playlistContent();
+// 
+//      contentHandlr->addContent(l);
+//      contentHandlr->addContent(f);
+// //     contentHandlr->addContent(c);
+// //     contentHandlr->addContent(pl);
 }
 
 void mainWindow::closeEvent(QCloseEvent *event)

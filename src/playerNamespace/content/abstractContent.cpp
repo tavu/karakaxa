@@ -29,7 +29,7 @@ void abstractContent::update(const int )
 
 bool abstractContent::isActive()
 {
-    return player::contentHandlr->isActive(this);
+    return player::contentHandlr.isActive(this);
 }
 
 

@@ -27,8 +27,25 @@ void nplDelegate::paint ( QPainter * painter, const QStyleOptionViewItem & optio
     QApplication::style()->drawPrimitive( QStyle::PE_PanelItemViewItem, &option, painter );
     QString text = index.data(Qt::DisplayRole).toString();
 
-         
+    int align;
     
+    if(index.column()==0)
+    {
+	align=Qt::AlignCenter;
+	painter->save();
+	QPen pen(Qt::black );	
+	pen.setWidth(1);	  
+	painter->setOpacity(0.2);
+	painter->setPen(pen);
+ 	painter->drawLine(rect.topRight(),rect.bottomRight() );
+	painter->restore();
+    }
+    else
+    {
+      	rect.setX(rect.x()+2);
+	align=Qt::AlignVCenter|Qt::AlignLeft;
+    }
+        
     if (npList.isPlaying(index.row() ) )
     {
         
@@ -47,10 +64,11 @@ void nplDelegate::paint ( QPainter * painter, const QStyleOptionViewItem & optio
 
 	if( index.column()==0 )
 	{
+	    align=Qt::AlignVCenter|Qt::AlignLeft;
 	    QPolygonF pol;
 	    pol<<QPoint(10,7.5)<<QPoint(5,12)<<QPoint(5,3);
 
-	    pol.translate(option.rect.x(),option.rect.y() );
+	    pol.translate(option.rect.x(),option.rect.y()+2 );
 	    painter->drawPolygon(pol,Qt::WindingFill);
 	    rect.setX(rect.x()+12);
 	}
@@ -62,8 +80,6 @@ void nplDelegate::paint ( QPainter * painter, const QStyleOptionViewItem & optio
     }
     
     painter->setFont(font);
-    int align;
-    align=Qt::AlignLeft;
     if(index.column()==0 && text==QString("0") )
     {
 // 	text=QString("-");
@@ -76,8 +92,8 @@ void nplDelegate::paint ( QPainter * painter, const QStyleOptionViewItem & optio
     if(!t->isValid() )
     {
 	painter->setOpacity(0.5);
-    } 
-    QApplication::style()->drawItemText(painter,rect,Qt::AlignLeft,QApplication::palette (),true,text);
+    }
+    QApplication::style()->drawItemText(painter,rect,align,QApplication::palette (),true,text);
     
     
 //     painter->drawText( option.rect,Qt::AlignVCenter|align, text);

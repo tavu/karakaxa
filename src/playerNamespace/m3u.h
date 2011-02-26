@@ -6,10 +6,13 @@
 #include<QString>
 #include<iostream>
 #include<playerNamespace.h>
+#include"files/audioFile.h"
+using namespace audioFiles;
 namespace player
 {
 class m3uPl
 {
+    
     public:
 	m3uPl(const QString s);
 
@@ -74,7 +77,7 @@ class m3uPl
 	}
 
 	void load();
-	QList<audioFile*> files();
+	QList<audioFiles::audioFile*> files();
     private:
 
 	void save();

@@ -3,7 +3,8 @@
 
 myStandardModel::myStandardModel(QObject* parent)
   :QStandardItemModel(parent)
-{  
+{ 
+  
 }
 
 myStandardModel::~myStandardModel()

@@ -5,7 +5,7 @@
 #include <textidentificationframe.h>
 #include <fileref.h>
 
-#include <tagsTable.h>
+#include "tagsTable.h"
 
 #include <textidentificationframe.h>
 #include <mpegfile.h>
@@ -15,7 +15,6 @@
 #include <tag.h>
 
 #include"fileTags.h"
-// #define test std::wcout<<"test"<<std::endl;
 
 //---QT---
 #include<QObject>
@@ -24,7 +23,7 @@
 
 #include <tstringlist.h>
 
-namespace player
+namespace audioFiles
 {
 
 class mp3Tags :public fileTags
@@ -56,8 +55,8 @@ public:
     virtual bool 		setArtists (const QStringList &l);
     virtual QStringList 	artists () const ;
 
-    virtual QVariant		tag(tagsEnum t) const;
-    virtual bool		setTag(tagsEnum t,const QVariant &var);
+    virtual QVariant		tag(player::tagsEnum t) const;
+    virtual bool		setTag(player::tagsEnum t,const QVariant &var);
     virtual int			originalRating() const;
     virtual bool		setOriginalRating(const unsigned int &num);
 };//class

@@ -9,8 +9,9 @@
 #include"../treeViewDelegate.h"
 
 #include<KFileItemDelegate>
-#include"folderProxyModel.h"
+// #include"folderProxyModel.h"
 #include<QDebug>
+
 
 using namespace player;
 #define DIRECTORYM "inode/directory"
@@ -24,7 +25,7 @@ folderContent::folderContent(QWidget *parent)
 
     model->dirLister()->setMimeFilter(player::config.files()<<DIRECTORYM);
 
-    proxyM=new folderProxyModel(this);
+    proxyM=new QSortFilterProxyModel(this);
     proxyM->setSourceModel(model);
 
     view=new myTreeView(this,"Folder view");

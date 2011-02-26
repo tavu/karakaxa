@@ -2,19 +2,20 @@
 #include<QTextStream>
 #include<player.h>
 #include<QTextStream>
+using namespace audioFiles;
 player::m3uPl::m3uPl(const QString s)
         :file(s)
 {
     path=s;
 }
 
-QList<audioFile*> player::m3uPl::files()
+QList<audioFiles::audioFile*> player::m3uPl::files()
 {
-    QList<audioFile*> audioL;
+    QList<audioFiles::audioFile*> audioL;
     for(int i=0;i<list.size();i++)
     {
-	audioFile *f=audioFile::getAudioFile(list.at(i) );
-	if(f!=0 && f->isValid() )
+	audioFile *f=new audioFile(list.at(i) );
+// 	if(f!=0 && f->isValid() )
 	{
 	    audioL<<f;
 	}	

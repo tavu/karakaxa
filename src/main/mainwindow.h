@@ -63,7 +63,7 @@ class mainWindow :public QMainWindow
 
 	QPalette pal;
 	//fuctions
-	inline void init();
+// 	inline void init();
 	inline void toolBarInit();
 	inline void nplViewInit();
 	inline void conTreeInit();

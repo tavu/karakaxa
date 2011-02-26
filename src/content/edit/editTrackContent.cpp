@@ -10,9 +10,9 @@ using namespace player;
 editTrackContent::editTrackContent(QString url,QWidget *parent)
         :abstractContent(parent)
 {
-    file=audioFile::getAudioFile(url);
+    file=new audioFile(url);
 
-    path=new QLineEdit(file->getPath(),this);
+    path=new QLineEdit(file->path(),this);
     path->setContextMenuPolicy(Qt::NoContextMenu);
 
     cw=new player::coverWidget(this);
@@ -51,7 +51,7 @@ QString editTrackContent::name() const
 editTrackContent::~editTrackContent()
 {
 
-    audioFile::releaseAudioFile(file);
+    delete file;
 }
 
 void editTrackContent::tagInit()
@@ -61,18 +61,20 @@ void editTrackContent::tagInit()
     QFormLayout *form = new QFormLayout();
     form->setLabelAlignment(Qt::AlignLeft);
 
-    titleL=new QLineEdit(file->tag(TITLE,audioFile::DEFAULTF & ~audioFile::TITLEFP).toString(),this );
-    albumL=new QLineEdit(file->tag(ALBUM,audioFile::ONFILE).toString(),this );
-    artistL=new QLineEdit(file->tag(ARTIST,audioFile::ONFILE).toString(),this );
-    leadArtistL=new QLineEdit(file->tag(LEAD_ARTIST,audioFile::ONFILE).toString(),this );
-    commentL=new QTextEdit(file->tag(COMMENT,audioFile::ONFILE).toString(),this );
-    composerL=new QLineEdit(file->tag(COMPOSER,audioFile::ONFILE).toString(),this );
-    genreL=new QLineEdit(file->tag(GENRE,audioFile::ONFILE).toString(),this );
+    int flag=audioFile::ONCACHE|audioFile::LOAD_FILE;
+    
+    titleL=new QLineEdit(file->tag(TITLE,flag).toString().trimmed(),this );
+    albumL=new QLineEdit(file->tag(ALBUM,flag).toString().trimmed(),this );
+    artistL=new QLineEdit(file->tag(ARTIST,flag).toString().trimmed(),this );
+    leadArtistL=new QLineEdit(file->tag(LEAD_ARTIST,flag).toString().trimmed(),this );
+    commentL=new QTextEdit(file->tag(COMMENT,flag).toString().trimmed(),this );
+    composerL=new QLineEdit(file->tag(COMPOSER,flag).toString().trimmed(),this );
+    genreL=new QLineEdit(file->tag(GENRE,flag).toString().trimmed(),this );
     yearL=new QSpinBox(this );
     trackL=new QSpinBox(this );
 
-    yearL->setValue(file->tag(YEAR,audioFile::ONFILE).toInt() );
-    trackL->setValue(file->tag(TRACK,audioFile::ONFILE).toInt() );
+    yearL->setValue(file->tag(YEAR,flag).toInt() );
+    trackL->setValue(file->tag(TRACK,flag).toInt() );
 
     year.setText(tr("Year:") );
 
@@ -105,7 +107,7 @@ void editTrackContent::infoInit()
     form->addRow(tr("length: "),&lengthF);
 
 //      bitRate.setText("Bit rate:");
-    bitRateF.setText("<b>"+file->tag(BITRATE).toString()+"</b>" );
+    bitRateF.setText("<b>"+file->tag(BITRATE).toString().trimmed()+"</b>" );
     form->addRow(tr("Bit rate: "),&bitRateF);
 //      gl->setHorizontalSpacing(0);
 //      gl->addWidget(&bitRate,1,0);
@@ -133,53 +135,78 @@ void editTrackContent::infoInit()
 
 void editTrackContent::save()
 {
-    using namespace player;
+    using namespace player;    
 
-
-    if (titleL->text()!=file->tag(TITLE,audioFile::DEFAULTF & ~audioFile::TITLEFP ).toString() )
+    QList<int> tags;
+    QList<QVariant>values;
+    QString s;
+    int f=audioFile::DEFAULTF|~audioFile::TITLEFP;  
+    
+    s=titleL->text().trimmed();
+    if (s.compare(file->tag(TITLE,f).toString().trimmed() )!=0 )
     {
         qDebug()<<"edit title";
-        file->setTitle(titleL->text() );
+	tags<<TITLE;
+	values<<QVariant(s);
     }
 
-    if (albumL->text()!=file->tag(ALBUM).toString() )
+    s=albumL->text().trimmed();
+    if ( s.compare(file->tag(ALBUM,f).toString().trimmed() )!=0 )
     {
         qDebug()<<"edit album";
-// 	qDebug()<<file->tag(ALBUM).toString()<<"	"<<albumL->text();
-        file->setAlbum(albumL->text() );
+	tags<<ALBUM;
+	values<<QVariant(s);
     }
-
-    if (artistL->text().compare(file->tag(ARTIST).toString() )!=0)
+    
+    s=artistL->text().trimmed();
+    if (s.compare(file->tag(ARTIST,f).toString().trimmed() )!=0)
     {
         qDebug()<<"edit artist";
-        file->setArtist(artistL->text() );
+	tags<<ARTIST;
+	values<<QVariant(s);
+
     }
     
-    
-    if (QString::compare(leadArtistL->text(),file->tag(LEAD_ARTIST).toString() )!=0)
+    s=leadArtistL->text().trimmed();
+    if (s.compare(file->tag(LEAD_ARTIST,f).toString().trimmed() )!=0)
     {
         qDebug()<<"edit leadArtist";
-        file->setLeadArtist(leadArtistL->text() );
+ 	qDebug()<<leadArtistL->text().trimmed();
+ 	qDebug()<<file->tag(LEAD_ARTIST).toString().trimmed();
+	tags<<LEAD_ARTIST;
+	values<<QVariant(s);
+
     }
 
-
-    if (composerL->text().compare(file->tag(COMPOSER).toString() )!=0)
+    s=composerL->text().trimmed();
+    if (s.compare(file->tag(COMPOSER,f).toString().trimmed() )!=0)
     {
         qDebug()<<"edit composer";
-        file->setComposer(composerL->text() );
+	qDebug()<<"val "<<s;
+	qDebug()<<"comp "<<file->tag(COMPOSER,f).toString().trimmed();
+	tags<<COMPOSER;
+	values<<QVariant(s);
+
     }
     
-    if (genreL->text()!=file->tag(GENRE).toString() )
+    s=genreL->text().trimmed();
+    if (s.compare(file->tag(GENRE,f).toString().trimmed() )!=0 )
     {
         qDebug()<<"edit genre";
-        file->setGenre(genreL->text() );
+	tags<<GENRE;
+	values<<QVariant(s);
+
     }
 
-    if (commentL->toPlainText().compare(file->tag(COMMENT).toString())!=0 )
+    s=commentL->toPlainText().trimmed();
+    if (s.compare(file->tag(COMMENT,f).toString().trimmed())!=0 )
     {
         qDebug()<<"edit comment";
-        file->setComment(commentL->toPlainText() );
+	tags<<COMMENT;
+	values<<QVariant(s);
     }
+        
+    file->setTags(tags,values);
 }
 
 void editTrackContent::clicked(QAbstractButton * button)
@@ -187,7 +214,7 @@ void editTrackContent::clicked(QAbstractButton * button)
     if (buttons->buttonRole(button)==QDialogButtonBox::AcceptRole)
     {
         save();
-        contentHandlr->removeContent(this);
+        contentHandlr.removeContent(this);
     }
     if (buttons->buttonRole(button)==QDialogButtonBox::ApplyRole)
     {
@@ -195,7 +222,7 @@ void editTrackContent::clicked(QAbstractButton * button)
     }
     if (buttons->buttonRole(button)==QDialogButtonBox::RejectRole)
     {
-        contentHandlr->removeContent(this);
+        contentHandlr.removeContent(this);
 
     }
 }

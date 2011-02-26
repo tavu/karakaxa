@@ -8,51 +8,55 @@
 #include<QThread>
 #include <player.h>
 #include<QDir>
-
+#include <kdirlister.h>
+#include"albumEntry.h"
 class scanTread :public  QThread//, public QObject
 {
     Q_OBJECT
-public:
-    scanTread();
+    public:
+	scanTread();
 
-    int importedItemNum();
-    inline bool isStoped()
-    {
-        return stopped;
-    }
-    inline int importedNum()
-    {
-        return filesImported;
-    }
+	int importedItemNum();
+	inline bool isStoped()
+	{
+	    return stopped;
+	}
+	inline int importedNum()
+	{
+	    return filesImported;
+	}
+	QByteArray albumKey(albumEntry e);
 
-protected:
-    void run();
+    protected:
+	void run();
+	
+	QMap<QString,QString> images;
+	QMap<int, albumEntry> albums;
+	QString image(albumEntry &al);
+	
+	QHash<int,int> allAlbums;
+	
+	
+    private:
+	libraryImporter importer;
+	bool scanFolder(KUrl url);
 
-private:
-    libraryImporter importer;
-
-    bool scanFolder(QDir dir);
-// 	  void import(QString file);
-
-
-    void findItemN(QString);
-    int itemNumber;
-    int num;
-    int filesImported;
-    bool stopped;
-//      public slots:
-// 	  void start();
-
-signals:
-// 	  void print(const QString);
-    void done(int);
-    void itemsNum(const int);
-    void imported(const int);
-    void canceled(int);
-    void error(QString);
-// 	  void item(const int);
-public slots:
-    void stop();
+	void findItemN(QString);
+	int itemNumber;
+	int num;
+	int filesImported;
+	bool stopped;
+	
+	
+    signals:
+	void done(int);
+	void itemsNum(const int);
+	void imported(const int);
+	void canceled(int);
+	void error(QString);
+    // 	  void item(const int);
+    public slots:
+	void stop();
 };
 
 #endif

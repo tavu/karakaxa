@@ -13,39 +13,47 @@ using namespace player;
 
 
 
-const short int player::audioFile::DBCACHE=0b00010000;
-const short int player::audioFile::ONDATAB=0b00000001;
-const short int player::audioFile::ONCACHE=0b00000010;
-const short int player::audioFile::ONFILE =0b00000100;
-const short int player::audioFile::TITLEFP=0b00001000;
-const short int player::audioFile::DEFAULTF=ONDATAB|DBCACHE|ONCACHE|ONFILE|TITLEFP;
+const short int audioFiles::audioFile::ONDATAB=0b00010000;
+const short int audioFiles::audioFile::SELECT=0b00000001;
+const short int audioFiles::audioFile::ONCACHE=0b00000010;
+const short int audioFiles::audioFile::LOAD_FILE =0b00000100;
+const short int audioFiles::audioFile::TITLEFP=0b00001000;
+const short int audioFiles::audioFile::DEFAULTF=SELECT|ONDATAB|ONCACHE|LOAD_FILE|TITLEFP;
 
-player::audioFile::audioFile(const QString url)
-        :recFlag(true),
+audioFiles::audioFile::audioFile(const QString url)
+        :QObject(),
+        recFlag(true),
         fileSize(0),
+        saveFlag(false),
         _mutable(false)
 {
-//      record=QSqlRecord();
-    table=new QVariant[FRAME_NUM];
-    flags=new bool[FRAME_NUM];
-
-
-    for (int i=0;i<FRAME_NUM;i++)	flags[i]=false;
-
-    flags[PATH]=true;
-
-    file=getFileTags(url);
+    cache=audioFiles::fileCache::getFileCache(url);
+//     flags[PATH]=true;
     
-    connect(&db,SIGNAL(changed()),this,SLOT(recordClean()) );
+//     connect(&db,SIGNAL(changed()),this,SLOT(recordClean()) );
 }
 
-player::audioFile::~audioFile()
+audioFiles::audioFile::audioFile(const audioFile& f)
+        :QObject(),
+        recFlag(true),
+        fileSize(0),
+        saveFlag(false)
 {
-    delete file;
+     cache=audioFiles::fileCache::getFileCache(f.path() );
+    _mutable=f.isMutable();
+    
 }
 
 
-QVariant player::audioFile::tag(tagsEnum t, const short int f, int *err, short int* r)
+
+audioFiles::audioFile::~audioFile()
+{
+    audioFiles::fileCache::releaseFileCache(cache);
+//     delete file;
+}
+
+
+QVariant audioFiles::audioFile::tag(int t, const short int f)
 {
   
 /*
@@ -61,511 +69,273 @@ QVariant player::audioFile::tag(tagsEnum t, const short int f, int *err, short i
     if you want another order use this function more than one with different flag.
     
 */
-//     mutex.lock();
+    QVariant ret;
+
+    if(t>=FRAME_NUM)
+    {
+	err=UNOWN;
+	stat=-1;
+	return ret;
+    }    
     if (t==PATH)
-        return tagRet(getPath(),TITLEFP,err,r) ;
-
-    if (f & DBCACHE)
     {
-        if (!record.isEmpty())
-        {
-	    return tagRet(record.value(t+TRV_HIDE),DBCACHE,err,r);
-        }
+	stat=-1;
+        return path();
     }
-
-    if (f & ONCACHE)
-    {
-        if (flags[t])
-        {
-            if (t==TITLE)
-            {
-                if (table[t].toString().isEmpty() && (f & TITLEFP) )
-                {
-                    return tagRet(titleFromPath(getPath()),TITLEFP,err,r );
-                }
-            }
-            return tagRet(table[t],DBCACHE,err,r);
-        }
-    }
-
     if (f & ONDATAB)
     {
-        //we use the recFlag as a flag to tell us if the file exist in database.
-        //if it doesn't we don't need to make queries at the next searches
-        //if you wan't to search we have to call select() manualy.
-        //if recFlag is false after the selection means that the file is not in database so 
-        //we do not return
-        if (recFlag)
+	//the first field of the record conteins the albumId
+	ret=cache->tagFromDb(t+1, err);
+        if (err==OK)
         {
-	    select();
-	    if(!record.isEmpty() )
-	    {
-	      return tagRet( record.value(t+TRV_HIDE),ONDATAB,err,r ); 
-	    }
+	    stat=ONDATAB;
+	    return ret;
         }
     }
-
-    if (f & ONFILE)
+    if (f & ONCACHE)
     {
-        if (t==TITLE)
-        {
-            table[t]=file->title();
-            flags[t]=true;
-
-            if (table[t].toString().isEmpty() &&(f & TITLEFP) )
-            {
-                return  tagRet(titleFromPath(getPath()),TITLEFP,err,r );
-            }
-            return tagRet(table[t],ONFILE,err,r);
+	ret=cache->tagFromFile((player::tagsEnum) t, err);
+	
+	//if we have loaded the tags information but there is no title frame and the TITLEFP is seted we return the file name.
+	if (t==TITLE && ret.toString().isEmpty() && (f & TITLEFP) && err!=TAGS_NOT_LOADED)
+        {	    
+	    stat= ONCACHE;
+	    return titleFromPath(path());
         }
-
-        table[t]=file->tag(t);
-        flags[t]=true;
-        return tagRet(table[t],ONFILE,err,r);
+        if(err==OK )
+	{
+	    stat=ONCACHE;
+	    QString s=ret.toString().trimmed();
+	    return QVariant(s);
+	} 
     }
-    return tagRet(QVariant(),-1,err,r);
+
+    if (f & SELECT)
+    {
+       err=cache->select();
+       if(err==OK)
+       {
+	  stat=SELECT;
+	  QString s=cache->tagFromDb((player::tagsEnum) t, err).toString().trimmed();	  
+	  ret=QVariant(s);
+       }
+    }
+
+    if (f & LOAD_FILE)
+    {
+	cache->loadTags();
+        ret=cache->tagFromFile((player::tagsEnum) t, err);
+	
+	//if we have loaded the tags information but there is no title frame and the TITLEFP is seted we return the file name.
+	if (t==TITLE && ret.toString().isEmpty() && (f & TITLEFP) && err!=TAGS_NOT_LOADED)
+        {	    
+	    stat= ONCACHE;
+	    return titleFromPath(path());
+        }
+    }
+    err=UNOWN;
+    stat=-1;
+    return ret;
 }
 
-bool player::audioFile::setTag(tagsEnum t,QVariant var)
-{
+bool audioFiles::audioFile::setTag(int t,QVariant var)
+{    
+    if(t>=FRAME_NUM )
+    {
+	err=UNOWN;
+	qDebug()<<err;
+	return false;
+    }
+  
+    if(!prepareToSave())
+    {
+	qDebug()<<err;
+	return false;
+    } 
+    int f=0;
+    int dberr;
+        
+    
     switch (t)
     {
 	case LEAD_ARTIST:
 	{
-	    return setLeadArtist(var.toString() );
+	    file->setTag(LEAD_ARTIST,var.toString());
+	    err=file->error();
+	    if(err==OK || err==NS_TAG)
+	    {
+		dberr=fileToDb::setLeadArtist(path(),var.toString(),tag(ARTIST,ONDATAB).toString(),tag(ALBUM,ONDATAB).toString() );
+	    }
+	    break ;
 	}
 	case RATING:
 	{
-	    return setRating(var.toInt() );
+	    file->setTag(RATING,var);
+	    err=file->error();
+	    if(err==OK || err==NS_TAG)
+	    {
+		dberr=fileToDb::setRating(path(),var.toInt() );
+	    }
+	    break ;
 	}
 	case COUNTER:
 	{
-	    return setCounter(var.toInt() );
+	    file->setTag(COUNTER,var.toInt());
+	    err=file->error();
+	    if(err==OK || err==NS_TAG)
+	    {
+		dberr=fileToDb::setCounter(path(),var.toInt() );
+	    }
+	    break ;
 	}
 	case COMPOSER:
 	{
-	    return setComposer(var.toString() );
+	    file->setTag(COMPOSER,var.toString());
+	    err=file->error();
+	    if(err==OK || err==NS_TAG)
+	    {
+		dberr=fileToDb::setComposer(path(),var.toString());
+	    }
+	    break ;
 	}
 	case TITLE:
 	{
-	    return setTitle(var.toString());
+	    file->setTitle(var.toString());
+	    err=file->error();
+	    if(err==OK || err==NS_TAG)
+	    {
+		dberr=fileToDb::setTitle(path(),var.toString() );
+	    }
+	    break ;
 	}
 	case ALBUM:
 	{
-	    return setAlbum(var.toString());
+	    file->setAlbum(var.toString());
+	    err=file->error();
+	    if(err==OK || err==NS_TAG)
+	    {
+		dberr=fileToDb::setAlbum(path(),var.toString());
+	    }
+	    break ;
 	}
 	case ARTIST:
 	{
-	    return setArtist(var.toString());
+	    file->setArtist(var.toString());
+	    err=file->error();
+	    if(err==OK || err==NS_TAG)
+	    {
+		dberr=fileToDb::setArtist(path(),var.toString(),tag(ALBUM,ONDATAB).toString() );
+	    }
+	    break ;
 	}
 	case GENRE:
 	{
-	    return setGenre(var.toString());
+	    file->setGenre(var.toString());
+	    err=file->error();
+	    if(err==OK || err==NS_TAG)
+	    {
+		dberr=fileToDb::setGenre(path(),var.toString() );
+	    }
+	    break ;
 	}
 	case COMMENT:
 	{
-	    return setComment(var.toString());
+	    file->setTag(COMMENT,var.toString());
+	    err=file->error();
+	    if(err==OK || err==NS_TAG)
+	    {
+		dberr=fileToDb::setComment(path(),var.toString());
+	    }
+	    break ;
 	}
 	case TRACK:
 	{
-	    return setTrack(var.toInt());
+	    file->setTrack(var.toInt());
+	    err=file->error();
+	    if(err==OK || err==NS_TAG)
+	    {
+		dberr=fileToDb::setTrack(path(),var.toInt() );
+	    }
+	    break ;
 	}
 	case YEAR:
 	{
-	    return setYear(var.toInt() );
+	    file->setTag(YEAR,var.toInt());
+	    err=file->error();
+	    if(err==OK || err==NS_TAG)
+	    {
+		dberr=fileToDb::setYear(path(),var.toInt() );
+	    }
+	    break ;
 	}
-
 	default:
 	{
+	    err=UNOWN;
 	    return false;
 	}
     }
-}
-bool player::audioFile::setArtist (const QString &s)
-{
-    mutex.lock();
-
-    //if the file is not supportes(fileTags::NSTAG) we stil update the information on database
-    //at any other error we return
-    if (!file->setArtist(s) && file->error()!=fileTags::NSTAG)
-    {
-        mutex.unlock();
-        return false;
-    }
-
-    table[ARTIST]=QVariant(s);
-    flags[ARTIST]=true;
-
-    if ( fileToDb::setArtist(file->getPath(),s,tag(ALBUM,ONDATAB|DBCACHE).toString() )==fileToDb::DBERR)
-    {
-        mutex.unlock();
-        return false;
-    }
-
-    mutex.unlock();
-
-    if(!_mutable )
-    {
-	db.updateSig(ARTIST);
-    }
+    qDebug()<<err;
     
-    return true;
-}
-
-bool player::audioFile::setAlbum(const QString &s)
-{
-    mutex.lock();
-
-    //if the file is not supportes(fileTags::NSTAG) we stil update the information on database
-    //at any other error we return
-    if (!file->setAlbum(s) && file->error()!=fileTags::NSTAG)
+    if(err!=NS_TAG)
     {
-        mutex.unlock();
-        return false;
+	f=f|1;
     }
-
-    table[ALBUM]=QVariant(s);
-    flags[ALBUM]=true;
-
-    if ( fileToDb::setAlbum(file->getPath(),s)==fileToDb::DBERR)
+    if(dberr==OK)
     {
-        mutex.unlock();
-        return false;
+      f=f|2;
     }
-    
-    mutex.unlock();
+    cache->setTag((player::tagsEnum)t,var,f);
+    err=dberr;    
     
     if(!_mutable )
     {
-	db.updateSig(ALBUM);
+	db.updateSig(t);
     }
 
-    
-    return true;
+    if(!saveFlag)
+    {
+	save();
+    }
+
+    qDebug()<<err;
+    if(err==OK||err==NOTINDB)
+    {
+      return true;  
+    }
+    else
+    {
+	return false;
+    }
 }
 
-
-bool player::audioFile::setGenre(const QString &s)
+void audioFiles::audioFile::setTags(QList<int> tags,QList<QVariant> values)
 {
-    mutex.lock();
-
-    //if the file is not supportes(fileTags::NSTAG) we stil update the information on database
-    //at any other error we return
-    if (!file->setGenre(s) && file->error()!=fileTags::NSTAG)
+    if(tags.isEmpty() ||tags.size()!=values.size() )
     {
-        mutex.unlock();
-        return false;
+	err=UNOWN;
+	return ;
     }
-
-    table[GENRE]=QVariant(s);
-    flags[GENRE]=true;
-
-    if ( fileToDb::setGenre(file->getPath(),s)==fileToDb::DBERR)
+    if(!prepareToSave() )
     {
-        mutex.unlock();
-        return false;
+	return ;
     }
-    if(!_mutable )
+    saveFlag=true;
+    for(int i=0;i<tags.size();i++ )
     {
-	db.updateSig(GENRE);
-    }
-
-
-    mutex.unlock();
-    return true;
-}
-
-bool player::audioFile::setLeadArtist(const QString &s)
-{
-    mutex.lock();
-
-    //if the file is not supportes(fileTags::NSTAG) we stil update the information on database
-    //at any other error we return
-    if (!file->setTag(LEAD_ARTIST,QVariant(s) ) && file->error()!=fileTags::NSTAG)
-    {
-        mutex.unlock();
-        return false;
-    }
-
-    table[ARTIST]=QVariant(s);
-    flags[ARTIST]=true;
-
-    if (db.isConnected() && fileToDb::setLeadArtist(file->getPath(),s,tag(ARTIST,ONDATAB).toString(),tag(ALBUM,ONDATAB).toString() )==fileToDb::DBERR)
-    {
-        mutex.unlock();
-        return false;
-    }
-    if(!record.isEmpty() )
-    {
-	record.setValue(TRV_HIDE+LEAD_ARTIST,QVariant(s) );
-    }
-    if(!_mutable )
-    {
-	db.updateSig(LEAD_ARTIST);
-    }
-
-
-    mutex.unlock();
-    return true;
-}
-
-bool player::audioFile::setComposer (const QString &s)
-{
-    mutex.lock();
-
-    //if the file is not supportes(fileTags::NSTAG) we stil update the information on database
-    //at any other error we return
-    if (!file->setTag(COMPOSER, QVariant(s) ) && file->error()!=fileTags::NSTAG)
-    {
-        mutex.unlock();
-        return false;
-    }
-
-    table[COMPOSER]=QVariant(s);
-    flags[COMPOSER]=true;
-
-    if ( db.isConnected() && fileToDb::setComposer(file->getPath(),s)==fileToDb::DBERR)
-    {
-        mutex.unlock();
-        return false;
-    }
-     
-    if(!record.isEmpty() )
-    {
-	record.setValue(TRV_HIDE+COMPOSER,QVariant(s) );
-    }
-    if(!_mutable )
-    {
-	db.updateSig(COMPOSER);
-    }
-
-
-    mutex.unlock();
-    return true;
-}
-
-bool player::audioFile::setTitle (const QString &s)
-{
-    mutex.lock();
-
-    //if the file is not supportes(fileTags::NSTAG) we stil update the information on database
-    //at any other error we return
-    if (!file->setTitle(s) && file->error()!=fileTags::NSTAG)
-    {
-        mutex.unlock();
-        return false;
-    }
-
-    table[TITLE]=QVariant(s);
-    flags[TITLE]=true;
-
-    if ( db.isConnected() && fileToDb::setTitle(file->getPath(),s)==fileToDb::DBERR)
-    {
-        mutex.unlock();
-        return false;
-    }
-     
-    if(!record.isEmpty() )
-    {
-	record.setValue(TRV_HIDE+TITLE,QVariant(s) );
+	setTag(tags.at(i),values.at(i) );
     }
     
-    if(!_mutable )
-    {
-	db.updateSig(TITLE);
-    }
-
-
-    mutex.unlock();
-    return true;
+    save();
+    saveFlag=false;    
 }
 
-bool player::audioFile::setComment (const QString &s)
-{
-    mutex.lock();
-
-    //if the file is not supportes(fileTags::NSTAG) we stil update the information on database
-    //at any other error we return
-    if (!file->setComment(s) && file->error()!=fileTags::NSTAG)
-    {
-        mutex.unlock();
-        return false;
-    }
-
-    table[COMMENT]=QVariant(s);
-    flags[COMMENT]=true;
-
-    if (  db.isConnected() && fileToDb::setComment(file->getPath(),s)==fileToDb::DBERR)
-    {
-        mutex.unlock();
-        return false;
-    }
-    
-     
-    if(!record.isEmpty() )
-    {
-	record.setValue(TRV_HIDE+COMMENT,QVariant(s) );
-    }
-    
-    if(!_mutable )
-    {
-	db.updateSig(COMMENT);
-    }
-
-
-    mutex.unlock();
-    return true;
-}
-
-bool player::audioFile::setYear (const unsigned int &year)
-{
-    mutex.lock();
-
-    //if the file is not supportes(fileTags::NSTAG) we stil update the information on database
-    //at any other error we return
-    if (!file->setYear(year) && file->error()!=fileTags::NSTAG)
-    {
-        mutex.unlock();
-        return false;
-    }
-
-    table[YEAR]=QVariant(year);
-    flags[YEAR]=true;
-
-    if (  db.isConnected() && fileToDb::setYear(file->getPath(),year)==fileToDb::DBERR)
-    {
-        mutex.unlock();
-        return false;
-    }
-    
-     
-    if(!record.isEmpty() )
-    {
-	record.setValue(TRV_HIDE+YEAR,QVariant(year) );
-    }
-
-    if(!_mutable )
-    {
-	db.updateSig(YEAR);
-    }
-
-
-    mutex.unlock();
-    return true;
-}
-
-bool player::audioFile::setTrack (const unsigned int &track)
-{
-    mutex.lock();
-
-    //if the file is not supportes(fileTags::NSTAG) we stil update the information on database
-    //at any other error we return
-    if (!file->setTrack(track) && file->error()!=fileTags::NSTAG)
-    {
-        mutex.unlock();
-        return false;
-    }
-
-    table[TRACK]=QVariant(track);
-    flags[TRACK]=true;
-
-    if ( db.isConnected() &&  fileToDb::setTrack(file->getPath(),track)==fileToDb::DBERR)
-    {
-        mutex.unlock();
-        return false;
-    }
-    
-     
-    if(!record.isEmpty() )
-    {
-	record.setValue(TRV_HIDE+TRACK,QVariant(track) );
-    }
-    
-    if(!_mutable )
-    {
-	db.updateSig(TRACK);
-    }
 
 
 
-    mutex.unlock();
-    return true;
-}
-
-bool player::audioFile::setRating (const unsigned int &rating)
-{
-    mutex.lock();
-
-    //if the file is not supportes(fileTags::NSTAG) we stil update the information on database
-    //at any other error we return
-    if (!file->setTag(RATING,QVariant(rating) ) && file->error()!=fileTags::NSTAG)
-    {
-        mutex.unlock();
-        return false;
-    }
-
-    table[RATING]=QVariant(rating);
-    flags[RATING]=true;
-
-    if (  db.isConnected() && fileToDb::setRating(file->getPath(),rating)==fileToDb::DBERR)
-    {
-        mutex.unlock();
-        return false;
-    }
-    if(!record.isEmpty() )
-    {
-	record.setValue(TRV_HIDE+RATING,QVariant(rating) );
-    }    
-    
-
-    if(!_mutable )
-    {
-	db.updateSig(RATING);
-    }
 
 
-    mutex.unlock();
-    return true;
-}
 
-bool player::audioFile::setCounter(const unsigned int &num )
-{
-    mutex.lock();
-
-    //if the file is not supportes(fileTags::NSTAG) we stil update the information on database
-    //at any other error we return
-    if (!file->setTag(COUNTER,QVariant(num) ) && file->error()!=fileTags::NSTAG)
-    {
-        mutex.unlock();
-        return false;
-    }
-
-    table[COUNTER]=QVariant(num);
-    flags[COUNTER]=true;
-
-    if ( db.isConnected() && fileToDb::setCounter(file->getPath(),num)==fileToDb::DBERR)
-    {
-        mutex.unlock();
-        return false;
-    }
-    
-      
-    if(!record.isEmpty() )
-    {
-	record.setValue(TRV_HIDE+COUNTER,QVariant(num) );
-    } 
-    
-    if(!_mutable )
-    {
-	db.updateSig(COUNTER);
-    }
-
-
-    mutex.unlock();
-    return true;
-}
-
-QVariant  player::audioFile::albumArtist()
+QVariant  audioFiles::audioFile::albumArtist()
 {
     QString s=tag(LEAD_ARTIST).toString();
     s.simplified();
@@ -577,7 +347,7 @@ QVariant  player::audioFile::albumArtist()
     return file->artist();
 }
 
-QString player::audioFile::cover()
+QString audioFiles::audioFile::cover()
 {
     //if albumArt is null we haven't search for covers yet.
     if (!albumArt.isNull() )
@@ -613,156 +383,80 @@ QString player::audioFile::cover()
     return albumArt;
 }
 
-void player::audioFile::clear()
-{
-    albumArt=QString();
-
-    for (int i=0;i<FRAME_NUM;i++)	flags[i]=false;
-
-    fileSize=0;
-}
-
-int player::audioFile::size()
+int audioFiles::audioFile::size()
 {
     if (fileSize==0)
     {
-        QFile f(getPath() );
+        QFile f(path() );
         fileSize=f.size();
     }
     return fileSize;
 }
 
-bool player::audioFile::onCache(tagsEnum t)
+int audioFiles::audioFile::albumId()
 {
-    return flags[t];
-}
-
-QString player::audioFile::getPath()
-{
-    return file->getPath();
-}
-
-int player::audioFile::albumId()
-{
-
-    if (record.isEmpty() && recFlag)
+    err=cache->select();
+    
+    if(err!=OK)
     {
-        select();
+	return -1;
     }
-
-    if (record.isEmpty() )
-    {
-        return -1;
-    }
-
-    return record.value(0).toInt();
-
+    return cache->tagFromDb(0,err).toInt();
 }
 
-fileTags* player::audioFile::getFileTags(const QString path)
+bool audioFiles::audioFile::prepareToSave()
 {
-    fileTags *ret;
-
-    QString f=player::format(path);
-    if (QString::compare(QString("mp3"),f,Qt::CaseInsensitive )==0)
+    if(saveFlag)
     {
-        ret=new mp3Tags(path);
+      err=OK;
+      return true;
+    }
+    
+    file=audioFiles::getFileTags(path());    
+    if(file->isValid() )
+    {
+      cache->lockForSaving();
+      err=OK; 
+      return true;
     }
     else
     {
-        ret=new fileTags(path);
-    }
-    return ret;
+	err=INVALID_FILE;
+    }    
+    return false;
 }
 
-bool player::audioFile::select()
+void audioFiles::audioFile::save()
 {
-    int err;
-    record=fileToDb::record(getPath(),err );
+    file->save();
+    cache->savingEnd();
+    delete file;    
+    file=0;
+}
 
-    if (err==fileToDb::NOTINDB)
+void audioFiles::audioFile::load()
+{
+    err=cache->select();
+    if(err!=OK)
     {
-        recFlag=false;
-        return false;
+	err=cache->loadTags();
     }
+}
 
+audioFile* audioFiles::audioFile::operator=(const audioFile &f)
+{
     recFlag=true;
-    return true;
+    fileSize=0;
+    saveFlag=false;
 
+    cache=audioFiles::fileCache::getFileCache(f.path() );
+    _mutable=f.isMutable();   
+    return this;
 }
-
-void player::audioFile::recordClean()
+/*
+void audioFiles::audioFile::recordClean()
 {
-    recFlag=true;
-    record.clear();
+//     recFlag=true;
+//     record.clear();
 }
-
-player::audioFile* player::audioFile::getAudioFile(QString path)
-{
-    gMutex.lock();
-    audioFileS *t=fileMap.value(path );
-
-    if (t==0)
-    {
-// 	  qDebug()<<"file "<<path<<"not fount";
-
-        audioFile *f=new audioFile(path);
-        t=new audioFileS;
-        t->p=f;
-
-        if (t->p==0)
-        {
-            qDebug()<<"error malloc audioFile";
-            delete t;
-            gMutex.unlock();
-            return 0;
-        }
-        t->used=1;
-
-        fileMap.insert(path,t);
-
-        gMutex.unlock();
-        return t->p;
-    }
-    t->used++;
-    gMutex.unlock();
-    return t->p;
-}
-
-void player::audioFile::releaseAudioFile(QString path)
-{
-    gMutex.lock();
-    audioFileS *t=fileMap.value(path );
-
-    if (t==0)
-    {
-        qDebug()<<"file: "<<path<<"not fount"<<"at release";
-        gMutex.unlock();
-        return ;
-    }
-    t->used--;
-    if (t->used==0)
-    {
-        fileMap.remove(path);
-        delete t->p;
-        delete t;
-
-        qDebug()<<"audiofile deleted ";
-    }
-    gMutex.unlock();
-
-}
-
-void player::audioFile::releaseAudioFile(audioFile *file)
-{
-    if (file==0)
-    {
-        qDebug()<<"can't release a null file";
-        return;
-    }
-    QString s=file->getPath();
-    releaseAudioFile(s);
-}
-
-QHash<QString, player::audioFile::audioFileS*> player::audioFile::fileMap;
-QMutex player::audioFile::gMutex;
+*/

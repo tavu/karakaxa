@@ -1,21 +1,19 @@
 #include"libraryImporter.h"
 #include<QSqlDatabase>
 #include<QWidget>
-
+#include"audioFiles.h"
 
 using namespace player;
-using namespace std;
+using namespace audioFiles;
+// using namespace std;
 
 
 libraryImporter::libraryImporter()
         :QObject(),
         name("importer")
 {
-
 //      connect(this,SIGNAL(error(QString) ),&player::errors,SLOT(setError(QString)),Qt::QueuedConnection);
-
     database=player::db.clone(name);
-
     isConnected=database.open();
 
     if (!isConnected)
@@ -28,24 +26,20 @@ libraryImporter::libraryImporter()
     
 }
 
-bool libraryImporter::import(const QString path)
+albumEntry libraryImporter::import(const QString &url)
 {
-
-    audioFile *f=audioFile::getAudioFile(path);
-   
-    QSqlQuery q(database);
-
-    database.transaction();            
+    audioFile f(url);
+    QSqlQuery q(database);               
 
     QVariant var[FRAME_NUM];
     
     for(int i=TAGS_START;i<=TAGS_END;++i)
     {
-	var[i]=f->tag((tagsEnum)i,audioFile::ONFILE|audioFile::TITLEFP);
+	var[i]=f.tag(i,audioFile::ONCACHE|audioFile::TITLEFP|audioFile::LOAD_FILE);
 	
-	if(f->error()==fileTags::NSTAG)
+	if(f.error()==NS_TAG)
 	{
-	    var[i]=f->tag((tagsEnum)i,audioFile::ONDATAB|audioFile::DBCACHE);
+	    var[i]=f.tag((tagsEnum)i,audioFile::ONDATAB|audioFile::SELECT);
 	}
     }
     QVariant *v;
@@ -58,13 +52,20 @@ bool libraryImporter::import(const QString path)
     {
 	v=&var[ARTIST];
     }
-      
+    
+    albumEntry al;
+    al.album=var[ALBUM].toString();
+    al.artist=v->toString();    
+    
+    database.transaction(); 
     
     var[ARTIST]=getId(var[ARTIST],"artistsTmp");
     var[LEAD_ARTIST]=getId(var[LEAD_ARTIST],"artistsTmp");
     var[GENRE]=getId(var[GENRE],"genresTmp");
     var[COMPOSER]=getId(var[COMPOSER],"composersTmp");
     var[ALBUM]= getAlbumId(var[ALBUM],*v);
+    
+    al.id=var[ALBUM].toInt();
 
     
     q.prepare("INSERT INTO tracksTmp (tracknumber,title,album,artist,lead_artist,comment,genre,composer,length,rating,year,bitrate,path,count)values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
@@ -85,37 +86,17 @@ bool libraryImporter::import(const QString path)
 	qDebug()<<"Importer error: can't commit";
         qDebug()<<q.lastError().text();
     }
-
-//     if (!f->cover().isEmpty() )
-//     {
-//         if (f->select())
-//         {
-//             qDebug()<<"EEDO";
-//         }
-//         int albumId=f->albumId();
-// 
-//         if (albumId>=0)
-//         {
-//             qDebug()<<"setting albumArt";
-//             player::fileToDb::setAlbumArt(albumId,f->cover());
-//         }
-//         else
-//         {
-//             qDebug()<<"null albumId";
-//         }
-// 
-//     }
-
-    audioFile::releaseAudioFile(f);
-    return true;
+    
+    return al;
 }
 
-bool libraryImporter::importPl(const QString path )
+bool libraryImporter::importPl(const QString &path )
 {
     QSqlQuery q(database);
     q.prepare("insert into playlists (path) values(?)");
     q.addBindValue( path );
     q.exec();
+    return true;
 }
 
 int libraryImporter::n=0;
@@ -130,46 +111,18 @@ libraryImporter::~libraryImporter()
     database.close();
 }
 
-void libraryImporter::saveAlbumArt(const QString &albumArt)
+void libraryImporter::saveAlbumArt(const QString &albumArt , const albumEntry &al)
 {
+    QSqlQuery query(database);        
+    query.prepare("update albumsTmp set image = ? where id=?");       
+    query.addBindValue(albumArt );
+    query.addBindValue(al.id);
 
-    if (albumArt.isEmpty() )
+    if (!query.exec() )
     {
-        albumList.clear();
-        return ;
+	qDebug()<<"error: can't save album art";
+	qDebug()<<query.lastError().text();
     }
-
-    QMap<QString, QString>::const_iterator i = albumList.begin();
-
-    QSqlQuery query(database);
-    QSqlQuery query2(database);
-    QSqlQuery query3(database);
-    while ( i!=albumList.end() )
-    {
-        query.prepare("select albums.id from albums inner join artists on albums.name=? AND artists.name = ? AND albums.artist=artists.id");
-
-        std::cout<<"edo "<<i.key().toUtf8().data()<<" "<<i.value().toUtf8().data()<<std::endl;
-        query.addBindValue(i.key() );
-        query.addBindValue(i.value() );
-        if (!query.exec() )
-        {
-            std::cout<<"eerrr :"<<query.lastError().text().toUtf8().data()<<std::endl;
-        }
-        query.next();
-        QVariant s=query.value(0);
-
-        std::cout<<"value "<<albumArt.toUtf8().data()<<std::endl;
-        query2.prepare("update albums set image = ? where id=?");
-        query2.addBindValue(albumArt );
-        query2.addBindValue(s );
-
-        if (!query2.exec() )
-        {
-        }
-        i++;
-    }
-
-    albumList.clear();
 }
 
 QVariant libraryImporter::getId(QVariant var,QString table)

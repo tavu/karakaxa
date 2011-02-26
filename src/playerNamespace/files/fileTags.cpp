@@ -1,7 +1,10 @@
 #include"fileTags.h"
 #include<QDebug>
-#include<player.h>
-player::fileTags::fileTags(QString url)
+#include"tagsTable.h"
+#include"audioFiles.h"
+#include<stdlib.h>
+using namespace player;
+audioFiles::fileTags::fileTags(QString url)
         :file(url.toLocal8Bit().constData() ),
         path(url),
         tags(0),
@@ -9,12 +12,10 @@ player::fileTags::fileTags(QString url)
         err(OK)
 {
     using namespace TagLib;
-//      file =new MPEG::File(path);
-
     if (file.isNull() )
     {
 
-        err=NULLFILE;
+        err=NULL_FILE;
         return;
     }
 
@@ -23,17 +24,17 @@ player::fileTags::fileTags(QString url)
     properties = file.audioProperties();
 
 }
-player::fileTags::~fileTags()
+audioFiles::fileTags::~fileTags()
 {
 }
 
-QVariant player::fileTags::title() const
+QVariant audioFiles::fileTags::title() const
 {
     using namespace TagLib;
 
     if (tags==0 )
     {
-        err=NULLFILE;
+        err=NULL_FILE;
         return QString();
     }
     err=0;
@@ -41,84 +42,84 @@ QVariant player::fileTags::title() const
     return toQString( tags->title() );
 }
 
-QVariant player::fileTags::artist() const
+QVariant audioFiles::fileTags::artist() const
 {
     using namespace TagLib;
     if (tags==0 )
     {
-        err=NULLFILE;
+        err=NULL_FILE;
         return QString();
     }
     err=0;
     return toQString( tags->artist() );
 }
 
-QVariant player::fileTags::album() const
+QVariant audioFiles::fileTags::album() const
 {
     using namespace TagLib;
     if (tags==0 )
     {
-        err=NULLFILE;
+        err=NULL_FILE;
         return QString();
     }
     err=0;
     return toQString( tags->album() );
 }
 
-QVariant player::fileTags::comment() const
+QVariant audioFiles::fileTags::comment() const
 {
     using namespace TagLib;
     if (tags==0 )
     {
-        err=NULLFILE;
+        err=NULL_FILE;
         return QString();
     }
     err=0;
     return toQString( tags->comment() );
 }
 
-QVariant player::fileTags::genre() const
+QVariant audioFiles::fileTags::genre() const
 {
     using namespace TagLib;
     if (tags==0 )
     {
-        err=NULLFILE;
+        err=NULL_FILE;
         return QString();
     }
     err=0;
     return toQString( tags->genre() );
 }
 
-QVariant player::fileTags::year() const
+QVariant audioFiles::fileTags::year() const
 {
     using namespace TagLib;
     if (tags==0 )
     {
-        err=NULLFILE;
+        err=NULL_FILE;
         return QString();
     }
     err=0;
     return tags->year();
 }
 
-QVariant player::fileTags::track() const
+QVariant audioFiles::fileTags::track() const
 {
     using namespace TagLib;
     if (tags==0 )
     {
-        err=NULLFILE;
+        err=NULL_FILE;
         return QString();
     }
     err=0;
     return tags->track();
 }
 
-QVariant player::fileTags::bitrate() const
+QVariant audioFiles::fileTags::bitrate() const
 {
     using namespace TagLib;
     if (tags==0 )
     {
-        err=NULLFILE;
+        err=NULL_FILE;
         return QString();
     }
     err=0;
@@ -126,42 +127,42 @@ QVariant player::fileTags::bitrate() const
     return properties->bitrate();
 }
 
-QVariant player::fileTags::length() const
+QVariant audioFiles::fileTags::length() const
 {
     using namespace TagLib;
     if (properties==0 )
     {
-        err=NULLFILE;
+        err=NULL_FILE;
         return QString();
     }
     err=0;
     return properties->length();
 }
 
-bool player::fileTags::setTitle(const QString &s)
+bool audioFiles::fileTags::setTitle(const QString &s)
 {
     using namespace TagLib;
 
     if (!isValid() )
     {
-        err=INVALIDF;
+        err=INVALID_FILE;
         return false;
     }
 
     err=OK;
     tags->setTitle( toTString(s) );
 
-    file.save();
+    
     return true;
 }
 
 
-bool player::fileTags::setAlbum (const QString &s)
+bool audioFiles::fileTags::setAlbum (const QString &s)
 {
     using namespace TagLib;
     if (!isValid() )
     {
-        err=INVALIDF;
+        err=INVALID_FILE;
         return false;
     }
 
@@ -169,16 +170,16 @@ bool player::fileTags::setAlbum (const QString &s)
     String ts=toTString(s);
     tags->setAlbum(ts );
 
-    file.save();
+    
     return true;
 }
 
-bool player::fileTags::setArtist (const QString &s)
+bool audioFiles::fileTags::setArtist (const QString &s)
 {
     using namespace TagLib;
     if (!isValid() )
     {
-        err=INVALIDF;
+        err=INVALID_FILE;
         return false;
     }
 
@@ -186,94 +187,98 @@ bool player::fileTags::setArtist (const QString &s)
     String ts=toTString(s);
     tags->setArtist(ts );
 
-    file.save();
+    
     return true;
 }
 
-bool player::fileTags::setComment (const QString &s)
+bool audioFiles::fileTags::setComment (const QString &s)
 {
     using namespace TagLib;
     if (!isValid() )
     {
-        err=INVALIDF;
+        err=INVALID_FILE;
         return false;
     }
 
     err=OK;
     tags->setComment(toTString(s) );
-    file.save();
+    
 
     return true;
 }
 
-bool player::fileTags::setGenre (const QString &s)
+bool audioFiles::fileTags::setGenre (const QString &s)
 {
     using namespace TagLib;
     if (!isValid() )
     {
-        err=INVALIDF;
+        err=INVALID_FILE;
         return false;
     }
 
     err=OK;
     tags->setGenre(toTString(s) );
-    file.save();
+    
 
     return true;
 }
 
-bool player::fileTags::setYear (const unsigned int &i)
+bool audioFiles::fileTags::setYear (const unsigned int &i)
 {
     using namespace TagLib;
     if (!isValid() )
     {
-        err=INVALIDF;
+        err=INVALID_FILE;
         return false;
     }
 
     err=OK;
     tags->setYear(i);
-    file.save();
+    
 
     return true;
 }
 
-bool player::fileTags::setTrack(const unsigned int &i)
+bool audioFiles::fileTags::setTrack(const unsigned int &i)
 {
     using namespace TagLib;
     if (!isValid() )
     {
-        err=INVALIDF;
+        err=INVALID_FILE;
         return false;
     }
 
     err=OK;
     tags->setTrack(i);
-    file.save();
+    
 
     return true;
 }
 
-TagLib::String player::fileTags::toTString( QString s)
+void audioFiles::fileTags::getTags(audioFiles::tagRecord *t)
 {
-    return TagLib::String(s.toUtf8().data(),TagLib::String::UTF8 );
-}
-
-QString player::fileTags::toQString(TagLib::String s)
-{
-//      return QString( QByteArray (s.to8Bit(true) ) );
-    return QString(s.toCString(true) );
-}
-
-void player::fileTags::toStringList( TagLib::StringList sl,QStringList &ql)
-{
-    for (unsigned int i=0;i<sl.size();i++)
+//     audioFiles::tagRecord *r=new audioFiles::tagRecord[FRAME_NUM];
+    
+//     audioFiles::tagRecord *r=(audioFiles::tagRecord*)malloc(FRAME_NUM*sizeof(audioFiles::tagRecord) );
+    
+    if(t==0)
+      qDebug()<<"null tags";
+//     for(player::tagsEnum i; i=TAGS_START; i<=TAGS_END; i++ )
+    for(int i=0;i<FRAME_NUM;i++ )
     {
-        ql.append(toQString(sl[i]) );
+	t[i].value=tag( (player::tagsEnum)i);
+	t[i].status=err;
     }
+  
 }
 
-QVariant player::fileTags::tag(tagsEnum t) const
+void audioFiles::fileTags::save()
+{
+    file.save();
+}
+
+
+QVariant audioFiles::fileTags::tag(player::tagsEnum t) const
 {
     switch (t)
     {
@@ -316,13 +321,13 @@ QVariant player::fileTags::tag(tagsEnum t) const
     }
     default:
     {
-        err=NSTAG;
+        err=NS_TAG;
         return QVariant();
     }
     }
 }
 
-bool player::fileTags::setTag(tagsEnum t,const QVariant &var)
+bool audioFiles::fileTags::setTag(player::tagsEnum t,const QVariant &var)
 {
     switch (t)
     {
@@ -358,14 +363,36 @@ bool player::fileTags::setTag(tagsEnum t,const QVariant &var)
 	}
 	default:
 	{
-	    err=NSTAG;
+	    err=NS_TAG;
 	    return false;
 	}
     }
 }
 
-const int player::fileTags::OK=0;
-const int player::fileTags::NULLFILE=1;
-const int player::fileTags::INVALIDF=2;
-const int player::fileTags::WRONGFT=3;
-const int player::fileTags::NSTAG=3;
+// const int audioFiles::fileTags::OK=0;
+// const int audioFiles::fileTags::NULL_FILE=1;
+// const int audioFiles::fileTags::INVALID_FILE=2;
+// const int audioFiles::fileTags::WRONG_FILETYPE=3;
+// const int audioFiles::fileTags::NS_TAG=3;
+
+
+
+
+TagLib::String audioFiles::fileTags::toTString( QString s)
+{
+    return TagLib::String(s.toUtf8().data(),TagLib::String::UTF8 );
+}
+
+QString audioFiles::fileTags::toQString(TagLib::String s)
+{
+//      return QString( QByteArray (s.to8Bit(true) ) );
+    return QString(s.toCString(true) );
+}
+
+void audioFiles::fileTags::toStringList( TagLib::StringList sl,QStringList &ql)
+{
+    for (unsigned int i=0;i<sl.size();i++)
+    {
+        ql.append(toQString(sl[i]) );
+    }
+}
