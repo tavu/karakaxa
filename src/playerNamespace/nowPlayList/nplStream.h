@@ -14,19 +14,25 @@ class nplStream :public QObject,public nplTrack
     Q_OBJECT
     public:
 	nplStream(QString s);
-	QString path();
-	QString title();
-	int 	type();
+	QString 	path();
+	QString	 	title();
+	int 		type();
 	
-	QVariant tag(tagsEnum t);
+	QVariant 	tag(tagsEnum t);
+	void 		play();
+	void 		finish();
     protected:
 	KUrl 	url;
 	QString albumS;
 	QString titleS;
+	QString artistS;
+	QString commentS;
+	QString genreS;
+
 
     Phonon::MediaObject *mediaObject;
 // protected slots:
-//     void getMetaData();
+   void getMetaData();
 
 };
 };

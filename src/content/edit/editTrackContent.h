@@ -40,7 +40,7 @@ private:
 
     QLineEdit *path;
 
-
+    player::starWidget *rating;
     QLineEdit *titleL;
     QLineEdit *albumL;
     QLineEdit *artistL;

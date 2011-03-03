@@ -41,7 +41,7 @@ class library :public abstractContent
 	QAction *config;
 	QLinkedList<tagsEnum> searchTagL;
 	
-	int needUpdate;
+	short needUpdate;
 	
 	//functions
 	void buttonInit();
@@ -57,7 +57,7 @@ class library :public abstractContent
 	void search();
 	
     private slots:
-	void updateQueriesSlot(int);
+	void updateQueriesSlot();
     
 };
 

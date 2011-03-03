@@ -77,10 +77,10 @@ class audioFile :public QObject
 	    return _mutable;
 	}
 	
-	inline void setMutable()
+	inline void setMutable(bool f)
 	{
 	    //a mutable audio file does not send database updated signals when makes chnges to tags
-	    _mutable=true;
+	    _mutable=f;
 	}
 
 	void load();

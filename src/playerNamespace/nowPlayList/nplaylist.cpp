@@ -16,6 +16,7 @@ player::nplaylist::nplaylist()
     qRegisterMetaType<nplList>("nplList");
     connect(this,SIGNAL(insertSig(nplList,int)),this,SLOT(insertSlot(nplList,int)),Qt::QueuedConnection);
     connect(this,SIGNAL(removeSig(int)),this,SLOT(removeSlot(int)),Qt::QueuedConnection);
+    connect(&engine,SIGNAL(trackChanged(QString) ),this,SLOT(informTrack() ) );
 }
 nplPointer player::nplaylist::getPlayingTrack()
 {
@@ -303,6 +304,13 @@ void player::nplaylist::suffle()
     model-> endResetModel();     
 }
 
+void player::nplaylist::informTrack()
+{
+   if(!playing.isNull() )
+   {
+      playing->play();
+   }
+}
 
 const int player::nplaylist::ADD=1;
 const int player::nplaylist::REMOVE=2;

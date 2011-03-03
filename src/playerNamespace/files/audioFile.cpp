@@ -140,7 +140,7 @@ QVariant audioFiles::audioFile::tag(int t, const short int f)
 
 bool audioFiles::audioFile::setTag(int t,QVariant var)
 {    
-    if(t>=FRAME_NUM )
+    if(t>=FRAME_NUM || t<0)
     {
 	err=UNOWN;
 	qDebug()<<err;
@@ -180,12 +180,15 @@ bool audioFiles::audioFile::setTag(int t,QVariant var)
 	}
 	case COUNTER:
 	{
+	  dberr=fileToDb::setCounter(path(),var.toInt() );
+	  /*
 	    file->setTag(COUNTER,var.toInt());
 	    err=file->error();
 	    if(err==OK || err==NS_TAG)
 	    {
 		dberr=fileToDb::setCounter(path(),var.toInt() );
 	    }
+	    */
 	    break ;
 	}
 	case COMPOSER:
@@ -274,7 +277,7 @@ bool audioFiles::audioFile::setTag(int t,QVariant var)
 	    return false;
 	}
     }
-    qDebug()<<err;
+//     qDebug()<<err;
     
     if(err!=NS_TAG)
     {
@@ -287,17 +290,13 @@ bool audioFiles::audioFile::setTag(int t,QVariant var)
     cache->setTag((player::tagsEnum)t,var,f);
     err=dberr;    
     
-    if(!_mutable )
-    {
-	db.updateSig(t);
-    }
 
     if(!saveFlag)
     {
 	save();
     }
 
-    qDebug()<<err;
+//     qDebug()<<err;
     if(err==OK||err==NOTINDB)
     {
       return true;  
@@ -432,6 +431,12 @@ void audioFiles::audioFile::save()
     cache->savingEnd();
     delete file;    
     file=0;
+    
+    if(!_mutable )
+    {
+	qDebug()<<"sending update signal";
+	db.updateSig(*this);
+    }
 }
 
 void audioFiles::audioFile::load()

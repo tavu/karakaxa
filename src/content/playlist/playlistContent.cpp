@@ -4,7 +4,8 @@
 #define XMLFILE QString("playlists.xml")
 
 playlistContent::playlistContent(QWidget *parent)
-        :abstractContent(parent)
+        :abstractContent(parent),
+        needUpdate(false)
 {    
     stack=new QStackedWidget(this);
     treeV=new myTreeView(this);
@@ -84,8 +85,23 @@ playlistContent::playlistContent(QWidget *parent)
     connect(editSmpAction,SIGNAL(triggered(bool)),this,SLOT(editSmpSlot()));
     connect(removeAction,SIGNAL(triggered(bool)),this,SLOT(removeSlot()));
     
+    connect(&db,SIGNAL(updated(audioFiles::audioFile)),this,SLOT(updateQueries() ) );
+    connect(&db,SIGNAL(changed()),this,SLOT(updateQueries() ) );
     
     connect(qApp,SIGNAL(aboutToQuit() ),this,SLOT(save() ) );
+}
+
+void playlistContent::updateQueries()
+{
+    if(trackV->model()==smpModel)
+    {
+	smpModel->refresh();
+	needUpdate=false;
+    }
+    else
+    {      
+	needUpdate=true;
+    }
 }
 
 void playlistContent::removeSlot()
@@ -226,6 +242,11 @@ void playlistContent::activationSlot(QModelIndex in)
     if(item->type()==SMARTPL_ITEM)
     {
 	trackV->setModel(smpModel);
+	if(needUpdate)
+	{
+	    smpModel->refresh();
+	}
+	  
 	smpModel->setFilter(item->data(ITEM_ROLE).toString());
 	stack->setCurrentIndex(1);
     }
@@ -305,7 +326,7 @@ void playlistContent::save()
     {
 	QTextStream ts(&file);
 	ts << doc.toString();	
-	qDebug()<<doc.toString();
+// 	qDebug()<<doc.toString();
 	file.close();
     }
     else

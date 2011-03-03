@@ -17,8 +17,8 @@ class albumTrack :public QWidget
 
 public:
     albumTrack(QWidget *parent=0);
-    void updateTrack();
-    
+//     void updateTrack();
+    void updateQueries();
 private:
 
     void labelInit();

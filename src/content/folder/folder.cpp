@@ -110,7 +110,7 @@ void folderContent::cleanup()
 
 void folderContent::setDir(const QModelIndex index)
 {
-    qDebug()<<index;
+//     qDebug()<<index;
     qDebug()<<"URL "<<proxyM->mapToSource(index).data(URL_ROLE);
   
     Qt::KeyboardModifiers m=QApplication::keyboardModifiers();
@@ -132,21 +132,17 @@ void folderContent::setDir(const QModelIndex index)
 void folderContent::cd(KUrl url)
 {
 
-
-
-//      QString placesUrl=url.toLocalFile();
-//      if( placesUrl.startsWith( "file://" ) )
-//                 placesUrl = placesUrl.replace( "file://", QString() );
-
-//      qDebug()<<"DDDDDDDDDDD";
-//      QModelIndex i=model->index(placesUrl );
-//      qDebug()<<"DDDDDDDDDDD";
-//       qDebug()<<i;
-
-//      model->setRootPath ( placesUrl );
-
-//      i=proxyM->mapFromSource(i);
-    model->dirLister()->openUrl(url);
+    if(player::exists(url.toLocalFile() ) )
+    {
+      model->dirLister()->openUrl(url);
+    }
+    else
+    {
+	player::statusBar.showMessage("Folder does not exist");
+ 	model->dirLister()->openUrl( KUrl(QDir::home().path() ) );
+// 	cd(KUrl(QDir::home().path() ) );
+// 	navigator->setUrl(KUrl(QDir::home().path() ) );
+    }
 //      qDebug()<<i;
 //         view->setRootIndex(i );
 //      qDebug()<<"edoo";

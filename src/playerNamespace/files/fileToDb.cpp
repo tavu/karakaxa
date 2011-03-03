@@ -117,6 +117,7 @@ int player::fileToDb::setArtist (const QString path,const QString &s,const QStri
 
 int player::fileToDb::setAlbum (const QString path,const QString &s)
 {
+    qDebug()<<"album "<<s;
     QSqlDatabase databs;
     databs=player::db.clone(path);
 
@@ -628,7 +629,7 @@ int player::fileToDb::setTrack (const QString path,const unsigned int &track)
     }
 
     QSqlQuery q(databs );
-    q.prepare( "update tracks SET track=? where path=?");
+    q.prepare( "update tracks SET tracknumber=? where path=?");
     q.addBindValue(QVariant(track) );
     q.addBindValue(path );
 

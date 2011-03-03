@@ -27,10 +27,12 @@ class nplTrack
 	virtual int 		type()=0;
 	virtual QVariant	tag(tagsEnum t);
 	virtual QString 	cover();
-	virtual  bool isValid() const
+	virtual  bool 		isValid() const
 	{
 	    return ok;
 	}
+	virtual void 		play();
+	virtual void 		finish();
 	
 
   protected:

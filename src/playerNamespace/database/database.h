@@ -7,6 +7,7 @@
 #include<QMessageBox>
 #include<QObject>
 #include "playerNamespace.h"
+#include"../files/audioFile.h"
 // #include"../nowPlayList/nplTrack.h"
 namespace player
 {
@@ -14,6 +15,7 @@ class database :public QObject
 {    
     Q_OBJECT
     public:
+	friend class audioFiles::audioFile;
 	static int DBCHANGED;
       
 	database();
@@ -48,9 +50,9 @@ class database :public QObject
 	    emit(changed() );
 	}
 	
-	inline void updateSig(int t)
+	inline void updateSig(audioFiles::audioFile &f)
 	{
-	    emit(updated(t) );
+	    emit(updated(f) );
 	}
 	
 	inline bool isConnected()
@@ -94,7 +96,7 @@ class database :public QObject
 
     signals:
 	void changed();
-	void updated(int);
+	void updated(audioFiles::audioFile);
 };
 
 }

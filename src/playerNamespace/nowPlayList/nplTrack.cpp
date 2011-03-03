@@ -53,3 +53,11 @@ QString player::nplTrack::cover()
 {
     return QString();
 }
+
+void player::nplTrack::play()
+{
+}
+
+void player::nplTrack::finish()
+{
+}

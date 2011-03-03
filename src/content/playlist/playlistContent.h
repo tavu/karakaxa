@@ -51,6 +51,7 @@ class playlistContent :public abstractContent
 
 	  QSortFilterProxyModel	*proxyM;
 	  
+	  bool			needUpdate;
 	  
 	  void toolBarInit();
 	  
@@ -64,6 +65,7 @@ class playlistContent :public abstractContent
 	  void removeSlot();
 	  void save();
 	  void contextMenuSlot(QModelIndex index);
+	  void updateQueries();
 };
 
 #endif

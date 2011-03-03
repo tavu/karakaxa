@@ -15,7 +15,7 @@ songModel::songModel(QWidget *parent)
 //    setSourceModel(&queryM);   
 //      setSort(0,Qt::DescendingOrder);
 //     select();
-//     connect(&db, SIGNAL(changed()),this,SLOT(refresh()) );
+    connect(&db, SIGNAL(changed()),this,SLOT(refresh()) );    
 }
 
 void songModel::setFilter(const QString &s)
@@ -102,16 +102,20 @@ bool songModel::setData ( const QModelIndex & index, const QVariant & value, int
      */
     if(!audioFiles::fileList.isEmpty() )
     {
-	foreach(audioFile f,audioFiles::fileList)
+	QLinkedList<audioFile>::iterator it=audioFiles::fileList.begin();
+	for(; it !=audioFiles::fileList.end()-1; it++ )
 	{
-	    f.setTag( (tagsEnum)index.column(),value );
+	    it->setMutable(true);
+	    it->setTag( (tagsEnum)index.column(),value );
 	}
+	it->setMutable(false);
+	it->setTag( (tagsEnum)index.column(),value );
 	audioFiles::fileList.clear();
     }
     else
     {
 	audioFile f(url(index.column() ).toLocalFile() );
-	f.setTag((tagsEnum)index.column(),value );
+	f.setTag(index.column(),value );
     }
     
     /*it does not need to emit the dataChanged signall.
@@ -125,8 +129,8 @@ bool songModel::setData ( const QModelIndex & index, const QVariant & value, int
 void songModel::refresh()
 {
     //we need this as a slot    
-//       clear();
-//       select();      
+//        clear();
+       select();      
 }
 
 

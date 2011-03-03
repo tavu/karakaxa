@@ -23,13 +23,17 @@ private:
     QSize itemSize;
     QSize maxSize;
     QSize minSize;
+    QSize imageSize;
     QIcon *artistIcon;
     QIcon *songIcon;
     QIcon *albumIcon;
-
+    
+    
+    QPixmap *pix;
     QPixmap *defaultPic;
 
     void queryChange ();
+    void resizePix();
 };
 
 #endif

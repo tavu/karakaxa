@@ -8,7 +8,7 @@
 
 library::library(QWidget *parent)
         :abstractContent(parent),
-        needUpdate(-1)
+        needUpdate(0)
 {
 
     addChild(QString(tr("Artist")));
@@ -43,58 +43,82 @@ library::library(QWidget *parent)
 
     connect(artistV,SIGNAL(toArtist(QString , QString) ) ,this,SLOT(toAlbum(const QString &,const QString &) ) );
     
-    connect(&db,SIGNAL(updated(int)),this,SLOT(updateQueriesSlot(int) ) );
+    connect(&db,SIGNAL(updated(audioFiles::audioFile)),this,SLOT(updateQueriesSlot() ) );
+    connect(&db,SIGNAL(changed()),this,SLOT(updateQueriesSlot() ) );
     
 
 }
 
-void library::updateQueriesSlot(int t)
-{
-    if(!abstractContent::isActive())
+void library::updateQueriesSlot()
+{   
+    qDebug()<<"update queries";
+    if(artistV->isVisible() )
     {
-	needUpdate=t;
+      qDebug()<<"artistV";
+	artistV->updateQueries();
+	needUpdate =0b10;
+    }
+    else if(albumTrV->isVisible() )
+    {
+      qDebug()<<"trackV";
+	albumTrV->updateQueries();
+	needUpdate =0b01;
     }
     else
     {
-	updateQueries(t);
+      needUpdate =0b11;
     }
 }
 
 void library::updateQueries(int n)
 {
-    qDebug()<<"library update";
-    if(n==database::DBCHANGED)
-    {
-	artistV->update();
-	albumTrV->update();
-	albumTrV->updateTrack();
-    }
-    else
-    {
-	tagsEnum t=(tagsEnum)n;
-	if(t==ARTIST||t==LEAD_ARTIST||t==ALBUM)
-	{	
-	    artistV->update();
-	    albumTrV->update();	
-	}   
-    }
-    albumTrV->updateTrack();    
-    needUpdate=-1;
+//     qDebug()<<"library update";
+//     if(n==database::DBCHANGED)
+//     {
+// 	artistV->update();
+// 	albumTrV->update();
+// 	albumTrV->updateTrack();
+//     }
+//     else
+//     {
+// 	tagsEnum t=(tagsEnum)n;
+// 	if(t==ARTIST||t==LEAD_ARTIST||t==ALBUM)
+// 	{	
+// 	    artistV->update();
+// 	    albumTrV->update();	
+// 	}   
+//     }
+//     albumTrV->updateTrack();    
+//     needUpdate=-1;
 }
 
 
 
 void library::update(const int n)
-{
+{    
     if (n==0)
     {
+	if(needUpdate & 0b01)
+	{
+	    artistV->updateQueries();
+	    needUpdate = needUpdate & ~0b01;
+	}
         stack->setCurrentWidget(artistV);
     }
-
-    if(needUpdate!=-1)
+    else
     {
-	updateQueries((tagsEnum)needUpdate);
+	if(stack->currentWidget()==artistV && (needUpdate & 0b01)  )
+	{
+	     artistV->updateQueries();
+	     needUpdate = needUpdate & ~0b01;
+	}
+	else if (needUpdate & 0b10)
+	{
+	    albumTrV->updateQueries();
+	    needUpdate = needUpdate & ~0b10;
+	}
     }
+    qDebug()<<"here "<<needUpdate;
 }
 
 QString library::name() const

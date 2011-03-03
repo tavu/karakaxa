@@ -39,20 +39,11 @@ QVariant myFileSystemModel::data(const QModelIndex &index, int role) const
         if (item.isDir() )	return QVariant();
 	
 	audioFile f(item.url().toLocalFile() );
-//         audioFile *f=audioFile::getAudioFile(item.url().toLocalFile() );	
-//         if (f==0)	return var;
 
         int filde=index.column()-DIRCOLUMN;
 	
         var=f.tag(filde, audioFile::ONCACHE|audioFile::ONDATAB );	
 	
-// 	if(filde==RATING)
-// 	{
-// 	    if(var.isNull() )
-// 	    {
-// // 		return f->tag(RATING);
-// 	    }
-// 	}
 	return player::pretyTag(var,filde);
 	
     }        

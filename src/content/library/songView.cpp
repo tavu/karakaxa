@@ -66,7 +66,7 @@ void songView::fileEdit()
 	    QUrl u=model()->data(i,URL_ROLE).toUrl();
 	    if(!u.isEmpty() )
 	    {
-		qDebug()<<"bah ah";
+// 		qDebug()<<"bah ah";
 		player::editTrack(u.toLocalFile() );
 	    }
         }

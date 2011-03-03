@@ -88,6 +88,7 @@ class nplaylist :public QObject
 
 	void insertSlot(nplList list,int pos);
 	void removeSlot(const int);
+	void informTrack();
 };
 
 };

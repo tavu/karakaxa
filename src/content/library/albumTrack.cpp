@@ -42,6 +42,7 @@ albumTrack::albumTrack(QWidget *parent)
     
     connect(albumV,SIGNAL(activated ( const QModelIndex) ),this ,SLOT( albumActivated(const QModelIndex&) ) );
     
+    
 //     connect(trackM,SIGNAL(newQuery()),trackV ,SLOT(updateStarWidget() ) );
 
 //       trackV->setStyleSheet(    qlineargradient(x1:0, y1:0, x2:0, y2:1,stop:0 #616161, stop: 0.5 #505050,stop: 0.6 #434343, stop:1 #656565);		
@@ -167,11 +168,6 @@ void albumTrack::setArtist(const QString &artist,const QString &labelS)
     albumActivated(albumM->index(0,0) );
 }
 
-void albumTrack::updateTrack()
-{
-    trackM->refresh();    
-}
-
 bool albumTrack::update()
 {
     QString query;
@@ -217,3 +213,16 @@ void albumTrack::albumActivated(const QModelIndex &n)
 //      trackM->setQuery(queryGrt::finish(s) );
 }
 
+void albumTrack::updateQueries()
+{
+
+  qDebug()<<"trackView update";
+  
+     QSqlQuery q=albumM->query();
+//     albumM->setQuery(q);
+     QSqlQuery nq(q.executedQuery(),db.getDatabase() );
+     nq.exec();
+     albumM->setQuery(nq);
+    
+    trackM->refresh();
+}

@@ -17,7 +17,17 @@ player::nplFile::nplFile(QString s)
 	file->tag(TRACK);
 	file->tag(LENGTH);
     }
+    if(!player::exists(s) )
+    {
+	ok=false;
+    }
     
+}
+
+void player::nplFile::play()
+{
+    int c=file->tag(COUNTER).toInt();
+    file->setTag(COUNTER,c+1);
 }
 
 QVariant nplFile::artist()

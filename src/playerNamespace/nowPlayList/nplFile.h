@@ -27,6 +27,7 @@ class nplFile :public nplTrack
 	QVariant	tag(tagsEnum);
 	
 	audioFile*	getAudioFile();
+	void 		play();
 
     private:
 

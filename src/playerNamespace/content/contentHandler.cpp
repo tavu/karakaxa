@@ -22,7 +22,7 @@ void player::contentHandler::loadDefault()
      addContent(l);
      addContent(f);
      addContent(pl);
-          addContent(c);
+     addContent(c);
     
 }
 
@@ -81,13 +81,17 @@ void player::contentHandler::itemChanger(const QModelIndex &index)
     if (parentItem.isValid() )
     {
         parent=contentList.at(parentItem.row() );
-        stack->setCurrentWidget(parent);
+        qDebug()<<"shown "<<parent->isVisible();
+	stack->setCurrentWidget(parent);
+	qDebug()<<"shown "<<parent->isVisible();
         parent->update(index.row() );
     }
     else
     {
         parent=contentList.at(index.row() );
+	qDebug()<<"shown "<<parent->isVisible();
         stack->setCurrentWidget(parent);
+	qDebug()<<"shown "<<parent->isVisible();
 	parent->update(-1);
     }
 
@@ -102,7 +106,8 @@ void player::contentHandler::addContent(abstractContent *content, bool activate)
 {
     QTreeWidgetItem *i=content->item();
     contentList.append(content);
-
+    
+    
     stack->addWidget(content);
     tree->addTopLevelItem(i);
     
@@ -111,6 +116,7 @@ void player::contentHandler::addContent(abstractContent *content, bool activate)
         tree->setCurrentItem(i);
         stack->setCurrentWidget(content);
     }
+    qDebug()<<"shown "<<content->isVisible();
 }
 
 void player::contentHandler::removeContent(abstractContent *content)

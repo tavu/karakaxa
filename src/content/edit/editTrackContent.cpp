@@ -24,10 +24,10 @@ editTrackContent::editTrackContent(QString url,QWidget *parent)
     buttons=new QDialogButtonBox(QDialogButtonBox::Ok|QDialogButtonBox::Apply|QDialogButtonBox::Cancel,Qt::Horizontal,this);
     QHBoxLayout *hLayout=new QHBoxLayout();
     QVBoxLayout *vLayout=new QVBoxLayout();
-
-
+    
     hLayout->addWidget(cw);
     hLayout->addWidget(infoW);
+    hLayout->addStretch();
 
     vLayout->addLayout(hLayout);
 
@@ -73,6 +73,8 @@ void editTrackContent::tagInit()
     yearL=new QSpinBox(this );
     trackL=new QSpinBox(this );
 
+    //the value would be valid until the next milenioum
+    yearL->setMaximum(3000);
     yearL->setValue(file->tag(YEAR,flag).toInt() );
     trackL->setValue(file->tag(TRACK,flag).toInt() );
 
@@ -95,41 +97,31 @@ void editTrackContent::tagInit()
     form->addRow(tr("Comment "),commentL);
 
     tagW->setLayout(form);
+    
+    connect(rating,SIGNAL(ratingChanged(int) ),rating,SLOT(setRating(int) ) );
 }
 
 void editTrackContent::infoInit()
 {
     infoW=new QWidget(this);
     QFormLayout *form = new QFormLayout();
+    
     form->setLabelAlignment(Qt::AlignLeft);
-
+    
+    int flag=audioFile::ONCACHE|audioFile::LOAD_FILE;
+    rating=new player::starWidget(this);
+    rating->setRating(file->tag(RATING,flag).toInt());
+    form->addRow(rating);
+    
     lengthF.setText("<b>"+prettyLength(file->tag(LENGTH).toInt() )+"</b>" );
     form->addRow(tr("length: "),&lengthF);
 
-//      bitRate.setText("Bit rate:");
     bitRateF.setText("<b>"+file->tag(BITRATE).toString().trimmed()+"</b>" );
     form->addRow(tr("Bit rate: "),&bitRateF);
-//      gl->setHorizontalSpacing(0);
-//      gl->addWidget(&bitRate,1,0);
-//      gl->addWidget(&bitRateF,1,1,Qt::AlignLeft);
-
-//      size.setText("Size:");
     sizeF.setText("<b>"+prettySize(file->size() )+"</b>" );
     form->addRow(tr("Size: "),&sizeF);
-//      gl->addWidget(&size,2,0);
-//      gl->addWidget(&sizeF,2,1);
-
-//      format.setText("Format:"+file->format()+"<\b>");
     formatF.setText("<b>"+file->format()+"</b>" );
     form->addRow(tr("Format: "),&formatF);
-//      gl->addWidget(&format,3,0);
-//      gl->addWidget(&formatF,3,1);
-
-
-
-//      gl->addWidget(&length,0,0);
-//      gl->addWidget(&lengthF,0,1);
-
     infoW->setLayout(form);
 }
 
@@ -153,7 +145,7 @@ void editTrackContent::save()
     s=albumL->text().trimmed();
     if ( s.compare(file->tag(ALBUM,f).toString().trimmed() )!=0 )
     {
-        qDebug()<<"edit album";
+        qDebug()<<"edit album "<<s;
 	tags<<ALBUM;
 	values<<QVariant(s);
     }
@@ -205,7 +197,31 @@ void editTrackContent::save()
 	tags<<COMMENT;
 	values<<QVariant(s);
     }
-        
+    
+    int num=yearL->value();
+    if (num != file->tag(YEAR,f).toInt() )
+    {
+        qDebug()<<"edit year";
+	tags<<YEAR;
+	values<<QVariant(num);
+    }
+
+    num=trackL->value();
+    if (num != file->tag(TRACK,f).toInt() )
+    {
+        qDebug()<<"edit track";
+	tags<<TRACK;
+	values<<QVariant(num);
+    }
+    
+    num=rating->rating();
+    if (num != file->tag(RATING,f).toInt() )
+    {
+        qDebug()<<"edit track";
+	tags<<RATING;
+	values<<QVariant(num);
+    }    
+    
     file->setTags(tags,values);
 }
 

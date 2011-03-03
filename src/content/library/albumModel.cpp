@@ -3,20 +3,19 @@
 
 #define IMAGE 1
 #define SIZE 170,150
+#define TEXT_H 30
+
 using namespace player;
 albumModel::albumModel(QObject *parent)
-        :QSqlQueryModel(parent)
+        :QSqlQueryModel(parent),
+        pix(0)
 {
-    maxSize.setHeight(230);
+    maxSize.setHeight(200);
     maxSize.setWidth(230);
 
-//     minSize.setHeight(80);
-//     minSize.setHeight(80);
-    itemSize.setHeight(180);
+    itemSize.setHeight(150);
     itemSize.setWidth(180);
-// 	  defaultPic=new QPixmap(size);
-// 	  defaultPic->load("/home/tavu/src/player/data/album.png");
-// 	  defaultPic->scaled(size, Qt::KeepAspectRatio,Qt::SmoothTransformation);
+
 }
 
 void albumModel::resize(QSize &s)
@@ -29,8 +28,33 @@ void albumModel::resize(QSize &s)
     else
     {
 	itemSize=s;
-    }    
+ 	itemSize.setWidth(itemSize.width()-10);
+    }
+//     resizePix();
+    imageSize=itemSize;
+    imageSize.setHeight(itemSize.height()-TEXT_H);
     layoutChanged();
+}
+
+void albumModel::resizePix()
+{
+    if(pix!=0)
+    {
+      delete []pix;
+    }
+    pix=new QPixmap[rowCount()];
+    
+    for(int i=0;i<rowCount();i++)
+    {
+// 	QSqlRecord r=record( i );
+	QVariant value=record(i).value(IMAGE);
+	pix[i]=decor.cover(value.toString());
+	if(pix[i].isNull() )
+	{
+	    pix[i]=decor.albumPic();	    
+	}
+	pix[i]=pix[i].scaled(imageSize, Qt::IgnoreAspectRatio,  Qt::SmoothTransformation);
+    }
 }
 
 QVariant albumModel::data(const QModelIndex &index, int role) const
@@ -44,6 +68,7 @@ QVariant albumModel::data(const QModelIndex &index, int role) const
 
     if (role==Qt::DecorationRole)
     {
+// 	return pix[index.row() ];
         QSqlRecord r=record( index.row() );
         QVariant value=r.value(IMAGE);
 
@@ -81,6 +106,7 @@ QVariant albumModel::data(const QModelIndex &index, int role) const
 
 void albumModel::queryChange ()
 {
+//   resizePix();
 }
 
 albumModel::~albumModel()
