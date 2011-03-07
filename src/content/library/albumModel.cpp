@@ -11,7 +11,7 @@ albumModel::albumModel(QObject *parent)
         pix(0)
 {
     maxSize.setHeight(200);
-    maxSize.setWidth(230);
+    maxSize.setWidth(190);
 
     itemSize.setHeight(150);
     itemSize.setWidth(180);
@@ -32,7 +32,8 @@ void albumModel::resize(QSize &s)
     }
 //     resizePix();
     imageSize=itemSize;
-    imageSize.setHeight(itemSize.height()-TEXT_H);
+    imageSize.setHeight(itemSize.height()-TEXT_H-15);
+    imageSize.setWidth(itemSize.width()-20);
     layoutChanged();
 }
 
@@ -68,7 +69,7 @@ QVariant albumModel::data(const QModelIndex &index, int role) const
 
     if (role==Qt::DecorationRole)
     {
-// 	return pix[index.row() ];
+//  	return pix[index.row() ];
         QSqlRecord r=record( index.row() );
         QVariant value=r.value(IMAGE);
 

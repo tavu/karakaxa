@@ -53,6 +53,10 @@ folderContent::folderContent(QWidget *parent)
     upAction = new QAction( KIcon( "go-up" ),"go up", this );
     toolBar->addAction( upAction );
     connect( upAction, SIGNAL( triggered( bool) ), this, SLOT( up() ) );
+    
+    goToPlayingTrackAction = new QAction( KIcon( "edit-redo" ),"go to playing track", this );
+    toolBar->addAction( goToPlayingTrackAction );
+    connect( goToPlayingTrackAction, SIGNAL( triggered( bool) ), this, SLOT( goToPlayingTrack() ) );
 
 //     KDirLister *dirL=model->dirLister();
 //     connect(dirL,SIGNAL(clear() ),this,SLOT(cleanup() ) );
@@ -161,6 +165,25 @@ void folderContent::back()
 void folderContent::forward()
 {
     navigator->goForward();
+}
+
+void folderContent::goToPlayingTrack()
+{
+    nplPointer p=player::npList.getPlayingTrack();
+    if(p.isNull())
+    {
+	return ;
+    }
+    QString f=player::folder(p->path() );
+    if(f.isEmpty() )
+    {
+	return ;
+    }
+    if(player::exists(f) )
+    {
+	navigator->setUrl( KUrl(f) );
+    }
+    
 }
 
 void folderContent::writeSettings()

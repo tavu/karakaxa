@@ -93,7 +93,7 @@ albumEntry libraryImporter::import(const QString &url)
 bool libraryImporter::importPl(const QString &path )
 {
     QSqlQuery q(database);
-    q.prepare("insert into playlists (path) values(?)");
+    q.prepare("insert into playlistsTmp (path) values(?)");
     q.addBindValue( path );
     q.exec();
     return true;
@@ -229,6 +229,7 @@ void libraryImporter::createTmpTable()
     q.exec("CREATE TEMPORARY TABLE artistsTmp 	LIKE artists");
     q.exec("CREATE TEMPORARY TABLE albumsTmp 	LIKE albums");
     q.exec("CREATE TEMPORARY TABLE composersTmp LIKE composers");    
+    q.exec("CREATE TEMPORARY TABLE playlistsTmp LIKE playlists");   
 }
 
 void libraryImporter::save()
@@ -243,6 +244,7 @@ void libraryImporter::save()
     q.exec("delete  from albums");
     q.exec("delete  from artists");    
     q.exec("delete  from composers");
+    q.exec("delete  from playlists");
     
     if(!q.exec("INSERT INTO artists select * from artistsTmp") )
     {
@@ -264,6 +266,11 @@ void libraryImporter::save()
     {
 	qDebug()<<q.lastError().text();
     }
+    if(!q.exec("INSERT INTO playlists select * from playlistsTmp") )
+    {
+	qDebug()<<q.lastError().text();
+    }
+
         
     
     if (!database.commit() )

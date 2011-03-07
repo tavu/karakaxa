@@ -693,7 +693,7 @@ int player::fileToDb::setCounter(const QString path,const unsigned int &num )
     }
 
     QSqlQuery q(databs );
-    q.prepare( "update tracks SET counter=? where path=?");
+    q.prepare( "update tracks SET count=? where path=?");
     q.addBindValue(QVariant(num) );
     q.addBindValue(path );
 

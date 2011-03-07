@@ -21,13 +21,14 @@ player::nplFile::nplFile(QString s)
     {
 	ok=false;
     }
+    file->setMutable(true);
     
 }
 
 void player::nplFile::play()
 {
     int c=file->tag(COUNTER).toInt();
-    file->setTag(COUNTER,c+1);
+    file->setTag(COUNTER,QVariant(c+1) );
 }
 
 QVariant nplFile::artist()

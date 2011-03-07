@@ -62,6 +62,7 @@ QString smplaylistItem::group(QDomNode nod) const
 	    s=e.attribute("value");
 	    
 	    l<<queryGrt::query(t,comp,s,invert);
+	    
 	}		
     }
     

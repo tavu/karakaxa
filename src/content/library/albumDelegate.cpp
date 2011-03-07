@@ -15,48 +15,37 @@ void albumDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option,
 {
      QApplication::style()->drawPrimitive( QStyle::PE_PanelItemViewItem, &option, painter );            
 
-    /*
-    int f=option.fontMetrics.height()*2+8;
-    QRect r(option.rect.x()+sideSpace,option.rect.y()+topSpace,option.rect.width()-sideSpace,option.rect.height()-f);
-    QPixmap pic=player::decor.decorationPixmap(option,index);
-    pic=pic.scaled(r.size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
-    QRect rect=option.rect;    
-    if (!pic.isNull() )
-    {
-        QApplication::style()->drawItemPixmap(painter,r,Qt::AlignTop|Qt::AlignHCenter,pic );
-        rect.setY(r.y()+r.height()+1);
-    }
-    QString s=displayText(index.data(),QLocale("UTF-8") );
-    drawDisplay(painter,option,rect,s);
-    */
-    QPixmap pic=player::decor.decorationPixmap(option,index);
+    QPixmap pic=player::decor.decorationPixmap(option,index);    
     QRect r=option.rect;
-//     r.setX(r.x()+5);
-//      r.setWidth(r.width()-10);
-//     r.setY(r.y()+5);    
+    
+    r.setY(r.y()+10);
+    r.setHeight(r.height()-TEXT_H-5);
+    r.setX(r.x()+10);
+    r.setWidth(r.width()-10);   
+    
+    pic=pic.scaled(r.size(), Qt::IgnoreAspectRatio,  Qt::SmoothTransformation);
+                           
+    QRect shadowR=r;
+    QPoint p=r.topLeft();
+    p.setX(p.x()+2);
+    p.setY(p.y()+2);
+    shadowR.moveTopLeft(p);
+    QPainterPath shadowPath;
+    painter->setRenderHint(QPainter::Antialiasing, true);
+    shadowPath.addRoundedRect(shadowR,1,1);
+    
+    painter->setOpacity(0.5);    
+    painter->fillPath(shadowPath,Qt::black);
+
+    painter->setOpacity(1);
+    QApplication::style()->drawItemPixmap(painter,r,Qt::AlignCenter,pic );
+    
     
     QRect textR=r;
-    textR.setY(r.y()+textR.height()-TEXT_H );
+    textR.setY(r.y()+textR.height()+2);
     textR.setHeight(TEXT_H);
     
-//     QRect r=rr;
-    r.setHeight(r.height()-TEXT_H);
-    
-//     r.setY(r.y()+40);
-     pic=pic.scaled(r.size(), Qt::IgnoreAspectRatio,  Qt::SmoothTransformation);
-    
-    QString s=displayText(index.data(),QLocale("UTF-8") );
-    
-//     r.setHeight(r.height()-10);
-//     QRect re=option.fontMetrics.boundingRect(rr,Qt::AlignTop|Qt::AlignBottom|Qt::TextWordWrap, s);
-    
-    QRect shadowR=r;
-    shadowR.setX(r.x()+20);
-    shadowR.setY(r.y()+20);
-    painter->setOpacity(0.3);
-//     painter->fillRect(shadowR,Qt::black);
-    painter->setOpacity(1);
-    QApplication::style()->drawItemPixmap(painter,r,Qt::AlignTop|Qt::AlignHCenter,pic );
+    QString s=displayText(index.data(),QLocale("UTF-8") );    
     drawDisplay(painter,option,textR,s);
     
     
@@ -75,6 +64,6 @@ void albumDelegate::drawDisplay(QPainter* painter, const QStyleOptionViewItem& o
 	painter->setOpacity(0.5);
 	text=tr("Uknown album");
     }
-    painter->drawText( rect,Qt::AlignCenter|Qt::TextWordWrap|Qt::TextDontClip, text);
+    painter->drawText( rect,Qt::AlignTop|Qt::AlignHCenter|Qt::TextWordWrap|Qt::TextIncludeTrailingSpaces, text,&rect);
     painter->restore();
 }

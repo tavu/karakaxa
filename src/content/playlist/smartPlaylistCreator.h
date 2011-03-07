@@ -45,8 +45,6 @@ class smartPlaylistCreator :public QDialog
 	void addMatch();
 	void addTag();
 	void remove();
-	void ok();
-	void cancel();
 
 	void addItem(smartPlaylistItem::Type);
 

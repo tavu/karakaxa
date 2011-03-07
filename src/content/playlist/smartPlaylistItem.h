@@ -8,6 +8,7 @@
 #include <QValidator>
 #include <QCheckBox>
 #include<QDomElement>
+#include <QSpinBox>
 
 // #define MATCHTYPE 0
 // #define TAGTYPE   1
@@ -44,12 +45,12 @@ class smartPlaylistItem :public QObject, public QTreeWidgetItem
     // 	  QString getQuery();
 
     private:
-	QComboBox *box1;
-	QComboBox *box2;
+	QComboBox *tagSelector;
+	QComboBox *equalSelector;
 	QLineEdit *lineE;
-	QSpinBox   *spin;
-	validator  *val;
+// 	QSpinBox   *spin;
 	QCheckBox  *ch;
+	QSpinBox  *tagsSpin;
 
 	void initTag();
 	void initMatch();
@@ -58,7 +59,7 @@ class smartPlaylistItem :public QObject, public QTreeWidgetItem
 
 	void setupFilde(int);
     public slots:
-	QString getQuery();
+// 	QString getQuery();
 	QDomElement xml();
     // 	  void setWidget();
 

@@ -34,7 +34,7 @@ void songModel::select()
     QString q("select * from trackView where %1 order by %2 %3");
     q=q.arg(_filter);
     q=q.arg(_order);
-    
+        
     if(sortO==Qt::AscendingOrder)
     {
 	q=q.arg("ASC");
@@ -44,6 +44,7 @@ void songModel::select()
 	q=q.arg("DESC"); 
     }
     
+//     qDebug()<<q;
     setQuery(q,db.getDatabase());
     
 //     emit(newQuery() );
@@ -63,22 +64,36 @@ Qt::ItemFlags songModel::flags(const QModelIndex &index) const
 }
 
 QVariant songModel::data(const QModelIndex &i, int role) const
-{  
-    QModelIndex in=QSqlQueryModel::index(i.row(),i.column()+1);
-    QVariant value = QSqlQueryModel::data(in, role);
+{      
   
     if(role==Qt::DisplayRole)
     {
-	return player::pretyTag(value,(tagsEnum)(in.column()-1) );
+      
+	QSqlRecord r=record(i.row());
+	if(r.isEmpty() )
+	{
+	    return QVariant();
+	}
+	return player::pretyTag(r.value(i.column()+1),i.column() );
     }
     else if(role==URL_ROLE)
-    {
-	QString s=record(in.row()).value(PATH).toString();
+    {        
+	QSqlRecord r=record(i.row());
+	if(r.isEmpty() )
+	{
+	    return QVariant();
+	}
+
+      
+	QString s=r.value(PATH+1).toString();
 	KUrl u(s);
 	return QVariant(u);
     }
+    else
+    {
+	return QSqlQueryModel::data(i,role);
+    }
     
-    return value;
 }
 
 int songModel::columnCount ( const QModelIndex & index ) const

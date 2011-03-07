@@ -48,7 +48,8 @@ void player::pStatusBar::init()
     //that connection allow to send messages thread safe
     //thats why we create that class
     connect(this,SIGNAL(message(const QString &,int) ),bar,SLOT(showMessage(const QString &,int) ), Qt::QueuedConnection );
-    connect(&player::npList,SIGNAL(changed(int) ),this,SLOT(setTrackTime() ), Qt::QueuedConnection );
+    connect(&player::npList,SIGNAL(inserted(int) ),this,SLOT(setTrackTime() ), Qt::QueuedConnection );
+    connect(&player::npList,SIGNAL(removed(int) ),this,SLOT(setTrackTime() ), Qt::QueuedConnection );
 
 }
 

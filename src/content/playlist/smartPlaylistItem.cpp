@@ -3,8 +3,9 @@
 smartPlaylistItem::smartPlaylistItem(QTreeWidgetItem * parent,Type t)
         :QTreeWidgetItem(parent,t),
         QObject(),
-        spin(0),
-        val(0)
+        equalSelector(0),
+	lineE(0),
+        tagsSpin(0)        
 {
 
     if (type()==MATCHTYPE)
@@ -20,8 +21,9 @@ smartPlaylistItem::smartPlaylistItem(QTreeWidgetItem * parent,Type t)
 smartPlaylistItem::smartPlaylistItem(QTreeWidget * parent)
          :QTreeWidgetItem(parent,MATCHTYPE),
          QObject(),
-         spin(0),
-         val(0)
+         equalSelector(0),
+         lineE(0),
+         tagsSpin(0)
 {
         
       initMatch();
@@ -35,11 +37,11 @@ void smartPlaylistItem::setXml(QDomElement el)
 	
 	if(s==QString("all") )
 	{
-	    box1->setCurrentIndex(0 );	    
+	    tagSelector->setCurrentIndex(0 );	    
 	}
 	else
 	{
-	     box1->setCurrentIndex(1);
+	     tagSelector->setCurrentIndex(1);
 	}
 		
 	for(QDomElement e=el.firstChildElement();!e.isNull();e=e.nextSiblingElement() )
@@ -58,8 +60,9 @@ void smartPlaylistItem::setXml(QDomElement el)
     }
     else if (type()==TAGTYPE)
     {	
-	box1->setCurrentIndex(el.attribute("tag","0").toInt(0,10) );
-	box2->setCurrentIndex(el.attribute("comparison","0").toInt(0,10) );
+	int t=el.attribute("tag","0").toInt(0,10);
+	tagSelector->setCurrentIndex(t);
+	equalSelector->setCurrentIndex(el.attribute("comparison","0").toInt(0,10) );
 	int checked=el.attribute("invert","0").toInt(0,10);
 	if(checked!=0)
 	{	    
@@ -69,7 +72,17 @@ void smartPlaylistItem::setXml(QDomElement el)
 	{
 	    ch->setCheckState(Qt::Unchecked);
 	}
-	lineE->setText(el.attribute("value",""));
+ 	if(t==YEAR||t==TRACK||t==LENGTH||t==RATING||t==COUNTER||t==BITRATE )
+ 	{
+//  	    tagsSpin =new QSpinBox();
+ 	    tagsSpin->setValue(el.attribute("value","").toInt() );
+//  	    treeWidget()->setItemWidget(this,3,tagsSpin);
+ 	}
+ 	else
+ 	{
+ 	    lineE->setText(el.attribute("value",""));
+//  	    treeWidget()->setItemWidget(this,3,lineE);
+ 	}
     }
 }
 
@@ -80,9 +93,9 @@ void smartPlaylistItem::initTag()
 {
     setText(0,tr("Tag") );
 
-    box1=new QComboBox();
-    box2=new QComboBox();
-    lineE=new QLineEdit();
+    tagSelector=new QComboBox();
+    equalSelector=new QComboBox();        
+//     lineE=new QLineEdit();
     ch=new QCheckBox();
     ch->setText ("Not");
     treeWidget ()->setItemWidget(this,4,ch);
@@ -92,18 +105,18 @@ void smartPlaylistItem::initTag()
     setFont(0,f);
 
 
-    treeWidget ()->setItemWidget(this,3,lineE);
+//     treeWidget ()->setItemWidget(this,3,lineE);
 
     for (int i=0;i<FRAME_NUM;i++)
     {
-        box1->addItem(tagName( (tagsEnum)i) );
+        tagSelector->addItem(tagName( (tagsEnum)i) );
     }
-    treeWidget ()->setItemWidget(this,1,box1);
+    treeWidget ()->setItemWidget(this,1,tagSelector);
 
     setupFilde(0);
-    treeWidget ()->setItemWidget(this,2,box2);
+    treeWidget ()->setItemWidget(this,2,equalSelector);
 
-    connect(box1,SIGNAL(currentIndexChanged(int)),this,SLOT(setupFilde(int) ) );
+    connect(tagSelector,SIGNAL(currentIndexChanged(int)),this,SLOT(setupFilde(int) ) );
 }
 
 void smartPlaylistItem::initMatch()
@@ -113,13 +126,13 @@ void smartPlaylistItem::initMatch()
     setFont(0,f);
 
     setText(0,tr("Match") );
-    box1=new QComboBox();
+    tagSelector=new QComboBox();
 
-    box1->addItem(tr("Match all") );
-    box1->addItem(tr("Match any") );
+    tagSelector->addItem(tr("Match all") );
+    tagSelector->addItem(tr("Match any") );
 
 
-    treeWidget ()->setItemWidget(this,1,box1);
+    treeWidget ()->setItemWidget(this,1,tagSelector);
 }
 
 void smartPlaylistItem::setupFilde(int num)
@@ -129,58 +142,63 @@ void smartPlaylistItem::setupFilde(int num)
     if (t==YEAR||t==TRACK||t==LENGTH||t==RATING||t==COUNTER||t==BITRATE)
     {
 
-        box2->clear();
-        box2->addItem(tr("Equal to"),queryGrt::EQUAL);
-        box2->addItem(tr("Greater than"),queryGrt::GREATER);
-        box2->addItem(tr("Less than"),queryGrt::LESS);
+        equalSelector->clear();
+        equalSelector->addItem(tr("Equal to"),queryGrt::EQUAL);
+        equalSelector->addItem(tr("Greater than"),queryGrt::GREATER);
+        equalSelector->addItem(tr("Less than"),queryGrt::LESS);
 
-        if (val==0)
-        {
-            val=new validator();
-        }
-
-        lineE->clear();
-        lineE->setValidator(val);
+	if(treeWidget()->itemWidget(this,3)!=tagsSpin ||treeWidget()->itemWidget(this,3)==0)
+	{
+	    tagsSpin=new QSpinBox();
+	    treeWidget ()->setItemWidget(this,3,tagsSpin);
+	}
+	if(t==RATING)
+	{
+	     tagsSpin->setMaximum(10);
+	}
+	else
+	{
+	     tagsSpin->setMaximum(3000);
+	}
+	if(lineE!=0 )
+	{
+	    delete lineE;
+	    lineE=0;
+	}
     }
     else
     {
-        box2->clear();
-        box2->addItem(tr("Equal to"),queryGrt::EQUAL);
-        box2->addItem(tr("Contains"),queryGrt::CONTAINS);
-        box2->addItem(tr("Starts with"),queryGrt::STARTS);
-        box2->addItem(tr("Ends with"),queryGrt::ENDS);
-
-        lineE->setValidator(0);
+      	if(treeWidget()->itemWidget(this,3)!=lineE ||treeWidget()->itemWidget(this,3)==0 )
+	{
+	    lineE=new QLineEdit();
+	    treeWidget ()->setItemWidget(this,3,lineE);
+	}
+	if(tagsSpin!=0)
+	{
+	    delete tagsSpin;
+	    tagsSpin=0;
+	}
+	
+        equalSelector->clear();
+        equalSelector->addItem(tr("Equal to"),queryGrt::EQUAL);
+        equalSelector->addItem(tr("Contains"),queryGrt::CONTAINS);
+        equalSelector->addItem(tr("Starts with"),queryGrt::STARTS);
+        equalSelector->addItem(tr("Ends with"),queryGrt::ENDS);
     }
 
 }
-
-QValidator::State validator::validate ( QString & input, int & pos ) const
-{
-    Q_UNUSED(pos);
-    bool b;
-
-    input.toInt(&b);
-
-    if (b)
-    {
-        return QValidator::Acceptable;
-    }
-
-    return QValidator::Invalid;
-}
-
+/*
 QString smartPlaylistItem::getQuery()
 {
     queryGrt q;
 
     if (type()==TAGTYPE)
     {
-        tagsEnum t=(tagsEnum)box1->currentIndex ();
+        tagsEnum t=(tagsEnum)tagSelector->currentIndex ();
         QString s=lineE->text();
 
 
-        queryGrt::equal eq= (queryGrt::equal) box2->itemData(box2->currentIndex () ).toInt();
+        queryGrt::equal eq= (queryGrt::equal) equalSelector->itemData(equalSelector->currentIndex () ).toInt();
 
         bool n=ch->isChecked();
 
@@ -203,7 +221,7 @@ QString smartPlaylistItem::getQuery()
             l<<s;
         }
 
-        if (box1->currentIndex()==0)
+        if (tagSelector->currentIndex()==0)
         {
             return q.connectAnd(l);
         }
@@ -213,7 +231,7 @@ QString smartPlaylistItem::getQuery()
         }
     }
 }
-
+*/
 QDomElement smartPlaylistItem::xml()
 {    
     
@@ -224,7 +242,7 @@ QDomElement smartPlaylistItem::xml()
     {
         root=doc.createElement("group");
          
-	if (box1->currentIndex()==0)
+	if (tagSelector->currentIndex()==0)
         {
             root.setAttribute("matchtype","all");
         }
@@ -241,7 +259,7 @@ QDomElement smartPlaylistItem::xml()
  	    if(!el.isNull() )
 	    {
 		flag=true;
-		qDebug()<<"element "<<el.text();
+// 		qDebug()<<"element "<<el.text();
 		root.appendChild(el);
 	    }
         }        
@@ -250,9 +268,18 @@ QDomElement smartPlaylistItem::xml()
     {
 	flag=true;
         root=doc.createElement("field");
-	root.setAttribute("tag",box1->currentIndex());
-	root.setAttribute("comparison",box2->currentIndex());
-	root.setAttribute("value",lineE->text());
+	root.setAttribute("tag",tagSelector->currentIndex());
+	int eq=equalSelector->itemData(equalSelector->currentIndex()).toInt();
+	root.setAttribute("comparison",eq);
+	qDebug()<<"EQ "<<eq;
+	if(treeWidget()->itemWidget(this,3)==lineE)
+	{
+	    root.setAttribute("value",lineE->text());
+	}
+	else
+	{
+	     root.setAttribute("value",tagsSpin->value());
+	}
 	root.setAttribute("invert",ch->isChecked());
     
     }

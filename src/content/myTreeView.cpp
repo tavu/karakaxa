@@ -43,7 +43,7 @@ myTreeView::myTreeView(QWidget *parent,QString name)
         readSettings();
     }
     setMouseTracking(true);
-    connect(qApp,SIGNAL(aboutToQuit() ),this,SLOT(writeSettings() ) );
+    connect(qApp,SIGNAL(aboutToQuit() ),this,SLOT(writeSettings() ) );    
 
 }
 
@@ -53,10 +53,10 @@ void myTreeView::mousePressEvent(QMouseEvent *event)
     {
         startPos = event->pos();
     }
-    else if(event->button() == Qt::RightButton)
-    {
-	
-    }
+//     else if(event->button() == Qt::RightButton)
+//     {
+// 	
+//     }
 
 
     QTreeView::mousePressEvent(event);
@@ -130,9 +130,29 @@ void myTreeView::setModel ( QAbstractItemModel * model )
     if(delegate->ratingColumn()>-1)
     {
 	connect(model,SIGNAL(rowsInserted ( const QModelIndex, int, int )),this ,SLOT(updateStarWidget(QModelIndex, int, int) ) );
+	connect(model,SIGNAL(dataChanged ( const QModelIndex &, const QModelIndex& ) ),this,SLOT(dataChanged ( const QModelIndex &, const QModelIndex& ) ) );
     }
 }
 
+void myTreeView::dataChanged ( const QModelIndex & topLeft, const QModelIndex & bottomRight )
+{
+     if(bottomRight.column()>ratingColumn() )
+     {
+ 	for(int i=topLeft.row();i<=bottomRight.row();i++)
+ 	{
+	    
+	    QModelIndex item=model()->index(i,ratingColumn(),topLeft.parent() );
+	    bool b;
+	    item.data().toInt(&b);
+	
+	    if(b)
+	    {
+ 		openPersistentEditor(item);
+	    }
+ 	}
+     }
+  
+}
 
 void myTreeView::fileEdit()
 {
@@ -241,7 +261,7 @@ void myTreeView::updateStarWidget(QModelIndex parent, int start, int end)
 	
 	if(b)
 	{
-	    openPersistentEditor(item);
+ 	    openPersistentEditor(item);
 	}
     }
 }

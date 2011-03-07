@@ -68,6 +68,10 @@ QString player::format(QString path)
 
 QString player::folder(QString path)
 {
+    if(path.isEmpty() )
+    {
+	return QString();
+    }
     return path.left(path.lastIndexOf('/') );
 }
 

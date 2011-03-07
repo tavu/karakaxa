@@ -11,12 +11,12 @@ playlistContent::playlistContent(QWidget *parent)
     treeV=new myTreeView(this);
     treeV->setFrameShape(QFrame::StyledPanel);
     treeV->setUniformRowHeights(false);
-    treeV->setIconSize(QSize ());
+//     treeV->setIconSize(QSize ());
     
     treeV->setHeaderHidden(true);
     
     trackV=new songView(this,"playlistView");
-//     trackV->setRatingColumn(RATING);
+    trackV->setRatingColumn(RATING);
     trackV->setEditTriggers(QAbstractItemView::SelectedClicked);
     trackV->setNotHide(TITLE);
     trackV->setFrameShape(QFrame::StyledPanel);
@@ -107,7 +107,12 @@ void playlistContent::updateQueries()
 void playlistContent::removeSlot()
 {
     QModelIndex index=proxyM->mapToSource(treeV->currentIndex());
-    treeModel->removeRow(index.row(),index.parent());    
+//     treeModel->removeRow(index.row(),index.parent());  
+    QStandardItem *i=treeModel->itemFromIndex(index);
+//     i=i->parent();	
+
+    myStandardItem *item=static_cast<myStandardItem*>(i->parent());
+    item->removeR(i->row());    
 }
 
 
@@ -177,13 +182,19 @@ void playlistContent::createSmpSlot()
     
     myStandardItem *headItem=treeModel->head(index);
     
-    if(headItem==0 || headItem!=smHead)
+    if(headItem!=smHead)
     {
 	return ;
     }
     
     smartPlaylistCreator *c=new smartPlaylistCreator(this);    
     c->exec();
+
+    if(c->result()!= QDialog::Accepted)
+    {
+	return ;
+    }
+
     smplaylistItem *item=c->item();
     
     if(item==0)
@@ -191,15 +202,20 @@ void playlistContent::createSmpSlot()
 	return;
     }
     
-    QStandardItem *i=treeModel->itemFromIndex(index);            
+    qDebug()<<index;
+    QStandardItem *i=treeModel->itemFromIndex(index);
+    qDebug()<<"type "<<i->type();
     if(i->type()!=FOLDER_ITEM)
     {
-	i=item->parent();	
+	i=i->parent();	
     }
+    qDebug()<<"type "<<i;
     
     myStandardItem *smItem=static_cast<myStandardItem*>(i);
     
     smItem->addRow(item);
+    
+    delete c;
 }
 
 void playlistContent::editSmpSlot()
@@ -216,6 +232,11 @@ void playlistContent::editSmpSlot()
     smartPlaylistCreator *c=new smartPlaylistCreator(i,this);
     
     c->exec();
+    if(c->result()!= QDialog::Accepted)
+    {
+	return ;
+    }
+    
     smplaylistItem *newItem=c->item();
 
     if(newItem==0)
@@ -225,9 +246,10 @@ void playlistContent::editSmpSlot()
     item=i->parent();
     myStandardItem *p=static_cast<myStandardItem*>(item);
     
-    p->removeRow(i->row());
+    p->removeR(i->row());
     p->addRow(newItem);
 
+    delete c;
 }
 
 

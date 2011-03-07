@@ -27,6 +27,7 @@ smartPlaylistCreator::smartPlaylistCreator(smplaylistItem *item,QWidget *parent)
     lineE->setText(el.attribute("name") );
     smartPlaylistItem *i=new smartPlaylistItem(treeW);
     i->setXml(e);
+    treeW->expandItem(i);
 
 }
 
@@ -76,12 +77,6 @@ void smartPlaylistCreator::remove()
 
 }
 
-void smartPlaylistCreator::ok()
-{
-//     smartPlaylistItem *item=static_cast<smartPlaylistItem*>(treeW->topLevelItem(0) );
-     close();
-
-}
 
 smplaylistItem* smartPlaylistCreator::item()
 {
@@ -95,13 +90,6 @@ smplaylistItem* smartPlaylistCreator::item()
     }
     return ret;
 }
-
-
-void smartPlaylistCreator::cancel()
-{
-     close();
-}
-
 
 QString smartPlaylistCreator::name()
 {
@@ -188,7 +176,7 @@ void smartPlaylistCreator::init()
     connect(tagAction, SIGNAL(triggered()), this, SLOT(addTag()));
     connect(removeAction, SIGNAL(triggered()), this, SLOT(remove()));
 
-    connect(buttons, SIGNAL(accepted()), this, SLOT(ok()));
-    connect(buttons, SIGNAL(rejected()), this, SLOT(cancel()));
+    connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
+    connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
 }
 

@@ -18,7 +18,7 @@ folderItem::folderItem(const QDomElement &el)
     setIcon(KIcon("folder"));
     element=el;
     QString s=element.attribute(QString("name"),"Unnamed");
-    qDebug()<<s;
+//     qDebug()<<s;
     setData(s,Qt::DisplayRole);
 }
 
@@ -57,7 +57,7 @@ bool folderItem::addRow (myStandardItem* item )
 
 bool folderItem::removeR (int row)
 {
-    qDebug()<<"Row "<<row;
+//     qDebug()<<"Row "<<row;
     QStandardItem *i=child(row,0);
     
     if(i==0)

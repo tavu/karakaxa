@@ -46,6 +46,7 @@ private:
     QAction *upAction;
     QAction *backAction;
     QAction *forwardAction;
+    QAction *goToPlayingTrackAction;
 
 
 public slots:
@@ -56,6 +57,7 @@ public slots:
     void up();
     void back();
     void forward();
+    void goToPlayingTrack();
     void setDir(const QModelIndex index);
     
   private slots:

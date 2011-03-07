@@ -45,27 +45,29 @@ void player::contentHandler::init(QTreeWidget *tree , QStackedWidget *stack)
 
 abstractContent* player::contentHandler::content(const QModelIndex &index) const
 {
-    abstractContent *parent;
-    QModelIndex parentItem=index.parent();
+    if(!index.isValid() )
+    {
+	return 0;
+    }    
+    abstractContent *c=0;
+    QModelIndex in;
 
-    if (parentItem.isValid() )
+    if (index.parent().isValid() )
     {
-        parent=contentList.at(parentItem.row() );
+        in=index.parent();
     }
-    else
+    
+    if(in.row()<contentList.size() )
     {
-        parent=contentList.at(index.row() );
+        c=contentList.at(index.row() );
     }
-    return parent;
+    return c;
 }
 
 bool player::contentHandler::isActive(QWidget *w)
 {
-    qDebug()<<w;
-      qDebug()<<stack->currentWidget();
     if(w==stack->currentWidget() )
-    {
-      ;
+    { 
       return true;
     }
     
@@ -80,18 +82,14 @@ void player::contentHandler::itemChanger(const QModelIndex &index)
 
     if (parentItem.isValid() )
     {
-        parent=contentList.at(parentItem.row() );
-        qDebug()<<"shown "<<parent->isVisible();
+        parent=contentList.at(parentItem.row() );     
 	stack->setCurrentWidget(parent);
-	qDebug()<<"shown "<<parent->isVisible();
         parent->update(index.row() );
     }
     else
     {
         parent=contentList.at(index.row() );
-	qDebug()<<"shown "<<parent->isVisible();
         stack->setCurrentWidget(parent);
-	qDebug()<<"shown "<<parent->isVisible();
 	parent->update(-1);
     }
 
@@ -116,7 +114,6 @@ void player::contentHandler::addContent(abstractContent *content, bool activate)
         tree->setCurrentItem(i);
         stack->setCurrentWidget(content);
     }
-    qDebug()<<"shown "<<content->isVisible();
 }
 
 void player::contentHandler::removeContent(abstractContent *content)

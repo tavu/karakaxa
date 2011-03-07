@@ -75,6 +75,9 @@ class nplaylist :public QObject
 	void insertSig(nplList,int );
 	void removeSig(const int);
 	void cancelThreads();
+	
+	void inserted(int);
+	void removed(int);
 
     public slots:
 

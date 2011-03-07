@@ -47,8 +47,9 @@ void player::nplaylist::insertSlot(nplList list, int pos)
 	totalLength+=list.at(i)->tag(LENGTH).toInt();
     }
     
-    model->endInsertRows();    
+    model->endInsertRows();
      
+    emit( inserted(list.size() ) );
     return ;
 }
 
@@ -84,6 +85,8 @@ void player::nplaylist::removeSlot(const int pos)
     nplPointer t=trackList.takeAt(pos);
     if (t==playing)	playing.clear();
     model-> endRemoveRows();
+    
+    emit removed(1);
     
     t.clear();     
 
@@ -158,10 +161,8 @@ void player::nplaylist::addMediaList(const QStringList &list,int pos)
 
 
 void player::nplaylist::move(int from,int pos)
-{
-     
-    trackList.move(from,pos);
-     
+{     
+    trackList.move(from,pos);     
 }
 
 QString player::nplaylist::url(int n)
