@@ -15,7 +15,7 @@ void albumDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option,
 {
      QApplication::style()->drawPrimitive( QStyle::PE_PanelItemViewItem, &option, painter );            
 
-    QPixmap pic=player::decor.decorationPixmap(option,index);    
+    QPixmap pic=player::decor.decorationPixmap(option,index);
     QRect r=option.rect;
     
     r.setY(r.y()+10);

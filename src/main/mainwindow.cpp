@@ -54,8 +54,7 @@ mainWindow::mainWindow()
     conViewInit();
 
 
-    init();
-//     contentHandlr
+     init();
      contentHandlr.init(conTree,conView);
      contentHandlr.loadDefault();
 
@@ -69,20 +68,20 @@ mainWindow::mainWindow()
      QVBoxLayout *v=new QVBoxLayout();
      
      QFrame *f=new QFrame(this);
-     QHBoxLayout *h=new QHBoxLayout(this);
-     h->addWidget(toolBar);
+//      QHBoxLayout *h=new QHBoxLayout(this);
+//      h->addWidget(toolBar);
      toolBar->setPalette(pal);
-     f->setLayout(h);
-     f->setFrameShape(QFrame::StyledPanel);
-     f->setFrameShadow(QFrame::Raised);
-     f->setPalette(pal);
-     f->setAutoFillBackground(true);
-     v->addWidget(f);
-     v->addWidget(conView);
-     ww->setLayout(v);
+//      f->setLayout(h);
+//      f->setFrameShape(QFrame::StyledPanel);
+//      f->setFrameShadow(QFrame::Raised);
+//      f->setPalette(pal);
+//      f->setAutoFillBackground(true);
+//      v->addWidget(f);
+//      v->addWidget(conView);
+//      ww->setLayout(v);
      conView->setAutoFillBackground(true);
 //      conView->setPalette(pal);
-     setCentralWidget(ww); 
+     setCentralWidget(conView); 
      toolBar->setAutoFillBackground(false);
 
      addDockWidget ( Qt::LeftDockWidgetArea, infoDock,Qt::Horizontal);
@@ -96,9 +95,9 @@ mainWindow::mainWindow()
      
     setStatusBar(player::statusBar.statusBar() );
 
-//     addToolBar ( Qt::TopToolBarArea,toolBar);
+    addToolBar ( Qt::TopToolBarArea,toolBar);
 
-//     lockDock();
+     lockDock();
 
     //signals
 
@@ -298,9 +297,6 @@ void mainWindow::toolBarInit()
 
     QPalette p=QApplication::palette();
 
-//     toolBar->setPalette(p);
-//     toolBar->setAutoFillBackground(true);
-
     toolBar->setObjectName("buttonsToolBar");
     toolBar->setToolButtonStyle( Qt::ToolButtonIconOnly );
     toolBar->setIconSize(ICONZISE );
@@ -335,19 +331,19 @@ void mainWindow::lockDock()
     const QFlags<QDockWidget::DockWidgetFeature> features = QDockWidget::NoDockWidgetFeatures;
 
     conTreeDock->setFeatures(features);
-//      conTreeDock->setTitleBarWidget(0);
+    conTreeDock->setTitleBarWidget(0);
 
     conViewDock->setFeatures(features);
-    conViewDock->setTitleBarWidget(conViewDockT);
+    conViewDock->setTitleBarWidget(new QWidget(conViewDock));
 
 
 
     nplViewDock->setFeatures(features);
-    nplViewDock->setTitleBarWidget(nplViewDockT);
+    nplViewDock->setTitleBarWidget(new QWidget(nplViewDock));
 
     infoDock->setFeatures(features);
 //     infoDock->setMinimumWidth(210);
-//    infoDock->setTitleBarWidget(infoDockT);
+    infoDock->setTitleBarWidget(new QWidget(infoDock));
     
 }
 

@@ -62,7 +62,19 @@ void smartPlaylistItem::setXml(QDomElement el)
     {	
 	int t=el.attribute("tag","0").toInt(0,10);
 	tagSelector->setCurrentIndex(t);
-	equalSelector->setCurrentIndex(el.attribute("comparison","0").toInt(0,10) );
+	
+	int eq=el.attribute("comparison","0").toInt(0,10);
+	
+	for(int i=0;i<queryGrt::LESS;i++)
+	{
+	    if(equalSelector->itemData(i).toInt()==eq )
+	    {
+		equalSelector->setCurrentIndex(i);
+		break;
+	    }
+	}
+	
+// 	equalSelector->setCurrentIndex(el.attribute("comparison","0").toInt(0,10) );
 	int checked=el.attribute("invert","0").toInt(0,10);
 	if(checked!=0)
 	{	    

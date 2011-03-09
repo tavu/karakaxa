@@ -103,11 +103,8 @@ void albumTrack::albumVInit()
     albumV->setPalette(player::pal);
 
     albumV->setFrameStyle(QFrame::NoFrame);
-//      albumV->setFrameStyle(QFrame::Box|QFrame::Plain);
-//      albumV->setFrameStyle(QFrame::StyledPanel|QFrame::Sunken);
     albumV->setViewMode(QListView::IconMode);
     albumV->setUniformItemSizes (true);
-//      albumV->setIconSize(QSize(100,100));
     albumV->setResizeMode(QListView::Adjust);
     albumV->setFlow(QListView::LeftToRight);
 
@@ -118,7 +115,7 @@ void albumTrack::albumVInit()
 
     QSizePolicy p;
     p.setHorizontalPolicy(QSizePolicy::Ignored);
-
+/*
     leftB=new QPushButton(this);
     leftB->setFixedWidth(20);
     leftB->setSizePolicy(QSizePolicy::Ignored,QSizePolicy::Ignored);
@@ -127,11 +124,14 @@ void albumTrack::albumVInit()
     leftB->setAutoRepeat (true);
 
     rightB=new QPushButton(this);
+    rightB->setAutoFillBackground(true);
     rightB->setFixedWidth(20);
     rightB->setSizePolicy(QSizePolicy::Ignored,QSizePolicy::Ignored);
     rightB->setFlat(true);
     rightB->setIcon(KIcon("go-next-view") );
     rightB->setAutoRepeat (true);
+    */
+//     rightB->setStyleSheet("QPushButton { background-color: green }");
 
 //       QPalette pal=player::pal;
 //       pal.setColor(QPalette::Button,pal.color(QPalette::Window) );
@@ -152,12 +152,12 @@ void albumTrack::albumVInit()
 
     hLayout->setContentsMargins(0,0,0,0);
     hLayout->setSpacing(0);
-    hLayout->addWidget(leftB);
+//     hLayout->addWidget(leftB);
     hLayout->addWidget(albumV);
-    hLayout->addWidget(rightB);
+//     hLayout->addWidget(rightB);
 
-    connect(rightB,SIGNAL(pressed() ),albumV,SLOT(scrollR() ) );
-    connect(leftB,SIGNAL(pressed() ),albumV,SLOT(scrollL() ) );
+//     connect(rightB,SIGNAL(pressed() ),albumV,SLOT(scrollR() ) );
+//     connect(leftB,SIGNAL(pressed() ),albumV,SLOT(scrollL() ) );
 }
 
 void albumTrack::setArtist(const QString &artist,const QString &labelS)
@@ -216,13 +216,13 @@ void albumTrack::albumActivated(const QModelIndex &n)
 void albumTrack::updateQueries()
 {
 
-  qDebug()<<"trackView update";
+//   qDebug()<<"trackView update";
   
-     QSqlQuery q=albumM->query();
-//     albumM->setQuery(q);
-     QSqlQuery nq(q.executedQuery(),db.getDatabase() );
-     nq.exec();
-     albumM->setQuery(nq);
+    QSqlQuery q=albumM->query();
+//   albumM->setQuery(q);
+    QSqlQuery nq(q.executedQuery(),db.getDatabase() );
+    nq.exec();
+    albumM->setQuery(nq);
     
     trackM->refresh();
 }

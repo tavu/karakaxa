@@ -14,6 +14,10 @@ public slots:
 protected:
     void wheelEvent(QWheelEvent *event);
     void resizeEvent(QResizeEvent* event);
+    
+  signals:
+      void scrolledR();
+      void scrolledL();
 // 	  virtual void paintEvent ( QPaintEvent * e ) ;
 };
 

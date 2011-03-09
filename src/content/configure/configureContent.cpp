@@ -63,6 +63,7 @@ void configureContent::libconfInit()
     dbNameL = new QLineEdit(db.dataBName(),this);    
     dbUserL = new QLineEdit(db.dataBUser(),this);
     dbPassL = new QLineEdit(db.dataBPass(),this);
+    dbPassL->setEchoMode(QLineEdit::Password);
     
     dbNameL->setMinimumWidth(150);
     dbUserL->setMinimumWidth(150);

@@ -28,6 +28,7 @@ void albumModel::resize(QSize &s)
     else
     {
 	itemSize=s;
+// 	itemSize.setHeight(s.height()-10);
  	itemSize.setWidth(itemSize.width()-10);
     }
 //     resizePix();
