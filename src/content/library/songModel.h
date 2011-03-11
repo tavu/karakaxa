@@ -9,6 +9,7 @@
 #include<player.h>
 #include<trackView.h>
 #include<QSortFilterProxyModel>
+#include<QSqlResult>
 
 class songModel :public QSqlQueryModel 
 {
@@ -33,6 +34,7 @@ class songModel :public QSqlQueryModel
 	
     private:
 
+// 	  const QSqlResult*	 result;
      	  QSqlQueryModel queryM;
 	  QString	_filter;
 	  int 		_order;

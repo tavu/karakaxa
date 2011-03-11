@@ -45,7 +45,15 @@ void songModel::select()
     }
     
 //     qDebug()<<q;
-    setQuery(q,db.getDatabase());
+//     QSqlQuery query(q);
+//     
+//     if(!query.exec() )
+//     {
+// 	qDebug()<<query.lastError().text();
+//     }
+    
+//     result =query.result();
+     setQuery(q,db.getDatabase());
     
 //     emit(newQuery() );
 }

@@ -25,13 +25,6 @@ using namespace player;
 mainWindow::mainWindow()
         :QMainWindow()
 {
-  
-//    qApp->setStyleSheet("QAbstractItemView {background-color: transparent; }");
-  
-//     qApp->setStyleSheet("QHeaderView::section {background-color: transparent;}");
-  
-    QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
-    QTextCodec::setCodecForTr(QTextCodec::codecForName ("UTF-8"));
     setIconSize(ICONZISE);
     
     pal=palette();
@@ -49,6 +42,7 @@ mainWindow::mainWindow()
     player::pal=pal;
     player::pal.setColor(QPalette::Base,pal.color(QPalette::Window) );
 
+    setMenuBar(0);
     infoInit();
     conTreeInit();
     conViewInit();
@@ -58,29 +52,11 @@ mainWindow::mainWindow()
      contentHandlr.init(conTree,conView);
      contentHandlr.loadDefault();
 
-    nplViewInit();
+     nplViewInit();
 
-    toolBarInit();
+     toolBarInit();
     
-
-     
-     QWidget *ww=new QWidget(this);
-     QVBoxLayout *v=new QVBoxLayout();
-     
-     QFrame *f=new QFrame(this);
-//      QHBoxLayout *h=new QHBoxLayout(this);
-//      h->addWidget(toolBar);
-     toolBar->setPalette(pal);
-//      f->setLayout(h);
-//      f->setFrameShape(QFrame::StyledPanel);
-//      f->setFrameShadow(QFrame::Raised);
-//      f->setPalette(pal);
-//      f->setAutoFillBackground(true);
-//      v->addWidget(f);
-//      v->addWidget(conView);
-//      ww->setLayout(v);
      conView->setAutoFillBackground(true);
-//      conView->setPalette(pal);
      setCentralWidget(conView); 
      toolBar->setAutoFillBackground(false);
 
@@ -97,7 +73,7 @@ mainWindow::mainWindow()
 
     addToolBar ( Qt::TopToolBarArea,toolBar);
 
-     lockDock();
+    lockDock();
 
     //signals
 
@@ -144,22 +120,23 @@ mainWindow::~mainWindow()
 inline void mainWindow::infoInit()
 {
     info=new playingInfo(this);
-    info->setFixedSize(200,150);
-    QWidget *w=new QWidget(this);
-    QHBoxLayout *hLayout=new QHBoxLayout();
+    info->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
+//     QWidget *w=new QWidget(this);
+//     QHBoxLayout *hLayout=new QHBoxLayout();
 //     QVBoxLayout *VLayout=new QVBoxLayout();
-    hLayout->addWidget(info);
-    hLayout->addStretch();
-    w->setLayout(hLayout);
+//     hLayout->addWidget(info);
+//     hLayout->addStretch();
+//     w->setLayout(hLayout);
     
     
     infoDock=new QDockWidget(this);
-    infoDock->setWidget(w);
+    infoDock->setWidget(info);
 
     infoDock->setPalette(player::pal);
 
-    infoDock->setWindowTitle("playing track info");
+    infoDock->setWindowTitle(tr("playing track info") );
     infoDock->setObjectName("playingTrackInfodf");
+//     infoDock->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
 //     infoDockT=new QWidget(this);
 
 }
@@ -188,12 +165,14 @@ void mainWindow::conTreeInit()
     conTree=new contentTree(this);
     conTree->setFrameStyle(QFrame::Raised);
     conTree->setHeaderHidden(true);
+    conTree->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding );
 //     conTree->setHeaderLabel("Content");
 
     conTreeDock =new QDockWidget(this);
     conTreeDock->setWindowTitle("select content");
     conTreeDock->setObjectName("contentTree");
 
+     conTree->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding );
 //     QWidget *w=new QWidget(this);
 //     QFrame *f=new QFrame(this);
 //     f->setFrameStyle(QFrame::HLine);
@@ -293,14 +272,14 @@ void mainWindow::nplViewInit()
 
 void mainWindow::toolBarInit()
 { 
-    toolBar=new KToolBar(this);
+    toolBar=new QToolBar(this);
 
     QPalette p=QApplication::palette();
 
     toolBar->setObjectName("buttonsToolBar");
-    toolBar->setToolButtonStyle( Qt::ToolButtonIconOnly );
-    toolBar->setIconSize(ICONZISE );
-    toolBar->setMovable(true);
+//     toolBar->setToolButtonStyle( Qt::ToolButtonIconOnly );
+//     toolBar->setIconSize(ICONZISE );
+//     toolBar->setMovable(true);
 
     previousAction = new QAction(  decor.previous() ,"play previous", this );
     toolBar->addAction( previousAction );
@@ -316,12 +295,12 @@ void mainWindow::toolBarInit()
     
     slider = new Phonon::SeekSlider(this);
     slider->setMediaObject(engine.getMediaObject() );
-    slider->setIconVisible(false);
-    toolBar->addWidget(slider);
+//     slider->setIconVisible(false);
+     toolBar->addWidget(slider);
     
-    volumeBar *v=new volumeBar(this);
-    v->setFixedWidth(150);
-    toolBar->addWidget(v);
+//     volumeBar *v=new volumeBar(this);
+//     v->setFixedWidth(150);
+//     toolBar->addWidget(v);
 
 }
 
@@ -343,7 +322,8 @@ void mainWindow::lockDock()
 
     infoDock->setFeatures(features);
 //     infoDock->setMinimumWidth(210);
-    infoDock->setTitleBarWidget(new QWidget(infoDock));
+//     infoDock->setTitleBarWidget(new QWidget(infoDock));
+    toolBar->setMovable(false);
     
 }
 
@@ -379,21 +359,20 @@ void mainWindow::writeSettings()
     KSharedConfigPtr config=player::config.configFile();
     KConfigGroup group( config, "MainWindow" );
     group.writeEntry("geometry", QVariant(saveGeometry() ) );
-    group.writeEntry( "state", QVariant(saveState() ));
+    group.writeEntry( "state", QVariant(saveState() ) );
 //     group.writeEntry( "infoDockHeight", QVariant(infoDock->height()) );
-    group.config()->sync();  
+    group.config()->sync();
 
   
 }
 
 void mainWindow::readSettings()
-{
-  
+{  
     KSharedConfigPtr config=player::config.configFile();
     KConfigGroup group( config, "MainWindow" );
-    restoreGeometry(group.readEntry("geometry",QByteArray() ) );    
+    restoreGeometry(group.readEntry("geometry",QByteArray() ) );
     restoreState(group.readEntry("state",QByteArray()) );
-  
+      
 //     infoDock->resize(infoDock->width(), group.readEntry("infoDockHeight",30) );
 }
 

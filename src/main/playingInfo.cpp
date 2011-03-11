@@ -92,7 +92,8 @@ playingInfo::playingInfo(QWidget *parent)
 
 QSize playingInfo::sizeHint() const
 {
-    return QSize(200,170);
+  qDebug()<<"SIZE";
+    return QSize(10,17);
 }
 
 

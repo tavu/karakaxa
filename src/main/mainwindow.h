@@ -32,7 +32,7 @@ class mainWindow :public QMainWindow
 	    
     private:
 
-	KToolBar 	*toolBar;
+	QToolBar 	*toolBar;
 	nplaylistView 	*nplView;
 	contentTree 	*conTree;
 	QStackedWidget 	*conView;

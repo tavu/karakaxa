@@ -10,7 +10,7 @@ class playingInfo :public QFrame
     public:
 	playingInfo(QWidget *parent=0);
 	~playingInfo();
-	virtual QSize sizeHint() const;
+ 	virtual QSize sizeHint() const;
 	
     private:
 	player::coverWidget *cover;

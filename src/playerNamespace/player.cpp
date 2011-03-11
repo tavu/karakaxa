@@ -4,7 +4,7 @@
 #include<QObject>
 #include<KMimeType>
 #include<QLinkedList>
-
+#include<QTextCodec>
 
 namespace player
 {
@@ -281,6 +281,8 @@ bool player::exists(const QString &url)
 
 void player::init()
 {
+      QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
+      QTextCodec::setCodecForTr(QTextCodec::codecForName ("UTF-8"));
       statusBar.init();
       db.init();
       engine.init();      
