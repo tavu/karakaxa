@@ -295,12 +295,12 @@ void mainWindow::toolBarInit()
     
     slider = new Phonon::SeekSlider(this);
     slider->setMediaObject(engine.getMediaObject() );
-//     slider->setIconVisible(false);
-     toolBar->addWidget(slider);
+    slider->setIconVisible(false);
+    toolBar->addWidget(slider);
     
-//     volumeBar *v=new volumeBar(this);
-//     v->setFixedWidth(150);
-//     toolBar->addWidget(v);
+    volumeBar *v=new volumeBar(this);
+    v->setFixedWidth(150);
+    toolBar->addWidget(v);
 
 }
 
