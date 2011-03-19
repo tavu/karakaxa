@@ -1,5 +1,5 @@
 #include"config.h"
-#include<phonon>
+#include<phonon/BackendCapabilities>
 // #include<KGlobal>
 #include<KStandardDirs>
 #include<KSharedConfig>

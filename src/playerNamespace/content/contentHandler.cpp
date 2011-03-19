@@ -2,7 +2,7 @@
 #include<QModelIndex>
 #include<QHBoxLayout>
 #include<QFont>
-
+#include <QPluginLoader>
 #include<QDebug>
 #include<content/defaultContent.h>
 #define MAX_HS 20
@@ -24,8 +24,24 @@ void player::contentHandler::loadDefault()
      addContent(pl);
      addContent(c);
     
+     loadPlugins();
 }
 
+void player::contentHandler::loadPlugins()
+{
+  //this is a test
+  QString s("/home/tavu/player/trunk/plugin/libplugin.so" );
+  QPluginLoader loader(s);
+  
+  QObject *b=loader.instance();
+  qDebug()<<"B "<<b;
+  abstractContent *plugin=dynamic_cast<abstractContent *>(b);
+  if(plugin)
+  {
+      addContent(plugin);
+  }
+  
+}
 
 void player::contentHandler::init(QTreeWidget *tree , QStackedWidget *stack)
 {

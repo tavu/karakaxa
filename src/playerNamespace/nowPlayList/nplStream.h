@@ -5,7 +5,7 @@
 #include"../playerNamespace.h"
 #include<KUrl>
 #include<QObject>
-#include <phonon>
+#include <Phonon/MediaObject>
 
 namespace player
 {

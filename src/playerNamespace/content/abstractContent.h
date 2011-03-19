@@ -32,4 +32,7 @@ class abstractContent :public QWidget
 	QTreeWidgetItem *widgetItem;
 };
 
+Q_DECLARE_INTERFACE(abstractContent,"abCont");
+
+
 #endif

@@ -1,7 +1,6 @@
 #include"nplStream.h"
 #include<QObject>
 #include <Phonon/MediaObject>
-
 #include<player.h>
 player::nplStream::nplStream(QString s)
         :nplTrack(),

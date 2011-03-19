@@ -1,5 +1,5 @@
 #include"abstractContent.h"
-#include"../player.h"
+// #include"../player.h"
 
 abstractContent::abstractContent(QWidget *parent)
         :QWidget(parent)
@@ -29,7 +29,7 @@ void abstractContent::update(const int )
 
 bool abstractContent::isActive()
 {
-    return player::contentHandlr.isActive(this);
+//     return player::contentHandlr.isActive(this);
 }
 
 

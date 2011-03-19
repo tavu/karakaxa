@@ -62,10 +62,10 @@ mainWindow::mainWindow()
 
      addDockWidget ( Qt::LeftDockWidgetArea, infoDock,Qt::Horizontal);
      addDockWidget ( Qt::LeftDockWidgetArea, conTreeDock,Qt::Vertical);
-     addDockWidget ( Qt::LeftDockWidgetArea, conViewDock, Qt::Horizontal );
+//      addDockWidget ( Qt::LeftDockWidgetArea, conViewDock, Qt::Horizontal );
 //      addDockWidget ( Qt::LeftDockWidgetArea, conViewDock, Qt::Horizontal );
      
-     addDockWidget ( Qt::LeftDockWidgetArea, nplViewDock, Qt::Horizontal );
+     addDockWidget ( Qt::RightDockWidgetArea, nplViewDock, Qt::Vertical );
 
      
      
@@ -73,7 +73,7 @@ mainWindow::mainWindow()
 
     addToolBar ( Qt::TopToolBarArea,toolBar);
 
-    lockDock();
+//     lockDock();
 
     //signals
 
@@ -97,7 +97,7 @@ mainWindow::mainWindow()
 mainWindow::~mainWindow()
 {
 //      writeSettings();
-    delete viewport;
+//     delete viewport;
 
 }
 
@@ -121,19 +121,14 @@ inline void mainWindow::infoInit()
 {
     info=new playingInfo(this);
     info->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
-//     QWidget *w=new QWidget(this);
-//     QHBoxLayout *hLayout=new QHBoxLayout();
-//     QVBoxLayout *VLayout=new QVBoxLayout();
-//     hLayout->addWidget(info);
-//     hLayout->addStretch();
-//     w->setLayout(hLayout);
-    
     
     infoDock=new QDockWidget(this);
     infoDock->setWidget(info);
 
     infoDock->setPalette(player::pal);
 
+    info->setPalette(player::pal);
+    
     infoDock->setWindowTitle(tr("playing track info") );
     infoDock->setObjectName("playingTrackInfodf");
 //     infoDock->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
@@ -146,18 +141,16 @@ void mainWindow::conViewInit()
     conView=new QStackedWidget(this);   
     conView->setFrameStyle(QFrame::StyledPanel);
     conView->setFrameShadow(QFrame::Raised);
-    conViewDock=new QDockWidget(this);
-    conViewDock->setWindowTitle("content Dock");
-    conViewDock->setObjectName("contentDock");
+//     conViewDock=new QDockWidget(this);
+//     conViewDock->setWindowTitle("content Dock");
+//     conViewDock->setObjectName("contentDock");
 //     conViewDock->setWidget(conView);
 
 
 
     conView->setPalette(pal);
 
-    conViewDock->setPalette(pal);
-
-    conViewDockT=new QWidget(this);
+//     conViewDock->setPalette(pal);
 }
 
 void mainWindow::conTreeInit()
@@ -225,10 +218,9 @@ void mainWindow::nplViewInit()
     QColor c=player::pal.color(QPalette::Base);
     QString s=("QHeaderView::section {background-color: rgb(%1,%2,%3); }");
     s=s.arg(QString::number(c.red() ),QString::number( c.green() ),QString::number( c.blue() ) );
-    qDebug()<<s;
-    nplView->header()->setStyleSheet(s);
     
-
+    
+    nplView->header()->setStyleSheet(s);
     viewport = nplView->viewport();
 
     connect( &engine ,SIGNAL(trackChanged ( QString) ),viewport, SLOT(update() ) );
@@ -264,6 +256,7 @@ void mainWindow::nplViewInit()
     nplViewDock->setWidget(w);
     
     nplViewDock->setPalette(player::pal);
+    nplView->setPalette(player::pal);
 //      nplViewDock->setPalette(player::pal);
 //      nplViewDockT=new QWidget(this);
 
@@ -312,8 +305,8 @@ void mainWindow::lockDock()
     conTreeDock->setFeatures(features);
     conTreeDock->setTitleBarWidget(0);
 
-    conViewDock->setFeatures(features);
-    conViewDock->setTitleBarWidget(new QWidget(conViewDock));
+//     conViewDock->setFeatures(features);
+//     conViewDock->setTitleBarWidget(new QWidget(conViewDock));
 
 
 

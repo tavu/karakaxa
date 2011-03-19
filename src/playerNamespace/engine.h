@@ -1,9 +1,9 @@
 #ifndef ENGINE_H
 #define ENGINE_H
 
-#include <phonon>
+// #include <phonon>
 #include <Phonon/AudioOutput>
-// #include <Phonon/MediaObject>
+#include <Phonon/MediaObject>
 #include<QString>
 #include<KUrl>
 #include<QMutex>

@@ -17,6 +17,7 @@ class contentHandler :public QObject
     public:
 	contentHandler();
 	void loadDefault();
+	void loadPlugins();
 	abstractContent* content(const QModelIndex &index) const;
 
 	void removeContent(abstractContent *content);

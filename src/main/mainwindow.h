@@ -44,7 +44,6 @@ class mainWindow :public QMainWindow
 	QDockWidget      *infoDock;
 
 	QWidget  *conTreeDockT;
-	QWidget  *conViewDockT;
 	QWidget  *nplViewDockT;
 	QWidget  *infoDockT;
 	//for the toolBar
