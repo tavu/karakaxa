@@ -1,5 +1,9 @@
 #!/bin/bash
 DIR=`pwd`
+TARGET=$DIR/target
+
+#making the library
+
 cd src/lib
 qmake -project  -o lib.pro.tmp
 echo "TEMPLATE = lib" > lib.pro
@@ -8,16 +12,27 @@ rm lib.pro.tmp
 cat $DIR/qmakeadd >>lib.pro
 echo "OBJECTS_DIR=$DIR/build/libs" >>lib.pro
 echo "MOC_DIR=$DIR/build/moc" >>lib.pro
+echo "TARGET = $TARGET/player" >>lib.pro
+
 qmake lib.pro
 
-cd $DIR/src/player
-qmake -project  -o player.pro
-echo "OBJECTS_DIR=$DIR/build" >>player.pro
-echo "MOC_DIR=$DIR/build/moc" >>player.pro
 
-cat $DIR/qmakeadd >>player.pro
-echo "LIBS += -L$DIR/src/lib -lplayer" >>player.pro
-echo "INCLUDEPATH += ../lib/core" >>player.pro
-echo "INCLUDEPATH += ../lib/files">>player.pro
-echo "INCLUDEPATH += ../lib/views">>player.pro
-qmake player.pro
+
+#making the main application
+cd $DIR/src/player
+qmake -project  -o application.pro
+echo "OBJECTS_DIR=$DIR/build" >>application.pro
+echo "MOC_DIR=$DIR/build/moc" >>application.pro
+
+cat $DIR/qmakeadd >>application.pro
+echo "LIBS += -L$TARGET -lplayer" >>application.pro
+echo "INCLUDEPATH += ../lib/core" >>application.pro
+echo "INCLUDEPATH += ../lib/files">>application.pro
+echo "INCLUDEPATH += ../lib/views">>application.pro
+echo "TARGET = $TARGET/player" >>application.pro
+
+qmake application.pro
+
+#creating the main makefile
+cd $DIR
+qmake 
