@@ -1,4 +1,23 @@
-#!/bin/bash 
-qmake -project src -o player.pro
-cat qmakeadd >>player.pro
+#!/bin/bash
+DIR=`pwd`
+cd src/lib
+qmake -project  -o lib.pro.tmp
+echo "TEMPLATE = lib" > lib.pro
+cat lib.pro.tmp|grep -v TEMPLATE >>lib.pro
+rm lib.pro.tmp
+cat $DIR/qmakeadd >>lib.pro
+echo "OBJECTS_DIR=$DIR/build/libs" >>lib.pro
+echo "MOC_DIR=$DIR/build/moc" >>lib.pro
+qmake lib.pro
+
+cd $DIR/src/player
+qmake -project  -o player.pro
+echo "OBJECTS_DIR=$DIR/build" >>player.pro
+echo "MOC_DIR=$DIR/build/moc" >>player.pro
+
+cat $DIR/qmakeadd >>player.pro
+echo "LIBS += -L$DIR/src/lib -lplayer" >>player.pro
+echo "INCLUDEPATH += ../lib/core" >>player.pro
+echo "INCLUDEPATH += ../lib/files">>player.pro
+echo "INCLUDEPATH += ../lib/views">>player.pro
 qmake player.pro
