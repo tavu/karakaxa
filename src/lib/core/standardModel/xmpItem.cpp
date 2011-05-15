@@ -1,11 +1,11 @@
 #include"xmlItem.h"
-
-core::xmlItem::xmlItem(const QString &tagName)
+#include<QDebug>
+core::xmlItem::xmlItem(QDomDocument &doc,const QString &tagName)
   :standardItem(),
   columns(1)
 {
     _attributeRole=Qt::DisplayRole;
-    element.setTagName(tagName);
+    element=doc.createElement(tagName);
 }
 
 core::xmlItem::xmlItem()
@@ -15,42 +15,70 @@ core::xmlItem::xmlItem()
     _attributeRole=Qt::DisplayRole;
 }
 
+core::xmlItem::xmlItem(const QDomElement &el)
+   :standardItem(),
+   element(el),
+   columns(1)
+{
+    _attributeRole=Qt::DisplayRole;
+}
+
 QDomElement core::xmlItem::xml() const
 {
     return element;
 }
 
-bool core::xmlItem::insertRow(int row,xmlItem * item)
+// bool core::xmlItem::appendRow ( standardItem * item )
+// {
+//     qDebug()<<"QQQ";
+//     return insertRow(rowCount(),item); 
+// }
+
+bool core::xmlItem::insertRow(int row, standardItem* item)
 {
-    if(row<0||row>rowCount())
+    qDebug()<<"HHHEHHE";
+    xmlItem *newItem=dynamic_cast<xmlItem*>(item);
+    if(newItem==0 )
     {
 	return false;
     }
     
-    if(row>0)
+    if(row<0||row>rowCount())
     {
-	standardItem *prev=child(row-1);
-	xmlItem *previous=static_cast<xmlItem*>(prev);
+	return false;
+    }    
+    
+    if(row==rowCount() )
+    {
+	QDomNode n= element.appendChild(newItem->xml() );
+	if(n.isNull() )
+	{
+	    qDebug()<<"Error inserting xml node";
+	}
 	
-	QDomElement el=previous->xml();
-	element.insertAfter(item->xml(),el);
     }    
     else
     {
-
-	standardItem *prev=child(1);
-	xmlItem *previous=static_cast<xmlItem*>(prev);
+	xmlItem *previous=static_cast<xmlItem*>( child(row-1) );
 	
-	QDomElement el=previous->xml();
-	element.insertBefore(item->xml(),el);
+	QDomNode n= 	element.insertBefore(newItem->xml(),previous->xml() );
+	if(n.isNull() )
+	{
+	    qDebug()<<"Error inserting xml node";
+	}
 
     }
-    standardItem::insertRow(row,item);
+    standardItem::insertRow(row,item);    
     
     return true;
 }
 
-bool core::xmlItem::insertRows( int row, const QList< core::xmlItem* >& items )
+bool core::xmlItem::insertRowWithNoElement(int row, standardItem* item)
+{
+    return standardItem::insertRow(row,item);  
+}
+
+bool core::xmlItem::insertRows( int row, const QList< standardItem* >& items )
 {
     for(int i=row;i<row+items.size();i++)
     {
@@ -85,6 +113,12 @@ bool core::xmlItem::removeRows(int row ,int count)
 
 }
 
+bool core::xmlItem::setTagName(const QString &name)
+{
+    element.setTagName(name );
+    return true;
+}
+
 QString core::xmlItem::tagName() const
 {
     return element.tagName();
@@ -94,38 +128,87 @@ QVariant core::xmlItem::data ( int column, int role ) const
 {
     if(role==_attributeRole)
     {
-	return element.attribute(columns[column] );
+	if(column>=columns.size()||column<0 )
+	{
+	    return QVariant();
+	}
+	
+	return QVariant( element.attribute(columns[column] ) );
     }
+    
+    if(role==attributeName)
+    {
+      	if(column>=columns.size()||column<0 )
+	{
+	    return QVariant();
+	}
+	return QVariant( columns[column] );
+    }
+    
+    if(role==tagNameRole)
+    {
+	return QVariant(tagName() );
+    }
+    return QVariant();
 }
+
 bool core::xmlItem::setData (const QVariant &value,int column, int role )
 {
+    qDebug()<<"herre";
+    //we treat the edit role and the display role the same
     if(role==Qt::EditRole)
     {
+	role=Qt::DisplayRole;
+    }
+    
+    if(role==attributeName)
+    {
+      	if(column>=columns.size()||column<0 )
+	{
+	    return false;
+	}
+	
 	columns[column]=value.toString();
 	return true;
     }
     
-    if(role==_attributeRole)
-    {
-	if(columns[column].isEmpty() )
+    if(role ==_attributeRole)
+    {	
+	if(column>=columns.size() || column<0 || columns[column].isEmpty())
 	{
 	    return false;
 	}
+	qDebug()<<"herre";
 	element.setAttribute(columns[column],value.toString() );
 	return true;
     }
+    
+    if(role==tagNameRole)
+    {
+	return setTagName(value.toString() );	
+    }
+    
     return false;
 }
 
-void core::xmlItem::setColumnCount(int num)
+bool core::xmlItem::insertColumns(int start,const QStringList &list)
 {
-    if(columns.size()<num)
+    if(start>columnCount()  )
     {
-	standardItem::beginInsertColumns(columns.size(),num );
-	columns.resize(num);
-	endInsertColumns();
-    }    
+	return false;
+    }
+    standardItem::beginInsertColumns(start,start+list.size() );
+    columns.insert(start,list.size(),QString() );
+    
+    for(int i=0;i<list.size();i++)
+    {
+	columns[start+i]=list[0];
+    }
+    standardItem::endInsertColumns();
+    
+    return true;
 }
+
 
 int core::xmlItem::type()
 {
@@ -134,3 +217,5 @@ int core::xmlItem::type()
 
 
 const int core::xmlItem::XmlType=StandardType+1;
+const int core::xmlItem::tagNameRole=Qt::UserRole+1;
+const int core::xmlItem::attributeName=Qt::UserRole+2;

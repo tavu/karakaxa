@@ -17,3 +17,6 @@
 
 #include<QDebug>
 #include"func.h"
+
+#include"standardModel/xmlItem.h"
+#include"standardModel/standardModel.h"

@@ -10,8 +10,10 @@ namespace core
   {
     Q_OBJECT    
       public:
-	  xmlItem(const QString &tagName);
-	  xmlItem();	
+	  xmlItem(QDomDocument &doc,const QString &tagName);
+	  xmlItem(const QDomElement &el);
+	  xmlItem();
+	  
 	  
 	  
 	  QString tagName() const;
@@ -24,18 +26,22 @@ namespace core
 	  virtual bool removeRow(int row);
 	  virtual bool removeRows(int row ,int count);
       
-	  virtual bool insertRows ( int row, const QList< core::xmlItem* >& items );
-	  virtual bool insertRow ( int row, core::xmlItem* item );
+	  virtual bool insertRows ( int row, const QList< standardItem* >& items );
+	  virtual bool insertRow ( int row, standardItem* item );
+	  
+// 	  bool appendRow(standardItem* item);
 
 	  virtual QDomElement xml() const;
-          virtual void setColumnCount(int);
+          virtual bool insertColumns(int start,const QStringList &list);
             
 	  virtual QVariant data ( int column,int role = Qt::UserRole + 1 ) const;
       
 	  virtual int type();
 	  
 	  //map a specific attribute name to a spesific column
-	  virtual bool setData (const QVariant& value, int column = Qt::EditRole, int role = Qt::EditRole );
+	  virtual bool setData (const QVariant& value, int column, int role = Qt::EditRole );
+	  
+	  virtual bool setTagName(const QString &name);
 	  
 	  int attributeRole()
 	  {
@@ -47,14 +53,27 @@ namespace core
 	      _attributeRole=role;
 	  }
 	  
-	  static const int XmlType;
+	  void setXml(const QDomElement &el)
+	  {
+	      element=el;
+	  }
 	  
+	  QDomDocument document()
+	  {
+	      return element.ownerDocument();
+	  }
+	  
+	  
+	  static const int XmlType;
+	  static const int tagNameRole;
+	  static const int attributeName;
 	  
       protected:
 	  
 	  QVector<QString> columns;
 	  QDomElement element;
 	  int _attributeRole;
+	  bool insertRowWithNoElement( int row, standardItem* item );
   };
   
 };

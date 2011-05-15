@@ -18,6 +18,7 @@
 
 #include"content/library/library.h"
 #include"content/folder/folder.h"
+#include"content/playlist/playlistContent.h"
 
 #define ICONZISE QSize(35,35)
 
@@ -334,12 +335,12 @@ void mainWindow::defaultContent()
       library *l=new library();
 // //      configureContent *c=new configureContent();
       folderContent *f=new folderContent();
-// //     playlistContent *pl=new playlistContent();
+      playlistContent *pl=new playlistContent();
 // 
       contentHdl->addContent(l);
       contentHdl->addContent(f);
 // //     contentHandlr->addContent(c);
-// //     contentHandlr->addContent(pl);
+      pl->load();
 
       contentHdl->setCurrentContent(l);
 

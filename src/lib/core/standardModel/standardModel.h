@@ -3,6 +3,7 @@
 
 #include<QStandardItemModel>
 #include<QDomElement>
+#include<QDebug>
 
 /*
   this is a model representation whitch every item represent a multiple columns row.
@@ -36,10 +37,14 @@ class standardItem :public QObject
       virtual bool removeRow(int row);
       virtual bool removeRows(int row ,int count);
       
+      standardItem *takeRow(int row) const;
+      
       //insert  row(s) at position row
       virtual bool insertRows ( int row, const QList< standardItem* >& items ) ;
-      virtual bool insertRow ( int row, standardItem * item ) ;
+      virtual bool insertRow ( int row, standardItem * item );
+      virtual bool appendRow ( standardItem * item );
 
+      
       //return the row of the item
       int row() const;
       
@@ -59,6 +64,8 @@ class standardItem :public QObject
       //return a type indentifier of the item
       virtual int type() const;
       
+      virtual Qt::ItemFlags flags ( int column) const;
+      
       standardModel* model() const;
       
       standardItem* child (int row ) const;
@@ -75,6 +82,7 @@ class standardItem :public QObject
       standardModel *_model;
       void beginInsertColumns( int first, int last);
       void endInsertColumns();
+      void dataChanged ( const QModelIndex & topLeft, const QModelIndex & bottomRight );
       
     private:
 	void insert(int row,standardItem *item);
@@ -106,15 +114,49 @@ class standardModel :public QAbstractItemModel
 	virtual bool hasChildren ( const QModelIndex & parent = QModelIndex() ) const;
 // 	virtual standardItem* head(QModelIndex index) const;
 	virtual bool removeRows ( int row, int count, const QModelIndex & parent = QModelIndex() );
+	virtual bool removeRow ( int row, const QModelIndex & parent = QModelIndex() );
+	virtual bool removeRow ( standardItem *item );		
+		
+	virtual bool insertRow ( int row, standardItem* item, const QModelIndex& parent = QModelIndex() );
+	virtual bool insertRows ( int row, const QList< standardItem* >& items, const QModelIndex& parent );
+	virtual bool appendRow ( standardItem* item, const QModelIndex& parent = QModelIndex() );
+  	
 	virtual QModelIndex index ( int row, int column, const QModelIndex & parent = QModelIndex() ) const; 
+
+	QVariant data(const QModelIndex & index, int role = Qt::DisplayRole ) const;
+	
+	bool setData (const QModelIndex& index, const QVariant& value, int role );
+	
+	virtual int rowCount(const QModelIndex& index=QModelIndex()) const;
+	virtual int columnCount(const QModelIndex& index=QModelIndex() ) const;
+	
+	Qt::ItemFlags flags ( const QModelIndex & index ) const;
 	
 	standardItem* itemFromIndex(const QModelIndex &index) const;
 	QModelIndex indexFromItem(const standardItem *item,int column) const;
-	QModelIndex parent ( const QModelIndex & index ) const;
+	QModelIndex parent ( const QModelIndex & index ) const;		
 	
     private:
-	standardItem *head;
+	void emitDataChanged(const QModelIndex & topLeft, const QModelIndex & bottomRight);
+	
+	
+	class headItem :public standardItem
+	{
+	  public:
+	    int columnCount() const
+	    {
+		return 1;
+	    }
+      
+	    QVariant data (int column, int role = Qt::UserRole + 1 ) const 
+	    {
+		return QVariant();
+	    }
+	};
+      
+	headItem *head;
 };
+
 
 
 #endif
