@@ -196,7 +196,7 @@ void audioFiles::fileCache::releaseFileCache(QString path)
          delete t->p;
          delete t;
 
-         qDebug()<<"file cache deleted ";
+//          qDebug()<<"file cache deleted ";
     }
     gMutex.unlock();
 
