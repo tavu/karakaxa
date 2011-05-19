@@ -12,17 +12,17 @@ class PlayerConfigure
 {
   public:
       PlayerConfigure();
-      QStringList files();
-      QStringList imagefiles();
-      QStringList playListFiles();
-      QString saveLocation( const QString &directory = QString() );
-      KSharedConfigPtr configFile(const QString &s =QString("player.conf") );
+      static QStringList files();
+      static QStringList imagefiles();
+      static QStringList playListFiles();
+      static QString saveLocation( const QString &directory = QString() );
+      static KSharedConfigPtr configFile(const QString &s =QString("player.conf") );
       
   private:
-      QStringList supportesFilesList;
-      QStringList supportedImageFiles;
+//       static QStringList supportesFilesList;
+//       static QStringList supportedImageFiles;
       
-      QMutex globalDirsMutex;
+      static QMutex globalDirsMutex;
 
 // 	  QSettings settings;
 };

@@ -2,24 +2,76 @@
 appname=player
 libname=lib$appname.so
 
-./configure
+libpath=src/lib
+apppath=src/player
 
-make
+path=`dirname $0`
 
-rm /usr/lib/$libname.1 /usr/lib/$libname.1.0
+echo $@
+echo $path
 
-cp  target/$libname /usr/lib
+function makeLib {
+   echo "compiling library"
+   cd $libpath
+   make
+   cd ../..
+}
 
-sudo ln -s /usr/lib/$libname /usr/lib/$libname.1
+function installLib {
 
-sudo ln -s /usr/lib/$libname /usr/lib/$libname.1.0
+  echo "installing the library"
+  rm /usr/lib/$libname.1 /usr/lib/$libname.1.0
+  cp  target/$libname /usr/lib
+  ln -s /usr/lib/$libname /usr/lib/$libname.1
+  ln -s /usr/lib/$libname /usr/lib/$libname.1.0
+}
+
+function makeApp {
+  echo "compiling application"
+  cd $apppath
+  make
+  cd ../..
+}
+
+function installApp {
+
+  echo "installing the application"
+  mkdir -p /usr/share/kde4/apps/$appname
+  cp -R  data/* /usr/share/kde4/apps/$appname
+  cp -R sql /usr/share/kde4/apps/$appname
+  cp -R target/$appname /usr/bin
+}
 
 
+if [ $# -eq 0 ] 
+then
+  
+  echo edo
+  ./configure
+  makeLib
+  installLib
+  makeApp
+  installApp
 
-mkdir -p /usr/share/kde4/apps/$appname
+elif [ $1 == 'lib' ]
+then
 
-cp -R  data/* /usr/share/kde4/apps/$appname
+  ./configure
+  makeLib
+  if [ "$2" == '-i' ]
+  then
+    installLib
+  fi
 
-cp -R sql /usr/share/kde4/apps/$appname
+elif [ $1 == 'app' ]
+then
 
-cp -R target/$appname /usr/bin
+  ./configure
+  makeApp
+  if [ $2 == '-i' ]
+  then
+    installApp
+  fi
+
+fi
+

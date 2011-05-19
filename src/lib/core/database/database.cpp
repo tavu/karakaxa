@@ -5,6 +5,8 @@
 #include<kconfiggroup.h>
 #include"../config/config.h"
 #include<ksharedconfig.h>
+#include<KGlobal>
+#include<KStandardDirs>
 core::database::database()
         :QObject()	
 {
@@ -56,9 +58,24 @@ void core::database::readSettings()
      KConfigGroup group( config, "database" );
      dbName=group.readEntry("database",QString());
      dbUser=group.readEntry("user",QString());
-     dbPass=group.readEntry("pass",QString());
-    
+     dbPass=group.readEntry("pass",QString());    
 }
+
+void core::database::setUpDb()
+{
+    QSqlQuery q(db);
+    QString s=KGlobal::dirs()->findResource("data",QString("player/sql/create.txt") );   
+    q.prepare("source "+s );    
+    
+    if(!q.exec() )
+    {
+	status->addError(QObject::tr("Could not set up database") );
+	status->addErrorP(q.lastError().text() );
+    }
+    
+   
+}
+
 
 void core::database::writeSettings()
 {

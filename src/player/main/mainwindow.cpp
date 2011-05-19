@@ -19,6 +19,7 @@
 #include"content/library/library.h"
 #include"content/folder/folder.h"
 #include"content/playlist/playlistContent.h"
+#include"content/configure/configureContent.h"
 
 #define ICONZISE QSize(35,35)
 
@@ -332,15 +333,15 @@ void mainWindow::stateChanged(Phonon::State state)
 
 void mainWindow::defaultContent()
 {
-      library *l=new library();
-// //      configureContent *c=new configureContent();
+      library *l=new library();      
       folderContent *f=new folderContent();
       playlistContent *pl=new playlistContent();
-// 
+      configureContent *c=new configureContent();
+
       contentHdl->addContent(l);
       contentHdl->addContent(f);
-// //     contentHandlr->addContent(c);
-      pl->load();
+      contentHdl->addContent(pl);
+      contentHdl->addContent(c);
 
       contentHdl->setCurrentContent(l);
 

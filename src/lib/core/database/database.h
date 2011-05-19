@@ -75,6 +75,7 @@ class database :public QObject
 	}
 	
 	bool dBConnect(QString n,QString u,QString p);
+	void setUpDb();
 	
   private:
 
@@ -84,7 +85,6 @@ class database :public QObject
 	QString dbPass;
 	
 	bool _isConnected;
-
 
     signals:
 	void changed();

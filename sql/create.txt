@@ -1,25 +1,25 @@
 CREATE DATABASE IF NOT EXISTS karakaxa CHARACTER SET utf8;
 use karakaxa;
 
-create table library_folders(
+create table IF NOT EXISTS library_folders(
      path varchar(255) not null,
      PRIMARY KEY(path)
 )default charset=utf8 collate=utf8_general_ci TYPE=innodb;
 
-create table playlists(
+create table IF NOT EXISTS playlists(
      path varchar(255) not null,
      PRIMARY KEY(path)
 )default charset=utf8 collate=utf8_general_ci TYPE=innodb;
 
 
-create table artists(
+create table IF NOT EXISTS artists(
      id int(10) not null auto_increment,
      name varchar(255),
      unique(name),
      PRIMARY KEY(id)
 )default charset=utf8 collate=utf8_general_ci TYPE=innodb;
 
-create table albums(
+create table IF NOT EXISTS albums(
      id int(10) not null auto_increment,
      name varchar(255),
      artist int(10) not null,
@@ -29,21 +29,21 @@ create table albums(
      unique(name,artist)
 )default charset=utf8 collate=utf8_general_ci TYPE=innodb;
 
-create table genres(
+create table IF NOT EXISTS genres(
      id int(10) not null auto_increment,
      name varchar(255),
      unique(name),
      PRIMARY KEY(id)
 )default charset=utf8 collate=utf8_general_ci TYPE=innodb;
 
-create table composers(
+create table IF NOT EXISTS composers(
      id int(10) not null auto_increment,
      name varchar(255),
      unique(name),
      PRIMARY KEY(id)
 )default charset=utf8 collate=utf8_general_ci TYPE=innodb;
 
-create table tracks(
+create table IF NOT EXISTS tracks(
      id int(10) not null auto_increment,
      path 		varchar(255) not null,
      title 		varchar(255),
@@ -82,7 +82,7 @@ create table tracks(
 )default charset=utf8 collate=utf8_general_ci TYPE=innodb;
 
 
-create table track_artists(
+create table IF NOT EXISTS track_artists(
      track int(10) not null,
      artist int(10) not null,
      
@@ -94,9 +94,9 @@ create table track_artists(
 
 #=====================procedures=========================
 
-
+DROP PROCEDURE IF EXISTS insert_track;
 delimiter $
-create procedure insert_track
+CREATE PROCEDURE insert_track
      (
 	  IN	album_artist	varchar(255)	,
 	  
@@ -170,7 +170,7 @@ BEGIN
 END$
 delimiter ;
 
-
+DROP PROCEDURE IF EXISTS get_artist;
 delimiter $
 CREATE PROCEDURE get_artist(IN artist_name varchar(255), OUT artist_id int(10) )
 BEGIN
@@ -188,6 +188,7 @@ BEGIN
 END$
 delimiter ;
 
+DROP PROCEDURE IF EXISTS get_album;
 delimiter $
 CREATE PROCEDURE get_album(IN album varchar(255),IN artist varchar(255), OUT album_id int(10) )
 BEGIN
@@ -211,6 +212,7 @@ BEGIN
 END$
 delimiter ;
 
+DROP PROCEDURE IF EXISTS get_genre;
 delimiter $
 CREATE PROCEDURE get_genre(IN genre_name varchar(255), OUT genre_id int(10) )
 BEGIN
@@ -228,6 +230,7 @@ BEGIN
 END$
 delimiter ;
 
+DROP PROCEDURE IF EXISTS get_composer;
 delimiter $
 CREATE PROCEDURE get_composer(IN composer_name varchar(255), OUT composer_id int(10) )
 BEGIN
@@ -246,14 +249,14 @@ BEGIN
 END$
 delimiter ;
 
-create view leadArtists as select name ,id from artists;
+CREATE OR REPLACE view leadArtists as select name ,id from artists;
 
 
-CREATE VIEW artist_album(artist,album,image,id) AS
+CREATE OR REPLACE VIEW artist_album(artist,album,image,id) AS
      select artists.name,albums.name,albums.image,albums.id from albums
      inner join artists on artists.id=albums.artist;
  
-CREATE VIEW trackView 	AS
+CREATE OR REPLACE VIEW trackView 	AS
      select
 	  albums.id		as album_id	,
 	  tracknumber	 			,
