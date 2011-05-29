@@ -29,7 +29,11 @@ class mainWindow :public QMainWindow
     public:
 	mainWindow();
 	~mainWindow();
-	    
+// 	bool fullScreen()
+// 	{
+// 	    return _fullScreen;
+// 	}
+	
     private:
 
 	QToolBar 	*toolBar;
@@ -57,12 +61,10 @@ class mainWindow :public QMainWindow
 	QLabel *timeLabel;
 	QLabel *progressLabel;    
 
-    //  	  sound *sd;
 	QWidget * viewport;
 
 	QPalette pal;
 	//fuctions
-// 	inline void init();
 	inline void toolBarInit();
 	inline void nplViewInit();
 	inline void conTreeInit();
@@ -70,6 +72,7 @@ class mainWindow :public QMainWindow
 	inline void defaultContent();
 	inline void infoInit();
 
+// 	bool _fullScreen;
 	void lockDock();
 
 	void writeSettings();

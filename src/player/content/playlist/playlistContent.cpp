@@ -323,7 +323,6 @@ void playlistContent::activationSlot(QModelIndex in)
     }
     else if(item->type()==FOLDER_ITEM || item->type()==PLAYLIST_FOLDER )
     {
-	qDebug()<<"AH BAH";
 	if(treeV->isExpanded(in) )
 	{
 	    treeV->collapse(in);

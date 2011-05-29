@@ -496,7 +496,6 @@ bool standardItem::insertRows(int row, const QList< standardItem* >& items)
 
 bool standardItem::insertRow(int row, standardItem* item)
 {
-//     qDebug()<<"JERR";
     if(_model!=0)
     {
  	QModelIndex index=_model->indexFromItem(this,0);

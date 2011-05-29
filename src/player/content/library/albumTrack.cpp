@@ -43,7 +43,7 @@ albumTrack::albumTrack(QWidget *parent)
     
     connect(albumV,SIGNAL(activated ( const QModelIndex) ),this ,SLOT( albumActivated(const QModelIndex&) ) );
     
-    connect(db,SIGNAL(updated(audioFiles::audioFile ) ),this,SIGNAL(albumsNeedUpdate(audioFiles::audioFile & ) ) );
+    connect(db,SIGNAL(updated(audioFiles::audioFile ) ),this,SLOT(albumsNeedUpdate(audioFiles::audioFile & ) ) );
     
 //     connect(db,SIGNAL(changed()),this,SLOT(setNeedUpdateTrue() ) );
       

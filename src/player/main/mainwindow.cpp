@@ -39,15 +39,17 @@ mainWindow::mainWindow()
     
     pal=palette();
     pal.setColor(QPalette::Base,pal.color(QPalette::Window) );
+    QColor c(180,189,213);
+    pal.setColor(QPalette::Window,c );
 //     pal.setColor(QPalette::Link,QColor(0,0,255) );
 //     pal.setColor(QPalette::Window,QColor(175,194,237) );
 
 //     QColor c(180,189,213);
-     QColor c(180,189,213);
+     
 //     c.setNamedColor("playerBlue");
     
 //      pal.setColor(QPalette::AlternateBase,c );
-     pal.setColor(QPalette::Window,c );
+     
 //      pal.setColor(QPalette::Base,c );
 
 //      qApp->setPalette(pal);
@@ -58,27 +60,27 @@ mainWindow::mainWindow()
     setMenuBar(0);
     infoInit();
     conTreeInit();
-    conViewInit();
+    conViewInit();    
+    nplViewInit();    
+    toolBarInit();                    
 
-
+    setStatusBar(new views::statusBar(this) );    
      
+    lockDock();
+
+    connect( core::engine ,SIGNAL(stateChanged ( Phonon::State) ),this, SLOT( stateChanged ( Phonon::State) ) );
+             
+    readSettings();
+    defaultContent();
+    
 //      core::contentHdl->init(conTree,conView);
 //      core::contentHdl.loadDefault();
 
-     nplViewInit();
-
-     toolBarInit();
-    
-     
-    setStatusBar(new views::statusBar(this) );
-    
-
-//     lockDock();
 
     //signals
 
 
-    connect( core::engine ,SIGNAL(stateChanged ( Phonon::State) ),this, SLOT( stateChanged ( Phonon::State) ) );
+    
 //
 //      connect(playButton, SIGNAL(clicked()), soundEngine, SLOT(playPause() ) );
 //
@@ -89,8 +91,7 @@ mainWindow::mainWindow()
 //      connect(nowPl,SIGNAL(changeSong(QString)),soundEngine,SLOT(play(QString) ) );
 
 
-    readSettings();
-    defaultContent();
+
 
 //      writeSettings();
 }
@@ -360,11 +361,11 @@ void mainWindow::writeSettings()
     KSharedConfigPtr config=core::config->configFile();
     KConfigGroup group( config, "MainWindow" );
     group.writeEntry("geometry", QVariant(saveGeometry() ) );
+    group.writeEntry("fullscreen", QVariant(isFullScreen() ) );
     group.writeEntry( "state", QVariant(saveState() ) );
     group.writeEntry( "infoDockHeight", QVariant(info->height()) );
     group.config()->sync();
 
-//     qDebug()<<"RR "<<infoDock->height();
   
 }
 
@@ -373,6 +374,7 @@ void mainWindow::readSettings()
     KSharedConfigPtr config=core::config->configFile();
     KConfigGroup group( config, "MainWindow" );
     restoreGeometry(group.readEntry("geometry",QByteArray() ) );
+//     _fullScreen=group.readEntry("fullscreen",false );
     int infoHeight=group.readEntry( "infoDockHeight",0 );
     
     restoreState(group.readEntry("state",QByteArray()) );

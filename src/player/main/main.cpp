@@ -20,8 +20,10 @@ int main(int argc, char *argv[])
     app.setApplicationName("player");
     app.setOrganizationName("player");
     mainWindow *pl=new mainWindow();
-
+    
     pl->show();
+
+    
     int ret=app.exec();
     core::cleanUp();
     return ret;

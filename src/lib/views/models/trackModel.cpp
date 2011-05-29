@@ -68,8 +68,8 @@ void views::trackModelItem::setQueryG(core::queryGrt* qe)
     q=qe;
     q->setParent(this);
     connect(q,SIGNAL(selectionMade() ),this,SLOT(addItems() ),Qt::QueuedConnection );
-    connect(q,SIGNAL(inserted(audioFiles::audioFile,int) ),this,SLOT(addItem(audioFile &,int) ),Qt::QueuedConnection );
-    connect(q,SIGNAL(removed(audioFiles::audioFile,int)),this,SLOT(removeItem(audioFiles::audioFile&,int)),Qt::QueuedConnection );
+//     connect(q,SIGNAL(inserted(audioFiles::audioFile,int) ),this,SLOT(addItem(audioFile &,int) ),Qt::QueuedConnection );
+//     connect(q,SIGNAL(removed(audioFiles::audioFile,int)),this,SLOT(removeItem(audioFiles::audioFile&,int)),Qt::QueuedConnection );
     
     if(q->needUpdate() )
     {
@@ -91,9 +91,7 @@ void views::trackModelItem::addItems()
 	    standardItem *item=getItem(*f);
 	    appendRow(item);
 	} 	
-    }
-    
-    qDebug()<<"mala "<<rowCount();
+    }    
 }
 
 void views::trackModelItem::addItem(audioFile f, int pos)

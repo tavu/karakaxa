@@ -36,7 +36,6 @@ QDomElement core::xmlItem::xml() const
 
 bool core::xmlItem::insertRow(int row, standardItem* item)
 {
-    qDebug()<<"HHHEHHE";
     xmlItem *newItem=dynamic_cast<xmlItem*>(item);
     if(newItem==0 )
     {
@@ -153,8 +152,7 @@ QVariant core::xmlItem::data ( int column, int role ) const
 }
 
 bool core::xmlItem::setData (const QVariant &value,int column, int role )
-{
-    qDebug()<<"herre";
+{    
     //we treat the edit role and the display role the same
     if(role==Qt::EditRole)
     {
@@ -178,7 +176,6 @@ bool core::xmlItem::setData (const QVariant &value,int column, int role )
 	{
 	    return false;
 	}
-	qDebug()<<"herre";
 	element.setAttribute(columns[column],value.toString() );
 	return true;
     }
