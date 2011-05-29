@@ -14,7 +14,6 @@ class standardItem :public QObject
 {
     Q_OBJECT    
     friend class standardModel;
-    friend class standardItem;
 //     friend void  insert(int row, standardItem* item);
     public:      
       standardItem();
@@ -37,14 +36,14 @@ class standardItem :public QObject
       virtual bool removeRow(int row);
       virtual bool removeRows(int row ,int count);
       
-      standardItem *takeRow(int row) const;
+      standardItem* takeRow(int row) ;
       
       //insert  row(s) at position row
       virtual bool insertRows ( int row, const QList< standardItem* >& items ) ;
       virtual bool insertRow ( int row, standardItem * item );
       virtual bool appendRow ( standardItem * item );
 
-      
+      virtual bool clear();
       //return the row of the item
       int row() const;
       
@@ -70,6 +69,8 @@ class standardItem :public QObject
       
       standardItem* child (int row ) const;
 
+      //if you set that item as a header item the header data of the model will shown according to that function.
+      virtual QVariant headerData ( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const;
 
       //the type of the default item
       static const int StandardType;;
@@ -77,26 +78,27 @@ class standardItem :public QObject
       //pass this role to the data function to get the type
       static const int typeRole; 
       
-    protected:      
-      QList<standardItem *>children;
+    protected:
+      void prealocateChildren(int n);
+      void insert(int row,standardItem *item);
+      
+      int childrenNum;
+      QVector<standardItem *>children;
       standardModel *_model;
+      
       void beginInsertColumns( int first, int last);
       void endInsertColumns();
       void dataChanged ( const QModelIndex & topLeft, const QModelIndex & bottomRight );
       
-    private:
-	void insert(int row,standardItem *item);
+      inline void beginRemoveRows(int first, int last );
+      
+      inline void endRemoveRows();
+      
+    private:	
 	int _row;
 	standardItem *_parent;
       
 };
-
-/*this is an abstact class.
- * the myStandardModel has head item of headItem class as top level items.
- * every modelIndex or qstandarditem belongs to a head item.
- * the head items are responsible for their children the model is as simpliest as posible.
- * that makes easy to have very diferent behavior on the same model for diferent items tha belongs to diferent heads
- */
 
 
 
@@ -123,9 +125,21 @@ class standardModel :public QAbstractItemModel
   	
 	virtual QModelIndex index ( int row, int column, const QModelIndex & parent = QModelIndex() ) const; 
 
+	QVariant headerData ( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const
+	{
+	    return head->headerData(section,orientation,role);
+	}
+	
 	QVariant data(const QModelIndex & index, int role = Qt::DisplayRole ) const;
 	
 	bool setData (const QModelIndex& index, const QVariant& value, int role );
+	
+	void setHeadItem(standardItem *h);
+	
+	standardItem* headItem()
+	{
+	    return head;
+	}
 	
 	virtual int rowCount(const QModelIndex& index=QModelIndex()) const;
 	virtual int columnCount(const QModelIndex& index=QModelIndex() ) const;
@@ -136,11 +150,17 @@ class standardModel :public QAbstractItemModel
 	QModelIndex indexFromItem(const standardItem *item,int column) const;
 	QModelIndex parent ( const QModelIndex & index ) const;		
 	
+// 	void refresh()
+// 	{
+// 	    emit layoutAboutToBeChanged () ;
+// 	    emit layoutChanged ();
+// 	}
+// 	
     private:
 	void emitDataChanged(const QModelIndex & topLeft, const QModelIndex & bottomRight);
 	
 	
-	class headItem :public standardItem
+	class defaultHeadItem :public standardItem
 	{
 	  public:
 	    int columnCount() const
@@ -151,10 +171,10 @@ class standardModel :public QAbstractItemModel
 	    QVariant data (int column, int role = Qt::UserRole + 1 ) const 
 	    {
 		return QVariant();
-	    }
-	};
+	    }    
+	};	
       
-	headItem *head;
+	standardItem *head;
 };
 
 

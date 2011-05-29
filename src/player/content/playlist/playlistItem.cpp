@@ -21,7 +21,12 @@ QVariant playlistFolder::data(int column, int role) const
     }
     if(role==Qt::SizeHintRole)
     {
-	return QVariant( sizeHint );
+      	if(sizeHint.isEmpty() )
+	{
+	    return QVariant();
+	}
+	return sizeHint;
+// 	return QVariant( sizeHint );
     }
     return QVariant();
 }

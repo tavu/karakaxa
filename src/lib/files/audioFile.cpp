@@ -5,7 +5,8 @@
 // #include<player.h>
 #include"fileToDb.h"
 #include"mp3Tags.h"
-
+#include"../core/database/database.h"
+#include"../core/func.h"
 #define TRV_HIDE 1
 
 
@@ -20,12 +21,18 @@ const short int audioFiles::audioFile::LOAD_FILE =0b00000100;
 const short int audioFiles::audioFile::TITLEFP=0b00001000;
 const short int audioFiles::audioFile::DEFAULTF=SELECT|ONDATAB|ONCACHE|LOAD_FILE|TITLEFP;
 
-audioFiles::audioFile::audioFile(const QString url)
+audioFiles::audioFile::audioFile()
         :QObject(),
-        recFlag(true),
         fileSize(0),
         saveFlag(false),
-        _mutable(false)
+        cache(0)
+{
+}
+
+audioFiles::audioFile::audioFile(const QString url)
+        :QObject(),
+        fileSize(0),
+        saveFlag(false)
 {
     cache=audioFiles::fileCache::getFileCache(url);
 //     flags[PATH]=true;
@@ -33,14 +40,27 @@ audioFiles::audioFile::audioFile(const QString url)
 //     connect(&db,SIGNAL(changed()),this,SLOT(recordClean()) );
 }
 
+audioFiles::audioFile::audioFile(QSqlRecord r, bool force)
+    :QObject(),
+     fileSize(0),
+     saveFlag(false)
+{
+    cache=audioFiles::fileCache::getFileCache(r.value(PATH+1).toString() );
+    cache->setRecord(r,force);
+}
+
+
 audioFiles::audioFile::audioFile(const audioFile& f)
         :QObject(),
-        recFlag(true),
-        fileSize(0),
         saveFlag(false)
 {
-     cache=audioFiles::fileCache::getFileCache(f.path() );
-    _mutable=f.isMutable();
+     if( !f.path().isEmpty() )
+     {
+	cache=audioFiles::fileCache::getFileCache(f.path() );
+     }
+     
+     changes=f.changes;
+     fileSize=f.fileSize;
     
 }
 
@@ -53,7 +73,7 @@ audioFiles::audioFile::~audioFile()
 }
 
 
-QVariant audioFiles::audioFile::tag(int t, const short int f)
+QVariant audioFiles::audioFile::tag(int t, const short int f) const
 {
   
 /*
@@ -70,6 +90,12 @@ QVariant audioFiles::audioFile::tag(int t, const short int f)
     
 */
     QVariant ret;
+         
+    if(cache==0)
+    {
+	err=INVALID_FILE;
+	return ret;
+    }
 
     if(t>=FRAME_NUM)
     {
@@ -88,23 +114,29 @@ QVariant audioFiles::audioFile::tag(int t, const short int f)
 	ret=cache->tagFromDb(t+1, err);
         if (err==OK)
         {
+	    if (t==TITLE && ret.toString().isEmpty() && (f & TITLEFP) )
+	    {	    
+		stat= TITLEFP;
+		ret=core::titleFromPath(path());
+		return ret;
+	    }
 	    stat=ONDATAB;
 	    return ret;
         }
     }
     if (f & ONCACHE)
     {
+	stat=ONCACHE;
 	ret=cache->tagFromFile((tagsEnum) t, err);
 	
 	//if we have loaded the tags information but there is no title frame and the TITLEFP is seted we return the file name.
 	if (t==TITLE && ret.toString().isEmpty() && (f & TITLEFP) && err!=TAGS_NOT_LOADED)
         {	    
-	    stat= ONCACHE;
-// 	    return titleFromPath(path());
+ 	    stat= TITLEFP;
+ 	    ret=core::titleFromPath(path());
         }
         if(err==OK )
 	{
-	    stat=ONCACHE;
 	    QString s=ret.toString().trimmed();
 	    return QVariant(s);
 	} 
@@ -129,23 +161,30 @@ QVariant audioFiles::audioFile::tag(int t, const short int f)
 	//if we have loaded the tags information but there is no title frame and the TITLEFP is seted we return the file name.
 	if (t==TITLE && ret.toString().isEmpty() && (f & TITLEFP) && err!=TAGS_NOT_LOADED)
         {	    
-	    stat= ONCACHE;
-// 	    return titleFromPath(path());
+	    stat= TITLEFP;
+ 	    ret=core::titleFromPath(path());
+	    return ret;
         }
     }
     err=UNOWN;
     stat=-1;
-    return ret;
+    return ret;        
 }
 
 bool audioFiles::audioFile::setTag(int t,QVariant var)
-{    
+{            
+    if(cache==0)
+    {
+	err=INVALID_FILE;
+	return false;
+    }
+  
     if(t>=FRAME_NUM || t<0)
     {
 	err=UNOWN;
 	qDebug()<<err;
 	return false;
-    }
+    }    
   
     if(!prepareToSave())
     {
@@ -153,8 +192,7 @@ bool audioFiles::audioFile::setTag(int t,QVariant var)
 	return false;
     } 
     int f=0;
-    int dberr;
-        
+    int dberr;         
     
     switch (t)
     {
@@ -296,7 +334,14 @@ bool audioFiles::audioFile::setTag(int t,QVariant var)
 	save();
     }
 
-//     qDebug()<<err;
+    tagChanges change;
+    change.tag=t;
+    change.value=var;
+    change.error=err;
+    
+    changes<<change;
+    
+
     if(err==OK||err==NOTINDB)
     {
       return true;  
@@ -309,6 +354,12 @@ bool audioFiles::audioFile::setTag(int t,QVariant var)
 
 void audioFiles::audioFile::setTags(QList<int> tags,QList<QVariant> values)
 {
+    if(cache==0)
+    {
+	err=INVALID_FILE;
+	return ;
+    }
+    
     if(tags.isEmpty() ||tags.size()!=values.size() )
     {
 	err=UNOWN;
@@ -328,14 +379,14 @@ void audioFiles::audioFile::setTags(QList<int> tags,QList<QVariant> values)
     saveFlag=false;    
 }
 
-
-
-
-
-
-
 QVariant  audioFiles::audioFile::albumArtist()
-{
+{     
+    if(cache==0)
+    {
+	err=INVALID_FILE;
+	return QVariant();
+    }
+    
     QString s=tag(LEAD_ARTIST).toString();
     s.simplified();
     if ( !s.isEmpty() )
@@ -386,7 +437,13 @@ QString audioFiles::audioFile::cover()
 }
 
 int audioFiles::audioFile::size()
-{
+{     
+    if(cache==0)
+    {
+	err=INVALID_FILE;
+	return 0;
+    }
+    
     if (fileSize==0)
     {
         QFile f(path() );
@@ -397,6 +454,12 @@ int audioFiles::audioFile::size()
 
 int audioFiles::audioFile::albumId()
 {
+    if(cache==0)
+    {
+	err=INVALID_FILE;
+	return -1;
+    }
+    
     err=cache->select();
     
     if(err!=OK)
@@ -414,6 +477,7 @@ bool audioFiles::audioFile::prepareToSave()
       return true;
     }
     
+    changes.clear();
     file=audioFiles::getFileTags(path());    
     if(file->isValid() )
     {
@@ -435,15 +499,17 @@ void audioFiles::audioFile::save()
     delete file;    
     file=0;
     
-    if(!_mutable )
-    {
-	qDebug()<<"sending update signal";
-// 	db.updateSig(*this);
-    }
+    core::db->updateSig(*this);
 }
 
 void audioFiles::audioFile::load()
 {
+    if(cache==0)
+    {
+	err=INVALID_FILE;
+	return ;
+    }
+  
     err=cache->select();
     if(err!=OK)
     {
@@ -453,23 +519,38 @@ void audioFiles::audioFile::load()
 
 audioFiles::audioFile* audioFiles::audioFile::operator=(const audioFile &f)
 {
-    recFlag=true;
-    fileSize=0;
     saveFlag=false;
 
-    cache=audioFiles::fileCache::getFileCache(f.path() );
-    _mutable=f.isMutable();   
+    if(f.cache!=0)
+    {
+	cache=audioFiles::fileCache::getFileCache(f.path() );
+    }
+    
+    changes=f.changes;
+    fileSize=f.fileSize;
     return this;
 }
 
 QString audioFiles::audioFile::folder()
 {
-//     return player::folder(path() );
+    if(cache==0)
+    {
+	err=INVALID_FILE;
+	return QString();
+    }
+    
+    return core::folder(path() );
 }
 
 QString audioFiles::audioFile::format()
-{
-//     return player::format(path() );
+{     
+    if(cache==0)
+    {
+	err=INVALID_FILE;
+	return QString();
+    }
+      
+    return core::format(path() );
 }
 
 /*

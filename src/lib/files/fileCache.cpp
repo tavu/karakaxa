@@ -88,6 +88,20 @@ int audioFiles::fileCache::select(bool force)
     return err;
 }
 
+void fileCache::setRecord(QSqlRecord &r, bool force)
+{
+    loadMutex.lock();
+    lock.lockForWrite();
+    
+    if(record.isEmpty() || force )
+    {
+	record=r;	
+    }
+    
+    lock.unlock();
+    loadMutex.unlock();
+}
+
 
 QVariant audioFiles::fileCache::tagFromFile(tagsEnum t, int &err)
 {

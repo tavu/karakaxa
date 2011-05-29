@@ -29,10 +29,8 @@ QVariant playlistModel::data(const QModelIndex & index, int role ) const
     
     if( role == Qt::DisplayRole)
     {      
-//       QVariant var;
-// 	audioFile f(files[ (index.row() ) ].path());
-  	QVariant var=thr->files[ (index.row() ) ].tag( index.column(),flag );
-	return views::pretyTag(var,(tagsEnum)index.column() );
+   	QVariant var=thr->files[ (index.row() ) ].tag( index.column(),flag );
+ 	return views::pretyTag(var,(tagsEnum)index.column() );
 	
     }    
     else if(role==URL_ROLE)

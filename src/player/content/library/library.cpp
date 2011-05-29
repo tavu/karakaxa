@@ -7,22 +7,27 @@
 using namespace core;
 
 library::library(QWidget *parent)
-        :abstractContent(parent),
-        needUpdate(0)
+        :abstractContent(parent)
 {
-
+//     quer=new queryGrt();
+  
     addSubmenu(QString(tr("Artist")));
     stack=new QStackedWidget(this);
 
-
-    artistV=new artistWidget(this);
-
-    albumTrV=new albumTrack(this);
-
+    artistV=new QListView(this);
+    artistM=new artistModel(this);    
+    artistV->setModel(artistM);
+    artistM->updateQueries();
+    
+    albumTrV=new albumTrack(this);    
 
     stack->addWidget(artistV);
     stack->addWidget(albumTrV);
 
+    searchQ=new queryGrt::matchQuery(queryGrt::OR);
+    artistM->setSearch(searchQ);
+    albumTrV->setSearch(searchQ);
+    
     toolBarInit();
     QVBoxLayout *layout = new QVBoxLayout();
 
@@ -31,24 +36,22 @@ library::library(QWidget *parent)
 
     setLayout(layout);
 
-    scan=new QAction(tr("Scan"),this);
-    config=new QAction(tr("Configure"),this);
-    menu.addAction(scan);
-    menu.addAction(config);
+    searchTagL<<ARTIST<<ALBUM<<TITLE<<LEAD_ARTIST;           
+    
+    connect(artistV,SIGNAL(activated ( const QModelIndex) ),this ,SLOT( artistActivated(const QModelIndex&) ) );
 
-    searchTagL<<ARTIST<<ALBUM<<TITLE<<LEAD_ARTIST;
-    
-    
-    connect(scan,SIGNAL(triggered()),this,SLOT(libraryScan() ) );
+    connect(db,SIGNAL(updated(audioFiles::audioFile) ),this,SLOT(artistNeedUpdate(audioFiles::audioFile)) );
+    connect(db,SIGNAL(changed() ),this,SLOT(dbChanged() ) );
 
-    connect(artistV,SIGNAL(toArtist(QString , QString) ) ,this,SLOT(toAlbum(const QString &,const QString &) ) );
-    
-    connect(db,SIGNAL(updated(audioFiles::audioFile)),this,SLOT(updateQueriesSlot() ) );
-    connect(db,SIGNAL(changed()),this,SLOT(updateQueriesSlot() ) );
     
 
 }
 
+library::~library()
+{
+    delete searchQ;
+}
+/*
 void library::updateQueriesSlot()
 {   
     qDebug()<<"update queries";
@@ -69,7 +72,7 @@ void library::updateQueriesSlot()
       needUpdate =0b11;
     }
 }
-
+*/
 void library::updateQueries(int n)
 {
 //     qDebug()<<"library update";
@@ -98,27 +101,18 @@ void library::activated(const int n)
 {    
     if (n==0)
     {
-	if(needUpdate & 0b01)
-	{
-	    artistV->updateQueries();
-	    needUpdate = needUpdate & ~0b01;
-	}
-        stack->setCurrentWidget(artistV);
+        goToArtist();
     }
-    else
-    {
-	if(stack->currentWidget()==artistV && (needUpdate & 0b01)  )
-	{
-	     artistV->updateQueries();
-	     needUpdate = needUpdate & ~0b01;
-	}
-	else if (needUpdate & 0b10)
-	{
-	    albumTrV->updateQueries();
-	    needUpdate = needUpdate & ~0b10;
-	}
+    else if(stack->currentWidget()== artistV )    
+    {	
+	artistM->updateQueries();	
+    }	
+    else if(stack->currentWidget()== albumTrV )
+    {		
+	albumTrV->updateQueries();	
     }
-    qDebug()<<"here "<<needUpdate;
+//     qDebug()<<"F "<<albumTrV->isVisible();
+    
 }
 
 QString library::name() const
@@ -142,11 +136,6 @@ void library::buttonInit()
     buttonWidget->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 }
 
-void library::libraryScan()
-{
-//      libraryWidget *w=new libraryWidget();
-//      player::contentHandlr->addWidget(w);
-}
 
 void library::toolBarInit()
 {
@@ -176,7 +165,37 @@ void library::toolBarInit()
 }
 
 void library::search()
-{
+{  
+    QString s= searchLine->text();
+    if(searchString==s || searchString.isEmpty() && s.isEmpty()  )
+    {
+ 	return ;
+    }
+    
+    searchQ->clear();   
+    if(!s.isEmpty() )
+    {
+	QLinkedList<tagsEnum>::iterator i=searchTagL.begin();
+      	for(i=searchTagL.begin();i!=searchTagL.end();i++)
+	{
+	    queryGrt::tagQuery *t=new queryGrt::tagQuery(*i,queryGrt::CONTAINS,s);
+	    searchQ->append(t);
+// 	    searchTagsL<<queryGrt::query(*i,queryGrt::CONTAINS,s);
+	}
+    }
+    albumTrV->setNeedUpdate(true);
+    artistM->setNeedUpdate(true);
+    
+    if(stack->currentWidget()==artistV )
+    {
+	artistM->updateQueries();
+    }
+    else      
+    {
+	albumTrV->updateQueries();
+    }
+//     artistV->setSearch(search);
+  /*
     QString s=searchLine->text();
     QString search;
     if(!s.isEmpty() )
@@ -188,25 +207,78 @@ void library::search()
 	{
 	  searchTagsL<<queryGrt::query(*i,queryGrt::CONTAINS,s);
 	}	
-	search=queryGrt::connectOr(searchTagsL);
+// 	search=queryGrt::connectOr(searchTagsL);
 	qDebug()<<search;
     }
     albumTrV->setSearch(search);
     artistV->setSearch(search);
+    */
 }
 
 void library::toAlbum(const QString &s1,const QString &s2)
 {
-    albumTrV->setArtist(s1,s2);
-    stack->setCurrentWidget(albumTrV);
+//     albumTrV->setArtist(s1,s2);
+//     stack->setCurrentWidget(albumTrV);
 }
 
 void library::goToArtist()
 {
     stack->setCurrentWidget(artistV);
+    if(artistM->needUpdate() )
+    {
+	artistM->updateQueries();
+    }
 }
 
 void library::goToAlbum()
 {
     stack->setCurrentWidget(albumTrV);
+    if(albumTrV->needUpdate() )
+    {
+	albumTrV->updateQueries();
+    }
+}
+
+void library::artistActivated(const QModelIndex &index )
+{
+    QString s=index.data(Qt::UserRole).toString();
+    albumTrV->goToArtist(s);
+    goToAlbum();
+}
+
+
+void library::artistNeedUpdate(audioFile f)
+{
+    foreach(audioFiles::changes c,f.tagChanged() )
+    {
+	if(c.tag==ARTIST)
+	{
+	    if(artistV->isVisible() )
+	    {
+		artistM->updateQueries();
+	    }
+	    else
+	    {
+		artistM->setNeedUpdate(true);
+	    }
+	    break;
+	}
+    }
+}
+
+void library::dbChanged()
+{
+    artistM->setNeedUpdate(true);
+    albumTrV->setNeedUpdate(true);
+    
+	
+    if(artistV->isVisible() )	
+    {
+      artistM->updateQueries();
+    }	
+    else if(albumTrV->isVisible() )	
+    {
+	    
+      albumTrV->updateQueries();
+    }
 }

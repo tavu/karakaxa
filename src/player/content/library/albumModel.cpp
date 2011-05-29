@@ -7,8 +7,9 @@
 
 using namespace views;
 albumModel::albumModel(QObject *parent)
-        :QSqlQueryModel(parent),
-        pix(0)
+        :QAbstractListModel(parent),
+        pix(0),
+        searchQ(0)
 {
     maxSize.setHeight(200);
     maxSize.setWidth(190);
@@ -40,6 +41,7 @@ void albumModel::resize(QSize &s)
 
 void albumModel::resizePix()
 {
+  /*
     if(pix!=0)
     {
       delete []pix;
@@ -57,24 +59,27 @@ void albumModel::resizePix()
 	}
 	pix[i]=pix[i].scaled(imageSize, Qt::IgnoreAspectRatio,  Qt::SmoothTransformation);
     }
+    */
 }
 
 QVariant albumModel::data(const QModelIndex &index, int role) const
 {
-    if (role==Qt::DisplayRole||role==Qt::ToolTipRole)
+    if(!index.isValid() )
     {
-        QVariant value = QSqlQueryModel::data(index, Qt::DisplayRole);
+       return QVariant();
+    }
+    
+    if (role==Qt::DisplayRole||role==Qt::ToolTipRole)
+    {       
 	
-	return pretyTag(value,ALBUM);
+	return pretyTag(albums[index.row()].name,ALBUM);
     }
 
     if (role==Qt::DecorationRole)
     {
-//  	return pix[index.row() ];
-        QSqlRecord r=record( index.row() );
-        QVariant value=r.value(IMAGE);
+	QString cover=albums[index.row()].cover;
 
-        if (!value.isValid()||value.isNull() )
+        if (cover.isEmpty() )
         {
              return decor->albumPic();
 // //  	      return decor->tagIcon(ALBUM).pixmap(itemSize);
@@ -82,33 +87,24 @@ QVariant albumModel::data(const QModelIndex &index, int role) const
         }
 
         QPixmap pix;
-        pix=decor->cover(value.toString());
+        pix=decor->cover(cover);
 
         if (pix.isNull() )
         {
-// 	    return decor->tagIcon(ALBUM).pixmap(itemSize);
             return decor->albumPic();
         }
         else
         {
-// 	       pix=pix.scaled(size,Qt::KeepAspectRatio,Qt::SmoothTransformation);
             return pix;
         }
     }
 
     if (role==Qt::SizeHintRole)
     {
-// 	return property("size");
         return QVariant(itemSize);
     }
 
-    QVariant value = QSqlQueryModel::data(index, role);
-    return value;
-}
-
-void albumModel::queryChange ()
-{
-//   resizePix();
+    return QVariant();
 }
 
 albumModel::~albumModel()
@@ -118,16 +114,27 @@ albumModel::~albumModel()
 
 int albumModel::albumId(const int row)
 {
-    QSqlRecord r=record(row);
-
-    if (r.isEmpty() )
+    if(row<0||row>=albums.size() )
     {
-        return -1;
+	return -1;
     }
-
-    return r.value(2).toInt();
+  
+    return albums[row].id;
 }
 
+void albumModel::update()
+{
+    beginResetModel(); 
+    if(searchQ!=0 && searchQ->isValid() )
+    {
+	albums=core::queryGrt::albums(artist,searchQ);
+    }
+    else
+    {
+	albums=core::queryGrt::albums(artist);
+    }
+    endResetModel();
+}
 
 
 

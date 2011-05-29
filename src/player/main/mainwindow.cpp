@@ -120,6 +120,8 @@ mainWindow::~mainWindow()
 inline void mainWindow::infoInit()
 {
     info=new playingInfo(this);
+    info->setFixedHeight(150);
+    info->setMinimumWidth(150);
 //     info->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
     
     infoDock=new QDockWidget(this);
@@ -131,8 +133,8 @@ inline void mainWindow::infoInit()
     
     infoDock->setWindowTitle(tr("playing track info") );
     infoDock->setObjectName("playingTrackInfodf");
-//     infoDock->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
-//     infoDockT=new QWidget(this);
+    
+
 
     addDockWidget ( Qt::LeftDockWidgetArea, infoDock,Qt::Horizontal);
     
@@ -362,7 +364,7 @@ void mainWindow::writeSettings()
     group.writeEntry( "infoDockHeight", QVariant(info->height()) );
     group.config()->sync();
 
-    qDebug()<<"RR "<<infoDock->height();
+//     qDebug()<<"RR "<<infoDock->height();
   
 }
 
@@ -374,9 +376,9 @@ void mainWindow::readSettings()
     int infoHeight=group.readEntry( "infoDockHeight",0 );
     
     restoreState(group.readEntry("state",QByteArray()) );
-    qDebug()<<"MM "<<infoHeight;
+//     qDebug()<<"MM "<<infoHeight;
     
-    infoDock->resize( QSize(infoDock->width(),500) );
+//     infoDock->resize( QSize(infoDock->width(),500) );
     
 //     if(infoHeight!=0)
 //     {

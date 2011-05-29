@@ -8,14 +8,12 @@ artistWidget::artistWidget(QWidget *parent)
     artistM=new artistModel(this);
     artistDelegate *del=new artistDelegate(this);
     setItemDelegate(del);
-    
-    QSqlQuery q(queryGrt::artist(),db->getDatabase() );
-    q.exec();
-    artistM->setQuery(q);
-    setModel(artistM);
+               
+    setModel(artistM);    
     setUniformItemSizes (true);
     setIconSize(QSize(70,70));
     setWordWrap(true);
+//     artistM->update();
 
 
     connect(this,SIGNAL(activated ( const QModelIndex) ),this ,SLOT( artistActivated(const QModelIndex&) ) );
@@ -23,24 +21,18 @@ artistWidget::artistWidget(QWidget *parent)
 
 void artistWidget::artistActivated(const QModelIndex &index)
 {
-    QString s1=artistM->data(index,Qt::DisplayRole).toString();
-    QString s2=artistM->data(index,Qt::UserRole).toString();
+    QString s=artistM->data(index,Qt::UserRole).toString();
+//     queryGrt::tagQuery(ARTIST,queryGrt::EQUAL,s2);
+    
+    
 
-    emit(toArtist(s1,s2) );
+    emit toArtist(s);
 
-}
-
-void artistWidget::updateQueries()
-{
-    QSqlQuery q= artistM->query();
-    QSqlQuery nq=QSqlQuery(q.executedQuery(),db->getDatabase() );
-    nq.exec();
-    artistM->setQuery(nq);
 }
 
 void artistWidget::setSearch(const QString &s)
 {
-    QSqlQuery q(db->getDatabase());
+/*    QSqlQuery q(db->getDatabase());
     if(s.isEmpty() )
     {	
 	q.prepare(queryGrt::artist() );
@@ -51,5 +43,5 @@ void artistWidget::setSearch(const QString &s)
     }
     
     q.exec();
-    artistM->setQuery(q);
+    artistM->setQuery(q);*/
 }

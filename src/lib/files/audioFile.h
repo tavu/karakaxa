@@ -14,10 +14,26 @@
 namespace audioFiles
 {
 
+struct changes
+{
+  int 	 tag;
+  QVariant value;
+  int error;
+};
+typedef struct changes tagChanges;
+
+
 class audioFile :public QObject
 {
 //     using namespace audioFiles;
     Q_OBJECT
+    
+    struct changes
+    {
+	int 	 tag;
+	QVariant value;
+	int error;
+    };
     
     public:
 
@@ -28,24 +44,32 @@ class audioFile :public QObject
 	static const short int SELECT;
 	static const short int DEFAULTF;
 
+	audioFile();
 	audioFile(const QString);
 	audioFile(const audioFiles::audioFile& f);
+	audioFile(QSqlRecord r,bool force=false);
+	
 	audioFile* operator=(const audioFile &f);
 	
 	virtual ~audioFile();
 
 	inline QString path() const
 	{
+	    if(cache==0)
+	    {
+		return QString();
+	    }
 	    return cache->path();
 	}
-	virtual QVariant tag(int t,const short int f=DEFAULTF);
 	
-	virtual QVariant		albumArtist();
-	virtual QString			cover();
+	QVariant tag(int t,const short int f=DEFAULTF) const;
+	
+	QVariant		albumArtist();
+	QString			cover();
 
-	virtual bool 			setTag(int t,QVariant var);
-	virtual void			setTags(QList<int> tags,QList<QVariant> values);
-	virtual int 			albumId();
+	bool 			setTag(int t,QVariant var);
+	void			setTags(QList<int> tags,QList<QVariant> values);
+	int 			albumId();
 
 
 	QString	folder();
@@ -54,36 +78,48 @@ class audioFile :public QObject
 
 	QString format();
 
-	inline int error()
+	inline int error() const
 	{
 	    //return the last error
 	    return err;
 	}
-	inline int status()
+	inline int status() const
 	{
 	    //return an int that shows from where the last tag was loaded
 	    return stat;
 	}
-	inline bool isMutable() const
+
+	QList<tagChanges> tagChanged() const
 	{
-	    //a mutable audio file does not send database updated signals when makes chnges to tags
-	    return _mutable;
-	}
-	
-	inline void setMutable(bool f)
-	{
-	    //a mutable audio file does not send database updated signals when makes chnges to tags
-	    _mutable=f;
+	    return changes;
 	}
 
 	void load();
 
+	bool isValid() const
+	{
+	    if(cache==0)
+	    {
+		return false;
+	    }
+	    return true;
+	}
+	
+	void setRecord(QSqlRecord r,bool force=false)
+	{
+	    if(cache==0)
+	    {
+		cache=audioFiles::fileCache::getFileCache(r.value(PATH+1).toString() );
+	    }
+	    cache->setRecord(r,force);
+	}
+	
     private:	
       
 	bool prepareToSave();
 	void save();	
-	int err;
-	int stat;
+	mutable int err;
+	mutable int stat;
 	
 
     protected:
@@ -95,9 +131,9 @@ class audioFile :public QObject
 	fileTags *file;
 	
 	bool saveFlag;
-	bool _mutable;
 	
 	mutable fileCache* cache;
+	QList<tagChanges> changes;
 	
 
 //    protected slots:

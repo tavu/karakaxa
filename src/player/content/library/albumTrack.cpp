@@ -7,18 +7,18 @@
 #include"songView.h"
 #include"albumDelegate.h"
 #include<core.h>
-
+#include<views.h>
 using namespace core;
 
 albumTrack::albumTrack(QWidget *parent)
-        :QWidget(parent)
+        :QWidget(parent),
+        searchQ(0),
+        _needUpdate(false)
 {
     labelInit();
     albumVInit();
-    trackVInit();
-
-
-
+    trackVInit();    
+    
     QHBoxLayout *hLayout = new QHBoxLayout();
 
     hLayout->addWidget(pLabel);
@@ -43,29 +43,36 @@ albumTrack::albumTrack(QWidget *parent)
     
     connect(albumV,SIGNAL(activated ( const QModelIndex) ),this ,SLOT( albumActivated(const QModelIndex&) ) );
     
+    connect(db,SIGNAL(updated(audioFiles::audioFile ) ),this,SIGNAL(albumsNeedUpdate(audioFiles::audioFile & ) ) );
     
-//     connect(trackM,SIGNAL(newQuery()),trackV ,SLOT(updateStarWidget() ) );
-
-//       trackV->setStyleSheet(    qlineargradient(x1:0, y1:0, x2:0, y2:1,stop:0 #616161, stop: 0.5 #505050,stop: 0.6 #434343, stop:1 #656565);		
-//       QString m_styleSet;
-//       m_styleSet=QString("QHeaderView::section {background-color: %1; padding-left: 4px; border: 1px solid; }");
-//       QString lineGrad=QString("qlineargradient(x1:0.5, y2:0.25, x2:0.5, y2:0.45, colorAt: 0.0 #%1,colorAt: 0.5 #%2)");
-//       lineGrad=lineGrad.arg("QColor::Blue","palette().highlight().color()");
-//       m_styleSet=m_styleSet.arg(lineGrad);
-//       trackV->setStyleSheet(m_styleSet);
+//     connect(db,SIGNAL(changed()),this,SLOT(setNeedUpdateTrue() ) );
       
 }
 
 void albumTrack::trackVInit()
 {
-    trackV=new songView(this,"TRACKVIEW");
-    trackM=new views::trackModel(this);
+    trackV=new views::treeView(this,"TRACKVIEW");
+    trackM=new standardModel(this);
+    
+    trmItem=new views::trackModelItem();
+//     trackM->appendRow(trmItem);
 
     trackV->setRatingColumn(RATING);
     trackV->setEditTriggers(QAbstractItemView::SelectedClicked);
 
     trackV->setModel(trackM);
     trackV->setNotHide(TITLE);
+    
+    queryGen=new queryGrt(this);    
+    quer=new queryGrt::tagQuery();
+    andQ=new queryGrt::matchQuery(queryGrt::AND);
+    andQ->append(quer);
+    queryGen->setQuery(andQ);
+    
+    trmItem->setQueryG(queryGen);
+
+    trackM->setHeadItem(trmItem);
+//     trackV->setRootIndex(trackM->index(0,0));
     
 //     trackV->setPalette(player::pal);
 //     trackV->setStyleSheet("QAbstractItemView {background-color: transparent; }");
@@ -117,91 +124,37 @@ void albumTrack::albumVInit()
 
     QSizePolicy p;
     p.setHorizontalPolicy(QSizePolicy::Ignored);
-/*
-    leftB=new QPushButton(this);
-    leftB->setFixedWidth(20);
-    leftB->setSizePolicy(QSizePolicy::Ignored,QSizePolicy::Ignored);
-    leftB->setFlat(true);
-    leftB->setIcon(KIcon("go-previous-view") );
-    leftB->setAutoRepeat (true);
-
-    rightB=new QPushButton(this);
-    rightB->setAutoFillBackground(true);
-    rightB->setFixedWidth(20);
-    rightB->setSizePolicy(QSizePolicy::Ignored,QSizePolicy::Ignored);
-    rightB->setFlat(true);
-    rightB->setIcon(KIcon("go-next-view") );
-    rightB->setAutoRepeat (true);
-    */
-//     rightB->setStyleSheet("QPushButton { background-color: green }");
-
-//       QPalette pal=player::pal;
-//       pal.setColor(QPalette::Button,pal.color(QPalette::Window) );
-//       leftB->setPalette(pal);
 
     albumW=new QWidget(this);
     albumW->setSizePolicy(QSizePolicy::Ignored,QSizePolicy::Fixed);
-/*
-    QPalette pal=albumV->palette();
-    pal.setColor(QPalette::Background,Qt::transparent);
-    albumV->setPalette(pal);*/
-
+   
     albumV->setStyleSheet("QAbstractItemView {background-color: transparent; }");
 
     QHBoxLayout *hLayout = new QHBoxLayout(albumW);
 
-//      QGridLayout *hLayout = new QGridLayout;
-
     hLayout->setContentsMargins(0,0,0,0);
     hLayout->setSpacing(0);
-//     hLayout->addWidget(leftB);
     hLayout->addWidget(albumV);
-//     hLayout->addWidget(rightB);
+    
+    albumM->update();
 
-//     connect(rightB,SIGNAL(pressed() ),albumV,SLOT(scrollR() ) );
-//     connect(leftB,SIGNAL(pressed() ),albumV,SLOT(scrollL() ) );
 }
 
-void albumTrack::setArtist(const QString &artist,const QString &labelS)
-{
-    sLabel->setText(labelS);
-    this->artist=artist;
-    update();
-    albumActivated(albumM->index(0,0) );
-}
-
-bool albumTrack::update()
-{
-    QString query;
-    if (search.isNull())
-    {
-        query= queryGrt::albums(artist);
-    }
-    else
-    {
-        query=queryGrt::albums(artist,search);
-    }
-
-    albumM->setQuery( query,db->getDatabase() );
-
-    if(albumM->rowCount()==0)
-    {
-	return false;
-    }
-    return true;
-}
-
-void albumTrack::setSearch(const QString &s)
-{
-    search=s;        
-    update();
-    albumActivated(albumM->index(0,0) );
+void albumTrack::goToArtist(QString& s)
+{  
+    sLabel->setText(views::pretyTag(s,ARTIST).toString() );
+//     this->artist=s;
+    
+    albumM->setArtist(s);
+    albumM->update();
+    QModelIndex in=albumM->index(0,0);
+    albumActivated(in);
 }
 
 void albumTrack::albumActivated(const QModelIndex &n)
-{
+{    
     int albumId=albumM->albumId(n.row() );
-
+/*
     QString s;
     if (search.isEmpty() )
     {
@@ -212,9 +165,53 @@ void albumTrack::albumActivated(const QModelIndex &n)
         s=queryGrt::tracks(albumId,search);	
     }
     trackM->setFilter(s);
-//      trackM->setQuery(queryGrt::finish(s) );
+*/
+   queryGrt::tagQuery *quer=new queryGrt::tagQuery();
+   
+   quer->init(ALBUM_ID,queryGrt::EQUAL,QVariant(albumId) );
+   andQ->clear();
+   andQ->append(quer);
+   if(searchQ!=0,searchQ->isValid() )
+   {
+      andQ->append(searchQ->clone());
+   }
+   queryGen->select();
+//    trackM->refresh ();
+   
+   qDebug()<<queryGen->queryString();
+
 }
 
+void albumTrack::updateQueries()
+{      
+    albumM->update();
+    QModelIndex in=albumM->index(0,0);
+    albumActivated(in);
+	
+    _needUpdate=true;	
+
+}
+
+void albumTrack::albumsNeedUpdate(audioFile& f)
+{    
+    foreach(audioFiles::changes c ,f.tagChanged() )
+    {
+	if(c.tag==ALBUM)
+	{
+	    if(isVisible() )
+	    {
+		updateQueries();
+	    }
+	    else
+	    {
+		_needUpdate=true;
+	    }
+	    break;
+	}
+    }
+}
+
+/*
 void albumTrack::updateQueries()
 {
 
@@ -227,4 +224,7 @@ void albumTrack::updateQueries()
     albumM->setQuery(nq);
     
     trackM->refresh();
+    
+
 }
+    */

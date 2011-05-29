@@ -12,6 +12,82 @@ const int audioFiles::fileToDb::OK=0;
 const int audioFiles::fileToDb::DBERR=1;
 const int audioFiles::fileToDb::NOTINDB=2;
 
+void audioFiles::fileToDb::setTag(int t, QVariant var)
+{
+    tag=t;
+    value=var;
+}
+
+int audioFiles::fileToDb::commit()
+{
+  int err;
+  
+    switch (tag)
+    {
+	case LEAD_ARTIST:
+	{	  
+	    err=setLeadArtist(_path,value.toString(),_artist,_album);
+	    break ;
+	}
+	case RATING:
+	{
+	    err=setRating(_path,value.toInt() );
+	    break ;
+	}
+	case COUNTER:
+	{
+	  err=setCounter(_path,value.toInt() );
+	    break ;
+	}
+	case COMPOSER:
+	{
+	    err=setComposer(_path,value.toString());	 
+	    break ;
+	}
+	case TITLE:
+	{
+	    err=setTitle(_path,value.toString() );	  
+	    break ;
+	}
+	case ALBUM:
+	{
+	    err=setAlbum(_path,value.toString());	    
+	    break ;
+	}
+	case ARTIST:
+	{
+	    err=setArtist(_path,value.toString(),_album );	    
+	    break ;
+	}
+	case GENRE:
+	{
+	    err=setGenre(_path,value.toString() );	    
+	    break ;
+	}
+	case COMMENT:
+	{
+	    err=setComment(_path,value.toString());	    
+	    break ;
+	}
+	case TRACK:
+	{
+	    err=setTrack(_path,value.toInt() );	    
+	    break ;
+	}
+	case YEAR:
+	{
+	    err=setYear(_path,value.toInt() );
+	    break ;
+	}
+	default:
+	{
+	    err=UNOWN;
+	}
+    }
+	
+	return err;
+}
+
 
 int audioFiles::fileToDb::setArtist (const QString path,const QString &s,const QString &album)
 {

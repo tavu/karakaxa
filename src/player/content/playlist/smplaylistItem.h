@@ -13,7 +13,7 @@ class smplaylistItem :public core::xmlItem
 	
 	virtual int type () const;
 	
-	virtual QString query() const;	
+ 	virtual core::queryGrt::abstractQuery* query() const;	
 	
 	virtual bool insertRows ( int row, const QList< core::xmlItem* >& items )
 	{
@@ -32,10 +32,12 @@ class smplaylistItem :public core::xmlItem
 //  	static const int SMARTPL_ITEM;
 	
     protected:
-	mutable QString _query;
 	
-	void generateQuery() const;
-	QString group(QDomNode nod) const;
+	mutable core::queryGrt::abstractQuery *quer;
+// 	mutable QString _query;
+	
+ 	void generateQuery() const;
+ 	core::queryGrt::abstractQuery * group(QDomNode nod) const;
 };
 
 

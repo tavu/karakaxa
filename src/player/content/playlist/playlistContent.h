@@ -17,6 +17,8 @@
 #include"items.h"
 #include"smplaylistItem.h"
 #include<KLineEdit>
+#include<core.h>
+#include<QSortFilterProxyModel>
 
 
 class playlistContent :public core::abstractContent
@@ -33,11 +35,11 @@ class playlistContent :public core::abstractContent
 	  QAction 		*backAction;
 	  QAction 		*forwardAction;	  
 	  QStackedWidget 	*stack;
-
+	  
 	  QTreeView		*treeV;
 	  views::treeView	*trackV;
 	  playlistModel  	*plModel;
-	  views::trackModel	*smpModel;
+	  standardModel		*smpModel;
 	  
 	  standardModel		*treeModel;
 	  playlistFolder	*plHead;
@@ -61,7 +63,10 @@ class playlistContent :public core::abstractContent
 	  
 	  bool			needUpdate;
 	  
-	  void 			toolBarInit();	  
+	  void 			toolBarInit();	 
+	  
+	  core::queryGrt	*quer;
+	  views::trackModelItem	*smItem;
 	  
       public slots:
 	  void back();

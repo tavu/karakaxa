@@ -111,6 +111,7 @@ void core::init()
         
 //       nplaylist *l=const_cast<nplaylist*>(npList);
       
+      mainThr();
       status=new playetStatus();
       config =new PlayerConfigure();
       db=new database();
@@ -118,7 +119,6 @@ void core::init()
       engine =new soundEngine();
       npList=new nplaylist();
       contentHdl=new contentHandler();
-//       l =new nplaylist();
       flag=false;            
     }
 //       engine.init();
@@ -140,6 +140,14 @@ int core::getRandomN(int min,int max)
 {
     return  qrand()/ (RAND_MAX + 1.0) * (max + 1 - min) + min ;
 }
+
+QThread* core::mainThr()
+{
+    static QThread *t=QThread::currentThread();
+    
+    return t;
+}
+
 /*
 template <class RandomAccessIterator>
 void core::randomShuffle ( RandomAccessIterator first, int size ) 

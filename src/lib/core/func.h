@@ -22,8 +22,10 @@ QString 	format(QString path);
 void 		init();
 void 		cleanUp();
 bool		exists(const QString &url);
+QThread*	mainThr();
 
 int getRandomN(int min,int max);
+
 
 template <class RandomAccessIterator>
 void randomShuffle ( RandomAccessIterator first, int size )

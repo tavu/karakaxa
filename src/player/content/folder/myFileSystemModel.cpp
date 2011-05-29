@@ -29,6 +29,7 @@ QVariant myFileSystemModel::data(const QModelIndex &index, int role) const
 {   
     if(role == URL_ROLE)
     {
+// 	qDebug()<<itemForIndex(index).url();
 	return QVariant(itemForIndex(index).url() );
     }
   

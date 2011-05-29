@@ -88,7 +88,7 @@ QVariant smplalistHead::data(int column, int role) const
 {
   if(column!=0)
   {
-    return QVariant();	
+    return QVariant();
   }
   
   if(role==Qt::DisplayRole)

@@ -3,13 +3,13 @@
 
 #include<QListView>
 #include"artistModel.h"
+#include<core.h>
 
 class artistWidget :public QListView
 {
     Q_OBJECT
     public:
 	artistWidget(QWidget *parent=0);
-	void updateQueries();
 	
     private:
 	QString search;
@@ -24,7 +24,7 @@ class artistWidget :public QListView
 	
 	
     signals:
-	void toArtist(QString s1,QString s2);
+	void toArtist(QString s);
 
 };
 #endif

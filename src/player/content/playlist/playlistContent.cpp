@@ -9,23 +9,27 @@ playlistContent::playlistContent(QWidget *parent)
         :abstractContent(parent),
         needUpdate(false)
 {    
+    quer=new queryGrt(this);
+    smItem=new views::trackModelItem();
+    smItem->setQueryG(quer);
+    
     stack=new QStackedWidget(this);
+    
     treeV=new views::treeView(this);
     treeV->setFrameShape(QFrame::StyledPanel);
-    treeV->setUniformRowHeights(false);
-    
+    treeV->setUniformRowHeights(false);    
     treeV->setHeaderHidden(true);
     treeV->setSelectionMode(QAbstractItemView::SingleSelection);
+    treeV->setRootIsDecorated(true);
     
     trackV=new views::treeView(this,"playlistView");
     trackV->setRatingColumn(RATING);
     trackV->setEditTriggers(QAbstractItemView::SelectedClicked);
     trackV->setNotHide(TITLE);
     trackV->setFrameShape(QFrame::StyledPanel);
+        
     
-    treeV->setRootIsDecorated(true);
-    
-    treeModel=new standardModel(this);
+    treeModel=new standardModel(this);    
              
     QFile file(core::config->saveLocation()+XMLFILE);        
     QDomElement el;
@@ -52,7 +56,9 @@ playlistContent::playlistContent(QWidget *parent)
     
     
     plModel=new playlistModel(this);
-    smpModel=new views::trackModel(this);
+    smpModel=new standardModel(this);
+    
+    smpModel->setHeadItem(smItem);
     
     proxyM=new QSortFilterProxyModel(this);
     proxyM->setSourceModel(treeModel);
@@ -67,7 +73,7 @@ playlistContent::playlistContent(QWidget *parent)
     
     treeV->setModel(proxyM);
     
-    proxyM->sort(0);
+//     proxyM->sort(0);
     
     stack->addWidget(treeV);
     stack->addWidget(trackV);
@@ -80,7 +86,7 @@ playlistContent::playlistContent(QWidget *parent)
 
     setLayout(layout);
     
-    connect(treeV,SIGNAL(showContextMenu(QModelIndex) ),SLOT(contextMenuSlot(QModelIndex)) );
+    connect(treeV,SIGNAL(showContextMenu(QModelIndex) ),this,SLOT(contextMenuSlot(QModelIndex)) );
     connect(treeV, SIGNAL(activated(QModelIndex)), this, SLOT(activationSlot(QModelIndex) )) ;
     
     
@@ -93,10 +99,7 @@ playlistContent::playlistContent(QWidget *parent)
     connect(createSmpAction,SIGNAL(triggered(bool)),this,SLOT(createSmpSlot()));
     connect(editSmpAction,SIGNAL(triggered(bool)),this,SLOT(editSmpSlot()));
     connect(removeAction,SIGNAL(triggered(bool)),this,SLOT(removeSlot()));
-    
-    connect(db,SIGNAL(updated(audioFiles::audioFile)),this,SLOT(updateQueries() ) );
-    connect(db,SIGNAL(changed()),this,SLOT(updateQueries() ) );
-    
+        
     connect(qApp,SIGNAL(aboutToQuit() ),this,SLOT(save() ) );
     
     stack->setCurrentWidget(treeV);    
@@ -109,7 +112,7 @@ void playlistContent::updateQueries()
 {
     if(trackV->model()==smpModel)
     {
-	smpModel->refresh();
+// 	smpModel->refresh();
 	needUpdate=false;
     }
     else
@@ -196,6 +199,10 @@ void playlistContent::back()
 void playlistContent::forward()
 {
     stack->setCurrentIndex(1);
+    if(trackProxy->sourceModel()==smpModel && quer->needUpdate() )
+    {
+	quer->select();
+    }
     searchAction->setVisible(true);
 }
 
@@ -294,15 +301,18 @@ void playlistContent::activationSlot(QModelIndex in)
     QModelIndex index=proxyM->mapToSource(in);
     standardItem *item=treeModel->itemFromIndex(index);
     
+    if(item==0)
+    {
+	return;
+    }
+    
     if(item->type()==SMARTPL_ITEM)
     {
+	smplaylistItem  *i= static_cast<smplaylistItem*>(item);
 	trackProxy->setSourceModel(smpModel);
-	if(needUpdate)
-	{
-	    smpModel->refresh();
-	}
-	
-	smpModel->setFilter(item->data(0,ITEM_ROLE).toString());	
+	queryGrt::abstractQuery *q=i->query();
+	quer->setQuery(q->clone() );
+	quer->select();
 	forward();
     }
     else if(item->type()==PLAYLIST_ITEM)
@@ -313,6 +323,7 @@ void playlistContent::activationSlot(QModelIndex in)
     }
     else if(item->type()==FOLDER_ITEM || item->type()==PLAYLIST_FOLDER )
     {
+	qDebug()<<"AH BAH";
 	if(treeV->isExpanded(in) )
 	{
 	    treeV->collapse(in);

@@ -36,7 +36,9 @@ views::treeView::treeView(QWidget *parent,QString name)
         readSettings();
 	setMouseTracking(true);
 	connect(qApp,SIGNAL(aboutToQuit() ),this,SLOT(writeSettings() ) ); 
-    }   
+    }
+    setEditTriggers(QAbstractItemView::SelectedClicked);
+    connect(this,SIGNAL(doubleClicked  ( const QModelIndex) ),this,SLOT(play(const QModelIndex) ) );
 
 }
 
@@ -295,3 +297,30 @@ void views::treeView::leaveEvent (QEvent *)
      header()->setProperty("highlight",QVariant(-1) );
      viewport->update();
 }
+
+void views::treeView::play(const QModelIndex index)
+{
+//     const trackUrl *Model=dynamic_cast<const trackUrl*>(model() );
+    
+    qDebug()<<"PLAY";
+
+    core::nplList list;
+    for (int i=0;i<model()->rowCount(index.parent() );i++)
+    {
+	 QModelIndex in=model()->index(i,0,index.parent() );
+	 if(in.isValid() )
+	 {
+	    QUrl u=model()->data(in,URL_ROLE).toUrl();
+	    qDebug()<<u;
+	    list<<core::nplTrack::getNplTrack(u);
+	 }
+    }
+    
+    
+    
+    core::npList->clear();
+    core::npList->insert(list,0);
+    
+    core::engine->play(index.row() );
+}
+

@@ -33,6 +33,7 @@ class fileCache
       }
       
       int 	loadTags(bool force=false);
+      void 	setRecord(QSqlRecord &r, bool force=false);
       int 	select(bool force=false);
       QVariant 	tagFromFile(tagsEnum t, int &err);
       QVariant 	tagFromDb(int t, int& err);

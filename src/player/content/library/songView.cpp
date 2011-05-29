@@ -7,7 +7,7 @@ songView::songView(QWidget *parent,QString name)
 // 	stars(0)
 {
     createMenu();
-    connect(this,SIGNAL(doubleClicked  ( const QModelIndex) ),this,SLOT(play(const QModelIndex) ) );
+//     connect(this,SIGNAL(doubleClicked  ( const QModelIndex) ),this,SLOT(play(const QModelIndex) ) );
 }
 
 void songView::contextMenuEvent(QContextMenuEvent *e)

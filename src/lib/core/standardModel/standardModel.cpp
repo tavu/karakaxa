@@ -4,10 +4,28 @@
 standardModel::standardModel(QObject* parent)
   :QAbstractItemModel(parent)
 { 
-    head=new headItem();
-    head->_row=0;
+    head=new defaultHeadItem();
+    head->_row=0;    
     head->_model=this;
 }
+
+void standardModel::setHeadItem(standardItem* h)
+{
+    if(head!=0)
+    {
+// 	delete head;
+    }
+      
+    h->setParent(this);
+    head=h;    
+    head->_row=0;    
+    head->_model=this;
+
+    emit headerDataChanged (Qt::Horizontal,0, columnCount() );
+    emit headerDataChanged (Qt::Vertical,0, columnCount() );
+
+}
+
 
 standardModel::~standardModel()
 {
@@ -71,11 +89,9 @@ bool standardModel::removeRows (int row, int count, const QModelIndex & parent )
 bool standardModel::insertRow(int row, standardItem *item, const QModelIndex& parent)
 {
     standardItem *father;
-    if(parent.isValid())
-    {
-	father=itemFromIndex(parent);
-    }
-    else
+    father=itemFromIndex(parent);
+    
+    if(father==0)
     {
       father=head;
     }
@@ -154,8 +170,13 @@ bool standardModel::hasChildren(const QModelIndex& parent) const
 QModelIndex standardModel::parent(const QModelIndex& index) const
 {
     standardItem *item=itemFromIndex(index);    
+    if(item==0)
+    {
+	return QModelIndex();
+    }
+    
     item=item->parent();
-    if(item==head)
+    if(item==head || item==0)
     {
 	return QModelIndex();
     }
@@ -170,7 +191,8 @@ QModelIndex standardModel::parent(const QModelIndex& index) const
 standardItem::standardItem()
   :QObject(),
   _model(0),
-  _parent(0)
+  _parent(0),
+  childrenNum(0)
 {
 
 }
@@ -281,6 +303,15 @@ void standardModel::emitDataChanged(const QModelIndex & topLeft, const QModelInd
 
 /*===============================model===================================*/
 
+QVariant standardItem::headerData(int section, Qt::Orientation orientation, int role) const
+{
+    if(role==Qt::DisplayRole)
+    {
+	return QString::number(section);	
+    }
+    return QVariant();
+}
+
 
 QVariant standardModel::data(const QModelIndex& index, int role) const
 {
@@ -340,14 +371,46 @@ int standardModel::rowCount(const QModelIndex &index ) const
 
 /*===============STANDARD ITEM=====================*/
 
+void standardItem::beginRemoveRows(int first, int last )
+{
+  if(_model)
+  {
+    QModelIndex i=_model->indexFromItem(this,0);
+    _model->beginRemoveRows(i,first,last);	
+  }  
+}
+      
+void standardItem::endRemoveRows()
+{
+  if(_model)
+  {	    
+    _model->endRemoveRows();	
+  }  
+}
 
-standardItem* standardItem::takeRow(int row) const
+
+bool standardItem::clear()
+{    
+    beginRemoveRows(0,rowCount()-1 );
+    standardItem **items=children.data();
+    for(int i=0;i<childrenNum;i++)
+    {
+	delete items[i];
+    }
+    children.clear();
+    childrenNum=0;
+    endRemoveRows();
+}
+
+
+standardItem* standardItem::takeRow(int row)
 {
     if(row<0||row>children.size() )
     {
 	return false;
     }
     standardItem *item=children[row];
+    children.remove(row);
     return item;
 }
 
@@ -364,8 +427,10 @@ bool standardItem::removeRow(int row)
 	_model->beginRemoveRows(index,row,row );
     }
     
-    standardItem *item=children.takeAt(row)	;
+    standardItem *item=children[row];
+    children.remove(row);
     delete item;
+    childrenNum--;
     
     if(_model!=0)
     {
@@ -389,9 +454,11 @@ bool standardItem::removeRows(int row, int count)
     standardItem *item;
     for(int i=0;i<count;i++)
     {
-	item=children.takeAt(row+i);
+	item=children.data()[row+i];
+	children.remove(row+i);
 	delete item;
     }
+    childrenNum-=count;
     
     if(_model!=0)
     {
@@ -429,31 +496,25 @@ bool standardItem::insertRows(int row, const QList< standardItem* >& items)
 
 bool standardItem::insertRow(int row, standardItem* item)
 {
-    qDebug()<<"JERR";
+//     qDebug()<<"JERR";
     if(_model!=0)
     {
  	QModelIndex index=_model->indexFromItem(this,0);
 	_model->beginInsertRows(index,row,row );
     }
     
-    children.insert(row,item);
-    item->_row=row;
-    item->_model=_model;
-    item->_parent=this;
+    insert(row,item);
     
     if(_model!=0)
     {
 	_model->endInsertRows();
-    }
-    
-    qDebug()<<"JER";
+    }    
     
     return true;
 }
 
 bool standardItem::appendRow ( standardItem * item )
 {
-    qDebug()<<"EEr";
     return insertRow(rowCount(),item); 
 }
 
@@ -468,10 +529,19 @@ standardItem* standardItem::child(int row) const
 
 void standardItem::insert(int row, standardItem *item)
 {  
-    children.insert(row,item);
+    if(row>=childrenNum && children.size()>childrenNum )
+    {
+	children.replace(row,item);
+    }
+    else
+    {      
+	children.insert(row,item);
+    }
+    
     item->_row=row;
     item->_model=_model;
-    item->_parent=this;   
+    item->_parent=this;
+    childrenNum++;
 }
 
 standardModel* standardItem::model() const
@@ -517,7 +587,7 @@ void standardItem::endInsertColumns()
 
 int standardItem::rowCount() const
 {
-    return children.size();
+    return childrenNum;
 }
 
 Qt::ItemFlags standardItem::flags(int column) const
@@ -533,7 +603,14 @@ void standardItem::dataChanged(const QModelIndex& topLeft, const QModelIndex& bo
     }
 }
 
-
+void standardItem::prealocateChildren(int n)
+{
+    if(children.size()<n)
+    {
+	childrenNum=children.size();
+	children.resize(n);
+    }
+}
 
 Qt::ItemFlags standardModel::flags(const QModelIndex& index) const
 {

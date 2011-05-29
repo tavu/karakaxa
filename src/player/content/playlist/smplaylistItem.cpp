@@ -5,26 +5,27 @@
 
 using namespace core;
 smplaylistItem::smplaylistItem(QDomDocument &doc, const QString &text)
-  :xmlItem(doc,QString("smartPlaylist") )
+  :xmlItem(doc,QString("smartPlaylist") ),
+  quer(0)
 {
-     _query.clear();
+//      _query.clear();
      setData(QVariant("name"),0,attributeName);
      setData(QVariant(text), 0 ,attributeRole() ); 
 //     setIcon(decor.tagIcon(-1));
 }
 
 smplaylistItem::smplaylistItem(const QDomElement &el)
-  :xmlItem(el)
+  :xmlItem(el),
+  quer(0)
 {
-    _query.clear();
+//     _query.clear();
     setData(QVariant("name"),0,attributeName);
 }    
 
 void smplaylistItem::generateQuery() const
-{  
-    QString q;
+{        
     QDomElement el=element.firstChildElement();
-    _query =group(el);
+    quer =group(el);
     /*
     for(QDomNode n = element.firstChild(); !n.isNull(); n = n.nextSiblingElement("group"))
     {      
@@ -45,22 +46,42 @@ int smplaylistItem::type () const
 }
 
 
-QString smplaylistItem::group(QDomNode nod) const
+queryGrt::abstractQuery* smplaylistItem::group(QDomNode nod) const
 {
+    queryGrt::matchQuery *q;
     qDebug()<<"QQ ";
-    QString q;
-    QStringList l;
+//     QString q;
+//     QStringList l;
+  
+    QDomElement e=nod.toElement();
+    QString s=e.attribute("matchtype");
+    
+    if(s==QString("all") )
+    {
+	q=new queryGrt::matchQuery(queryGrt::AND);
+    }
+    else if(s==QString("any") )
+    {
+	q=new queryGrt::matchQuery(queryGrt::OR);
+    }
+    else
+    {
+	return 0;
+    }
+    
+
     for(QDomNode n=nod.firstChild(); !n.isNull(); n=n.nextSibling() )	
     {
 	QString name=n.nodeName();
 	
 	if(name==QString("group") )
-	{
-	    q+=group(n);
+	{	  
+// 	    q+=group(n);
+	    q->append(group(n) );
 	}
 	else if(name==QString("field") )
 	{
-	    QString s, q;
+	    QString s;
 	    bool invert;
 	    int t;
 	    queryGrt::equal comp;
@@ -78,22 +99,12 @@ QString smplaylistItem::group(QDomNode nod) const
 	    
 	    s=e.attribute("value");
 	    
-	    l<<queryGrt::query(t,comp,s,invert);	    
+	    q->append(new queryGrt::tagQuery(t,comp,s,invert) );
+// 	    l<<queryGrt::query(t,comp,s,invert);
 	}	
     }
     
-    QDomElement e=nod.toElement();
-    QString s=e.attribute("matchtype");
-    
-    if(s==QString("all") )
-    {
-	q+=queryGrt::connectAnd(l);
-    }
-    else if(s==QString("any") )
-    {
-      q+=queryGrt::connectOr(l);
-    }
-    qDebug()<<"QQ "<<q;
+    qDebug()<<"QQ "<<q->text();
     
     return q;    
 }
@@ -111,20 +122,20 @@ QVariant smplaylistItem::data (int column,int role  ) const
     }
     if(role==ITEM_ROLE)
     {
-	return QVariant(query());
+	return QVariant();
     }
     return xmlItem::data(column,role);
 }
 
-QString smplaylistItem::query() const
+core::queryGrt::abstractQuery* smplaylistItem::query() const
 {	    
 
-    if(_query.isEmpty() )
-    {		
+    if(quer==0 )
+    {
 	generateQuery();	
     }
 	    
-    return _query;    
+    return quer;
 }
 
 // const int smplaylistItem::SMARTPL_ITEM=core::xmlItem::XmlType+2;

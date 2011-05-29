@@ -39,9 +39,15 @@ nplPointer core::nplaylist::getPlayingTrack()
 }
 
 void core::nplaylist::insert(nplList list,int pos)
-{
-    connect(qApp,SIGNAL(aboutToQuit() ),this,SLOT(prepareToQuit() ) );
-    emit (insertSig(list,pos) );
+{  
+    if(QThread::currentThread()==core::mainThr() )
+    {
+	insertSlot(list,pos);
+    }
+    else
+    {
+	emit (insertSig(list,pos) );
+    }
 }
 
 
@@ -59,8 +65,11 @@ void core::nplaylist::insertSlot(nplList list, int pos)
     model->beginInsertRows(QModelIndex(), pos,pos+list.size()-1 );
     for(int i=0;i<list.size();i++)
     {
-	trackList.insert (pos+i,list.at(i));
-	totalLength+=list.at(i)->tag(LENGTH).toInt();
+	if(!list[i].isNull() && list[i]->isValid() )
+	{
+	    trackList.insert (pos+i,list[i] );
+	    totalLength+=list[i]->tag(LENGTH).toInt();
+	}
     }
     
     model->endInsertRows();
@@ -201,7 +210,7 @@ QString core::nplaylist::playUrl(int n)
 {
      
     QString ret;
-    if (n>=trackList.size() )
+    if (n>=trackList.size() || n<0 )
     {
          
         return ret;

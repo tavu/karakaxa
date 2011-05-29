@@ -8,6 +8,7 @@
 #include<QPushButton>
 #include <QLinkedList>
 #include<views.h>
+#include<core.h>
  
 class albumTrack :public QWidget
 {
@@ -15,8 +16,19 @@ class albumTrack :public QWidget
 
 public:
     albumTrack(QWidget *parent=0);
-//     void updateTrack();
+    void goToArtist(QString &s);
     void updateQueries();
+    
+    bool needUpdate()
+    {
+	return _needUpdate && queryGen->needUpdate();
+    }
+    
+    void setNeedUpdate(bool t)
+    {
+	_needUpdate=t;
+    }
+//     void updateTrack();
 private:
 
     void labelInit();
@@ -25,14 +37,21 @@ private:
 
 
     albumModel *albumM;
-    views::trackModel *trackM;
+    standardModel *trackM;
+    views::trackModelItem *trmItem;
 
-    QString search;
+//     QString search;
 
     QString artist;
 
     albumWidget *albumV;
     views::treeView *trackV;
+    
+    core::queryGrt *queryGen;
+    core::queryGrt::tagQuery *quer;
+    core::queryGrt::matchQuery *andQ;
+    core::queryGrt::matchQuery *searchQ;
+    
 //     treeViewDelegate *trackD;
 
 
@@ -43,16 +62,28 @@ private:
     QPushButton *rightB;
 
     QWidget *albumW;
+    
+    bool _needUpdate;
 
     
 
 public slots:
-    void setArtist(const QString &artist,const QString &labelS);
-    void setSearch(const QString &s);
+    void setSearch(core::queryGrt::matchQuery *q)
+    {
+	albumM->setSearch(q);
+	searchQ=q;
+	_needUpdate=true;
+    }
 
 //      private slots:
     void albumActivated(const QModelIndex &n);
-    bool update();
+    
+    void albumsNeedUpdate(audioFiles::audioFile &f);
+    
+    void setNeedUpdateTrue()
+    {
+	_needUpdate=true;
+    }
 
 };
 

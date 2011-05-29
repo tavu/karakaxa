@@ -29,9 +29,13 @@ enum tagsEnum
     PATH	,
     COUNTER
 };
+
+const int FRAME_NUM=COUNTER+1;
+//we set a number to ALBUM_ID different from the tagsEnum numbers
+const int ALBUM_ID=FRAME_NUM;
 };//namespace
 
-#define FRAME_NUM COUNTER+1
+
 
 #define TAGS_START TRACK
 #define TAGS_END   COUNTER

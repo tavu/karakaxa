@@ -10,6 +10,7 @@
 #include<core.h>
 
 #include"artistWidget.h"
+#include"artistModel.h"
 #include"albumTrack.h"
 #include<QLinkedList>
 class library :public core::abstractContent
@@ -17,13 +18,15 @@ class library :public core::abstractContent
     Q_OBJECT
     public:
 	library(QWidget *parent=0);
+	virtual ~library();
 	QString name() const;	
 
     private:
 
 	QWidget *buttonWidget;
 
-	artistWidget *artistV;
+	QListView *artistV;
+	artistModel  *artistM;
 	albumTrack  *albumTrV;
 	QStackedWidget *stack;
 
@@ -36,28 +39,32 @@ class library :public core::abstractContent
 
 	QPushButton *refresh;
 
-	QAction *scan;
-	QAction *config;
 	QLinkedList<tagsEnum> searchTagL;
 	
-	short needUpdate;
-	
+ 	core::queryGrt::matchQuery *searchQ;
+// 	
 	//functions
 	void buttonInit();
 	void inline toolBarInit();
 	void updateQueries(int t);
 	void activated(const int n);
+	QString searchString;
 	
     public slots:
-	void libraryScan();
+	void artistActivated(const QModelIndex& index);
+      
+	void artistNeedUpdate(audioFiles::audioFile f);
+      
 	void toAlbum(const QString &s1,const QString &s2);
 	void goToArtist();
 	void goToAlbum();
+	
+	void dbChanged();
     //      private slots:
 	void search();
 	
-    private slots:
-	void updateQueriesSlot();	
+//     private slots:
+// 	void updateQueriesSlot();	
     
 };
 
