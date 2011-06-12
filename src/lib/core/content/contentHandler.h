@@ -8,10 +8,28 @@
 #include<QMutex>
 #include <QStandardItemModel>
 #include<KToolBar>
+#include<KUrl>
 // class abstractContent;
 // #include<QStandardItemModel>
 namespace core
 {
+
+//This is a menu that can be shown by right click to any item.
+//the views can ask for the contentHandler for an appropriate menu.
+class abstractMenu :public QObject
+{
+    public:
+      abstractMenu() :QObject(){}      
+      virtual ~abstractMenu(){}
+      
+      //return true if the menu can be shown for the spesific url u. 
+      //the multFiles spesifies if there are more than one selected files.
+      virtual bool canShow(QUrl &u ,bool multFiles)=0;
+      //return an action for the menu.
+      //this object must connect the acction to the appropriate slot.
+      virtual QAction* action()=0;
+};
+  
 
 class contentHandler :public QObject
 {
@@ -28,7 +46,7 @@ class contentHandler :public QObject
 	void removeContent(abstractContent *content);
 	bool isActive(QWidget *w);
 	
-	void setView(QAbstractItemView* v)
+	void setView(QTreeView* v)
 	{
 	    view=v;
 	    view->setModel(model);
@@ -42,19 +60,31 @@ class contentHandler :public QObject
 	    return _toolBar;
 	}
 	
+	void addMenu(abstractMenu *m);
+	void removeMenu(abstractMenu *m);
+	
+	//returns a menu with appropriate action for tha url.
+	//the reciver must check if the menu is empty and must delete the menu later.
+	void contextMenu(QMenu* menu, QUrl u, bool multFiles);
+	
     private:
 	void activateContent(abstractContent*,bool);
+		
 	
 	QStackedWidget *stack;
 	QList<abstractContent * > contentList;
+	QList<abstractMenu * > menuList;
+	
 	KToolBar *_toolBar;
 
+	
+	
 	
 	QMutex mutex;
 	QList<abstractContent*>history;
 	QStandardItemModel *model;
-	QAbstractItemView *view;
-
+	QTreeView *view;
+      
 		
     class genericContent :public abstractContent
     {

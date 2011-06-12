@@ -1,13 +1,13 @@
 #include"albumTrack.h"
 #include<QHBoxLayout>
 #include<QVBoxLayout>
-#include<QSplitter>
 #include<QDebug>
 #include"albumWidget.h"
 #include"songView.h"
 #include"albumDelegate.h"
 #include<core.h>
 #include<views.h>
+#include<KConfigGroup>
 using namespace core;
 
 albumTrack::albumTrack(QWidget *parent)
@@ -25,7 +25,7 @@ albumTrack::albumTrack(QWidget *parent)
     hLayout->addWidget(sLabel);
     hLayout->addStretch();
 
-    QSplitter *splitter= new QSplitter (Qt::Vertical,this);
+    splitter= new QSplitter (Qt::Vertical,this);
     QVBoxLayout *vLayout = new QVBoxLayout(this);
 
     splitter->addWidget(albumW);
@@ -33,9 +33,8 @@ albumTrack::albumTrack(QWidget *parent)
     splitter->addWidget(trackV);
     
     splitter->setMidLineWidth(5);
-    QList<int> l;
-    l<<100<<200;
-    splitter->setSizes(l);
+
+    readSettings();
 
     vLayout->addLayout(hLayout);
     vLayout->addWidget(splitter);
@@ -43,8 +42,9 @@ albumTrack::albumTrack(QWidget *parent)
     
     connect(albumV,SIGNAL(activated ( const QModelIndex) ),this ,SLOT( albumActivated(const QModelIndex&) ) );
     
-    connect(db,SIGNAL(updated(audioFiles::audioFile ) ),this,SLOT(albumsNeedUpdate(audioFiles::audioFile & ) ) );
+    connect(db,SIGNAL(updated(audioFiles::audioFile ) ),this,SLOT(albumsNeedUpdate(audioFiles::audioFile ) ) );
     
+    connect(qApp,SIGNAL(aboutToQuit()),this,SLOT(writeSettings()) );
 //     connect(db,SIGNAL(changed()),this,SLOT(setNeedUpdateTrue() ) );
       
 }
@@ -60,7 +60,7 @@ void albumTrack::trackVInit()
     trackV->setRatingColumn(RATING);
     trackV->setEditTriggers(QAbstractItemView::SelectedClicked);
 
-    trackV->setModel(trackM);
+//     trackV->setModel(trackM);
     trackV->setNotHide(TITLE);
     
     queryGen=new queryGrt(this);    
@@ -71,17 +71,17 @@ void albumTrack::trackVInit()
     
     trmItem->setQueryG(queryGen);
 
+    trackV->setModel(trackM);
     trackM->setHeadItem(trmItem);
-//     trackV->setRootIndex(trackM->index(0,0));
-    
-//     trackV->setPalette(player::pal);
+
+    connect(trackV,SIGNAL(showContextMenu(QModelIndex,QModelIndexList)),this,SLOT(showContexMenuSlot(QModelIndex,QModelIndexList))); 
 //     trackV->setStyleSheet("QAbstractItemView {background-color: transparent; }");
     
 }
 
 void albumTrack::labelInit()
 {
-    sLabel =new QLabel(this);
+    sLabel =new QLabel(this);    
     QFont font;
     font.setPointSize(13);
     sLabel->setFont(font);
@@ -122,8 +122,8 @@ void albumTrack::albumVInit()
     albumV->setMinimumHeight(80);
     albumV->setSizePolicy(QSizePolicy::Ignored,QSizePolicy::Ignored);
 
-    QSizePolicy p;
-    p.setHorizontalPolicy(QSizePolicy::Ignored);
+//     QSizePolicy p;
+//     p.setHorizontalPolicy(QSizePolicy::Ignored);
 
     albumW=new QWidget(this);
     albumW->setSizePolicy(QSizePolicy::Ignored,QSizePolicy::Fixed);
@@ -136,14 +136,13 @@ void albumTrack::albumVInit()
     hLayout->setSpacing(0);
     hLayout->addWidget(albumV);
     
-    albumM->update();
+//     albumM->update();
 
 }
 
 void albumTrack::goToArtist(QString& s)
 {  
-    sLabel->setText(views::pretyTag(s,ARTIST).toString() );
-//     this->artist=s;
+    sLabel->setText(views::pretyTag(s,ARTIST).toString() );      
     
     albumM->setArtist(s);
     albumM->update();
@@ -192,11 +191,11 @@ void albumTrack::updateQueries()
 
 }
 
-void albumTrack::albumsNeedUpdate(audioFile& f)
+void albumTrack::albumsNeedUpdate(audioFile f)
 {    
     foreach(audioFiles::changes c ,f.tagChanged() )
     {
-	if(c.tag==ALBUM)
+	if(c.tag==ALBUM ||c.tag==ARTIST || c.tag==LEAD_ARTIST )
 	{
 	    if(isVisible() )
 	    {
@@ -211,20 +210,34 @@ void albumTrack::albumsNeedUpdate(audioFile& f)
     }
 }
 
-/*
-void albumTrack::updateQueries()
+void albumTrack::showContexMenuSlot(QModelIndex index, QModelIndexList list)
 {
-
-//   qDebug()<<"trackView update";
-  
-    QSqlQuery q=albumM->query();
-//   albumM->setQuery(q);
-    QSqlQuery nq(q.executedQuery(),db->getDatabase() );
-    nq.exec();
-    albumM->setQuery(nq);
-    
-    trackM->refresh();
-    
-
+    QUrl u=index.data(URL_ROLE).toUrl();    
+    QMenu *menu=new QMenu(this);
+    core::contentHdl->contextMenu(menu,KUrl(u),!list.isEmpty() );
+    if(!menu->isEmpty() )
+    {
+	menu->exec( QCursor::pos() );
+    }
+    menu->deleteLater();
 }
-    */
+
+void albumTrack::writeSettings()
+{
+    KSharedConfigPtr config=core::config->configFile();
+    KConfigGroup group( config, "albumTrack" );
+    group.writeEntry("albumSize", QVariant(splitter->sizes().at(0)  ) );
+    group.writeEntry("trackVSize", QVariant(splitter->sizes().at(1)  ) );
+    group.config()->sync();  
+}
+
+void albumTrack::readSettings()
+{
+    KSharedConfigPtr config=core::config->configFile();
+    KConfigGroup group( config, "albumTrack" );
+    QList<int> l;
+//     l<<100<<200;
+    l<<group.readEntry("albumSize",100 );
+    l<<group.readEntry("trackVSize",200 );
+    splitter->setSizes(l);
+}

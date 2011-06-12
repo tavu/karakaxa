@@ -171,3 +171,9 @@ void folderContent::readSettings()
     showUrl(navigator->url());
 
 }
+
+void folderContent::loaded()
+{
+    m=new folderContextMenu(this);
+    core::contentHdl->addMenu(m);
+}

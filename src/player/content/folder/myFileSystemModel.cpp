@@ -57,6 +57,17 @@ QVariant myFileSystemModel::data(const QModelIndex &index, int role) const
 
 }
 
+bool myFileSystemModel::setData( const QModelIndex & index, const QVariant & value, int role)
+{
+    KFileItem item=itemForIndex(index);
+    audioFile f(item.url().toLocalFile() );
+    int filde=index.column()-DIRCOLUMN;
+    f.setTag(filde,value);
+    
+    return true;
+}
+
+
 QVariant myFileSystemModel::headerData ( int section, Qt::Orientation orientation, int role ) const
 {
     if (section<DIRCOLUMN)

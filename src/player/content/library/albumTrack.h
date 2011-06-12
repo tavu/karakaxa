@@ -9,81 +9,89 @@
 #include <QLinkedList>
 #include<views.h>
 #include<core.h>
+#include<QSplitter>
  
 class albumTrack :public QWidget
 {
     Q_OBJECT
 
-public:
-    albumTrack(QWidget *parent=0);
-    void goToArtist(QString &s);
-    void updateQueries();
-    
-    bool needUpdate()
-    {
-	return _needUpdate && queryGen->needUpdate();
-    }
-    
-    void setNeedUpdate(bool t)
-    {
-	_needUpdate=t;
-    }
-//     void updateTrack();
-private:
+    public:
+	albumTrack(QWidget *parent=0);
+	void goToArtist(QString &s);
+	void updateQueries();
+	
+	bool needUpdate()
+	{
+	    return _needUpdate && queryGen->needUpdate();
+	}
+	
+	void setNeedUpdate(bool t)
+	{
+	    _needUpdate=t;
+	}
 
-    void labelInit();
-    void albumVInit();
-    void trackVInit();
+    private:
 
+	void labelInit();
+	void albumVInit();
+	void trackVInit();
+		
+	void readSettings();
 
-    albumModel *albumM;
-    standardModel *trackM;
-    views::trackModelItem *trmItem;
+	QSplitter *splitter;
+	albumModel *albumM;
+	standardModel *trackM;
+	views::trackModelItem *trmItem;
 
-//     QString search;
+    //     QString search;
 
-    QString artist;
+	QString artist;
 
-    albumWidget *albumV;
-    views::treeView *trackV;
-    
-    core::queryGrt *queryGen;
-    core::queryGrt::tagQuery *quer;
-    core::queryGrt::matchQuery *andQ;
-    core::queryGrt::matchQuery *searchQ;
+	albumWidget *albumV;
+	views::treeView *trackV;
+	
+	core::queryGrt *queryGen;
+	core::queryGrt::tagQuery *quer;
+	core::queryGrt::matchQuery *andQ;
+	core::queryGrt::matchQuery *searchQ;
     
 //     treeViewDelegate *trackD;
 
 
-    QLabel *sLabel;
-    QLabel *pLabel;
+	QLabel *sLabel;
+	QLabel *pLabel;    
 
-    QPushButton *leftB;
-    QPushButton *rightB;
+	QPushButton *leftB;
+	QPushButton *rightB;
 
-    QWidget *albumW;
+	QWidget *albumW;
+	
+	bool _needUpdate;
+
     
-    bool _needUpdate;
 
-    
+    public slots:
+      
+	void writeSettings();
+      
+	void setSearch(core::queryGrt::matchQuery *q)
+	{
+	    albumM->setSearch(q);
+	    searchQ=q;
+	    _needUpdate=true;
+	}
+	
+	void showContexMenuSlot(QModelIndex index, QModelIndexList list) ;
 
-public slots:
-    void setSearch(core::queryGrt::matchQuery *q)
-    {
-	albumM->setSearch(q);
-	searchQ=q;
-	_needUpdate=true;
-    }
-
-//      private slots:
-    void albumActivated(const QModelIndex &n);
-    
-    void albumsNeedUpdate(audioFiles::audioFile &f);
-    
-    void setNeedUpdateTrue()
-    {
-	_needUpdate=true;
-    }
+    //      private slots:
+	void albumActivated(const QModelIndex &n);
+	
+	void albumsNeedUpdate(audioFiles::audioFile f);
+	
+	void setNeedUpdateTrue()
+	{
+	    _needUpdate=true;
+	}
 
 };
 

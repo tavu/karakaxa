@@ -5,7 +5,7 @@
 #include<QStringList>
 #include<KIcon>
 #include"nowPlayList/nplaylist.h"
-#include"decoration/decoration.h"
+#include"views.h"
 
 // #include "myUrl.h"
 using namespace core;
@@ -31,21 +31,26 @@ QVariant nplModel::data ( const QModelIndex & index, int role ) const
         return QVariant();
     }
 
+    nplPointer t=npList->getTrack(index.row() );
+
     if (role==Qt::DisplayRole)
     {
-	nplPointer t=npList->getTrack(index.row() );
+	
 	if (t.isNull())	return QVariant();
 	
 	if(index.column()==0)
 	{
-	    QVariant ret=t->tag(TRACK);
-	    return ret;
+	    return t->tag(TRACK);
 	}
 	else
 	{
 	    return t->title();
-	}
-	
+	}	
+    }
+    if(role==URL_ROLE)
+    {
+	qDebug()<<"P "<<t->path();
+	return QVariant( KUrl(t->path() ) );
     }
     return QVariant();
 

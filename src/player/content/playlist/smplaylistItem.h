@@ -28,6 +28,8 @@ class smplaylistItem :public core::xmlItem
 	    return false;
 	}
 	
+	virtual bool setData (const QVariant& value, int column, int role = Qt::EditRole );
+	
 	
 //  	static const int SMARTPL_ITEM;
 	

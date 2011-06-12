@@ -20,6 +20,7 @@
 #include"content/folder/folder.h"
 #include"content/playlist/playlistContent.h"
 #include"content/configure/configureContent.h"
+#include"content/edit/editTrackContent.h"
 
 #define ICONZISE QSize(35,35)
 
@@ -30,12 +31,13 @@ using namespace core;
 
 mainWindow::mainWindow()
         :QMainWindow()
-{
-
+{    
     core::init();
     views::init();
 
     setIconSize(ICONZISE);
+    setWindowIcon(decor->logo() );
+    
     
     pal=palette();
     pal.setColor(QPalette::Base,pal.color(QPalette::Window) );
@@ -63,12 +65,15 @@ mainWindow::mainWindow()
     conViewInit();    
     nplViewInit();    
     toolBarInit();                    
+    createTrayIcon();
 
     setStatusBar(new views::statusBar(this) );    
      
     lockDock();
 
     connect( core::engine ,SIGNAL(stateChanged ( Phonon::State) ),this, SLOT( stateChanged ( Phonon::State) ) );
+    
+    connect(qApp,SIGNAL(aboutToQuit()) ,this,SLOT(QuitSlot() ) );
              
     readSettings();
     defaultContent();
@@ -293,9 +298,9 @@ void mainWindow::toolBarInit()
     slider->setIconVisible(false);
     toolBar->addWidget(slider);
     
-    views::volumeBar *v=new views::volumeBar(this);
-    v->setFixedWidth(150);
-    toolBar->addWidget(v);
+    volumeB=new views::volumeBar(this);
+    volumeB->setFixedWidth(150);
+    toolBar->addWidget(volumeB);
     
     toolBar->setAutoFillBackground(false);
    
@@ -347,17 +352,21 @@ void mainWindow::defaultContent()
       contentHdl->addContent(c);
 
       contentHdl->setCurrentContent(l);
+      
+      editTrackMenu *m=new editTrackMenu();
+      contentHdl->addMenu(m);
 
 }
 
 void mainWindow::closeEvent(QCloseEvent *event)
-{
-    writeSettings();
-    QMainWindow::closeEvent(event);
+{    
+    hide();	
+    event->ignore();
 }
 
 void mainWindow::writeSettings()
 {
+    hide();
     KSharedConfigPtr config=core::config->configFile();
     KConfigGroup group( config, "MainWindow" );
     group.writeEntry("geometry", QVariant(saveGeometry() ) );
@@ -390,5 +399,39 @@ void mainWindow::readSettings()
 //      infoDock->resize(infoDock->width(), group.readEntry("infoDockHeight",30) );
 }
 
+void mainWindow::createTrayIcon()
+{
+     trayIcon=new QSystemTrayIcon(decor->logo(),this);
+     QMenu *trayIconMenu = new QMenu(this);
+     QAction *quitAction = new QAction(KIcon("application-exit"), tr("&Quit"), this);
+     connect(quitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
+//      trayIconMenu->addAction(minimizeAction);
+//      trayIconMenu->addAction(maximizeAction);
+//      trayIconMenu->addAction(restoreAction);     
+    trayIconMenu->addAction(volumeB->action());
+    trayIconMenu->addSeparator();
+    trayIconMenu->addAction(previousAction);    
+    trayIconMenu->addAction(playAction);    
+    trayIconMenu->addAction(nextAction);    
+    trayIconMenu->addSeparator();    
+    trayIconMenu->addAction(quitAction);
+    
+     
+     trayIcon = new QSystemTrayIcon(this);
+     trayIcon->setContextMenu(trayIconMenu);
+     trayIcon->setIcon(decor->logo());
+     
+     connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),this, SLOT(iconActivated(QSystemTrayIcon::ActivationReason) ) );     
+     trayIcon->show();
+     
+     
+     
+}
 
-
+void mainWindow::iconActivated(QSystemTrayIcon::ActivationReason reason)
+{
+    if(reason==QSystemTrayIcon::Trigger||reason==QSystemTrayIcon::DoubleClick)
+    {
+	setVisible(!isVisible());
+    }  
+}

@@ -54,6 +54,9 @@ class abstractContent :public QWidget
 	
 	//this function is called after the content have been loaded
 	virtual void loaded();
+	//this function is called before the content unloads
+	virtual void unloaded()
+	{}
 	//thes function is called after the content have been deactivated.
 	virtual void hiden();
 

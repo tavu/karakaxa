@@ -9,9 +9,8 @@
 
 namespace core
 {
-class nplStream :public QObject,public nplTrack
+class nplStream :public nplTrack
 {
-    Q_OBJECT
     public:
 	nplStream(QString s);
 	QString 	path();
@@ -21,6 +20,7 @@ class nplStream :public QObject,public nplTrack
 	QVariant 	tag(int t);
 	void 		play();
 	void 		finish();
+	nplTrack*	clone();
     protected:
 	KUrl 	url;
 	QString albumS;

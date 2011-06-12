@@ -42,6 +42,14 @@ QVariant playlistModel::data(const QModelIndex & index, int role ) const
     return QVariant();    
 }
 
+bool playlistModel::setData(const QModelIndex& index, const QVariant& value, int role)
+{
+    thr->files[ (index.row() ) ].setTag(index.column(),value);
+    
+    return true;
+}
+
+
 QVariant playlistModel::headerData ( int section, Qt::Orientation orientation, int role) const
 {
     if(orientation==Qt::Vertical)

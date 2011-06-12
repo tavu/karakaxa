@@ -9,6 +9,7 @@
 #include<core.h>
 #include<views.h>
 #include <QSpinBox>
+#include<core.h>
 class editTrackContent :public core::abstractContent
 {
     Q_OBJECT
@@ -59,5 +60,43 @@ public slots:
     void clicked(QAbstractButton * button);
 
 
+};
+
+class editTrackMenu :public core::abstractMenu
+{
+    Q_OBJECT
+    
+    public:
+      editTrackMenu()
+      {
+	  act=new QAction(KIcon("document-edit"),tr("Edit track information"),this );
+	  connect(act,SIGNAL(triggered(bool)),this,SLOT(activated()) );
+      }
+      
+      bool canShow(QUrl &u ,bool multFiles)
+      {	  
+	  if(core::isAudio(u.toLocalFile() ) )
+	  {
+	      s=u.toLocalFile();
+	      return true;
+	  }
+      }
+      
+      QAction* action()
+      {
+	  return act;
+      }
+    
+    private:
+      QAction *act;
+      QString s;
+      
+    public slots:
+	void activated()
+	{
+	    editTrackContent *c=new editTrackContent(s);
+	    core::contentHdl->addContent(c,true);
+	}
+	
 };
 #endif

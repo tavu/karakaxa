@@ -11,6 +11,10 @@ class volumeBar :public KToolBar
     Q_OBJECT
     public:
 	volumeBar(QWidget *parent=0);
+	QAction *action()
+	{
+	    return volumeAction;
+	}
     private:
 	QAction *volumeAction;
 	Phonon::VolumeSlider *volume;

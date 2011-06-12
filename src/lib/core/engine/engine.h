@@ -19,7 +19,7 @@ class soundEngine :public QObject
 	~soundEngine();
 	void init();	
 	Phonon::MediaObject* getMediaObject();
-	bool isMuted();
+	inline bool isMuted();
 	
     private:
 	Phonon::MediaObject* mediaObject;
@@ -28,7 +28,6 @@ class soundEngine :public QObject
 	int errors;
 	QMutex mutex;
 	bool flag;
-	bool _isMuted;
 
     private slots:
 	void getNext();

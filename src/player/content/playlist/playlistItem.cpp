@@ -1,6 +1,7 @@
 #include"playlistItem.h"
 #include"items.h"
 #include<KIcon>
+#include<views.h>
 using namespace core;
 playlistFolder::playlistFolder(const QString& name) 
   :standardItem(),
@@ -103,7 +104,7 @@ QVariant playlistItem::data(int column, int role ) const
     }
     if(role==Qt::DecorationRole)
     {
-	return KIcon("audio-x-generic");
+	return views::decor->playListIcon();
     }
      
 

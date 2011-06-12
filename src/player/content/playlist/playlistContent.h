@@ -48,6 +48,10 @@ class playlistContent :public core::abstractContent
 	  QSortFilterProxyModel	*proxyM;
  	  QSortFilterProxyModel	*trackProxy;
 	  
+	  QLabel 		iconL;
+	  QLabel		textL;
+	  QString		textS;
+	  
 	  //actions
 	  QAction 		*removeAction;
 	  QAction		*addFolderAction;

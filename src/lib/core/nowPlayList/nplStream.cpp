@@ -9,7 +9,6 @@ using namespace audioFiles;
 
 core::nplStream::nplStream(QString s)
         :nplTrack(),
-        QObject(),
         url(s)
 {
     if (! core::isStream(url) )
@@ -22,6 +21,11 @@ core::nplStream::nplStream(QString s)
     albumS=url.url();
 
 //      connect(mediaObject,SIGNAL(metaDataChanged() ),this,SLOT(getMetaData() ) );
+}
+
+core::nplTrack* core::nplStream::clone()
+{
+    return new nplStream(url.url());
 }
 
 void core::nplStream::play()

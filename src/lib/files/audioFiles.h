@@ -59,7 +59,6 @@ enum errors
 
 struct _tagRecord
 {
-
     QVariant 	value;
     int 	status;        
 };

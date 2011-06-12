@@ -14,8 +14,7 @@ artistModel::artistModel(QObject *parent)
     size.setWidth(100);
     itemSize.setHeight(100);
     artistPic=views::decor->tagIcon(ARTIST).pixmap(50,50);
-    
-    connect(db,SIGNAL(updated(audioFiles::audioFile) ),this,SLOT(artistNeedUpdate(audioFiles::audioFile)) );
+       
 }
 
 
@@ -59,4 +58,5 @@ void artistModel::updateQueries()
     }
 //     endResetModel();
 }
+
 

@@ -20,7 +20,7 @@ class playlistModel :public  QAbstractListModel
 	
 // 	virtual KUrl url(int row) const;
 	virtual Qt::ItemFlags flags ( const QModelIndex & index ) const;
-	
+	bool setData( const QModelIndex & index, const QVariant & value, int role);
 	
     public slots:
 	void updateData();

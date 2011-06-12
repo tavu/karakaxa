@@ -34,6 +34,15 @@ QVariant views::trackItem::data(int column, int role) const
     return QVariant();
 }
 
+bool views::trackItem::setData(const QVariant& value, int column, int role)
+{
+    file.setTag(column,value);
+    dataChanged(column,column);
+    
+    return true;
+}
+
+
 views::trackModelItem::trackModelItem()
   :q(0)
 {

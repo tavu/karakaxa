@@ -5,6 +5,7 @@
 #include<QString>
 #include"../files/tagsTable.h"
 #include<QSharedPointer>
+#include<QDebug>
 
 #define NPLAUDIOFILE	1
 #define NPLSTREAM 	2
@@ -15,9 +16,9 @@ namespace core
     
 class nplTrack;    
 typedef QSharedPointer<core::nplTrack> nplPointer;
-class nplTrack
+class nplTrack :public QObject
 {
-    
+    Q_OBJECT    
     public:
 	nplTrack();
 	virtual ~nplTrack();
@@ -35,6 +36,7 @@ class nplTrack
 	}
 	virtual void 		play();
 	virtual void 		finish();
+	virtual nplTrack*	clone()=0;
 	
 
   protected:
@@ -44,6 +46,18 @@ class nplTrack
   public:
       static nplPointer getNplTrack(const QString url);
       static nplPointer getNplTrack(const QUrl url);
+      
+  signals:
+      void changed();
+      
+         
+  protected slots:
+  
+      void emitChanged()	
+      {	
+	qDebug()<<"KKKeee";
+	emit changed();
+      }
 };
 
 

@@ -29,6 +29,14 @@ public:
 
 
 private:
+    void loaded();
+    void unloaded()
+    {
+	core::contentHdl->removeMenu(m);
+	delete m;
+    }
+  
+    core::abstractMenu *m;
     myFileSystemModel *model;
     KDirModel *dirModel;
     QSortFilterProxyModel  *proxyM;
@@ -63,5 +71,59 @@ public slots:
 
     
 };
+
+class folderContextMenu :public core::abstractMenu
+{
+    Q_OBJECT
+    public:
+	
+	folderContextMenu(folderContent *c)
+	  :abstractMenu(), f(c)
+	{	    
+	     act=new QAction(KIcon("folder"),tr("go to folder"),this);
+	     connect(act,SIGNAL(triggered() ),this,SLOT(cd() ) );
+	}
+	~folderContextMenu()
+	{
+	    delete act;
+	}
+	
+	virtual bool canShow(QUrl &u ,bool multFiles)
+	{
+	    this->u=KUrl(u);
+	    if(this->u.isLocalFile() )
+	    {
+		this->u=u;
+		return true;
+	    }
+	    
+	    return false;
+	}
+	
+	QAction* action()
+	{
+	    return act;
+	}
+    
+    private:      
+      folderContent *f;
+      QAction *act;
+      KUrl u;
+
+    private slots:
+	void cd()	
+	{
+	    f->cd(core::folder(u.toLocalFile()) );
+	    core::contentHdl->setCurrentContent(f);
+	}
+	
+};
+
+
+
+
+
+
+
 
 #endif

@@ -17,13 +17,12 @@ public:
     int sizeHintForColumn(int column) const;
 private:
     QPoint startPos;
-    QMenu *menu;
     QAction *removeAction;
     QAction *duplicateAction;
 
 
     void contextMenuEvent(QContextMenuEvent *e);
-    void createMenu();
+    QMenu* createMenu();
     void keyPressEvent(QKeyEvent *event);
 
 protected:

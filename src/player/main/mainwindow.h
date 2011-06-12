@@ -7,6 +7,7 @@
 #include <Phonon/VolumeSlider>
 #include<QLabel>
 #include<QVBoxLayout>
+#include<QSystemTrayIcon>
 
 // #include"nowPlaylistWidget.h"
 // #include"sound/sound.h"
@@ -35,7 +36,8 @@ class mainWindow :public QMainWindow
 // 	}
 	
     private:
-
+	
+	QSystemTrayIcon	*trayIcon;
 	QToolBar 	*toolBar;
 	nplaylistView 	*nplView;
 	contentTree 	*conTree;
@@ -54,7 +56,8 @@ class mainWindow :public QMainWindow
 	QAction *playAction;
 	QAction *nextAction;
 	QAction *previousAction;
-	QAction *volumeAction;
+	
+	views::volumeBar *volumeB;
 	
 	
 	Phonon::SeekSlider *slider;
@@ -71,16 +74,25 @@ class mainWindow :public QMainWindow
 	inline void conViewInit();
 	inline void defaultContent();
 	inline void infoInit();
-
-// 	bool _fullScreen;
-	void lockDock();
+	inline void createTrayIcon();
+	
 
 	void writeSettings();
+// 	bool _fullScreen;
+	void lockDock();
+	
 	void readSettings();
 
 	void closeEvent(QCloseEvent *event);
+    
     public slots:
 	void stateChanged(Phonon::State state);
+	void iconActivated(QSystemTrayIcon::ActivationReason reason);
+	void QuitSlot()
+	{
+	    hide();
+	    writeSettings();
+	}
 
 
 };

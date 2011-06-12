@@ -217,27 +217,30 @@ void core::soundEngine::newSource( const Phonon::MediaSource  s)
 void core::soundEngine::setMute(bool f)
 {
     //due to a bug we don't use setMute from audioOutput but we set the volume to zero
-    static qreal v;
+    static qreal v=audioOutput->volume();    
     if(f)
     {
 	v=audioOutput->volume();    
 	audioOutput->setVolume(0);
     }
+    else if(v==0)
+    {
+	audioOutput->setVolume(0.5);
+    }
     else
     {
 	audioOutput->setVolume(v);
     }
-    _isMuted=f;
 }
 
 void core::soundEngine::muteToggle()
 {
-    setMute(!_isMuted);
+    setMute(!isMuted());
 }
 
 bool core::soundEngine::isMuted()
 {
-    return _isMuted;
+    return audioOutput->volume()==0;
 }
 
 namespace core

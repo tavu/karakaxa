@@ -12,7 +12,8 @@ core::contentHandler::contentHandler()
         :QObject()
 {
     model=new QStandardItemModel(this);
-    stack=new QStackedWidget();   
+    stack=new QStackedWidget();
+    stack->setMinimumSize(QSize(0,0) );
     _toolBar=new KToolBar( 0,true,false );
 }
 
@@ -22,6 +23,7 @@ QFrame* core::contentHandler::contentView() const
     QVBoxLayout *layout=new QVBoxLayout(f);
     layout->addWidget(_toolBar);
     layout->addWidget(stack);
+    f->setSizePolicy(QSizePolicy::Ignored,QSizePolicy::Ignored);
     return f;
 }
 
@@ -96,6 +98,8 @@ void core::contentHandler::itemChanger(const QModelIndex &index)
 	content=contentList.at(index.row());
     }
 
+    view->expand(index);
+
     activateContent(content,true);
     content->updateContent(model->itemFromIndex(index) );
 }
@@ -146,7 +150,10 @@ void core::contentHandler::addContent(abstractContent *content, bool activate)
         
     stack->addWidget(content);
     model->appendRow( content->item() );
+    content->setParent(stack);
+    content->setMinimumSize(QSize(0,0) );
     content->loaded();
+    
     
     if(content->toolBar!=0)
     {
@@ -166,7 +173,7 @@ void core::contentHandler::addContent(abstractContent *content, bool activate)
 }
 
 void core::contentHandler::removeContent(abstractContent *content)
-{
+{    
     history.removeAll(content);
     if (isActive(content) )
     {
@@ -192,8 +199,11 @@ void core::contentHandler::removeContent(abstractContent *content)
 
     content->unloadContent();
     int pos=contentList.indexOf(content);
+    
     model->removeRow(pos);
+
     contentList.removeAt(pos);
+    
     content->deleteLater();
 }
 
@@ -222,6 +232,33 @@ QString core::contentHandler::genericContent::genericContent::name() const
 
     return widget->windowTitle();
 }
+
+void core::contentHandler::addMenu(core::abstractMenu* m)
+{
+    mutex.lock();
+    menuList.append(m);
+    mutex.unlock();
+}
+
+void core::contentHandler::removeMenu(core::abstractMenu* m)
+{
+    mutex.lock();
+    int pos=menuList.indexOf(m);
+    menuList.removeAt(pos);
+    mutex.unlock();
+}
+
+void core::contentHandler::contextMenu(QMenu* menu, QUrl u, bool multFiles)
+{
+  foreach(abstractMenu *m,menuList)
+  {
+      if(m->canShow(u,multFiles) )	
+      {
+	menu->addAction(m->action() );	
+      }
+  }
+}
+
 
 namespace core
 {

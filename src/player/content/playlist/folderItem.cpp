@@ -79,7 +79,7 @@ QVariant folderItem::data(int column, int role) const
     return core::xmlItem::data(column, role);
 }
 
-Qt::ItemFlags standardItem::flags(int column) const
+Qt::ItemFlags folderItem::flags(int column) const
 {
     return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable;
 }
@@ -101,3 +101,7 @@ QVariant smplalistHead::data(int column, int role) const
 
 // const int folderItem::FOLDER_ITEM=core::xmlItem::XmlType+1;
 
+Qt::ItemFlags smplalistHead::flags(int column) const
+{
+    return Qt::ItemIsEnabled | Qt::ItemIsSelectable ;
+}

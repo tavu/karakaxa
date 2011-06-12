@@ -78,15 +78,30 @@ playlistContent::playlistContent(QWidget *parent)
     stack->addWidget(treeV);
     stack->addWidget(trackV);
 
+    
+    
+    iconL.setPixmap(views::decor->tagIcon(-1).pixmap(20,20) );
+    textL.setText(tr("Playlists") );
+    QFont font;
+    font.setPointSize(13);
+    textL.setFont(font);
+    
     toolBarInit();
     
+    
     QVBoxLayout *layout = new QVBoxLayout();
+    QHBoxLayout *hLayout = new QHBoxLayout();
 
+    hLayout->addWidget(&iconL);
+    hLayout->addWidget(&textL);
+    hLayout->addStretch();
+    
+    layout->addLayout(hLayout);
     layout->addWidget(stack);
 
     setLayout(layout);
     
-    connect(treeV,SIGNAL(showContextMenu(QModelIndex) ),this,SLOT(contextMenuSlot(QModelIndex)) );
+    connect(treeV,SIGNAL(showContextMenu(QModelIndex,QModelIndexList) ),this,SLOT(contextMenuSlot(QModelIndex)) );
     connect(treeV, SIGNAL(activated(QModelIndex)), this, SLOT(activationSlot(QModelIndex) )) ;
     
     
@@ -175,6 +190,18 @@ void playlistContent::toolBarInit()
     toolBar->addAction( forwardAction );
     connect( forwardAction, SIGNAL( triggered( bool) ),this, SLOT( forward() ) );   
     
+//     QHBoxLayout *layout=new QHBoxLayout();
+//     layout->addWidget(iconL);
+// //     layout->addWidget(textL);
+//     QWidget *w=new QWidget(this);
+//     w->setLayout(layout);
+    
+//     toolBar->addWidget(&iconL);
+//     toolBar->addWidget(&textL);
+    
+//     toolBar->addWidget(w);
+    
+    
     QWidget* spacer = new QWidget(this);
     spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     toolBar->addWidget(spacer);
@@ -194,6 +221,7 @@ void playlistContent::back()
 {
     stack->setCurrentIndex(0);
     searchAction->setVisible(false);
+    textL.setText(tr("Playlists") );
 }
 
 void playlistContent::forward()
@@ -203,6 +231,7 @@ void playlistContent::forward()
     {
 	quer->select();
     }
+    textL.setText(textS);
     searchAction->setVisible(true);
 }
 
@@ -313,12 +342,14 @@ void playlistContent::activationSlot(QModelIndex in)
 	queryGrt::abstractQuery *q=i->query();
 	quer->setQuery(q->clone() );
 	quer->select();
+	textS=item->data(0,Qt::DisplayRole).toString();
 	forward();
     }
     else if(item->type()==PLAYLIST_ITEM)
     {
 	trackProxy->setSourceModel(plModel);
 	plModel->setPlPath(item->data(0,ITEM_ROLE).toString() );
+	textS=item->data(0,Qt::DisplayRole).toString();
 	forward();
     }
     else if(item->type()==FOLDER_ITEM || item->type()==PLAYLIST_FOLDER )

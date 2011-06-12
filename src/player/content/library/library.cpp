@@ -2,6 +2,7 @@
 #include<QLabel>
 #include<QHBoxLayout>
 #include <QSpacerItem>
+#include"artistDelegate.h"
 // #include<libraryWidget.h>
 
 using namespace core;
@@ -18,6 +19,7 @@ library::library(QWidget *parent)
     artistM=new artistModel(this);    
     artistV->setModel(artistM);
     artistM->updateQueries();
+    artistV->setItemDelegate(new artistDelegate() );
     
     albumTrV=new albumTrack(this);    
 
@@ -40,8 +42,7 @@ library::library(QWidget *parent)
     
     connect(artistV,SIGNAL(activated ( const QModelIndex) ),this ,SLOT( artistActivated(const QModelIndex&) ) );
 
-    connect(db,SIGNAL(updated(audioFiles::audioFile) ),this,SLOT(artistNeedUpdate(audioFiles::audioFile)) );
-    connect(db,SIGNAL(changed() ),this,SLOT(dbChanged() ) );
+//     connect(db,SIGNAL(changed() ),this,SLOT(dbChanged() ) );
 
     
 
@@ -160,25 +161,20 @@ void library::toolBarInit()
 //     toolBar->addWidget(&s);
     toolBar->addWidget(searchLine);
 
-    connect(searchLine,SIGNAL(editingFinished () ),this,SLOT(search() ) );
-    connect(searchLine,SIGNAL(clearButtonClicked() ),this,SLOT(search() ) );
+//     connect(searchLine,SIGNAL(editingFinished () ),this,SLOT(search() ) );
+//     connect(searchLine,SIGNAL(clearButtonClicked() ),this,SLOT(search() ) );textChanged ( const QString & text ) 
+    connect(searchLine,SIGNAL(textChanged ( const QString & ) ),this,SLOT(search(const QString &) ) );
 }
 
-void library::search()
-{  
-    QString s= searchLine->text();
-    if(searchString==s || searchString.isEmpty() && s.isEmpty()  )
-    {
- 	return ;
-    }
-    
+void library::search(const QString & text)
+{    
     searchQ->clear();   
-    if(!s.isEmpty() )
+    if(!text.isEmpty() )
     {
 	QLinkedList<tagsEnum>::iterator i=searchTagL.begin();
       	for(i=searchTagL.begin();i!=searchTagL.end();i++)
 	{
-	    queryGrt::tagQuery *t=new queryGrt::tagQuery(*i,queryGrt::CONTAINS,s);
+	    queryGrt::tagQuery *t=new queryGrt::tagQuery(*i,queryGrt::CONTAINS,text);
 	    searchQ->append(t);
 // 	    searchTagsL<<queryGrt::query(*i,queryGrt::CONTAINS,s);
 	}
@@ -251,7 +247,7 @@ void library::artistNeedUpdate(audioFile f)
 {
     foreach(audioFiles::changes c,f.tagChanged() )
     {
-	if(c.tag==ARTIST)
+	if(c.tag==ARTIST || c.tag==LEAD_ARTIST )
 	{
 	    if(artistV->isVisible() )
 	    {

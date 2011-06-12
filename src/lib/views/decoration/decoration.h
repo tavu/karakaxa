@@ -65,7 +65,17 @@ class decoration
 	    return KIcon("audio-volume-low");
 	}
 	
+	KIcon playListIcon()
+	{
+	    return KIcon("audio-x-generic");
+	}
+	
 	KIcon tagIcon(int t);
+	
+	KIcon logo()
+	{
+	    return playerIcon;
+	}
 	
 	
 	QPixmap cover(const QString &path);
@@ -93,6 +103,7 @@ class decoration
 	KIcon pauseIcon;
 	KIcon playIcon;
 
+	KIcon playerIcon;
 	KIcon icons[audioFiles::FRAME_NUM];
 	KIcon defaultIcon;
 	

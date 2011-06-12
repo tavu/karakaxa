@@ -61,7 +61,7 @@ class library :public core::abstractContent
 	
 	void dbChanged();
     //      private slots:
-	void search();
+	void search(const QString& text);
 	
 //     private slots:
 // 	void updateQueriesSlot();	

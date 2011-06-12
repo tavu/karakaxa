@@ -12,6 +12,7 @@ editTrackContent::editTrackContent(QString url,QWidget *parent)
         :abstractContent(parent)
 {
     file=new audioFile(url);
+    file->load(audioFile::LOAD_FILE);
 
     path=new QLineEdit(file->path(),this);
     path->setContextMenuPolicy(Qt::NoContextMenu);
@@ -29,6 +30,7 @@ editTrackContent::editTrackContent(QString url,QWidget *parent)
 
     hLayout->addWidget(cw);
     hLayout->addWidget(infoW);
+    hLayout->addStretch();
 
     vLayout->addLayout(hLayout);
 
@@ -57,12 +59,12 @@ editTrackContent::~editTrackContent()
 
 void editTrackContent::tagInit()
 {
-
+    
     tagW=new QWidget(this);
     QFormLayout *form = new QFormLayout();
     form->setLabelAlignment(Qt::AlignLeft);
 
-    titleL=new QLineEdit(file->tag(TITLE,audioFile::DEFAULTF & ~audioFile::TITLEFP).toString(),this );
+    titleL=new QLineEdit(file->tag(TITLE,audioFile::ONCACHE & ~audioFile::TITLEFP).toString(),this );
     albumL=new QLineEdit(file->tag(ALBUM,audioFile::ONCACHE).toString(),this );
     artistL=new QLineEdit(file->tag(ARTIST,audioFile::ONCACHE).toString(),this );
     leadArtistL=new QLineEdit(file->tag(LEAD_ARTIST,audioFile::ONCACHE).toString(),this );
@@ -134,7 +136,9 @@ void editTrackContent::infoInit()
 
 void editTrackContent::save()
 {
-    if (titleL->text()!=file->tag(TITLE,audioFile::DEFAULTF & ~audioFile::TITLEFP ).toString() )
+//     QList<int> tags,QList<QVariant> values
+  
+    if (titleL->text().compare(file->tag(TITLE,audioFile::ONCACHE | ~audioFile::TITLEFP ).toString() )!=0)
     {
         qDebug()<<"edit title";
         file->setTag(TITLE,titleL->text() );
@@ -147,36 +151,46 @@ void editTrackContent::save()
         file->setTag(ALBUM,albumL->text() );
     }
 
-    if (artistL->text().compare(file->tag(ARTIST).toString() )!=0)
+    if (artistL->text()!=file->tag(ARTIST).toString() )
     {
         qDebug()<<"edit artist";
         file->setTag(ARTIST,artistL->text() );
     }
     
     
-    if (QString::compare(leadArtistL->text(),file->tag(LEAD_ARTIST).toString() )!=0)
+    if (leadArtistL->text()!=file->tag(LEAD_ARTIST).toString() )
     {
         qDebug()<<"edit leadArtist";
         file->setTag(LEAD_ARTIST,leadArtistL->text() );
     }
 
 
-    if (composerL->text().compare(file->tag(COMPOSER).toString() )!=0)
+    if (composerL->text()!=file->tag(COMPOSER).toString() )
     {
         qDebug()<<"edit composer";
         file->setTag(COMPOSER,composerL->text() );
     }
     
-    if (genreL->text()!=file->tag(GENRE).toString() )
+    if (genreL->text() != file->tag(GENRE).toString() )
     {
         qDebug()<<"edit genre";
         file->setTag(GENRE,genreL->text() );
     }
 
-    if (commentL->toPlainText().compare(file->tag(COMMENT).toString())!=0 )
+    if (commentL->toPlainText() != file->tag(COMMENT).toString() )
     {
         qDebug()<<"edit comment";
         file->setTag(COMMENT,commentL->toPlainText() );
+    }
+    
+    if(yearL->value() != file->tag(YEAR).toInt() )
+    {
+	file->setTag(YEAR,QVariant(yearL->value() ) );
+    }
+    
+    if(trackL->value() != file->tag(TRACK).toInt() )
+    {
+	file->setTag(TRACK,QVariant(trackL->value() ) );
     }
 }
 

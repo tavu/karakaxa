@@ -28,12 +28,6 @@ class audioFile :public QObject
 //     using namespace audioFiles;
     Q_OBJECT
     
-    struct changes
-    {
-	int 	 tag;
-	QVariant value;
-	int error;
-    };
     
     public:
 
@@ -94,7 +88,7 @@ class audioFile :public QObject
 	    return changes;
 	}
 
-	void load();
+	void load(const short int f=SELECT|LOAD_FILE);
 
 	bool isValid() const
 	{
@@ -137,10 +131,12 @@ class audioFile :public QObject
 	
 
 //    protected slots:
-	
+
 // 	void recordClean();
 
 };//class
 
 };//namespace
+
+
 #endif

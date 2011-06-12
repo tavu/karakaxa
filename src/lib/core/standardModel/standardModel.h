@@ -88,7 +88,11 @@ class standardItem :public QObject
       
       void beginInsertColumns( int first, int last);
       void endInsertColumns();
-      void dataChanged ( const QModelIndex & topLeft, const QModelIndex & bottomRight );
+      void dataChanged ( const int first, const int last);
+      void dataChanged ( const int column)
+      {
+	  dataChanged(column,column);
+      }
       
       inline void beginRemoveRows(int first, int last );
       

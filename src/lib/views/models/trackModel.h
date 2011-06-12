@@ -17,6 +17,7 @@ class trackItem :public standardItem
 	    return audioFiles::FRAME_NUM;
 	}
        
+	virtual bool setData (const QVariant &value,int column, int role );
 	virtual QVariant data (int column, int role = Qt::UserRole + 1 ) const;	
     protected:
 	audioFiles::audioFile file;

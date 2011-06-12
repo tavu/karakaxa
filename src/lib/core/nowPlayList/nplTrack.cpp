@@ -9,7 +9,7 @@
 
 
 core::nplTrack::nplTrack()
-        :ok(true)
+        :QObject(), ok(true)
 {
 }
 

@@ -21,6 +21,8 @@ class folderItem :public core::xmlItem
 	    return element.hasChildNodes();
 	}
 	
+	Qt::ItemFlags flags(int column) const;
+	
 	void setSizeHint(const QSize &s)
 	{
 	    sizeHint=s;
@@ -38,6 +40,7 @@ class smplalistHead :public folderItem
 	{}
 	
 	QVariant data (int column, int role = Qt::UserRole + 1 ) const;
+	Qt::ItemFlags flags(int column) const;
 
 	
 };

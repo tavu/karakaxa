@@ -14,11 +14,11 @@
 
 
 
-const short int audioFiles::audioFile::ONDATAB=0b00010000;
-const short int audioFiles::audioFile::SELECT=0b00000001;
-const short int audioFiles::audioFile::ONCACHE=0b00000010;
+const short int audioFiles::audioFile::ONDATAB=   0b00010000;
+const short int audioFiles::audioFile::SELECT =   0b00000001;
+const short int audioFiles::audioFile::ONCACHE=   0b00000010;
 const short int audioFiles::audioFile::LOAD_FILE =0b00000100;
-const short int audioFiles::audioFile::TITLEFP=0b00001000;
+const short int audioFiles::audioFile::TITLEFP=   0b00001000;
 const short int audioFiles::audioFile::DEFAULTF=SELECT|ONDATAB|ONCACHE|LOAD_FILE|TITLEFP;
 
 audioFiles::audioFile::audioFile()
@@ -27,6 +27,8 @@ audioFiles::audioFile::audioFile()
         saveFlag(false),
         cache(0)
 {
+    qRegisterMetaType<audioFiles::audioFile>("audioFile");
+    qRegisterMetaType<audioFiles::audioFile>("audioFiles::audioFile");
 }
 
 audioFiles::audioFile::audioFile(const QString url)
@@ -35,7 +37,8 @@ audioFiles::audioFile::audioFile(const QString url)
         saveFlag(false)
 {
     cache=audioFiles::fileCache::getFileCache(url);
-//     flags[PATH]=true;
+    qRegisterMetaType<audioFiles::audioFile>("audioFile");
+    qRegisterMetaType<audioFiles::audioFile>("audioFiles::audioFile");
     
 //     connect(&db,SIGNAL(changed()),this,SLOT(recordClean()) );
 }
@@ -126,6 +129,8 @@ QVariant audioFiles::audioFile::tag(int t, const short int f) const
     }
     if (f & ONCACHE)
     {
+	
+      
 	stat=ONCACHE;
 	ret=cache->tagFromFile((tagsEnum) t, err);
 	
@@ -135,10 +140,11 @@ QVariant audioFiles::audioFile::tag(int t, const short int f) const
  	    stat= TITLEFP;
  	    ret=core::titleFromPath(path());
         }
-        if(err==OK )
+        if(err==OK)
 	{
-	    QString s=ret.toString().trimmed();
-	    return QVariant(s);
+	qDebug()<<"here";  
+// 	    QString s=ret.toString().trimmed();
+	    return ret;
 	} 
     }
 
@@ -165,6 +171,8 @@ QVariant audioFiles::audioFile::tag(int t, const short int f) const
  	    ret=core::titleFromPath(path());
 	    return ret;
         }
+        stat=ONCACHE;
+        return ret;
     }
     err=UNOWN;
     stat=-1;
@@ -502,7 +510,7 @@ void audioFiles::audioFile::save()
     core::db->updateSig(*this);
 }
 
-void audioFiles::audioFile::load()
+void audioFiles::audioFile::load(const short int f)
 {
     if(cache==0)
     {
@@ -510,10 +518,22 @@ void audioFiles::audioFile::load()
 	return ;
     }
   
-    err=cache->select();
-    if(err!=OK)
+    if(f & SELECT)
+    {
+	err=cache->select();
+	if(err==OK)
+	{
+	    return ;
+	}
+    }    
+    
+    if(f & LOAD_FILE)
     {
 	err=cache->loadTags();
+    }
+    else
+    {    
+	err=UNOWN;
     }
 }
 

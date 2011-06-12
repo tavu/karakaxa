@@ -18,11 +18,11 @@ views::decoration::decoration()
 //         defaultIcon("data/music.png")
 {
     QString artistS=KGlobal::dirs()->findResource("data",QString("player/icons/artist.png") );
-    qDebug()<<"artist icon location "<<artistS;
+//     qDebug()<<"artist icon location "<<artistS;
     icons[ARTIST]=KIcon(artistS);
     
     albumIcon=KGlobal::dirs()->findResource("data",QString("player/icons/album.png") );
-    qDebug()<<"album icon location "<<albumIcon;
+//     qDebug()<<"album icon location "<<albumIcon;
     icons[ALBUM]=KIcon(albumIcon);
     
     icons[RATING]=KIcon("rating");
@@ -37,9 +37,12 @@ views::decoration::decoration()
     icons[LENGTH]=KIcon(lengthIcon);
     
     QString defaultS=KGlobal::dirs()->findResource("data",QString("player/icons/music.png"));
-    qDebug()<<"default icon location"<<defaultS;
+//     qDebug()<<"default icon location"<<defaultS;
     defaultIcon=KIcon(defaultS);
     
+    defaultS=KGlobal::dirs()->findResource("data",QString("player/icons/karakaxa.png"));
+//     qDebug()<<"default icon location"<<defaultS;
+    playerIcon=KIcon(defaultS);
     
     pal=qApp->palette();
     QColor c(180,189,213);

@@ -29,12 +29,12 @@ views::treeView::treeView(QWidget *parent,QString name)
     setDragDropMode( QAbstractItemView::DragOnly );
     setRootIsDecorated(false);
     setSortingEnabled (true);
+//     setMouseTracking(true);
 
     if (!name.isEmpty() )
     {
         setObjectName(name);
         readSettings();
-	setMouseTracking(true);
 	connect(qApp,SIGNAL(aboutToQuit() ),this,SLOT(writeSettings() ) ); 
     }
     setEditTriggers(QAbstractItemView::SelectedClicked);
@@ -116,7 +116,10 @@ void views::treeView::performDrag()
 
 void views::treeView::setModel ( QAbstractItemModel * model )
 {
-    QTreeView::setModel(model);   
+    byteArr=header()->saveState();
+    QTreeView::setModel(model);        
+    header()->restoreState(byteArr);    
+    
     if(delegate->ratingColumn()>-1)
     {
 	connect(model,SIGNAL(rowsInserted ( const QModelIndex, int, int )),this ,SLOT(updateStarWidget(QModelIndex, int, int) ) );
@@ -147,7 +150,7 @@ void views::treeView::dataChanged ( const QModelIndex & topLeft, const QModelInd
 
 void views::treeView::contextMenuEvent(QContextMenuEvent *e)
 {
-    emit(showContextMenu(indexAt(e->pos()) ) ); 
+    emit showContextMenu(indexAt(e->pos() ),selectedIndexes() ); 
 }
 
 
@@ -182,7 +185,8 @@ void views::treeView::writeSettings()
 void views::treeView::readSettings()
 {
     KSharedConfigPtr config=core::config->configFile();
-    KConfigGroup group( config, objectName() );
+    KConfigGroup group( config, objectName() );    
+//     byteArr=group.readEntry( "state", QByteArray() );
     header()->restoreState(group.readEntry( "state", QByteArray() ) );
 }
 
@@ -300,9 +304,7 @@ void views::treeView::leaveEvent (QEvent *)
 
 void views::treeView::play(const QModelIndex index)
 {
-//     const trackUrl *Model=dynamic_cast<const trackUrl*>(model() );
-    
-    qDebug()<<"PLAY";
+//     const trackUrl *Model=dynamic_cast<const trackUrl*>(model() );    
 
     core::nplList list;
     for (int i=0;i<model()->rowCount(index.parent() );i++)
@@ -311,12 +313,9 @@ void views::treeView::play(const QModelIndex index)
 	 if(in.isValid() )
 	 {
 	    QUrl u=model()->data(in,URL_ROLE).toUrl();
-	    qDebug()<<u;
 	    list<<core::nplTrack::getNplTrack(u);
 	 }
-    }
-    
-    
+    }        
     
     core::npList->clear();
     core::npList->insert(list,0);

@@ -38,6 +38,9 @@ class treeView :public QTreeView
 	virtual void contextMenuEvent(QContextMenuEvent *e);
 	void headerRepaint();
 	virtual void leaveEvent(QEvent*)  ;
+	
+	QByteArray byteArr;
+	
 
     protected slots:
 	virtual void commitData ( QWidget * editor ) ;
@@ -51,7 +54,7 @@ class treeView :public QTreeView
 	virtual void play(const QModelIndex index);
 	
     signals:
-	void showContextMenu(QModelIndex);
+	void showContextMenu(QModelIndex,QModelIndexList);
 	
 };//class
 

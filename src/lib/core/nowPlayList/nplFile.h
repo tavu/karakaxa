@@ -11,6 +11,7 @@ namespace core
 {
 class nplFile :public nplTrack
 {
+    Q_OBJECT
     public:
 
 	nplFile(QString s);
@@ -23,6 +24,7 @@ class nplFile :public nplTrack
 	int	 	length() ;
 	QString 	cover();
 	
+	nplTrack*	clone();
 	QVariant	artist();	
 	QVariant	tag(int);
 	
@@ -30,8 +32,11 @@ class nplFile :public nplTrack
 	void 		play();
 
     private:
-
 	audioFile *file;
+	
+    private slots:
+	void emitChanged(audioFiles::audioFile f);
+    
 
 };
 };

@@ -35,6 +35,8 @@ QStandardItem* core::abstractContent::item()
 	{
 	   _item=new QStandardItem(name() );
 	}
+	
+	_item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsDropEnabled | Qt::ItemIsEnabled);
     }
     
     return _item;
@@ -126,6 +128,7 @@ void core::abstractContent::showMenu(const QPoint p)
 void core::abstractContent::unloadContent()
 {    
     _isLoaded=false;
+    unloaded();
 }
 
 void core::abstractContent::load()

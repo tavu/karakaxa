@@ -16,6 +16,7 @@ class myFileSystemModel :public KDirModel
 	myFileSystemModel(QObject *parent=0);
 	int columnCount( const QModelIndex & parent ) const;
 	QVariant data(const QModelIndex &index, int role) const;
+	bool setData( const QModelIndex & index, const QVariant & value, int role);
 	QVariant headerData ( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const ;
 	void updateTrack(audioFile *f);
 	int infoC();

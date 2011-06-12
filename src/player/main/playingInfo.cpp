@@ -91,7 +91,7 @@ playingInfo::playingInfo(QWidget *parent)
       
       
 //      setFixedHeight(50);    
-    connect(engine,SIGNAL(trackChanged(QString) ),this,SLOT(update(QString)) );
+    connect(engine,SIGNAL(trackChanged(QString) ),this,SLOT(update()) );
     connect(stars,SIGNAL(ratingChanged(int) ),SLOT(setRating(int) ) );
     
 //     setSizePolicy(QSizePolicy::Preferred,QSizePolicy::Preferred);
@@ -109,14 +109,16 @@ playingInfo::~playingInfo()
     delete stars;
 }
 
-void playingInfo::update(QString path)
+void playingInfo::update()
 {
      track=npList->getPlayingTrack();
+     connect(track.data(),SIGNAL(changed()),this,SLOT(getInfo()) );
      getInfo();
 }
 
 void playingInfo::getInfo()
 {
+    qDebug()<<"KKK";
     if (track.isNull())
     {
         qDebug()<<"playingInfo: can't get informarion file is null";

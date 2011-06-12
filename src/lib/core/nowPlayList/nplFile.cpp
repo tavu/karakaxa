@@ -22,9 +22,24 @@ core::nplFile::nplFile(QString s)
     {
       //if the file is valid we read the info we are soure that we will use.
         file->load();
+	connect(db,SIGNAL(updated(audioFiles::audioFile)),this,SLOT(emitChanged(audioFiles::audioFile) ) ) ;
     }
-//     file->setMutable(true);
 
+}
+
+void core::nplFile::emitChanged(audioFiles::audioFile f)
+{
+//     qDebug()<<"DTG";
+    if(f.path()==file->path() )
+    {
+//       qDebug()<<"DTGhefd";  
+	nplTrack::emitChanged();
+    }
+}
+
+core::nplTrack* core::nplFile::clone()
+{
+    return new nplFile( file->path() );
 }
 
 void core::nplFile::play()

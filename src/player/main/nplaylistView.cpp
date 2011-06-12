@@ -21,7 +21,6 @@ nplaylistView::nplaylistView(QWidget *parent)
   
     setDragDropMode( QAbstractItemView::DragDrop );
     setSelectionMode(QAbstractItemView::ExtendedSelection);
-    createMenu();
 
     setDropIndicatorShown(true);
     setDragEnabled( true );
@@ -107,12 +106,13 @@ int nplaylistView::sizeHintForColumn(int column) const
     return -1;
 }
 
-void nplaylistView::createMenu()
+QMenu* nplaylistView::createMenu()
 {
-    menu=new QMenu(this);
+    QMenu *menu=new QMenu(this);
     QPalette pal=views::decor->palette();
     pal.setColor(QPalette::Base,pal.color(QPalette::Window) );
-    menu->setPalette(pal);
+    menu->setPalette(pal);        
+    
     removeAction=new QAction(tr("&Remove track"),this);
     connect(removeAction,SIGNAL(triggered( bool)),this,SLOT(remove() ) );
     menu->addAction(removeAction);
@@ -120,17 +120,29 @@ void nplaylistView::createMenu()
     duplicateAction=new QAction(tr("&Duplicate track"),this);
     connect(duplicateAction,SIGNAL(triggered( bool)),this,SLOT(duplicate() ) );
     menu->addAction(duplicateAction);
-
+    
+    return menu;
 }
 
 void nplaylistView::duplicate()
 {
-    QList<nplTrack*> l;
+    nplList l;
     QModelIndexList list=selectedIndexes();
+    qSort(list.begin(), list.end());
+//     qDebug()<<"S "<<list.size();
 
-    QModelIndexList::const_iterator it=list.begin();
+    foreach(QModelIndex index,list)
+    {
+	if(index.column()==0 )
+	{
+	    nplPointer p=npList->getTrack(index.row());
+	    l<<nplPointer(p->clone() );
+	}
+    }
 
-    npList->duplicate( (*it).row());
+    npList->insert(l,list.last().row()+1 );
+
+//     npList->duplicate( (*it).row());
 }
 
 void nplaylistView::remove()
@@ -189,15 +201,29 @@ void nplaylistView::contextMenuEvent(QContextMenuEvent *e)
 {
     if (indexAt(e->pos()).isValid() )
     {
-        if (selectedIndexes().size()>1	  )
+	QMenu *menu=new QMenu(this);	
+	QPalette pal=views::decor->palette();	
+	pal.setColor(QPalette::Base,pal.color(QPalette::Window) );	
+	menu->setPalette(pal);        	      
+	    
+	removeAction=new QAction(tr("&Remove track"),this);	
+	connect(removeAction,SIGNAL(triggered( bool)),this,SLOT(remove() ) );	
+	menu->addAction(removeAction);	    
+		
+//         if (selectedIndexes().size()==1)
         {
-            duplicateAction->setDisabled (true);
+	    duplicateAction=new QAction(tr("&Duplicate track"),this);	    
+	    connect(duplicateAction,SIGNAL(triggered( bool)),this,SLOT(duplicate() ) );	    
+	    menu->addAction(duplicateAction);
         }
-        else
-        {
-            duplicateAction->setDisabled (false);
-        }
-        menu->popup( e->globalPos() );
+	
+	QMenu *m=new QMenu(tr("More"),menu );
+	m->setPalette(menu->palette());
+	menu->addMenu(m);
+	core::contentHdl->contextMenu(m,currentIndex().data(URL_ROLE).toUrl(),!selectedIndexes().isEmpty());
+	
+        menu->exec( e->globalPos() );
+	delete menu;
     }
 }
 void nplaylistView::dragEnterEvent ( QDragEnterEvent * event )

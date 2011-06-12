@@ -170,7 +170,7 @@ bool core::xmlItem::setData (const QVariant &value,int column, int role )
 	return true;
     }
     
-    if(role ==_attributeRole)
+    if(role ==_attributeRole && !value.toString().isEmpty() )
     {	
 	if(column>=columns.size() || column<0 || columns[column].isEmpty())
 	{
@@ -179,8 +179,7 @@ bool core::xmlItem::setData (const QVariant &value,int column, int role )
 	element.setAttribute(columns[column],value.toString() );
 	return true;
     }
-    
-    if(role==tagNameRole)
+    else if(role==tagNameRole)
     {
 	return setTagName(value.toString() );	
     }

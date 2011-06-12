@@ -45,6 +45,15 @@ int smplaylistItem::type () const
     return SMARTPL_ITEM;
 }
 
+bool smplaylistItem::setData(const QVariant& value, int column, int role)
+{
+    if(value.isNull() )
+    {
+	return false;
+    }
+    return core::xmlItem::setData(value, column, role);
+}
+
 
 queryGrt::abstractQuery* smplaylistItem::group(QDomNode nod) const
 {

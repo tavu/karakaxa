@@ -13,17 +13,16 @@ void standardModel::setHeadItem(standardItem* h)
 {
     if(head!=0)
     {
-// 	delete head;
+  	delete head;
     }
       
     h->setParent(this);
-    head=h;    
+    head=h;
     head->_row=0;    
     head->_model=this;
 
-    emit headerDataChanged (Qt::Horizontal,0, columnCount() );
-    emit headerDataChanged (Qt::Vertical,0, columnCount() );
-
+    emit headerDataChanged (Qt::Horizontal,0, columnCount()-1 );
+    emit headerDataChanged (Qt::Vertical,0, columnCount()-1 );
 }
 
 
@@ -594,11 +593,13 @@ Qt::ItemFlags standardItem::flags(int column) const
     return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
 }
 
-void standardItem::dataChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight)
+void standardItem::dataChanged(const int first, const int last)
 {
     if(_model!=0)
     {
-	_model->emitDataChanged(topLeft,bottomRight);
+	QModelIndex a=_model->index(row(),first);
+	QModelIndex b=_model->index(row(),last);
+	_model->emitDataChanged(a,b);
     }
 }
 

@@ -34,7 +34,7 @@ class playingInfo :public QFrame
 	core::nplPointer track;
 
     public slots:
-	void update(QString path);
+	void update();
 	void getInfo();
 	void setRating(int);
 };
