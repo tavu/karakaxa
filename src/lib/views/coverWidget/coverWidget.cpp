@@ -69,7 +69,7 @@ void views::coverWidget::paintEvent(QPaintEvent *e)
     QPainterPath shadowPath;
     shadowPath.addRoundedRect(shadowR,1,1);
     
-    painter.setOpacity(0.5);    
+    painter.setOpacity(0.5);
     painter.fillPath(shadowPath,Qt::black);
     
     painter.setOpacity(1);    

@@ -16,8 +16,11 @@ views::decoration::decoration()
         pauseIcon( "media-playback-pause" ),
         pixSize(170,150)
 {
-    QString artistS=KGlobal::dirs()->findResource("data",QString("player/icons/artist.png") );
-    icons[ARTIST]=KIcon(artistS);
+    QString s=KGlobal::dirs()->findResource("data",QString("player/icons/artist.png") );
+    icons[ARTIST]=KIcon(s);
+        
+    s=KGlobal::dirs()->findResource("data",QString("player/icons/lead-artist.png") );
+    icons[LEAD_ARTIST]=KIcon(s);
     
     albumIcon=KGlobal::dirs()->findResource("data",QString("player/icons/album.png") );
     icons[ALBUM]=KIcon(albumIcon);
