@@ -10,6 +10,7 @@
 // #include<player.h>
 #include"audioFiles.h"
 #include"fileCache.h"
+#include"fileToDb.h"
 
 namespace audioFiles
 {
@@ -123,6 +124,7 @@ class audioFile :public QObject
 	int fileSize;
 
 	fileTags *file;
+	fileToDb *fdb;
 	
 	bool saveFlag;
 	

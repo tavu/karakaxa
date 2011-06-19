@@ -21,6 +21,9 @@ class database :public QObject
 	database();
 	~database();
 	QSqlDatabase getDatabase();
+	void closeDatabase(QSqlDatabase& dbase);
+	void closeDatabase();
+	
 	QStringList getLibraryFolders();
 
 
@@ -79,12 +82,24 @@ class database :public QObject
 	
   private:
 
+	struct dBEntry
+	{
+	    QString name;
+	    QThread *thr;
+	    int used;
+	};
+    
+	QMap<QString,dBEntry*> dBMap;
+    
 	QSqlDatabase db;
 	QString dbName;
 	QString dbUser;
 	QString dbPass;
 	
 	bool _isConnected;
+	
+	QString apprName(QThread *thr);
+	QMutex mutex;
 
     signals:
 	void changed();

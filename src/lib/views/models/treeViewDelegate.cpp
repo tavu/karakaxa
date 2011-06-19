@@ -41,8 +41,6 @@ void views::treeViewDelegate::paint ( QPainter * painter, const QStyleOptionView
     
     QPen pen;
 
-//     pen.setWidthF(1.5);
-
     painter->setOpacity(0.8);
     pen.setWidth(1);
     pen.setColor(decor->palette().window().color() );
@@ -102,8 +100,6 @@ void views::treeViewDelegate::paint ( QPainter * painter, const QStyleOptionView
 	text=text.simplified();
 	painter->drawText( r,Qt::AlignLeft|Qt::AlignVCenter, text);
     }
-//     style()->drawItemText(painter,r,Qt::AlignLeft|Qt::AlignVCenter,option.palette,true,text);
-
 }
 
 QWidget* views::treeViewDelegate::createEditor(QWidget *parent,const QStyleOptionViewItem &option,const QModelIndex &index) const

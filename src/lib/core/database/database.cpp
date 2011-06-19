@@ -7,6 +7,9 @@
 #include<ksharedconfig.h>
 #include<KGlobal>
 #include<KStandardDirs>
+#include<QThread>
+#include"../func.h"
+#include"../status/playerStatus.h"
 core::database::database()
         :QObject()	
 {
@@ -91,9 +94,108 @@ void core::database::writeSettings()
 
 QSqlDatabase core::database::getDatabase()
 {
-    return db;
+    if(QThread::currentThread()==core::mainThr() )
+    {
+	return db;
+    }
+    else
+    {	
+ 	QString name=apprName(QThread::currentThread() );
+	mutex.lock();
+	
+	dBEntry* dbE=dBMap[name];
+	QSqlDatabase newDb;
+	if(dbE==0)
+	{
+	    dbE=new dBEntry;
+	    dbE->name=name;
+	    dbE->thr=QThread::currentThread();
+	    dbE->used=1;
+	    dBMap[name]=dbE;
+	    newDb=QSqlDatabase::cloneDatabase(db,name);
+	}
+	else
+	{
+	    dbE->used++;
+	    newDb=QSqlDatabase::database(name,false);
+	}
+	 
+	mutex.unlock();
+	newDb.open();
+	return newDb;
+    }
 }
 
+void core::database::closeDatabase()
+{     
+    if(QThread::currentThread()==core::mainThr() )
+    {
+	return ;
+    }
+    
+    QString name=apprName(QThread::currentThread() );
+    
+    mutex.lock();
+    dBEntry* dbE=dBMap.value(name);	
+	
+    if(dbE==0)	
+    {
+	core::status->addErrorP("Can't close a non exist database connection");
+    }
+    else
+    {
+	
+	dbE->used--;	    
+	if(dbE->used==0)
+	{
+	    QSqlDatabase dbase=QSqlDatabase::database(name,false);
+	    dbase.close();
+	    dbase=QSqlDatabase();
+	    QSqlDatabase::removeDatabase(name);
+	    dBMap.remove(name);
+	    delete dbE;
+	}
+    }	 
+    mutex.unlock();    
+}
+
+void core::database::closeDatabase(QSqlDatabase &dbase)
+{   
+    mutex.lock();    
+    QString name=dbase.connectionName();    
+    if(name==db.connectionName() )
+    {
+	mutex.unlock();
+	return ;
+    }
+    
+    dBEntry* dbE=dBMap.value(name);
+	
+    if(dbE==0)
+    {
+	core::status->addErrorP("Can't close a non exist database connection");
+    }	
+    else
+    {	
+	dbE->used--;	    
+	if(dbE->used==0)
+	{	
+ 	    dbase.close();
+	    dbase=QSqlDatabase();
+	    QSqlDatabase::removeDatabase(name);
+	    dBMap.remove(name);
+ 	    delete dbE;
+	}
+    }
+    
+    mutex.unlock();
+}
+
+
+QString core::database::apprName(QThread *thr)
+{
+    return QString::number((long int) thr);
+}
 
 // QSqlQuery core::database::getLibraryFolders()
 // {

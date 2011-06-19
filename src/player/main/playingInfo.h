@@ -25,11 +25,13 @@ class playingInfo :public QFrame
 	scrolText *albumT;
 	scrolText *artistT;
 	scrolText *commentT;
+	scrolText *genreT;
 
 	QLabel 	  *titleIcon;
 	QLabel 	  *albumIcon;
 	QLabel 	  *artistIcon;
 	QLabel 	  *commentIcon;
+	QLabel 	  *genreIcon;
 	
 	core::nplPointer track;
 

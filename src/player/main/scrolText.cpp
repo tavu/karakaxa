@@ -65,10 +65,12 @@ void scrolText::paintEvent(QPaintEvent *event)
     {
  	painter.setOpacity(0.5);
     }
-//     qDebug()<<"text "<<_text;
+
     QRect r=rect();
     r.setWidth(r.width()-3);
-    painter.drawText(r,Qt::AlignLeft|Qt::AlignVCenter|Qt::TextSingleLine,_text);
+    QFontMetrics fontMetrics(font);
+    QString elideText=fontMetrics.elidedText(_text,Qt::ElideRight,rect().width() );
+    painter.drawText(r,Qt::AlignLeft|Qt::AlignVCenter|Qt::TextSingleLine|Qt::TextIncludeTrailingSpaces,elideText);
 
 }
 

@@ -76,7 +76,7 @@ bool core::isDirectory(const QString &url)
 
     if (type->name() == "inode/directory")
     {
-        return true;
+	return true;
     }
     return false;
 }
@@ -112,6 +112,11 @@ void core::init()
 //       nplaylist *l=const_cast<nplaylist*>(npList);
       
       mainThr();
+      
+      
+      qRegisterMetaType<audioFiles::audioFile>("audioFile");
+      qRegisterMetaType<audioFiles::audioFile>("audioFiles::audioFile");
+      
       status=new playetStatus();
       config =new PlayerConfigure();
       db=new database();
@@ -119,6 +124,9 @@ void core::init()
       engine =new soundEngine();
       npList=new nplaylist();
       contentHdl=new contentHandler();
+      
+      
+      
       flag=false;            
     }
 //       engine.init();

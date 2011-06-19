@@ -14,8 +14,16 @@ class loadInfoThr :public QThread
       QLinkedList<audioFiles::audioFile> fileList;
       QLinkedList<audioFiles::audioFile>::iterator iter;
       void updateTracks();
+      
+      void cancel()
+      {
+	  canceled=true;
+      }
+      
   protected:
       void run();
+      bool canceled;
+      int  pos;
       
   public slots:
       void cleanup();

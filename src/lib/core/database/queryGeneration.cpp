@@ -29,46 +29,53 @@ bool core::queryGrt::select()
     {
 	return false;
     }
+        
+    QSqlDatabase dBase=db->getDatabase();
     
-    QSqlQuery quer(db->getDatabase() );
-    
-    if(!quer.exec(queryString() ) )
     {
-	status->addErrorP(quer.lastError().text() );
-	status->addError("executing query error");
-	return false;
-    }
-    
-    foreach(audioFiles::audioFile *f,files)
-    {
- 	delete f;
-    }
-    map.clear();
-    
-    if(quer.size()>0 )
-    {
-	files.resize(quer.size() );
-	int i=0;	
-	while ( quer.next() ) 
+	QSqlQuery quer(dBase );
+	
+	if(!quer.exec(queryString() ) )
 	{
-	    audioFiles::audioFile *f=new audioFiles::audioFile(quer.record(),false );
-	    files.replace(i,f);
-	    map.insert(f->path(),f);
-	    i++;
+	    status->addErrorP(quer.lastError().text() );
+	    status->addError("executing query error");
+	    db->closeDatabase(dBase);
+	    return false;
 	}
-    }
-    else
-    {
-	files.clear();
-	while ( quer.next() ) 
+	
+	foreach(audioFiles::audioFile *f,files)
 	{
-	    audioFiles::audioFile *f=new audioFiles::audioFile(quer.record() );
-	    files.append(f);
-	    map.insert(f->path(),f);
+	    delete f;
 	}
-    }   
+	map.clear();
+	
+	if(quer.size()>0 )
+	{
+	    files.resize(quer.size() );
+	    int i=0;	
+	    while ( quer.next() ) 
+	    {
+		audioFiles::audioFile *f=new audioFiles::audioFile(quer.record(),false );
+		files.replace(i,f);
+		map.insert(f->path(),f);
+		i++;
+	    }
+	}
+	else
+	{
+	    files.clear();
+	    while ( quer.next() ) 
+	    {
+		audioFiles::audioFile *f=new audioFiles::audioFile(quer.record() );
+		files.append(f);
+		map.insert(f->path(),f);
+	    }
+	}   
+    }
     
+    db->closeDatabase(dBase);
     emit selectionMade();
+    
     return true;
 }
 
@@ -163,7 +170,8 @@ bool core::queryGrt::select()
 QList<core::queryGrt::album> core::queryGrt::albums()
 {
     QString ret("select album,image,id from artist_album order by album asc");
-    QSqlQuery q(db->getDatabase() );
+    QSqlDatabase dBase=db->getDatabase();
+    QSqlQuery q(dBase);
     
     if(!q.exec(ret) )
     {
@@ -182,6 +190,8 @@ QList<core::queryGrt::album> core::queryGrt::albums()
 	l<<al;
     }
     
+    db->closeDatabase(dBase);
+    
     return l;
 }
 
@@ -191,7 +201,9 @@ QList<core::queryGrt::album> core::queryGrt::albums(QString artist)
     core::database::toSqlSafe(artist);
     ret=ret.arg(artist);
 
-    QSqlQuery q(db->getDatabase() );
+    QSqlDatabase dBase=db->getDatabase();      
+    QSqlQuery q(dBase );
+    
     if(!q.exec(ret) )
     {
 	status->addErrorP(q.lastQuery() );
@@ -210,8 +222,9 @@ QList<core::queryGrt::album> core::queryGrt::albums(QString artist)
 	l<<al;
     }
     
-    return l;
+    db->closeDatabase(dBase);
 
+    return l;
 
 }
 
@@ -247,42 +260,53 @@ QList<core::queryGrt::album> core::queryGrt::albums(QString artist,core::queryGr
 QStringList core::queryGrt::artists()
 {
     QString ret("select distinct artist_album.artist from artist_album order by artist_album.artist asc");
-    QSqlQuery q(db->getDatabase() );
+    QSqlDatabase dBase=db->getDatabase();
+    QStringList l;    
     
-    if(!q.exec(ret) )
     {
-	status->addErrorP(q.lastError().text() );
-	status->addError("Could not retrive artists names");
+	QSqlQuery q(dBase);
+	
+	if(!q.exec(ret) )
+	{
+	    status->addErrorP(q.lastError().text() );
+	    status->addError("Could not retrive artists names");
+	}
+	
+
+	while ( q.next() ) 
+	{
+	    l<<q.record().value(0).toString();
+	}
     }
     
-    QStringList l;
-    while ( q.next() ) 
-    {
-	l<<q.record().value(0).toString();
-    }
+    db->closeDatabase(dBase);
+    
     return l;
 }
 
 QStringList core::queryGrt::artists(const abstractQuery *qe)
 {
     QString ret("select distinct artist_album.artist from artist_album inner join trackView on artist_album.id=trackView.album_id AND ( %1 ) order by artist_album.artist asc");
-//     QString s=("select distinct artist    
     ret=ret.arg(qe->text() );
-    QSqlQuery q(db->getDatabase() );    
-        
-    if(!q.exec(ret) )
-    {
-	status->addErrorP(q.lastError().text() );
-	status->addError("Could not retrive artists names");
-    }
-    
     QStringList l;
-    while ( q.next() ) 
+    
+    QSqlDatabase dBase=db->getDatabase();    
     {
-	l<<q.record().value(0).toString();
+	QSqlQuery q(dBase);
+	    
+	if(!q.exec(ret) )
+	{
+	    status->addErrorP(q.lastError().text() );
+	    status->addError("Could not retrive artists names");
+	}
+		
+	while ( q.next() ) 
+	{
+	    l<<q.record().value(0).toString();
+	}
     }
     
-//     qDebug()<<q.lastQuery();
+    db->closeDatabase(dBase);
     return l;
 }
 

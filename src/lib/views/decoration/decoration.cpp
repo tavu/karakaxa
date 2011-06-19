@@ -15,20 +15,20 @@ views::decoration::decoration()
         nextIcon( "media-skip-forward" ),
         pauseIcon( "media-playback-pause" ),
         pixSize(170,150)
-//         defaultIcon("data/music.png")
 {
     QString artistS=KGlobal::dirs()->findResource("data",QString("player/icons/artist.png") );
-//     qDebug()<<"artist icon location "<<artistS;
     icons[ARTIST]=KIcon(artistS);
     
     albumIcon=KGlobal::dirs()->findResource("data",QString("player/icons/album.png") );
-//     qDebug()<<"album icon location "<<albumIcon;
     icons[ALBUM]=KIcon(albumIcon);
     
     icons[RATING]=KIcon("rating");
     
     QString commentIcon=KGlobal::dirs()->findResource("data",QString("player/icons/comment.png") );
     icons[COMMENT]=KIcon(commentIcon);
+    
+    QString genreIcon=KGlobal::dirs()->findResource("data",QString("player/icons/genre.png") );
+    icons[GENRE]=KIcon(genreIcon);
     
     QString trackIcon=KGlobal::dirs()->findResource("data",QString("player/icons/track.png") );
     icons[TRACK]=KIcon(trackIcon);
@@ -37,11 +37,9 @@ views::decoration::decoration()
     icons[LENGTH]=KIcon(lengthIcon);
     
     QString defaultS=KGlobal::dirs()->findResource("data",QString("player/icons/music.png"));
-//     qDebug()<<"default icon location"<<defaultS;
     defaultIcon=KIcon(defaultS);
     
     defaultS=KGlobal::dirs()->findResource("data",QString("player/icons/karakaxa.png"));
-//     qDebug()<<"default icon location"<<defaultS;
     playerIcon=KIcon(defaultS);
     
     pal=qApp->palette();
@@ -53,7 +51,7 @@ views::decoration::decoration()
 
 KIcon views::decoration::tagIcon(int t)
 {
-    if(t>=FRAME_NUM||t<0)
+    if(t>=audioFiles::FRAME_NUM||t<0)
     {
 	return defaultIcon;
     }

@@ -12,7 +12,7 @@ albumDelegate::albumDelegate(QObject* parent): QStyledItemDelegate(parent)
 
 void albumDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
-     QApplication::style()->drawPrimitive( QStyle::PE_PanelItemViewItem, &option, painter );            
+    QApplication::style()->drawPrimitive( QStyle::PE_PanelItemViewItem, &option, painter );            
 
     QPixmap pic=views::decor->decorationPixmap(option,index);
     QRect r=option.rect;
@@ -49,6 +49,7 @@ void albumDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option,
     
     
 }
+
 
 void albumDelegate::drawDisplay(QPainter* painter, const QStyleOptionViewItem& option,QRect& rect, QString& text) const
 {

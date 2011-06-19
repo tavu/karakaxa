@@ -6,6 +6,7 @@
 #include<QMutex>
 #include<QSqlQuery>
 #include<QSqlError>
+// #include"../core/database/database.h"
 // #include<player.h>
 // #include"playerNamespace.h"
 
@@ -16,18 +17,14 @@ namespace audioFiles
 
 class fileToDb
 {
-    public:	
-      
-	const static int OK;
-	const static int DBERR;
-	const static int NOTINDB;
+  public:
 
-	fileToDb(QString path)
-	{
-	    _path=path;
-	}
+	fileToDb(QString path);
+	~fileToDb();	
 
 	int commit();
+	
+	int prepare();
 	
 	void setAlbum(const QString &s)
 	{
@@ -39,27 +36,28 @@ class fileToDb
 	    _artist=s;
 	}
 	
-	void setTag(int t,QVariant var);
+	int setTag(int t,QVariant var);
 	
 // 	void save();
-	
-	static int 	setTitle (const QString path,const QString &s);
-	static int 	setArtist (const QString path,const QString &s,const QString &album);
-	static int 	setAlbum (const QString path,const QString &s);
-	static int 	setComment (const QString path,const QString &s);
-	static int 	setLeadArtist (const QString path,const QString &s,const QString &artist,const QString &album);
-	static int	setComposer(const QString path,const QString &s);
-	static int 	setGenre (const QString path,const QString &s);
-	static int 	setYear (const QString path,const unsigned int &year);
-	static int 	setTrack (const QString path,const unsigned int &i);
-	static int 	setRating(const QString path,const unsigned int &rating);
-	static int 	setCounter(const QString path,const unsigned int &num);
-	static int 	setAlbumArt(const int albumId,QString art);
-
 	static QSqlRecord 	record(const QString path,int &err);
-	static QString	 albumArt(const int albumId,int &err);
-    
+	QString			albumArt(const int albumId,int &err);
+	
     private:
+	int 	setTitle (const QString path,const QString &s);
+	int 	setArtist (const QString path,const QString &s,const QString &album);
+	int 	setAlbum (const QString path,const QString &s);
+	int 	setComment (const QString path,const QString &s);
+	int 	setLeadArtist (const QString path,const QString &s,const QString &artist,const QString &album);
+	int	setComposer(const QString path,const QString &s);
+	int 	setGenre (const QString path,const QString &s);
+	int 	setYear (const QString path,const unsigned int &year);
+	int 	setTrack (const QString path,const unsigned int &i);
+	int 	setRating(const QString path,const unsigned int &rating);
+	int 	setCounter(const QString path,const unsigned int &num);
+	int 	setAlbumArt(const int albumId,QString art);
+
+    
+    
 	QString		_album;
 	QString 	_artist;
 	QString 	_path;
@@ -67,8 +65,10 @@ class fileToDb
 	int 		_tag;
 	QVariant 	value;
 	int 		tag;
+	
+	QSqlDatabase    databs;
       
-	static bool setAlbumArtist(const QString &path,const QString &s,const QString &album,QSqlQuery &q);
+	 bool setAlbumArtist(const QString &path,const QString &s,const QString &album,QSqlQuery &q);
 };//class
 
 };//namespace

@@ -26,7 +26,6 @@ QVariant views::trackItem::data(int column, int role) const
     }
     if(role==URL_ROLE)
     {
-// 	qDebug()<<"EEEEEEEEEEEEEEDR "<<file.path();
 	KUrl u( file.path() );
 	return QVariant(u);
     }

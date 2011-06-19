@@ -126,7 +126,7 @@ mainWindow::~mainWindow()
 inline void mainWindow::infoInit()
 {
     info=new playingInfo(this);
-    info->setFixedHeight(150);
+    info->setFixedHeight(165);
     info->setMinimumWidth(150);
 //     info->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
     
@@ -138,9 +138,7 @@ inline void mainWindow::infoInit()
     info->setPalette(views::decor->palette());
     
     infoDock->setWindowTitle(tr("playing track info") );
-    infoDock->setObjectName("playingTrackInfodf");
-    
-
+    infoDock->setObjectName("playingTrackInfodf");    
 
     addDockWidget ( Qt::LeftDockWidgetArea, infoDock,Qt::Horizontal);
     
@@ -198,7 +196,7 @@ void mainWindow::conTreeInit()
 void mainWindow::nplViewInit()
 {
     QFrame *w=new QFrame(this);
-    nplViewDockT=new QWidget(this);
+//     nplViewDockT=new QWidget(this);
     
     nplView =new nplaylistView(w);
     nplModel *m=new nplModel(this);
@@ -208,7 +206,6 @@ void mainWindow::nplViewInit()
 
     nplDelegate *delegate=new nplDelegate(this);
     nplView->setItemDelegate(delegate);
-
     
 //     p.setColor(QPalette::Base,p.color(QPalette::Window) );
 
@@ -216,7 +213,7 @@ void mainWindow::nplViewInit()
     nplView->header()->setStretchLastSection(true);
     nplView->header()->setDefaultSectionSize(35);
     nplView->header()->setResizeMode(QHeaderView::Fixed);    
-//     p.color(QPalette::Window).setNamedColor(colorN);
+    
     QColor c=decor->palette().color(QPalette::Window);    
     QString s=("QHeaderView::section {background-color: rgb(%1,%2,%3); }");
     s=s.arg(QString::number(c.red() ),QString::number( c.green() ),QString::number( c.blue() ) );
@@ -224,16 +221,13 @@ void mainWindow::nplViewInit()
     QPalette pal=decor->palette();
     pal.setColor(QPalette::Base,pal.color(QPalette::Window) );
     nplView->setPalette(pal);
-    
-     nplView->header()->setStyleSheet(s);
-//     nplView->header()->setStyleSheet("QHeaderView::section  {background-color: transparent; }");
+        
+    nplView->header()->setStyleSheet(s);
     viewport = nplView->viewport();
 
     connect( engine ,SIGNAL(trackChanged ( QString) ),viewport, SLOT(update() ) );
 
-
     KToolBar *t=new KToolBar(this);
-//     nplView->setAutoFillBackground(false);
 
     t->setToolButtonStyle( Qt::ToolButtonIconOnly );
     t->setIconSize(QSize(25,25) );    
@@ -252,10 +246,6 @@ void mainWindow::nplViewInit()
 
     l->setContentsMargins(2,10,2,0);
 
-//     w->setPalette(QApplication::palette);
-    
-//     w->setFrameShadow(QFrame::Raised);
-
     nplViewDock=new QDockWidget(this);
     nplViewDock->setWindowTitle("Playlist");
     nplViewDock->setObjectName("Playlist");
@@ -263,9 +253,6 @@ void mainWindow::nplViewInit()
     
     nplViewDock->setPalette(pal);
     nplView->header()->setPalette(pal);
-//     nplView->setPalette(views::decor->palette());
-//      nplViewDock->setPalette(core::pal);
-//      nplViewDockT=new QWidget(this);
     addDockWidget ( Qt::RightDockWidgetArea, nplViewDock, Qt::Vertical );
 
 }
@@ -316,17 +303,12 @@ void mainWindow::lockDock()
     conTreeDock->setFeatures(features);
     conTreeDock->setTitleBarWidget(0);
 
-//     conViewDock->setFeatures(features);
-//     conViewDock->setTitleBarWidget(new QWidget(conViewDock));
-
-
-
     nplViewDock->setFeatures(features);
     nplViewDock->setTitleBarWidget(new QWidget(nplViewDock));
 
     infoDock->setFeatures(features);
-//     infoDock->setMinimumWidth(210);
-//     infoDock->setTitleBarWidget(new QWidget(infoDock));
+    infoDock->setTitleBarWidget(new QWidget(infoDock));
+
     toolBar->setMovable(false);
     
 }

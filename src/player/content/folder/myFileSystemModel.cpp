@@ -49,6 +49,7 @@ QVariant myFileSystemModel::data(const QModelIndex &index, int role) const
         int filde=index.column()-DIRCOLUMN;
 	
         var=f.tag(filde, audioFile::ONCACHE|audioFile::ONDATAB );	
+// 	var=f.tag(filde, audioFile::DEFAULTF);
 	
 	return views::pretyTag(var,filde);
     }        
@@ -84,6 +85,7 @@ QVariant myFileSystemModel::headerData ( int section, Qt::Orientation orientatio
 
 void myFileSystemModel::insert(const KFileItemList &items)
 {    
+    qDebug()<<"ERTDSHSETSEB"<<items.size();
     foreach(KFileItem item , items)
     {
 	if( core::isAudio(item.url().toLocalFile() )  )

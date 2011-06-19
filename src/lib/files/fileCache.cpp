@@ -54,7 +54,7 @@ int audioFiles::fileCache::loadTags(bool force)
 }
 
 int audioFiles::fileCache::select(bool force)
-{   
+{       
     loadMutex.lock();
     //if notInDb, a previous select have occurred and we know tha the file does not exist on database
     if(notInDb && !force)
@@ -70,6 +70,7 @@ int audioFiles::fileCache::select(bool force)
     }
     
     int err;
+    qDebug()<<"DBdsr";
     QSqlRecord rec=fileToDb::record(path(),err );
     lock.lockForWrite();
     record=rec;
@@ -83,7 +84,7 @@ int audioFiles::fileCache::select(bool force)
     {
 	notInDb=false;
     }
-    
+    qDebug()<<"DB "<<err;
     loadMutex.unlock();
     return err;
 }

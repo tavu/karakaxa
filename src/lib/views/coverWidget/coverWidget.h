@@ -14,12 +14,13 @@ public:
     coverWidget(QString s=QString(), QWidget * parent = 0, Qt::WindowFlags f = 0 );
     coverWidget( QWidget * parent = 0, Qt::WindowFlags f = 0 );
     void setSize(QSize s);
-    void setSize(int x,int y);
+    void setSize(int w, int h);
     QSize size();
     QString cover();
     void setCover(QString s=QString() );
     QSize sizeHint() const;
 private:
+    QSize picSize;
     QPixmap pic;
     QPixmap picScaled;
 
@@ -27,7 +28,7 @@ private:
     QString art;
     QSize fixedSize;
 
-//     void paintEvent(QPaintEvent *);
+    void paintEvent(QPaintEvent *);
 };
 
 };

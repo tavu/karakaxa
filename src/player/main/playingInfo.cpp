@@ -9,7 +9,7 @@
 #include <QFormLayout>
 #include<QGraphicsView>
 #include<QCommonStyle>
-#define ICONZISE QSize(15,15)
+#define ICONZISE QSize(17,17)
 
 using namespace core;
 using namespace views;
@@ -19,10 +19,8 @@ playingInfo::playingInfo(QWidget *parent)
 {
  
     cover=new views::coverWidget(this);
-    cover->setSize(90,110);
-//     cover->setFixedSize(100,110);
-//     cover->setFrameShape(QFrame::StyledPanel);
-//     cover->setFrameShadow(QFrame::Sunken);
+    cover->setSize(100,90);
+//     cover->setFrameStyle(QFrame::Panel | QFrame::Raised);
         
     stars=new views::ratingWidget(this);
     stars->setMaximumWidth(100);    
@@ -32,29 +30,34 @@ playingInfo::playingInfo(QWidget *parent)
     albumT= new scrolText(tr("Empty"),this);
     artistT= new scrolText(tr("Empty"),this);
     commentT= new scrolText(tr("Empty"),this);
+    genreT=new scrolText(tr("Empty"),this);
     
     titleIcon=new QLabel(this);
     albumIcon=new QLabel(this);
     commentIcon=new QLabel(this);
-    artistIcon=new QLabel(this);
+    genreIcon=new QLabel(this);
+    artistIcon=new QLabel(this);    
      
     titleIcon->setPixmap(decor->tagIcon(TITLE).pixmap(ICONZISE ));
     albumIcon->setPixmap(decor->tagIcon(ALBUM).pixmap(ICONZISE ));
     commentIcon->setPixmap(decor->tagIcon(COMMENT).pixmap(ICONZISE ));
+    genreIcon->setPixmap(decor->tagIcon(GENRE).pixmap(ICONZISE ));
     artistIcon ->setPixmap(decor->tagIcon(ARTIST).pixmap(ICONZISE ));
     
     QFormLayout *formLayout=new QFormLayout();    
     formLayout->addRow(stars);
     formLayout->addRow(commentIcon,commentT);
+    formLayout->addRow(genreIcon,genreT);
+    formLayout->setContentsMargins(0,0,0,0);
     QHBoxLayout *hLayout=new QHBoxLayout();
     hLayout->addWidget(cover);
     hLayout->addLayout(formLayout);
     hLayout->addStretch();
     
-     hLayout->setContentsMargins(0,0,0,0);
-     QWidget *w =new QWidget(this);
-     w->setLayout(hLayout);
-     w->setFixedHeight(100);
+    hLayout->setContentsMargins(0,8,0,0);
+//      QWidget *w =new QWidget(this);
+//      w->setLayout(hLayout);
+//      w->setFixedHeight(100);
 //     
 //      layout->addLayout(hLayout);
 //      layout->addWidget(titleT);
@@ -65,7 +68,7 @@ playingInfo::playingInfo(QWidget *parent)
     QFormLayout *mainLayout=new QFormLayout();
 
 //     l->setFieldGrowthPolicy(QFormLayout::ExpandingFieldsGrow);
-     mainLayout->addRow(w);
+     mainLayout->addRow(hLayout);
     
 //     l->addLayout(hLayout,0,0,2,2);
     
@@ -78,7 +81,8 @@ playingInfo::playingInfo(QWidget *parent)
     
     
     
-       mainLayout->setContentsMargins(0,0,0,0);
+//     l->setContentsMargins(2,10,2,0);  
+    mainLayout->setContentsMargins(3,0,3,3);
 // /       setLayout(layout);
       
 //        l->setFieldGrowthPolicy(QFormLayout::ExpandingFieldsGrow);
@@ -118,7 +122,6 @@ void playingInfo::update()
 
 void playingInfo::getInfo()
 {
-    qDebug()<<"KKK";
     if (track.isNull())
     {
         qDebug()<<"playingInfo: can't get informarion file is null";
@@ -129,8 +132,9 @@ void playingInfo::getInfo()
     albumT->setText(track->tag(ALBUM).toString() );
     artistT->setText(track->tag(ARTIST).toString() );
     commentT->setText(track->tag(COMMENT).toString() );
-
-//      cover->setCover(track->cover() );
+    genreT->setText(track->tag(GENRE).toString() );
+    
+    cover->setCover(track->cover() );
 //     lab->setPixmap(track->cover());
     stars->setRating(track->tag(RATING).toInt());
 //      l->setPixmap(file->cover() );

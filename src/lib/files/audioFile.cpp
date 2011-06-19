@@ -25,10 +25,9 @@ audioFiles::audioFile::audioFile()
         :QObject(),
         fileSize(0),
         saveFlag(false),
-        cache(0)
+        cache(0),
+        fdb(0)
 {
-    qRegisterMetaType<audioFiles::audioFile>("audioFile");
-    qRegisterMetaType<audioFiles::audioFile>("audioFiles::audioFile");
 }
 
 audioFiles::audioFile::audioFile(const QString url)
@@ -36,11 +35,7 @@ audioFiles::audioFile::audioFile(const QString url)
         fileSize(0),
         saveFlag(false)
 {
-    cache=audioFiles::fileCache::getFileCache(url);
-    qRegisterMetaType<audioFiles::audioFile>("audioFile");
-    qRegisterMetaType<audioFiles::audioFile>("audioFiles::audioFile");
-    
-//     connect(&db,SIGNAL(changed()),this,SLOT(recordClean()) );
+    cache=audioFiles::fileCache::getFileCache(url);    
 }
 
 audioFiles::audioFile::audioFile(QSqlRecord r, bool force)
@@ -128,9 +123,7 @@ QVariant audioFiles::audioFile::tag(int t, const short int f) const
         }
     }
     if (f & ONCACHE)
-    {
-	
-      
+    {	      
 	stat=ONCACHE;
 	ret=cache->tagFromFile((tagsEnum) t, err);
 	
@@ -142,7 +135,7 @@ QVariant audioFiles::audioFile::tag(int t, const short int f) const
         }
         if(err==OK)
 	{
-	qDebug()<<"here";  
+// 	qDebug()<<"here";  
 // 	    QString s=ret.toString().trimmed();
 	    return ret;
 	} 
@@ -190,141 +183,27 @@ bool audioFiles::audioFile::setTag(int t,QVariant var)
     if(t>=FRAME_NUM || t<0)
     {
 	err=UNOWN;
-	qDebug()<<err;
 	return false;
     }    
   
     if(!prepareToSave())
     {
-	qDebug()<<err;
 	return false;
     } 
     int f=0;
     int dberr;         
     
-    switch (t)
-    {
-	case LEAD_ARTIST:
-	{
-	    file->setTag(LEAD_ARTIST,var.toString());
-	    err=file->error();
-	    if(err==OK || err==NS_TAG)
-	    {
-		dberr=fileToDb::setLeadArtist(path(),var.toString(),tag(ARTIST,ONDATAB).toString(),tag(ALBUM,ONDATAB).toString() );
-	    }
-	    break ;
-	}
-	case RATING:
-	{
-	    file->setTag(RATING,var);
-	    err=file->error();
-	    if(err==OK || err==NS_TAG)
-	    {
-		dberr=fileToDb::setRating(path(),var.toInt() );
-	    }
-	    break ;
-	}
-	case COUNTER:
-	{
-	  dberr=fileToDb::setCounter(path(),var.toInt() );
-	  /*
-	    file->setTag(COUNTER,var.toInt());
-	    err=file->error();
-	    if(err==OK || err==NS_TAG)
-	    {
-		dberr=fileToDb::setCounter(path(),var.toInt() );
-	    }
-	    */
-	    break ;
-	}
-	case COMPOSER:
-	{
-	    file->setTag(COMPOSER,var.toString());
-	    err=file->error();
-	    if(err==OK || err==NS_TAG)
-	    {
-		dberr=fileToDb::setComposer(path(),var.toString());
-	    }
-	    break ;
-	}
-	case TITLE:
-	{
-	    file->setTitle(var.toString());
-	    err=file->error();
-	    if(err==OK || err==NS_TAG)
-	    {
-		dberr=fileToDb::setTitle(path(),var.toString() );
-	    }
-	    break ;
-	}
-	case ALBUM:
-	{
-	    file->setAlbum(var.toString());
-	    err=file->error();
-	    if(err==OK || err==NS_TAG)
-	    {
-		dberr=fileToDb::setAlbum(path(),var.toString());
-	    }
-	    break ;
-	}
-	case ARTIST:
-	{
-	    file->setArtist(var.toString());
-	    err=file->error();
-	    if(err==OK || err==NS_TAG)
-	    {
-		dberr=fileToDb::setArtist(path(),var.toString(),tag(ALBUM,ONDATAB).toString() );
-	    }
-	    break ;
-	}
-	case GENRE:
-	{
-	    file->setGenre(var.toString());
-	    err=file->error();
-	    if(err==OK || err==NS_TAG)
-	    {
-		dberr=fileToDb::setGenre(path(),var.toString() );
-	    }
-	    break ;
-	}
-	case COMMENT:
-	{
-	    file->setTag(COMMENT,var.toString());
-	    err=file->error();
-	    if(err==OK || err==NS_TAG)
-	    {
-		dberr=fileToDb::setComment(path(),var.toString());
-	    }
-	    break ;
-	}
-	case TRACK:
-	{
-	    file->setTrack(var.toInt());
-	    err=file->error();
-	    if(err==OK || err==NS_TAG)
-	    {
-		dberr=fileToDb::setTrack(path(),var.toInt() );
-	    }
-	    break ;
-	}
-	case YEAR:
-	{
-	    file->setTag(YEAR,var.toInt());
-	    err=file->error();
-	    if(err==OK || err==NS_TAG)
-	    {
-		dberr=fileToDb::setYear(path(),var.toInt() );
-	    }
-	    break ;
-	}
-	default:
-	{
-	    err=UNOWN;
-	    return false;
-	}
-    }
-//     qDebug()<<err;
+    fdb->setAlbum ( tag(ALBUM,ONDATAB).toString()  );
+    fdb->setArtist( tag(ARTIST,ONDATAB).toString() );
     
+    file->setTag( (tagsEnum)t,var);
+    err=file->error();
+    
+    if(err==OK || err==NS_TAG)
+    {
+	dberr=fdb->setTag(t,var);	
+    }
+        
     if(err!=NS_TAG)
     {
 	f=f|1;
@@ -333,14 +212,9 @@ bool audioFiles::audioFile::setTag(int t,QVariant var)
     {
       f=f|2;
     }
+    
     cache->setTag((tagsEnum)t,var,f);
     err=dberr;    
-    
-
-    if(!saveFlag)
-    {
-	save();
-    }
 
     tagChanges change;
     change.tag=t;
@@ -348,11 +222,15 @@ bool audioFiles::audioFile::setTag(int t,QVariant var)
     change.error=err;
     
     changes<<change;
-    
+            
+    if(!saveFlag)
+    {
+	save();
+    }
 
     if(err==OK||err==NOTINDB)
     {
-      return true;  
+	return true;  
     }
     else
     {
@@ -377,6 +255,7 @@ void audioFiles::audioFile::setTags(QList<int> tags,QList<QVariant> values)
     {
 	return ;
     }
+    
     saveFlag=true;
     for(int i=0;i<tags.size();i++ )
     {
@@ -407,7 +286,10 @@ QVariant  audioFiles::audioFile::albumArtist()
 
 QString audioFiles::audioFile::cover()
 {
-    return QString();
+    fdb=new fileToDb(path() );
+    QString s=fdb->albumArt(albumId(),err);
+    return s;
+    
   /*
     //if albumArt is null we haven't search for covers yet.
     if (!albumArt.isNull() )
@@ -486,26 +368,42 @@ bool audioFiles::audioFile::prepareToSave()
     }
     
     changes.clear();
-    file=audioFiles::getFileTags(path());    
+    file=audioFiles::getFileTags(path()); 
+    fdb=new fileToDb(path() );
+    
     if(file->isValid() )
     {
-      cache->lockForSaving();
-      err=OK; 
-      return true;
+      err=fdb->prepare();
     }
     else
     {
 	err=INVALID_FILE;
     }    
+    
+    if(err==OK)
+    {
+        cache->lockForSaving();
+	return true;
+    }
+    
     return false;
 }
 
 void audioFiles::audioFile::save()
 {
     file->save();
+    int e=fdb->commit();
+    
+    if(e!=OK)
+    {
+	err=e;
+    }
+    
     cache->savingEnd();
     delete file;    
     file=0;
+    delete fdb;
+    fdb=0;
     
     core::db->updateSig(*this);
 }
@@ -520,19 +418,22 @@ void audioFiles::audioFile::load(const short int f)
   
     if(f & SELECT)
     {
+	stat=SELECT;
 	err=cache->select();
 	if(err==OK)
 	{
 	    return ;
 	}
-    }    
+    }
     
     if(f & LOAD_FILE)
     {
-	err=cache->loadTags();
+	stat=LOAD_FILE;
+ 	err=cache->loadTags();
     }
     else
     {    
+	stat=UNOWN;
 	err=UNOWN;
     }
 }
