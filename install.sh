@@ -37,9 +37,14 @@ function installApp {
 
   echo "installing the application"
   mkdir -p /usr/share/kde4/apps/$appname
-  cp -R  data/* /usr/share/kde4/apps/$appname
-  cp -R sql /usr/share/kde4/apps/$appname
+#   cp -R  data/* /usr/share/kde4/apps/$appname
+  rsync -r --exclude='.*' root data/ /usr/share/kde4/apps/$appname
+  
   cp -R target/$appname /usr/bin
+
+  chown root /usr/bin/$appname
+  chown -R root /usr/share/kde4/apps/$appname
+  chmod -R 755 /usr/share/kde4/apps/$appname
 }
 
 
