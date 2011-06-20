@@ -8,6 +8,7 @@ albumWidget::albumWidget(QWidget *parent)
 {
 //     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
      setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+	setHorizontalScrollMode(QAbstractItemView::ScrollPerItem);
 //     setWindowOpacity(0);
 }
 

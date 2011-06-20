@@ -37,10 +37,7 @@ class treeView :public QTreeView
 	virtual void performDrag();
 	virtual void contextMenuEvent(QContextMenuEvent *e);
 	void headerRepaint();
-	virtual void leaveEvent(QEvent*)  ;
-	
-	QByteArray byteArr;
-	
+	virtual void leaveEvent(QEvent*)  ;		
 
     protected slots:
 	virtual void commitData ( QWidget * editor ) ;

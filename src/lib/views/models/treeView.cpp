@@ -29,13 +29,14 @@ views::treeView::treeView(QWidget *parent,QString name)
     setDragDropMode( QAbstractItemView::DragOnly );
     setRootIsDecorated(false);
     setSortingEnabled (true);
-//     setMouseTracking(true);
+    
+    setMouseTracking(true);
 
     if (!name.isEmpty() )
     {
         setObjectName(name);
         readSettings();
-	connect(qApp,SIGNAL(aboutToQuit() ),this,SLOT(writeSettings() ) ); 
+	   connect(qApp,SIGNAL(aboutToQuit() ),this,SLOT(writeSettings() ) ); 
     }
     setEditTriggers(QAbstractItemView::SelectedClicked);
     connect(this,SIGNAL(doubleClicked  ( const QModelIndex) ),this,SLOT(play(const QModelIndex) ) );
@@ -116,9 +117,9 @@ void views::treeView::performDrag()
 
 void views::treeView::setModel ( QAbstractItemModel * model )
 {
-    byteArr=header()->saveState();
-    QTreeView::setModel(model);        
-    header()->restoreState(byteArr);    
+    QAbstractItemModel *m=model();
+    QTreeView::setModel(model);          
+    disconnect(m);
     
     if(delegate->ratingColumn()>-1)
     {

@@ -54,7 +54,7 @@ mainWindow::mainWindow()
      
 //      pal.setColor(QPalette::Base,c );
 
-//      qApp->setPalette(pal);
+//     qApp->setPalette(pal);
 //     core::pal=pal;
 //     core::pal.setColor(QPalette::Base,pal.color(QPalette::Window) );
     

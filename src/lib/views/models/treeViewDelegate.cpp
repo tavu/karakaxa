@@ -19,52 +19,41 @@
 views::treeViewDelegate::treeViewDelegate(QObject *parent)    
     :QItemDelegate(parent),    
     rating(-1),
-    ITEM_HEIGH(17),
-    FONT_SIZE(15)
+    ITEM_HEIGH(18),
+    FONT_SIZE(11)
 {
-//   ratingPainter.setEnabled( true );
-//   ratingPainter.setIcon(KIcon("favorites") );
+  font.setPointSize(FONT_SIZE);            
+  pen.setWidth(2);
 }
 
 void views::treeViewDelegate::paint ( QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index ) const
 {
 
     painter->save();
-
+    painter->setRenderHint(QPainter::Antialiasing, true);
+    
     if (index.row()%2==1)
     {
         painter->save();
         painter->setOpacity(0.2);
         painter->fillRect(option.rect,option.palette.window());
         painter->restore();
-    }
+    }    
+	     
+	
+	painter->setOpacity(0.8);    
+     pen.setWidth(2);
+     pen.setColor(option.palette.window().color() );
+     painter->setPen(pen);
+		
+	painter->drawLine(option.rect.topRight(),option.rect.bottomRight());
+	
+   
+	painter->restore();
     
-    QPen pen;
-
-    painter->setOpacity(0.8);
-    pen.setWidth(1);
-    pen.setColor(decor->palette().window().color() );
-    painter->setPen(pen);
-
-    QPointF up(option.rect.topRight().x(),option.rect.topRight().y() );
-    QPointF down(option.rect.bottomRight().x(),option.rect.bottomRight().y() );
+	painter->save();
     
-    painter->drawLine(up,down);
-
-    painter->setOpacity(0.1);
-    pen.setWidthF(4);
-    pen.setColor(decor->palette().window().color() );
-    painter->setPen(pen);
-
-    painter->drawLine(up,down);
-
-    painter->restore();
-    painter->save();
-
-    QFont font=painter->font();
-    font.setPointSize(FONT_SIZE);
-    painter->setFont(font);
-
+     painter->setFont(font);
 
     QApplication::style()->drawPrimitive( QStyle::PE_PanelItemViewItem, &option, painter );
 
@@ -76,7 +65,7 @@ void views::treeViewDelegate::paint ( QPainter * painter, const QStyleOptionView
 
     if (index.column()==rating)
     {
-	painter->restore();
+	   painter->restore();
         return;
     }
 
@@ -84,7 +73,7 @@ void views::treeViewDelegate::paint ( QPainter * painter, const QStyleOptionView
     r.setWidth(r.width()-4);
     r.setX(r.x()+2);
 
-    painter->restore();
+//     painter->restore();
     QPixmap pic=decor->decorationPixmap(option,index);
 
     if (!pic.isNull() )
@@ -96,10 +85,12 @@ void views::treeViewDelegate::paint ( QPainter * painter, const QStyleOptionView
     QVariant var=index.data(Qt::DisplayRole);
     if(!var.isNull() )
     {
-	QString text = option.fontMetrics.elidedText(var.toString(),Qt::ElideRight,r.width() );
-	text=text.simplified();
-	painter->drawText( r,Qt::AlignLeft|Qt::AlignVCenter, text);
+	   
+	 QString text = option.fontMetrics.elidedText(var.toString(),Qt::ElideRight,r.width() );
+// 	text=text.simplified();
+	 painter->drawText( r,Qt::AlignLeft|Qt::AlignVCenter, text);
     }
+    painter->restore();
 }
 
 QWidget* views::treeViewDelegate::createEditor(QWidget *parent,const QStyleOptionViewItem &option,const QModelIndex &index) const
@@ -128,6 +119,9 @@ void views::treeViewDelegate::setEditorData(QWidget *editor,const QModelIndex &i
 QSize views::treeViewDelegate::sizeHint ( const QStyleOptionViewItem & option, const QModelIndex & index ) const
 {       
     QSize ret=QItemDelegate::sizeHint ( option,index );
+    if(ret.isEmpty() )	 
+	 return QSize(ITEM_HEIGH,ITEM_HEIGH);
+    
     return ret;
 }
 

@@ -2,6 +2,7 @@
 #define TREEVIEWDELEGATE_H
 
 #include<QItemDelegate>
+#include<QPen>
 // #include"../playerNamespace/rattingWidget/kratingpainter.h"
 // #include "myTreeView.h"
 
@@ -34,7 +35,8 @@ class treeViewDelegate :public QItemDelegate
 	int ITEM_HEIGH;
 	int FONT_SIZE;
 	QSize _sizeHint;
-	
+	QFont font;
+	mutable QPen pen;
 // 	KRatingPainter ratingPainter;
 	
     private slots:

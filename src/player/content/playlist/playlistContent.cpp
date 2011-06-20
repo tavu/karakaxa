@@ -35,13 +35,13 @@ playlistContent::playlistContent(QWidget *parent)
     QDomElement el;
     if(doc.setContent(&file,true) )
     {
-	el = doc.firstChildElement ("spartPlaylists");
+	   el = doc.firstChildElement ("spartPlaylists");
     }
 	
     if(el.isNull() )
     {
-	el=doc.createElement("spartPlaylists");
-	doc.appendChild(el);      
+	   el=doc.createElement("spartPlaylists");
+	   doc.appendChild(el);      
     }
     
     smHead=new smplalistHead(el);
@@ -68,6 +68,7 @@ playlistContent::playlistContent(QWidget *parent)
     trackProxy->setDynamicSortFilter(true);
     trackProxy->setFilterKeyColumn(-1);
     trackProxy->setFilterCaseSensitivity(Qt::CaseInsensitive);
+    trackProxy->setSourceModel(smpModel);
     
     trackV->setModel(trackProxy);
     
@@ -84,6 +85,7 @@ playlistContent::playlistContent(QWidget *parent)
     textL.setText(tr("Playlists") );
     QFont font;
     font.setPointSize(13);
+    font.setBold(true);
     textL.setFont(font);
     
     toolBarInit();
@@ -117,35 +119,25 @@ playlistContent::playlistContent(QWidget *parent)
         
     connect(qApp,SIGNAL(aboutToQuit() ),this,SLOT(save() ) );
     
-    stack->setCurrentWidget(treeV);    
-        
-//     test();
-//     treeModel->modelReset();
+    stack->setCurrentWidget(treeV);
 }
 
 void playlistContent::updateQueries()
 {
     if(trackV->model()==smpModel)
     {
-// 	smpModel->refresh();
-	needUpdate=false;
+	   needUpdate=false;
     }
     else
     {      
-	needUpdate=true;
+	   needUpdate=true;
     }
 }
 
 void playlistContent::removeSlot()
 {
     QModelIndex index=proxyM->mapToSource(treeV->currentIndex());
-//     treeModel->removeRow(index.row(),index.parent());  
     treeModel->removeRow(index.row(),index.parent());
-//     standardItem *i=treeModel->itemFromIndex(index);
-//     i=i->parent();	
-
-//     standardItem *item=i->parent();
-//     item->removeR(i->row());    
 }
 
 
@@ -155,21 +147,7 @@ playlistContent::~playlistContent()
 
 void playlistContent::activated(const int n)
 {
-/*    if(n==0 && current==1)
-    {
-	qDebug()<<"DEACTIVATING smpl";
-	smPl->deActivate();
-	filePl->activate();
-	current=n;
-    }
-    if(n==1 && current==0)
-    {
-	qDebug()<<"DEACTIVATING filepl";
-	filePl->deActivate();
-	smPl->activate();
-	current=n;
-    }*/
-//     test();
+
 }
 
 QString playlistContent::name() const
@@ -188,19 +166,7 @@ void playlistContent::toolBarInit()
     
     forwardAction =new QAction( KIcon( "go-next" ),"go forward", this );
     toolBar->addAction( forwardAction );
-    connect( forwardAction, SIGNAL( triggered( bool) ),this, SLOT( forward() ) );   
-    
-//     QHBoxLayout *layout=new QHBoxLayout();
-//     layout->addWidget(iconL);
-// //     layout->addWidget(textL);
-//     QWidget *w=new QWidget(this);
-//     w->setLayout(layout);
-    
-//     toolBar->addWidget(&iconL);
-//     toolBar->addWidget(&textL);
-    
-//     toolBar->addWidget(w);
-    
+    connect( forwardAction, SIGNAL( triggered( bool) ),this, SLOT( forward() ) );       
     
     QWidget* spacer = new QWidget(this);
     spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -411,23 +377,19 @@ void playlistContent::contextMenuSlot(QModelIndex in)
 }
 
 void playlistContent::save()
-{
-    qDebug()<<"saving";    
-    
+{    
     QFile file(core::config->saveLocation()+XMLFILE);
     file.copy(core::config->saveLocation()+XMLFILE+QString(".bak") );
     if ( file.open( QIODevice::WriteOnly ) ) 
     {
-	QTextStream ts(&file);
-	ts << doc.toString();	
-	qDebug()<<smHead->xml().hasChildNodes();
-// 	qDebug()<<doc.toString();
-	file.close();
+	   QTextStream ts(&file);
+	   ts << doc.toString();
+	   file.close();
     }
     else
     {
-	core::status->addError(tr("Unable to save the playlist"));
-	core::status->addErrorP(tr("Unable to save the playlist"));
+	 core::status->addError(tr("Unable to save the playlist"));
+	 core::status->addErrorP(tr("Unable to save the playlist"));
     }
     
     

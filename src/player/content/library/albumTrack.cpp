@@ -84,15 +84,13 @@ void albumTrack::labelInit()
     sLabel =new QLabel(this);    
     QFont font;
     font.setPointSize(13);
+    font.setBold(true);
     sLabel->setFont(font);
 
     pLabel=new QLabel(this);
 
-    QPixmap pix;
-//     pix=views::decor.artist().toPixmap();
-    pix.load("/home/tavu/src/player/data/artist.png");
-    pix=pix.scaled(18,18, Qt::KeepAspectRatio,Qt::SmoothTransformation);
-
+    QPixmap pix=views::decor->tagIcon(ARTIST).pixmap(18,18);
+//     pix=views::decor.artist().toPixmap();    
 
     pLabel->setPixmap(pix);
 }
@@ -170,7 +168,7 @@ void albumTrack::albumActivated(const QModelIndex &n)
    quer->init(ALBUM_ID,queryGrt::EQUAL,QVariant(albumId) );
    andQ->clear();
    andQ->append(quer);
-   if(searchQ!=0,searchQ->isValid() )
+   if(searchQ!=0 && searchQ->isValid() )
    {
       andQ->append(searchQ->clone());
    }

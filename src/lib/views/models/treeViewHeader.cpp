@@ -6,6 +6,7 @@
 #include<QFrame>
 #include <QCheckBox>
 #include<QButtonGroup>
+#include"../decoration/decoration.h"
 // #include<QApplication>
 
 // #define notHid 1+treeV->getHideFirstsColumn()
@@ -24,8 +25,9 @@ views::treeViewHeader::treeViewHeader(QTreeView *parent)
     
     lines=new QLineF[3];
     
-    setProperty("highlight",QVariant(-1));
-    setStyleSheet("QHeaderView::section {background-color: transparent;}");
+    setProperty("highlight",QVariant(-1));        
+         
+    setStyleSheet("QHeaderView::section {background-color: transparent; }" );
 }
 
 void views::treeViewHeader::createMenu()
@@ -96,7 +98,7 @@ void views::treeViewHeader::selectColumnW()
         layout->addWidget(box);
     }
     connect(Bgroup, SIGNAL(buttonClicked (int)), this, SLOT( toggleHideColumn(int) ));
-//      f->setWindowFlags(Qt::Tool );
+
     f->setWindowFlags(Qt::Tool | Qt::CustomizeWindowHint| Qt::WindowCloseButtonHint  );
 
     f->setAttribute(Qt::WA_DeleteOnClose);
@@ -107,7 +109,7 @@ void views::treeViewHeader::selectColumnW()
 
 
     f->show();
-//      delete f;
+
 }
 
 void views::treeViewHeader::toggleHideColumn(int i)
@@ -144,14 +146,10 @@ views::treeViewHeader::~treeViewHeader()
 }
 
 void views::treeViewHeader::paintSection( QPainter * painter, const QRect & rect, int logicalIndex ) const
-{
-    QStyleOptionHeader option;    
-    option.initFrom(this);
-    
-    QRect r=rect;
+{    
     painter->save();
     
-    painter->fillRect(r,QBrush( palette().window().color() ) );
+    painter->fillRect(rect,QBrush( palette().window().color() ) );
     
     
     QLinearGradient grad(0.5,0.25,0.5,0.45);
@@ -172,30 +170,27 @@ void views::treeViewHeader::paintSection( QPainter * painter, const QRect & rect
     }
     else if(property("highlight").toInt()==logicalIndex )
     {
- 	painter->setOpacity(1);
+	 painter->setOpacity(1);
     }    
     
     QBrush b(grad);    
-    painter->fillRect(r,b);            
+    painter->fillRect(rect,b);            
     QPalette pal= static_cast<QWidget*>(parent())->palette();
-//     QPalette pal=option.palette;
     QPen pen(pal.window().color() );
 
     pen.setWidth(2);
     painter->setPen(pen);
     painter->setOpacity(1);
 
-    lines[0].setP1(r.topLeft());
-    lines[0].setP2(r.topRight());
-    lines[1].setP1(r.bottomLeft());
-    lines[1].setP2(r.bottomRight());
-    lines[2].setP1(r.bottomLeft() );
-    lines[2].setP2(r.topLeft());
+    lines[0].setP1(rect.topLeft());
+    lines[0].setP2(rect.topRight());
+    lines[1].setP1(rect.bottomLeft());
+    lines[1].setP2(rect.bottomRight());
+    lines[2].setP1(rect.bottomRight() );
+    lines[2].setP2(rect.topRight());
 
     painter->drawLines(lines,3);
-    painter->restore();
-    
-    r.setX(r.x()+2);
+    painter->restore();   
 
     painter->save();
     QHeaderView::paintSection(painter,rect,logicalIndex);
