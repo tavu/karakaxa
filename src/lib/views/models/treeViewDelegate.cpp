@@ -20,7 +20,8 @@ views::treeViewDelegate::treeViewDelegate(QObject *parent)
     :QItemDelegate(parent),    
     rating(-1),
     ITEM_HEIGH(18),
-    FONT_SIZE(11)
+    FONT_SIZE(11),
+    _paintValidRole(true)
 {
   font.setPointSize(FONT_SIZE);            
   pen.setWidth(2);
@@ -87,11 +88,16 @@ void views::treeViewDelegate::paint ( QPainter * painter, const QStyleOptionView
     {
 	   
 	 QString text = option.fontMetrics.elidedText(var.toString(),Qt::ElideRight,r.width() );
-// 	text=text.simplified();
+	 
+	 if(_paintValidRole && index.data(VALID_ROLE).toInt()!=0 )
+	 {
+		painter->setOpacity(0.5);
+	 }
 	 painter->drawText( r,Qt::AlignLeft|Qt::AlignVCenter, text);
     }
     painter->restore();
 }
+
 
 QWidget* views::treeViewDelegate::createEditor(QWidget *parent,const QStyleOptionViewItem &option,const QModelIndex &index) const
 {

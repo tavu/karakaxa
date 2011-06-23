@@ -274,7 +274,6 @@ QDomElement creatorItem::xml()
  	    if(!el.isNull() )
 	    {
 		flag=true;
-// 		qDebug()<<"element "<<el.text();
 		root.appendChild(el);
 	    }
         }        
@@ -286,7 +285,7 @@ QDomElement creatorItem::xml()
 	root.setAttribute("tag",tagSelector->currentIndex());
 	int eq=equalSelector->itemData(equalSelector->currentIndex()).toInt();
 	root.setAttribute("comparison",eq);
-	qDebug()<<"EQ "<<eq;
+	
 	if(treeWidget()->itemWidget(this,3)==lineE)
 	{
 	    root.setAttribute("value",lineE->text());

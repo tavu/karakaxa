@@ -128,7 +128,6 @@ inline void mainWindow::infoInit()
     info=new playingInfo(this);
     info->setFixedHeight(165);
     info->setMinimumWidth(150);
-//     info->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
     
     infoDock=new QDockWidget(this);
     infoDock->setWidget(info);
@@ -139,10 +138,9 @@ inline void mainWindow::infoInit()
     
     infoDock->setWindowTitle(tr("playing track info") );
     infoDock->setObjectName("playingTrackInfodf");    
+    infoDock->setAutoFillBackground(true);
 
-    addDockWidget ( Qt::LeftDockWidgetArea, infoDock,Qt::Horizontal);
-    
-    infoDock->setPalette(decor->palette());
+    addDockWidget ( Qt::LeftDockWidgetArea, infoDock,Qt::Horizontal);    
 }
 
 void mainWindow::conViewInit()
@@ -172,6 +170,7 @@ void mainWindow::conTreeInit()
     conTree->setFrameStyle(QFrame::Raised);
     conTree->setHeaderHidden(true);
     conTree->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding );
+    conTree->setAutoFillBackground(true);
 //     conTree->setHeaderLabel("Content");
 
     conTreeDock =new QDockWidget(this);
@@ -185,8 +184,9 @@ void mainWindow::conTreeInit()
     conTreeDock->setPalette(pal); 
     
     core::contentHdl->setView(conTree);
-    
+        
     conTreeDock->setWidget(conTree);
+    conTreeDock->setAutoFillBackground(true);
     addDockWidget ( Qt::LeftDockWidgetArea, conTreeDock,Qt::Vertical);
 
     
@@ -202,12 +202,11 @@ void mainWindow::nplViewInit()
     nplModel *m=new nplModel(this);
     nplView->setModel(m);
     nplView->setDragDropMode(QAbstractItemView::DragDrop);
-    nplView->setAcceptDrops(true);   
-
-    nplDelegate *delegate=new nplDelegate(this);
-    nplView->setItemDelegate(delegate);
+    nplView->setAcceptDrops(true);
     
-//     p.setColor(QPalette::Base,p.color(QPalette::Window) );
+    npList->loadSavedPlaylist();
+   
+    nplView->setItemDelegate(new nplDelegate(this) );    
 
     nplView->setFrameShadow(QFrame::Raised);
     nplView->header()->setStretchLastSection(true);
@@ -252,6 +251,7 @@ void mainWindow::nplViewInit()
     nplViewDock->setWidget(w);
     
     nplViewDock->setPalette(pal);
+    nplViewDock->setAutoFillBackground(true);
     nplView->header()->setPalette(pal);
     addDockWidget ( Qt::RightDockWidgetArea, nplViewDock, Qt::Vertical );
 
@@ -369,16 +369,6 @@ void mainWindow::readSettings()
     int infoHeight=group.readEntry( "infoDockHeight",0 );
     
     restoreState(group.readEntry("state",QByteArray()) );
-//     qDebug()<<"MM "<<infoHeight;
-    
-//     infoDock->resize( QSize(infoDock->width(),500) );
-    
-//     if(infoHeight!=0)
-//     {
-//  	info->resize( QSize(infoDock->width(),infoHeight) );
-//     }
-//      qDebug()<<"MMM "<<infoDock->height();
-//      infoDock->resize(infoDock->width(), group.readEntry("infoDockHeight",30) );
 }
 
 void mainWindow::createTrayIcon()
@@ -387,9 +377,7 @@ void mainWindow::createTrayIcon()
      QMenu *trayIconMenu = new QMenu(this);
      QAction *quitAction = new QAction(KIcon("application-exit"), tr("&Quit"), this);
      connect(quitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
-//      trayIconMenu->addAction(minimizeAction);
-//      trayIconMenu->addAction(maximizeAction);
-//      trayIconMenu->addAction(restoreAction);     
+    
     trayIconMenu->addAction(volumeB->action());
     trayIconMenu->addSeparator();
     trayIconMenu->addAction(previousAction);    

@@ -1,5 +1,6 @@
 #include"playlistModel.h"
 #include<views.h>
+#include<core.h>
 playlistModel::playlistModel(QObject *parent)
     :QAbstractListModel(parent),
     pl(0)
@@ -19,34 +20,62 @@ int playlistModel::columnCount ( const QModelIndex & parent ) const
 }
 
 QVariant playlistModel::data(const QModelIndex & index, int role ) const
-{    
-    if(!index.isValid() )
-    {
-	return QVariant();
-    }
-    
+{   
     static int flag=audioFile::ONDATAB|audioFile::ONCACHE|audioFile::TITLEFP;
     
+    if(!index.isValid() )
+    {
+	 return QVariant();
+    }        
+    
     if( role == Qt::DisplayRole)
-    {      
-   	QVariant var=thr->files[ (index.row() ) ].tag( index.column(),flag );
- 	return views::pretyTag(var,(tagsEnum)index.column() );
+    {
+	 QVariant var;
+	 nplPointer f=thr->files[index.row()];
+	 if(f->type()==NPLAUDIOFILE)
+	 {
+		audioFile file(f->path() );
+		var=file.tag( index.column(),flag );
+	 }
+	 else
+	 {
+		  var=f->tag( index.column() );
+	 }
+	 
+	 return views::pretyTag(var,(tagsEnum)index.column() );
 	
     }    
     else if(role==URL_ROLE)
     {
-	KUrl u(thr->files.at(index.row() ).path() );
-	return QVariant(u);
+	 KUrl u(thr->files.at(index.row() )->path() );
+	 return QVariant(u);
     }
-    
+    else if(role==VALID_ROLE)
+    {
+	   nplPointer f=thr->files[index.row()];
+	   if(!f->isValid() )
+	   {
+		  return QVariant(1);
+	   }
+    }    
     return QVariant();    
 }
 
 bool playlistModel::setData(const QModelIndex& index, const QVariant& value, int role)
 {
-    thr->files[ (index.row() ) ].setTag(index.column(),value);
+    nplPointer f=thr->files[index.row()];
+    if(f->type()==NPLAUDIOFILE)	
+    {			
+	   audioFile file(f->path() );		
+	   file.setTag(index.column(),value);
+	   
+	   if(file.error()==OK)
+	   {
+		  return true;
+	   }
+    }
     
-    return true;
+    return false;
 }
 
 
@@ -73,27 +102,33 @@ void playlistModel::setPlPath(const QString &s)
 {    
     if(pl!=0)
     {
- 	thr->terminate();
- 	beginResetModel();
-	thr->files.clear();	
- 	delete pl;
+	   thr->terminate();
+	   beginResetModel();
+	   thr->files.clear();	
+	   delete pl;
      }
      else
      {
-	beginResetModel();
+	   beginResetModel();
      }
         
-    pl=new m3uPlaylist(s);
+    pl=core::getPlaylist(s);
   
     pl->load();
     
     for(int i=0;i<pl->size();i++)
     {
-	if(core::exists(pl->item(i)) )
+	 	 
+	   nplPointer t=core::nplTrack::getNplTrack(pl->item(i) );
+	   if(!t.isNull() )
+	   {
+		thr->files<<t;
+	   }
+/*	if(core::exists(pl->item(i)) )
 	{
 // 	    audioFile f=audioFile(pl->item(i);
 	    thr->files<<audioFile(pl->item(i) ); 
-	}	
+	}*/	
     }
     endResetModel();        
     
@@ -112,8 +147,12 @@ void playlistModel::setPlPath(const QString &s)
 void playlistModel::playlistThr::run()
 {
      for(int i=0;i<files.size();i++)
-     {
- 	files[i].load();
+     {	     
+	   if(files[i]->type()==NPLAUDIOFILE)	
+	   {			
+		  audioFile file(files[i]->path() );		
+		  file.load();
+	   }
      }    
 }
 
@@ -133,7 +172,6 @@ void playlistModel::updateData()
     QModelIndex topLeft ,bottomRight;
     topLeft=index(0,0);
     bottomRight=index(rowCount()-1,columnCount()-1 );
-//     qDebug()<<topLeft;
-//     qDebug()<<bottomRight;
+    
     emit dataChanged(topLeft,bottomRight);
 }

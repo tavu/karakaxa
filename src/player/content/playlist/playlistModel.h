@@ -26,7 +26,7 @@ class playlistModel :public  QAbstractListModel
 	void updateData();
 
     private:
-	core::m3uPlaylist *pl;
+	core::abstractPlaylist *pl;
 	
 
   class playlistThr :public QThread
@@ -37,7 +37,7 @@ class playlistModel :public  QAbstractListModel
 	  {}
 	  
 	  void run();
-	  mutable QList<audioFiles::audioFile> files;
+	  mutable QList<nplPointer> files;
   };
 
   playlistThr *thr;

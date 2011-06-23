@@ -5,6 +5,7 @@
 // #include<player.h>
 #include<KIcon>
 #include<nowPlayList/nplaylist.h>
+#include<QAbstractItemView>
 
 using namespace core;
 
@@ -18,7 +19,6 @@ nplDelegate::nplDelegate(QObject *parent)
 
 void nplDelegate::paint ( QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index ) const
 {
-
     painter->save();
 
     QRect rect=option.rect;
@@ -29,79 +29,113 @@ void nplDelegate::paint ( QPainter * painter, const QStyleOptionViewItem & optio
 
     QApplication::style()->drawPrimitive( QStyle::PE_PanelItemViewItem, &option, painter );
     QString text = index.data(Qt::DisplayRole).toString();
+         
+    if(option.state & QStyle::State_MouseOver)
+    {
+	   int dropIn=property("dropIn").toInt();
+	   if(dropIn!=-1 )
+	   {
+		  painter->save();
+		  QPen pen(option.palette.highlight().color() );	
+		  pen.setWidth(2);	
+		  painter->setPen(pen);	
+		  
+		  if(dropIn == 1 )
+		  {
+			 painter->drawLine(rect.topLeft(),rect.topRight());
+		  }
+		  else if(dropIn == 2 )
+		  {
+			 painter->drawLine(rect.bottomLeft(),rect.bottomRight());
+		  }
+		  painter->restore();
+	   }
+    }
+    else if(index.row()==index.model()->rowCount()-1 )//if its the last index
+    {
+	   if(property("dropIn").toInt()==3 )
+	   {
+		  painter->save();
+		  QPen pen(option.palette.highlight().color() );	
+		  pen.setWidth(2);	
+		  painter->setPen(pen);
+		  painter->drawLine(rect.bottomLeft(),rect.bottomRight());
+		  painter->restore();
+	   }
+	   
+    }
+    
 
     int align;
     
     if(index.column()==0)
     {
-	align=Qt::AlignCenter;
-	painter->save();
-	QPen pen(Qt::black );	
-	pen.setWidth(1);	  
-	painter->setOpacity(0.2);
-	painter->setPen(pen);
- 	painter->drawLine(rect.topRight(),rect.bottomRight() );
-	painter->restore();
+	   align=Qt::AlignCenter;
+	   painter->save();
+	   QPen pen(option.palette.linkVisited().color() );	
+	   pen.setWidth(1);	  
+	   painter->setOpacity(0.2);
+	   painter->setPen(pen);
+	   painter->drawLine(rect.topRight(),rect.bottomRight() );
+	   painter->restore();
     }
     else
     {
       	rect.setX(rect.x()+2);
-	align=Qt::AlignVCenter|Qt::AlignLeft;
+		align=Qt::AlignVCenter|Qt::AlignLeft;
     }
         
     if (npList->isPlaying(index.row() ) )
-    {
-        
-	if (option.state & QStyle::State_Selected)    
-	{
-	    painter->setPen(option.palette.link().color());
-	    painter->setBrush(option.palette.link().color());
-	}
-	else    
-	{
-	    painter->setPen(option.palette.linkVisited().color());
-	    painter->setBrush(option.palette.linkVisited().color());
-	}
-	
-        font.setBold(true);
+    {        
+	   if (option.state & QStyle::State_Selected)    
+	   {
+		  painter->setPen(option.palette.link().color());
+		  painter->setBrush(option.palette.link().color());
+	   }
+	   else    
+	   {
+		  painter->setPen(option.palette.linkVisited().color());
+		  painter->setBrush(option.palette.linkVisited().color());
+	   }
+	   		  
+	   font.setBold(true);
 
-	if( index.column()==0 )
-	{
-	    align=Qt::AlignVCenter|Qt::AlignLeft;
-	    QPolygonF pol;
-	    pol<<QPoint(10,7.5)<<QPoint(5,12)<<QPoint(5,3);
+	   if( index.column()==0 )
+	   {
+		  align=Qt::AlignVCenter|Qt::AlignLeft;
+		  QPolygonF pol;
+		  pol<<QPoint(10,7.5)<<QPoint(5,12)<<QPoint(5,3);
 
-	    pol.translate(option.rect.x(),option.rect.y()+2 );
-	    painter->drawPolygon(pol,Qt::WindingFill);
-	    rect.setX(rect.x()+12);
-	}
-
+		  pol.translate(option.rect.x(),option.rect.y()+2 );
+		  painter->drawPolygon(pol,Qt::WindingFill);
+		  rect.setX(rect.x()+12);
+	   }
     }
     else if (option.state & QStyle::State_Selected)
     {
         painter->setPen(option.palette.highlightedText().color());
-    }
+    }    
     
     painter->setFont(font);
     if(index.column()==0 && text==QString("0") )
-    {
-// 	text=QString("-");
-	
+    {	
 	  painter->restore();
 	  return ;
     }
+    
+    
     nplPointer t=npList->getTrack(index.row() );
     
     if(!t->isValid() )
     {
-	painter->setOpacity(0.5);
+	 painter->setOpacity(0.5);
     }
+    
     QApplication::style()->drawItemText(painter,rect,align,QApplication::palette (),true,text);
-    
-    
-//     painter->drawText( option.rect,Qt::AlignVCenter|align, text);
+        
     painter->restore();
-
+    
+    int dropIn=property("dropIn").toInt();    
 }
 
 QSize nplDelegate::sizeHint ( const QStyleOptionViewItem & option, const QModelIndex & index ) const

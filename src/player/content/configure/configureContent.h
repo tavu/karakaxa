@@ -23,22 +23,22 @@ class configureContent :public core::abstractContent
 	QStringList		sList;
 	QGroupBox 		*groupB;
 
-	QPushButton 	*scanB;
-	QPushButton 	*cancelB;
-	QProgressBar 	*bar;
-	QLabel		scanInf;
-	QLabel		info;
-	scanTread 	*scThread;
-	QCheckBox	*chBox;
+	QPushButton 		*scanB;
+	QPushButton 		*cancelB;
+	QProgressBar 		*bar;
+	QLabel			scanInf;
+	QLabel			info;
+	scanTread 		*scThread;
+	QCheckBox			*rememberPl;
 
-	QDialogButtonBox *DbButtons;
-	QLineEdit	*dbNameL;
-	QLineEdit	*dbUserL;
-	QLineEdit	*dbPassL;
+	QDialogButtonBox 	*DbButtons;
+	QLineEdit			*dbNameL;
+	QLineEdit			*dbUserL;
+	QLineEdit			*dbPassL;
 	
-	QLabel 		dbNameS;
-	QLabel 		dbUserS;
-	QLabel		dbPassS;
+	QLabel 			dbNameS;
+	QLabel 			dbUserS;
+	QLabel			dbPassS;
 	
 
 	void libconfInit();
@@ -50,6 +50,7 @@ class configureContent :public core::abstractContent
 	void scanDone();
 	void scan();
 	void prepare(const int num);
-	void DbButtonClicked(QAbstractButton*) ;
+	void DbButtonClicked(QAbstractButton*);
+	void rememberPlSlot(int);
 };
 #endif

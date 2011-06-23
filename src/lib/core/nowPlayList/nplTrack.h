@@ -54,9 +54,8 @@ class nplTrack :public QObject
   protected slots:
   
       void emitChanged()	
-      {	
-	qDebug()<<"KKKeee";
-	emit changed();
+      {
+	   emit changed();
       }
 };
 

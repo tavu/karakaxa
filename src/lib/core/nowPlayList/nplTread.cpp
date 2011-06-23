@@ -7,8 +7,8 @@
 #include <QHBoxLayout>
 #include <QProgressBar>
 #include"nplStream.h"
+#include"playlist/abstractPlaylist.h"
 
-#define test qDebug()<<"test";
 
 nplTread::nplTread()
         :QThread(),
@@ -93,18 +93,31 @@ void nplTread::addMedia(const QString &url)
 
 void nplTread::addPlaylist(const QString& url)
 {
-//     core::m3uPl m3u(url);
-//     m3u.load();	
-//     for (int i=0;i<m3u.size() && !canceled;i++)    
-    {            
-//       addSingleFile(m3u.item(i));
+    abstractPlaylist *pl=getPlaylist(url);
+    if(pl==0)
+    {
+	   status->addError(tr("Can't load playlist") );
+	   return;
     }
+    
+    pl->load();	
+    for (int i=0;i<pl->size() && !canceled;i++)    
+    {            
+	   addSingleFile(pl->item(i));
+    }
+    delete pl;
 }
 
 void nplTread::addSingleFile(const QString& url)
 {
     nplPointer tr=core::nplTrack::getNplTrack(url);
     list<<tr;
+       	  
+    if(tr->type()==NPLAUDIOFILE)		
+    {				 
+	   audioFile file(url);		 
+	   file.load();	
+    }
     
     if(list.size()>=size )	
     {
@@ -138,7 +151,6 @@ void nplTread::addDirectory(const QString &url)
     QFileInfo info;
     while (it.hasNext() && !canceled )
     {
-// 	qDebug()<<"ffffffffff "<<info.filePath();
         it.next();
         info=it.fileInfo();
 	

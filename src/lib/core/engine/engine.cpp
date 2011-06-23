@@ -43,7 +43,6 @@ bool core::soundEngine::play(int n)
         mutex.unlock();
         return false;
     }
-//     qDebug()<<"file "<<s;
 
     mediaObject->setCurrentSource(s);
     mediaObject->play();
@@ -125,9 +124,8 @@ void core::soundEngine::mediaStateChanged ( Phonon::State newstate, Phonon::Stat
     {
         if (mediaObject->errorType()==Phonon::FatalError)
         {
-	  qDebug()<<"fatal";
+		  qDebug()<<"fatal";
         }
-        qDebug()<<"state";
         qDebug()<<"engine error "<<mediaObject->errorString();
         errors++;
 	

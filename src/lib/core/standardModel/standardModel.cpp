@@ -590,7 +590,7 @@ int standardItem::rowCount() const
 
 Qt::ItemFlags standardItem::flags(int column) const
 {
-    return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
+    return Qt::ItemIsEnabled | Qt::ItemIsSelectable |Qt::ItemIsDragEnabled;
 }
 
 void standardItem::dataChanged(const int first, const int last)

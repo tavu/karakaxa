@@ -29,7 +29,6 @@ QVariant myFileSystemModel::data(const QModelIndex &index, int role) const
 {   
     if(role == URL_ROLE)
     {
-// 	qDebug()<<itemForIndex(index).url();
 	return QVariant(itemForIndex(index).url() );
     }
   
@@ -85,7 +84,6 @@ QVariant myFileSystemModel::headerData ( int section, Qt::Orientation orientatio
 
 void myFileSystemModel::insert(const KFileItemList &items)
 {    
-    qDebug()<<"ERTDSHSETSEB"<<items.size();
     foreach(KFileItem item , items)
     {
 	if( core::isAudio(item.url().toLocalFile() )  )

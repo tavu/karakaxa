@@ -13,6 +13,7 @@
 #include<QSharedPointer>
 #include"nplAbstractModel.h"
 #include"../engine/engine.h"
+#include"../config/config.h"
 /*
 This class creates a list tha saves the track that is about to be played.
 Every track is represented by a nplTrack poinder.
@@ -57,6 +58,23 @@ class nplaylist :public QObject
 	    this->model=model;
 	}
 	
+	
+	 bool rememberPlaylist()
+	 {
+		return rememberPl;
+	 }
+	 
+	 void setRememberPlaylist(bool b)
+	 {
+		rememberPl=b;
+		KSharedConfigPtr config=core::config->configFile();
+		KConfigGroup group( config, "nowPlaylist" );
+		group.writeEntry( "rememberPl", QVariant(rememberPl));
+		group.config()->sync(); 
+	 }
+	
+	 void loadSavedPlaylist();
+	
     private:
 
 	nplAbstractModel *model;
@@ -69,7 +87,9 @@ class nplaylist :public QObject
 
 	QString next();
 	QString playUrl(int n);
-	QString previous();		
+	QString previous();
+	
+	bool rememberPl;
 	
 
     signals:

@@ -70,7 +70,6 @@ int audioFiles::fileCache::select(bool force)
     }
     
     int err;
-    qDebug()<<"DBdsr";
     QSqlRecord rec=fileToDb::record(path(),err );
     lock.lockForWrite();
     record=rec;
@@ -84,7 +83,7 @@ int audioFiles::fileCache::select(bool force)
     {
 	notInDb=false;
     }
-    qDebug()<<"DB "<<err;
+
     loadMutex.unlock();
     return err;
 }

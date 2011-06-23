@@ -5,9 +5,7 @@ QT += phonon
 QT += sql
 QT += xml
 
-LIBS += -lkdecore -lkdeui -lkfile -lkio
+LIBS += -lkdecore -lkdeui -lkfile -lkio -ltag -ltag-extras
 
-CONFIG += link_pkgconfig 
 CONFIG += debug
-PKGCONFIG += taglib taglib-extras
 #QT += qt3support

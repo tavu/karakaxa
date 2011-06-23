@@ -8,16 +8,13 @@
 #include<core.h>
 #include<views.h>
 
-// #include<QList >
-// using namespace player;
 #include<set>
+#define FONT_SIZE 10
 
 nplaylistView::nplaylistView(QWidget *parent)
-//      :QListView(parent)
         :QTreeView(parent)
 {
     setRootIsDecorated(false);
-//     setHeaderHidden(true);
   
     setDragDropMode( QAbstractItemView::DragDrop );
     setSelectionMode(QAbstractItemView::ExtendedSelection);
@@ -66,7 +63,6 @@ void nplaylistView::performDrag()
 
     nplModel *m=static_cast<nplModel *>(model());
 
-//      npList->clearReorder();
     QList<QUrl> urls;
     set<int> rowL;
 
@@ -89,20 +85,14 @@ void nplaylistView::performDrag()
     drag->setPixmap(views::decor->tagIcon(-1).pixmap(48,48) );
 
     drag->exec(Qt::MoveAction);
-//      QItemSelectionModel *sm=selectionModel();
-//     sm->clear();
     selectionModel()->clear();
     
     m->clearReorder();
-
-//     QItemSelection sel;
-
-//      sel.select(npList->index(*rowL.begin()),npList->index(rowL.size()+ *rowL.begin()) );
-//      m->select(sel,QItemSelectionModel::Select);
 }
 
 int nplaylistView::sizeHintForColumn(int column) const
 {
+    Q_UNUSED(column);
     return -1;
 }
 
@@ -129,7 +119,6 @@ void nplaylistView::duplicate()
     nplList l;
     QModelIndexList list=selectedIndexes();
     qSort(list.begin(), list.end());
-//     qDebug()<<"S "<<list.size();
 
     foreach(QModelIndex index,list)
     {
@@ -141,8 +130,6 @@ void nplaylistView::duplicate()
     }
 
     npList->insert(l,list.last().row()+1 );
-
-//     npList->duplicate( (*it).row());
 }
 
 void nplaylistView::remove()
@@ -164,7 +151,6 @@ void nplaylistView::remove()
         npList->remove(*it-n);
         n++;
     }
-
 }
 
 
@@ -174,64 +160,78 @@ void nplaylistView::keyPressEvent(QKeyEvent *event)
     {
         selectAll();
     }
-//      QListView::keyPressEvent(event);
 }
 
 
-// void nplaylistView::remove()
-// {
-//
-//      QModelIndexList list=selectedIndexes();
-//
-//      QModelIndexList::const_iterator it=list.begin();
-//
-//
-//      while(it!=list.end() )
-//      {
-// // 	  int r=
-// 	  npList->remove((*it).row());
-// // 	  l<<t;
-// 	  it++;
-//
-//      }
-//      qDebug()<<"nplView re";
-//
-// }
 void nplaylistView::contextMenuEvent(QContextMenuEvent *e)
 {
     if (indexAt(e->pos()).isValid() )
     {
-	QMenu *menu=new QMenu(this);	
-	QPalette pal=views::decor->palette();	
-	pal.setColor(QPalette::Base,pal.color(QPalette::Window) );	
-	menu->setPalette(pal);        	      
-	    
-	removeAction=new QAction(tr("&Remove track"),this);	
-	connect(removeAction,SIGNAL(triggered( bool)),this,SLOT(remove() ) );	
-	menu->addAction(removeAction);	    
+	   QMenu *menu=new QMenu(this);	
+	   QPalette pal=views::decor->palette();	
+	   pal.setColor(QPalette::Base,pal.color(QPalette::Window) );	
+	   menu->setPalette(pal);        	      
 		
-//         if (selectedIndexes().size()==1)
-        {
-	    duplicateAction=new QAction(tr("&Duplicate track"),this);	    
-	    connect(duplicateAction,SIGNAL(triggered( bool)),this,SLOT(duplicate() ) );	    
-	    menu->addAction(duplicateAction);
-        }
-	
-	QMenu *m=new QMenu(tr("More"),menu );
-	m->setPalette(menu->palette());
-	menu->addMenu(m);
-	core::contentHdl->contextMenu(m,currentIndex().data(URL_ROLE).toUrl(),!selectedIndexes().isEmpty());
-	
-        menu->exec( e->globalPos() );
-	delete menu;
+	   removeAction=new QAction(tr("&Remove track"),this);	
+	   connect(removeAction,SIGNAL(triggered( bool)),this,SLOT(remove() ) );	
+	   menu->addAction(removeAction);	    
+
+	   duplicateAction=new QAction(tr("&Duplicate track"),this);	    	 
+	   connect(duplicateAction,SIGNAL(triggered( bool)),this,SLOT(duplicate() ) );	    	 
+	   menu->addAction(duplicateAction);
+	 
+	   QMenu *m=new QMenu(tr("More"),menu );
+	   m->setPalette(menu->palette());
+	   menu->addMenu(m);
+	   core::contentHdl->contextMenu(m,currentIndex().data(URL_ROLE).toUrl(),!selectedIndexes().isEmpty());
+		  
+	   menu->exec( e->globalPos() );
+	   delete menu;
     }
 }
 void nplaylistView::dragEnterEvent ( QDragEnterEvent * event )
 {
+    onDrag=true;
     event->accept();
 }
+
+void nplaylistView::dragLeaveEvent ( QDragLeaveEvent* event )
+{
+	   onDrag=false;
+        QAbstractItemView::dragLeaveEvent ( event );
+}
+
+void nplaylistView::dropEvent ( QDropEvent* event )
+{
+	 onDrag=false;
+	 QTreeView::dropEvent(event);
+}
+
 
 void nplaylistView::play(const QModelIndex &i)
 {
     core::engine->play(i.row() );
+}
+
+
+void nplaylistView::drawRow ( QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index ) const
+{
+
+    if(onDrag)
+    {
+	   itemDelegate()->setProperty("dropIn",dropIndicatorPosition());
+    }
+    else
+    {
+	    itemDelegate()->setProperty("dropIn",-1);
+    }
+    QTreeView::drawRow(painter,option,index);
+}
+    
+void nplaylistView::paintEvent(QPaintEvent * event)
+{
+        
+  QPainter painter(viewport());  
+  drawTree(&painter, event->region());
+   
 }

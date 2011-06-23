@@ -15,6 +15,7 @@ core::contentHandler::contentHandler()
     stack=new QStackedWidget();
     stack->setMinimumSize(QSize(0,0) );
     _toolBar=new KToolBar( 0,true,false );
+    _toolBar->setAutoFillBackground(false);
 }
 
 QFrame* core::contentHandler::contentView() const
@@ -40,7 +41,7 @@ void core::contentHandler::loadPlugins()
   QPluginLoader loader(s);
   
   QObject *b=loader.instance();
-  qDebug()<<"B "<<b;
+
   abstractContent *plugin=dynamic_cast<abstractContent *>(b);
   if(plugin)
   {

@@ -117,9 +117,12 @@ void views::treeView::performDrag()
 
 void views::treeView::setModel ( QAbstractItemModel * model )
 {
-    QAbstractItemModel *m=model();
-    QTreeView::setModel(model);          
-    disconnect(m);
+    QAbstractItemModel *m=QTreeView::model();
+    QTreeView::setModel(model); 
+    if(m!=0)
+    {
+	   disconnect(m, 0, this, 0);
+    }
     
     if(delegate->ratingColumn()>-1)
     {
@@ -177,7 +180,7 @@ void views::treeView::writeSettings()
         
     KSharedConfigPtr config=core::config->configFile();
     KConfigGroup group( config, objectName() );
-    group.writeEntry( "state", QVariant(header()->saveState() ));
+    group.writeEntry( "list", QVariant(header()->saveState() ));
     group.config()->sync(); 
     
     
@@ -305,8 +308,6 @@ void views::treeView::leaveEvent (QEvent *)
 
 void views::treeView::play(const QModelIndex index)
 {
-//     const trackUrl *Model=dynamic_cast<const trackUrl*>(model() );    
-
     core::nplList list;
     for (int i=0;i<model()->rowCount(index.parent() );i++)
     {

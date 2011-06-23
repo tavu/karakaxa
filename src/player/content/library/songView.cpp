@@ -50,13 +50,6 @@ void songView::fileEdit()
 
     if (list.isEmpty() )	return;
 
-//     trackUrl *Model=dynamic_cast<trackUrl*>(model() );
-
-//     if(Model==0)
-//     {
-// 	qDebug()<<"ah bah";
-// 	return ;
-//     }
     
     foreach(QModelIndex i,list)
     {

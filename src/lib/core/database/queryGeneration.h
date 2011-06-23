@@ -170,11 +170,7 @@ class queryGrt :public QObject
  		return 0;
 	    }
 	    
-// 	    qDebug()<<"size "<<files.size();
-// 	    audioFiles::audioFile f=
-	    
 	    return files[n];
-// 	    return  audioFiles::audioFile(files[n] );
 	}
 	
 	bool select();

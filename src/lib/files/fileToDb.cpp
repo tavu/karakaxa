@@ -398,7 +398,6 @@ bool audioFiles::fileToDb::setAlbumArtist(const QString &path,const QString &s,c
     }
     q.exec("select @k");
     q.next();
-//     qDebug()<<q.value(0);
 
     q.prepare( "update tracks SET album=@k where path=?");
     q.addBindValue(path );

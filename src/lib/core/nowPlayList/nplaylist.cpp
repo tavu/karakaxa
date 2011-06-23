@@ -8,6 +8,7 @@
 // #include<KMimeType>
 // #include"../../random.cpp"
 #include<QApplication>
+#include"../status/playerStatus.h"
 
 
 using namespace core;
@@ -17,15 +18,49 @@ core::nplaylist::nplaylist()
 {
     circle=true;
     qRegisterMetaType<nplList>("nplList");
+    
+    		
+    KSharedConfigPtr config=core::config->configFile();	
+    KConfigGroup group( config, "nowPlaylist" );	
+    rememberPl=group.readEntry( "rememberPl", false);
+    
+    
+    
     connect(this,SIGNAL(insertSig(nplList,int)),this,SLOT(insertSlot(nplList,int)),Qt::QueuedConnection);
     connect(this,SIGNAL(removeSig(int)),this,SLOT(removeSlot(int)),Qt::QueuedConnection);    
     connect(engine,SIGNAL(trackChanged(QString) ),this,SLOT(informTrack() ),Qt::QueuedConnection );
+    connect(qApp,SIGNAL(aboutToQuit()),this,SLOT(prepareToQuit()) );
 }
 
-
-void nplaylist::prepareToQuit()
+void core::nplaylist::prepareToQuit()
 {
-    clear();
+    if(rememberPl)
+    {
+	   QStringList l;
+	   
+	   foreach(nplPointer p ,trackList)
+	   {
+		  l<<p->path();
+	   }
+	   QVariant var(l);
+	   KSharedConfigPtr config=core::config->configFile("nowPlaylist");
+	   KConfigGroup group( config, "list" );
+	   group.writeEntry( "list", QVariant(l) );
+	   group.config()->sync(); 
+    }    
+}
+
+void core::nplaylist::loadSavedPlaylist()
+{
+    if(rememberPl)
+    {
+	   KSharedConfigPtr config=core::config->configFile("nowPlaylist");	
+	   KConfigGroup group( config, "list" );	
+	   QStringList l=group.readEntry("list", QStringList() );
+	   
+	   if(!l.isEmpty() )
+		addMediaList(l,0);    
+    }
 }
 
 
@@ -62,19 +97,27 @@ void core::nplaylist::insertSlot(nplList list, int pos)
         return ;
     }
     
+    int newPos=pos;
+    
     model->beginInsertRows(QModelIndex(), pos,pos+list.size()-1 );
     for(int i=0;i<list.size();i++)
     {
-	if(!list[i].isNull() && list[i]->isValid() )
-	{
-	    trackList.insert (pos+i,list[i] );
-	    totalLength+=list[i]->tag(LENGTH).toInt();
-	}
+	   if(!list[i].isNull() && list[i]->isValid() )
+	   {
+		  newPos++;
+		  trackList.insert (newPos,list[i] );
+		  totalLength+=list[i]->tag(LENGTH).toInt();
+	   }
     }
     
     model->endInsertRows();
-     
-    emit( inserted(list.size() ) );
+
+    if(newPos-pos<list.size() )
+    {
+	   core::status->addError(tr("Some media coulbn't be inserted") );
+    }
+	
+    emit( inserted(newPos-pos ) );
     return ;
 }
 

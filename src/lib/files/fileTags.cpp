@@ -256,14 +256,10 @@ bool audioFiles::fileTags::setTrack(const unsigned int &i)
 }
 
 void audioFiles::fileTags::getTags(audioFiles::tagRecord *t)
-{
-//     audioFiles::tagRecord *r=new audioFiles::tagRecord[FRAME_NUM];
-    
-//     audioFiles::tagRecord *r=(audioFiles::tagRecord*)malloc(FRAME_NUM*sizeof(audioFiles::tagRecord) );
-    
+{    
     if(t==0)
       qDebug()<<"null tags";
-//     for(player::tagsEnum i; i=TAGS_START; i<=TAGS_END; i++ )
+    
     for(int i=0;i<FRAME_NUM;i++ )
     {
 	t[i].value=tag( (tagsEnum)i);

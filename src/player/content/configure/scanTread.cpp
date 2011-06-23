@@ -30,9 +30,7 @@ void scanTread::findItemN(QString dir)
 }
 
 bool scanTread::scanFolder(KUrl url)
-{
-    qDebug()<<"ENTER "<<url;
-  
+{ 
     QDir dir(url.toLocalFile() );
 
     QLinkedList<QString> dirs;
@@ -163,7 +161,6 @@ QString scanTread::image(albumEntry &al)
     {
 	allAlbums.insert(al.id,num);
     }
-    qDebug()<<"Album "<<al.album<<"	"<<ret;
-//     qDebug()<<"ret "<<ret;
+//     qDebug()<<"Album "<<al.album<<"	"<<ret;
     return ret;
 }

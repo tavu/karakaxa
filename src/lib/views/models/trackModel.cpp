@@ -20,7 +20,7 @@ QVariant views::trackItem::data(int column, int role) const
 	return QVariant();
     }
     
-    if(role==Qt::DisplayRole)
+    if(role==Qt::DisplayRole || role==Qt::ToolTipRole)
     {
 	return views::pretyTag(file.tag(column),column );
     }
@@ -89,8 +89,6 @@ void views::trackModelItem::addItems()
 {
     clear();
     
-//     qDebug()<<"DRE";
-//     int end=q->size();
     for(int i=0;i<q->size();i++)
     {
 	audioFile *f=q->at(i);

@@ -12,7 +12,7 @@ class abstractPlaylist
 {      
     public:
       
-        static const int OK=0;
+     static const int OK=0;
 	static const int FILENOTFOUND=1;
 	static const int CANTOPENFILE=2;
 	
@@ -33,6 +33,9 @@ class abstractPlaylist
 	virtual bool load()=0;
 	virtual bool save()=0;
 	virtual int  error() const=0;
+	
+  protected:
+    void toFullPath(QString &s);
 	
 // 	virtual nplTrack;
 };

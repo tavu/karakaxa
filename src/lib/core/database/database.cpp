@@ -68,7 +68,7 @@ void core::database::setUpDb()
 {
     QSqlQuery q(db);
     QString s=KGlobal::dirs()->findResource("data",QString("player/sql/create.txt") );   
-    q.prepare("source "+s );    
+    q.prepare("LOAD DATA INFILE "+s );    
     
     if(!q.exec() )
     {

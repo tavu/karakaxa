@@ -47,10 +47,6 @@ QString core::nplStream::path()
 
 QString core::nplStream::title()
 {
-//      qDebug()<<"M "<<mediaObject->metaData("TITLE");
-//      qDebug()<<"M "<<engine->getMediaObject()->metaData("ARTIST");
-
-//      return engine->getMediaObject()->metaData("TITLE").at(0);
     return titleS;
 }
 

@@ -17,10 +17,7 @@ void loadInfoThr::updateTracks()
 {
      for(;iter!=fileList.end();iter++)
      {	
-// 	qDebug()<<"E";  
      	iter->load();
-// 	qDebug()<<"ET "<<iter->status();
-//  	iter->load(audioFiles::audioFile::LOAD_FILE);
      }
 
 }

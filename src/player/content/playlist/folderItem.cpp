@@ -13,7 +13,6 @@ folderItem::folderItem(QDomDocument &doc, const QString &text)
      setData(QVariant("name"),0,attributeName);
      setData(QVariant(text), 0 ,attributeRole() );  
      
-//      qDebug()<<element.toDocument().toString();
 }
 
 folderItem::folderItem(const QDomElement &el)
@@ -55,7 +54,6 @@ void folderItem::fetchMore()
 	qDebug()<<el.tagName();
 	i++;
     }    
-    qDebug()<<"I "<<i;
 }
 
 QVariant folderItem::data(int column, int role) const

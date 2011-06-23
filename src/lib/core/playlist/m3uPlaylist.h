@@ -36,10 +36,7 @@ class m3uPlaylist :public abstractPlaylist
 	
 	int error() const;
 	
-    private:
-
-	
-	void toFullPath(QString &s);
+    private:		
 	QString _path;
 	QFile file;
 	int	err;

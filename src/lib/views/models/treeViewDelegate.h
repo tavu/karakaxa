@@ -15,7 +15,7 @@ class treeViewDelegate :public QItemDelegate
     Q_OBJECT
     public:
 	treeViewDelegate(QObject * parent = 0 );
-	virtual void	paint ( QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index ) const;
+	virtual void	paint ( QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index ) const;	
 	virtual QSize	sizeHint ( const QStyleOptionViewItem & option, const QModelIndex & index ) const;
 	int itemHeigh() const;
 	void setItemHeigh(int k);
@@ -25,8 +25,19 @@ class treeViewDelegate :public QItemDelegate
 	void setEditorData(QWidget *editor,const QModelIndex &index) const;
 	void setModelData(QWidget *editor,QAbstractItemModel *model,const QModelIndex &index) const;	
 	
+	bool paintValidRole()
+	{
+	   return _paintValidRole;
+	}
+
+	void setPaintValidRole(bool b)
+	{
+	   _paintValidRole=b;
+	}
+
+	
     private:
-	int rating;
+	 int rating;
 
 /*	QPixmap decoration(const QStyleOptionViewItem &option, const QModelIndex &index) const;
 	QPixmap toPixmap(const QStyleOptionViewItem& option, const QIcon& icon, const QModelIndex &index) const;
@@ -37,6 +48,7 @@ class treeViewDelegate :public QItemDelegate
 	QSize _sizeHint;
 	QFont font;
 	mutable QPen pen;
+	bool _paintValidRole;
 // 	KRatingPainter ratingPainter;
 	
     private slots:

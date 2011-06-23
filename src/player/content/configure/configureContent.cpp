@@ -11,8 +11,8 @@ using namespace core;
 configureContent::configureContent(QWidget *parent)
         :abstractContent(parent),
         dbNameS(QObject::tr("database Name:")),
-	dbUserS(QObject::tr("User:")),
-	dbPassS(QObject::tr("password:"))
+	   dbUserS(QObject::tr("User:")),
+	   dbPassS(QObject::tr("password:"))
 {
     QLabel *l=new QLabel(this);
 
@@ -25,20 +25,36 @@ configureContent::configureContent(QWidget *parent)
     QVBoxLayout *layout = new QVBoxLayout();
     libconfInit();
 
-    chBox=new QCheckBox("remember playlist on exit",this);
+    rememberPl=new QCheckBox("remember playlist on exit",this);
+    rememberPl->setChecked(npList->rememberPlaylist() );
     layout->addWidget(l);
     layout->addWidget(groupB);
-    layout->addWidget(chBox);
+    layout->addWidget(rememberPl);
     layout->addStretch();
 
     layout->setContentsMargins(20,20,50,20);
     setLayout(layout);
+    
+    connect(rememberPl,SIGNAL(stateChanged(int) ),this,SLOT(rememberPlSlot(int) ) );
 }
 
 QString configureContent::name() const
 {
     return QObject::tr("Config");
 }
+
+void configureContent::rememberPlSlot(int state)
+{
+    if(state==Qt::Checked)
+    {
+	   npList->setRememberPlaylist(true);
+    }
+    else
+    {
+	   npList->setRememberPlaylist(false);
+    }
+}
+
 
 void configureContent::libconfInit()
 {
@@ -198,7 +214,6 @@ void configureContent::addLibraryFolder()
     dialog->exec();
     
     QStringList l=dialog->selectedFiles ();
-    qDebug()<<l;
     if(l.isEmpty())
     {
 	return;

@@ -448,7 +448,6 @@ QVariant audioFiles::mp3Tags::tag(tagsEnum t) const
     }
     case ALBUM:
     {
-// 	       qDebug()<<album();
         return album();
     }
     case ARTIST:

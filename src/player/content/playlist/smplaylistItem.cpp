@@ -58,9 +58,6 @@ bool smplaylistItem::setData(const QVariant& value, int column, int role)
 queryGrt::abstractQuery* smplaylistItem::group(QDomNode nod) const
 {
     queryGrt::matchQuery *q;
-    qDebug()<<"QQ ";
-//     QString q;
-//     QStringList l;
   
     QDomElement e=nod.toElement();
     QString s=e.attribute("matchtype");
@@ -111,9 +108,7 @@ queryGrt::abstractQuery* smplaylistItem::group(QDomNode nod) const
 	    q->append(new queryGrt::tagQuery(t,comp,s,invert) );
 // 	    l<<queryGrt::query(t,comp,s,invert);
 	}	
-    }
-    
-    qDebug()<<"QQ "<<q->text();
+    }   
     
     return q;    
 }

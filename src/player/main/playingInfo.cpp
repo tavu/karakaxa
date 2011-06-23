@@ -115,7 +115,10 @@ playingInfo::~playingInfo()
 
 void playingInfo::update()
 {
-    disconnect(track.data() );
+	if(!track.isNull() )
+	{
+	   disconnect(track.data(), 0, this, 0);
+	}
      track=npList->getPlayingTrack();
      connect(track.data(),SIGNAL(changed()),this,SLOT(getInfo()) );
      getInfo();

@@ -34,20 +34,6 @@ bool core::m3uPlaylist::load()
     return true;
 }
 
-void core::m3uPlaylist::toFullPath(QString &s)
-{
-    if (core::isStream(s) )
-    {
-        return ;
-    }
-
-    if (s.startsWith('/') )
-    {
-        return ;
-    }
-
-    s.prepend(folder(_path)+'/' );
-}
 
 QStringList core::m3uPlaylist::urls() const
 {

@@ -21,7 +21,7 @@ core::nplFile::nplFile(QString s)
     else
     {
       //if the file is valid we read the info we are soure that we will use.
-        file->load();
+//         file->load();
 	connect(db,SIGNAL(updated(audioFiles::audioFile)),this,SLOT(emitChanged(audioFiles::audioFile) ) ) ;
     }
 
@@ -29,10 +29,8 @@ core::nplFile::nplFile(QString s)
 
 void core::nplFile::emitChanged(audioFiles::audioFile f)
 {
-//     qDebug()<<"DTG";
     if(f.path()==file->path() )
     {
-//       qDebug()<<"DTGhefd";  
 	nplTrack::emitChanged();
     }
 }

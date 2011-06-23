@@ -21,6 +21,7 @@ playlistContent::playlistContent(QWidget *parent)
     treeV->setHeaderHidden(true);
     treeV->setSelectionMode(QAbstractItemView::SingleSelection);
     treeV->setRootIsDecorated(true);
+    treeV->setAnimated(true);
     
     trackV=new views::treeView(this,"playlistView");
     trackV->setRatingColumn(RATING);
@@ -74,7 +75,7 @@ playlistContent::playlistContent(QWidget *parent)
     
     treeV->setModel(proxyM);
     
-//     proxyM->sort(0);
+    proxyM->sort(0);
     
     stack->addWidget(treeV);
     stack->addWidget(trackV);

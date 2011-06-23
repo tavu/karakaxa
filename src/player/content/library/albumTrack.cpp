@@ -173,7 +173,6 @@ void albumTrack::albumActivated(const QModelIndex &n)
       andQ->append(searchQ->clone());
    }
    queryGen->select();
-//    trackM->refresh ();
    
    qDebug()<<queryGen->queryString();
 

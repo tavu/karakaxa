@@ -33,25 +33,25 @@ QVariant nplModel::data ( const QModelIndex & index, int role ) const
 
     nplPointer t=npList->getTrack(index.row() );
 
-    if (role==Qt::DisplayRole)
-    {
-	
-	if (t.isNull())	return QVariant();
-	
-	if(index.column()==0)
-	{
-	    return t->tag(TRACK);
-	}
-	else
-	{
-	    return t->title();
-	}	
+    if (role==Qt::DisplayRole || role==Qt::ToolTipRole)
+    {	
+	 if (t.isNull())	return QVariant();
+	 
+	 if(index.column()==0)
+	 {
+		return t->tag(TRACK);
+	 }
+	 else
+	 {
+		return t->title();
+	 }	
     }
     if(role==URL_ROLE)
     {
-	qDebug()<<"P "<<t->path();
-	return QVariant( KUrl(t->path() ) );
+	   return QVariant( KUrl(t->path() ) );
     }
+    
+    
     return QVariant();
 
 }
@@ -86,6 +86,8 @@ QVariant nplModel::headerData ( int section, Qt::Orientation orientation, int ro
 
 bool nplModel::dropMimeData ( const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent)
 {
+    Q_UNUSED(parent);
+    Q_UNUSED(column);
     if (row<0)
         row=npList->size();
 

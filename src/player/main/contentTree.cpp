@@ -12,8 +12,9 @@ contentTree::contentTree(QWidget *parent)
 void contentTree::contextMenuEvent(QContextMenuEvent *e)
 {
     QModelIndex i=indexAt(e->pos());
-    abstractContent *c=contentHdl->content(i);
-        
+    abstractContent *c=contentHdl->content(i);       
+    setAnimated(true);
+    
     if (c!=0 )
     {
         c->showMenu( e->globalPos() );

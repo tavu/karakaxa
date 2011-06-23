@@ -147,7 +147,6 @@ void editTrackContent::save()
     if (albumL->text()!=file->tag(ALBUM).toString() )
     {
         qDebug()<<"edit album";
-// 	qDebug()<<file->tag(ALBUM).toString()<<"	"<<albumL->text();
         file->setTag(ALBUM,albumL->text() );
     }
 

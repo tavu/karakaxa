@@ -135,8 +135,6 @@ QVariant audioFiles::audioFile::tag(int t, const short int f) const
         }
         if(err==OK)
 	{
-// 	qDebug()<<"here";  
-// 	    QString s=ret.toString().trimmed();
 	    return ret;
 	} 
     }
