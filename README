@@ -1,1 +1,8 @@
 kdelibs5-dev
+qmake (qt4-qmake)
+libtag
+libtag-extras
+libqt4-dev
+libphonon-dev
+kdelibs 
+kdelibs-dev (kdelibs5-dev)
