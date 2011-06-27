@@ -52,19 +52,19 @@ class audioFile :public QObject
 	{
 	    if(cache==0)
 	    {
-		return QString();
+		  return QString();
 	    }
 	    return cache->path();
 	}
 	
 	QVariant tag(int t,const short int f=DEFAULTF) const;
 	
-	QVariant		albumArtist();
+	QVariant			albumArtist();
 	QString			cover();
 
 	bool 			setTag(int t,QVariant var);
-	void			setTags(QList<int> tags,QList<QVariant> values);
-	int 			albumId();
+	void				setTags(QList<int> tags,QList<QVariant> values);
+	int 				albumId();
 
 
 	QString	folder();

@@ -11,19 +11,21 @@ class loadInfoThr :public QThread
   Q_OBJECT
   public:
       loadInfoThr(QObject *parent=0);
-      QLinkedList<audioFiles::audioFile> fileList;
-      QLinkedList<audioFiles::audioFile>::iterator iter;
       void updateTracks();
       
       void cancel()
       {
 	  canceled=true;
       }
+      void addItems(QLinkedList<audioFiles::audioFile> &l);
       
   protected:
+          
+	 QLinkedList<audioFiles::audioFile> fileList;
+      QLinkedList<audioFiles::audioFile>::iterator iter;
       void run();
       bool canceled;
-      int  pos;
+	 QMutex *mutex;
       
   public slots:
       void cleanup();

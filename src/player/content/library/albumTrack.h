@@ -10,6 +10,7 @@
 #include<views.h>
 #include<core.h>
 #include<QSplitter>
+#include<QSortFilterProxyModel>
  
 class albumTrack :public QWidget
 {
@@ -41,6 +42,7 @@ class albumTrack :public QWidget
 	QSplitter *splitter;
 	albumModel *albumM;
 	standardModel *trackM;
+	QSortFilterProxyModel *proxyM;
 	views::trackModelItem *trmItem;
 
     //     QString search;

@@ -45,7 +45,8 @@ QStandardItem* core::abstractContent::item()
 void core::abstractContent::addSubmenu(const QString& s, QIcon icon)
 {
     QStandardItem *it;
-    if(!icon.isNull() )
+    it=new QStandardItem(icon,s);
+/*    if(!icon.isNull() )
     {      
 	it=new QStandardItem(s);
     }
@@ -53,6 +54,7 @@ void core::abstractContent::addSubmenu(const QString& s, QIcon icon)
     {
 	it=new QStandardItem(icon,s);
     }
+    */
     item()->appendRow(it);
 }
 

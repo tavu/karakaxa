@@ -14,6 +14,10 @@ class playingInfo :public QFrame
  	virtual QSize sizeHint() const;
 	
     private:
+	QPoint startPos;
+	void mouseMoveEvent(QMouseEvent *event);
+	void mousePressEvent(QMouseEvent *event);
+	void performDrag();
 	views::coverWidget *cover;
 	views::ratingWidget *stars;
     // 	  QLabel *titleL;

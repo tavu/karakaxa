@@ -5,7 +5,7 @@
 // #include<player.h>
 #include<KIcon>
 #include<nowPlayList/nplaylist.h>
-#include<QAbstractItemView>
+#include<views.h>
 
 using namespace core;
 
@@ -36,7 +36,7 @@ void nplDelegate::paint ( QPainter * painter, const QStyleOptionViewItem & optio
 	   if(dropIn!=-1 )
 	   {
 		  painter->save();
-		  QPen pen(option.palette.highlight().color() );	
+		  QPen pen(views::decor->palette().highlight().color() );	
 		  pen.setWidth(2);	
 		  painter->setPen(pen);	
 		  
@@ -56,7 +56,7 @@ void nplDelegate::paint ( QPainter * painter, const QStyleOptionViewItem & optio
 	   if(property("dropIn").toInt()==3 )
 	   {
 		  painter->save();
-		  QPen pen(option.palette.highlight().color() );	
+		  QPen pen(views::decor->palette().highlight().color() );
 		  pen.setWidth(2);	
 		  painter->setPen(pen);
 		  painter->drawLine(rect.bottomLeft(),rect.bottomRight());

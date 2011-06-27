@@ -78,7 +78,9 @@ mainWindow::mainWindow()
     readSettings();
     defaultContent();
     
-//      core::contentHdl->init(conTree,conView);
+    npList->loadSavedPlaylist();
+    
+    //      core::contentHdl->init(conTree,conView);
 //      core::contentHdl.loadDefault();
 
 
@@ -202,9 +204,7 @@ void mainWindow::nplViewInit()
     nplModel *m=new nplModel(this);
     nplView->setModel(m);
     nplView->setDragDropMode(QAbstractItemView::DragDrop);
-    nplView->setAcceptDrops(true);
-    
-    npList->loadSavedPlaylist();
+    nplView->setAcceptDrops(true);        
    
     nplView->setItemDelegate(new nplDelegate(this) );    
 
@@ -402,6 +402,10 @@ void mainWindow::iconActivated(QSystemTrayIcon::ActivationReason reason)
 {
     if(reason==QSystemTrayIcon::Trigger||reason==QSystemTrayIcon::DoubleClick)
     {
-	setVisible(!isVisible());
+	 setVisible(!isVisible());
+	 if(isVisible() )
+	 {	
+		activateWindow();
+	 }
     }  
 }

@@ -46,6 +46,7 @@ class treeView :public QTreeView
 	virtual void writeSettings();
 	virtual void readSettings();
 	virtual void updateStarWidget(QModelIndex parent, int start, int end);
+	void updateStarWidget();
 	virtual void dataChanged ( const QModelIndex & topLeft, const QModelIndex & bottomRight );
 	virtual void closeEditor ( QWidget * editor, QAbstractItemDelegate::EndEditHint hint );
 	virtual void play(const QModelIndex index);

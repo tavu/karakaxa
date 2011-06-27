@@ -25,7 +25,8 @@ folderContent::folderContent(QWidget *parent)
 
     proxyM=new QSortFilterProxyModel(this);
     proxyM->setSourceModel(model);
-
+    proxyM->setFilterCaseSensitivity(Qt::CaseInsensitive);
+    
     view=new views::treeView(this,"Folder view");
     view->setRatingColumn(DIRCOLUMN+RATING);
     view->setModel(proxyM);
@@ -52,11 +53,20 @@ folderContent::folderContent(QWidget *parent)
     upAction = new QAction( KIcon( "go-up" ),"go up", this );
     toolBar->addAction( upAction );
     connect( upAction, SIGNAL( triggered( bool) ), this, SLOT( up() ) );
-
-//     KDirLister *dirL=model->dirLister();
-//     connect(dirL,SIGNAL(clear() ),this,SLOT(cleanup() ) );
+   
+    QWidget* spacer = new QWidget(this);
+    spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    toolBar->addWidget(spacer);
     
-//     connect(model,SIGNAL(updated() ),this,SLOT(cleanup() ) );
+    searchLine =new KLineEdit(this);
+    searchLine->setClearButtonShown(true);
+    searchLine->setClickMessage(tr("filter"));
+    searchLine->setFixedWidth(300);
+    searchLine->setVisible(true);
+    toolBar->addWidget(searchLine);
+        
+    connect(searchLine,SIGNAL(textChanged ( const QString & )  ),proxyM,SLOT(setFilterFixedString(QString) ) );
+//     connect(searchLine,SIGNAL(clearButtonClicked() ),this,SLOT(search() ) );
     
     
     QVBoxLayout *layout = new QVBoxLayout();

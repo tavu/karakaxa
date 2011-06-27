@@ -53,6 +53,7 @@ void albumTrack::trackVInit()
 {
     trackV=new views::treeView(this,"TRACKVIEW");
     trackM=new standardModel(this);
+    proxyM=new QSortFilterProxyModel(this);        
     
     trmItem=new views::trackModelItem();
 //     trackM->appendRow(trmItem);
@@ -71,8 +72,10 @@ void albumTrack::trackVInit()
     
     trmItem->setQueryG(queryGen);
 
-    trackV->setModel(trackM);
     trackM->setHeadItem(trmItem);
+    proxyM->setSourceModel(trackM);
+    trackV->setModel(proxyM);
+    
 
     connect(trackV,SIGNAL(showContextMenu(QModelIndex,QModelIndexList)),this,SLOT(showContexMenuSlot(QModelIndex,QModelIndexList))); 
 //     trackV->setStyleSheet("QAbstractItemView {background-color: transparent; }");

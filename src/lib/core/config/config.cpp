@@ -15,7 +15,7 @@ core::PlayerConfigure::PlayerConfigure()
 
 QStringList core::PlayerConfigure::files()
 {
-    return  Phonon::BackendCapabilities::availableMimeTypes().filter( "audio/", Qt::CaseInsensitive )<<"*.mp3";
+    return  Phonon::BackendCapabilities::availableMimeTypes().filter( "audio/", Qt::CaseInsensitive );
 }
 
 QStringList core::PlayerConfigure::playListFiles()

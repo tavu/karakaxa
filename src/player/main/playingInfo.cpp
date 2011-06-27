@@ -126,6 +126,7 @@ void playingInfo::update()
 
 void playingInfo::getInfo()
 {
+    qDebug()<<"EDFHGS";
     if (track.isNull())
     {
         qDebug()<<"playingInfo: can't get informarion file is null";
@@ -139,9 +140,7 @@ void playingInfo::getInfo()
     genreT->setText(track->tag(GENRE).toString() );
     
     cover->setCover(track->cover() );
-//     lab->setPixmap(track->cover());
     stars->setRating(track->tag(RATING).toInt());
-//      l->setPixmap(file->cover() );
 
 }
 
@@ -160,6 +159,62 @@ void playingInfo::setRating(int n)
     if(f->setTag(RATING,n) )
     {
 	stars->setRating(n);
+    }    
+}
+
+void playingInfo::mousePressEvent(QMouseEvent *event)
+{
+    if (event->button() == Qt::LeftButton)
+    {
+        startPos = event->pos();
+    }
+    else
+    {
+	   QWidget::mousePressEvent(event);
+    }
+}
+
+
+void playingInfo::mouseMoveEvent(QMouseEvent *event)
+{
+    if (event->buttons() & Qt::LeftButton)
+    {
+        int distance = (event->pos() - startPos).manhattanLength();
+        if (distance >= QApplication::startDragDistance())
+        {
+            performDrag();
+            //after the drag we get no mouse released event due to a bug
+            //we  create that event manualy
+            QMouseEvent *e=new QMouseEvent(QEvent::MouseButtonRelease,QPoint(-1,-1),Qt::NoButton,Qt::LeftButton,Qt::NoModifier);
+            mouseReleaseEvent (e);
+        }
+        else
+        {
+            QWidget::mouseMoveEvent(event);
+        }
+    }
+    else
+    {
+        QWidget::mouseMoveEvent(event);
+    }
+}
+
+void playingInfo::performDrag()
+{
+  
+    if(track.isNull() || !track->isValid() )
+    {
+	   return ;
     }
     
+    QList<QUrl> l;
+    l<<track->path();
+    QMimeData *mimeData = new QMimeData;
+    mimeData->setUrls(l);
+
+    QDrag *drag = new QDrag(this);
+    drag->setMimeData(mimeData);
+    drag->setPixmap(QPixmap(decor->tagIcon(-1).pixmap(48,48)) );
+
+    drag->exec(Qt::CopyAction);
 }

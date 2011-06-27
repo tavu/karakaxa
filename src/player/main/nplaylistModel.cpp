@@ -93,7 +93,7 @@ bool nplModel::dropMimeData ( const QMimeData *data, Qt::DropAction action, int 
 
     if (reorderL.size()==0 )
     {
-        npList->addMediaList( data->urls(),row );
+        npList->addMediaList( data->urls(),row-1 );
     }
     else
     {
@@ -160,10 +160,8 @@ QStringList nplModel::mimeTypes () const
 
 Qt::ItemFlags nplModel::flags(const QModelIndex &index) const
 {
-    Qt::ItemFlags defaultFlags = QAbstractItemModel::flags(index);
-
-    if (index.isValid())
-        return Qt::ItemIsDragEnabled  | defaultFlags;
-    else
-        return Qt::ItemIsDropEnabled | defaultFlags;
+    if(!index.isValid() )
+	   return Qt::ItemIsDropEnabled;
+    
+    return Qt::ItemIsDragEnabled  | Qt::ItemIsEnabled |Qt::ItemIsSelectable;
 }

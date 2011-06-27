@@ -152,7 +152,7 @@ QVariant audioFiles::audioFile::tag(int t, const short int f) const
 
     if (f & LOAD_FILE)
     {
-	cache->loadTags();
+	   cache->loadTags();
         ret=cache->tagFromFile((tagsEnum) t, err);
 	
 	//if we have loaded the tags information but there is no title frame and the TITLEFP is seted we return the file name.
@@ -174,19 +174,19 @@ bool audioFiles::audioFile::setTag(int t,QVariant var)
 {            
     if(cache==0)
     {
-	err=INVALID_FILE;
-	return false;
+	   err=INVALID_FILE;
+	   return false;
     }
   
     if(t>=FRAME_NUM || t<0)
     {
-	err=UNOWN;
-	return false;
+	   err=UNOWN;
+	   return false;
     }    
   
     if(!prepareToSave())
     {
-	return false;
+	   return false;
     } 
     int f=0;
     int dberr;         
@@ -196,7 +196,7 @@ bool audioFiles::audioFile::setTag(int t,QVariant var)
     
     file->setTag( (tagsEnum)t,var);
     err=file->error();
-    
+    qDebug()<<"edit "<<var<<err;
     if(err==OK || err==NS_TAG)
     {
 	dberr=fdb->setTag(t,var);	

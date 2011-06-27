@@ -315,6 +315,7 @@ QVariant audioFiles::fileTags::tag(tagsEnum t) const
     {
         return bitrate();
     }
+    
     default:
     {
         err=NS_TAG;

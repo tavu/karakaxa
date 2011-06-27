@@ -35,7 +35,7 @@ class nplFile :public nplTrack
 	audioFile *file;
 	
     private slots:
-	void emitChanged(audioFiles::audioFile f);
+	void emitCh(audioFiles::audioFile f);
     
 
 };

@@ -5,7 +5,6 @@ using namespace core;
 myFileSystemModel::myFileSystemModel(QObject *parent)
         :KDirModel(parent)
 {
-    thr.iter=thr.fileList.end();
     dirL=KDirModel::dirLister();
     connect(dirL,SIGNAL(newItems(const KFileItemList &) ),this,SLOT(insert(const KFileItemList &) ) );
     connect(dirL,SIGNAL(clear() ),&thr,SLOT(cleanup() ) );
@@ -14,8 +13,8 @@ myFileSystemModel::myFileSystemModel(QObject *parent)
 
 void myFileSystemModel::callRest()
 {
-//     reset();
-    emit dataChanged (index(0,DIRCOLUMN+1),index(rowCount()-1,DIRCOLUMN+FRAME_NUM-1 ) );
+    beginResetModel ();
+    endResetModel();
 }
 
 
@@ -29,7 +28,7 @@ QVariant myFileSystemModel::data(const QModelIndex &index, int role) const
 {   
     if(role == URL_ROLE)
     {
-	return QVariant(itemForIndex(index).url() );
+	   return QVariant(itemForIndex(index).url() );
     }
   
     if (index.column()<DIRCOLUMN)
@@ -48,9 +47,8 @@ QVariant myFileSystemModel::data(const QModelIndex &index, int role) const
         int filde=index.column()-DIRCOLUMN;
 	
         var=f.tag(filde, audioFile::ONCACHE|audioFile::ONDATAB );	
-// 	var=f.tag(filde, audioFile::DEFAULTF);
 	
-	return views::pretyTag(var,filde);
+	   return views::pretyTag(var,filde);
     }        
     
     return QVariant();
@@ -84,18 +82,15 @@ QVariant myFileSystemModel::headerData ( int section, Qt::Orientation orientatio
 
 void myFileSystemModel::insert(const KFileItemList &items)
 {    
+    QLinkedList<audioFiles::audioFile> l;
     foreach(KFileItem item , items)
     {
-	if( core::isAudio(item.url().toLocalFile() )  )
+	   if( core::isAudio(item.url().toLocalFile() )  )
         {
-	    thr.fileList<<audioFiles::audioFile( item.url().toLocalFile() ); 
+		  l<<audioFiles::audioFile( item.url().toLocalFile() );
         }
     }
-    if(thr.iter==thr.fileList.end() )
-    {
-	thr.iter=thr.fileList.begin();
-    }
-    thr.start();
+    thr.addItems(l);    
 }
 
 

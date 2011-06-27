@@ -29,6 +29,11 @@ class playlistContent :public core::abstractContent
 	  ~playlistContent();
 	  QString name() const;
 	  void activated(const int n);
+	 	  
+	  QIcon icon() const
+	  {
+		return views::decor->playListIcon();
+	  }
 	  
 	  
       private:	

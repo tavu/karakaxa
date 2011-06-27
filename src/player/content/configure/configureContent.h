@@ -10,12 +10,19 @@
 #include <QCheckBox>
 #include<QDialogButtonBox>
 #include<core.h>
+#include<KIcon>
 class configureContent :public core::abstractContent
 {
     Q_OBJECT
     public:
 	configureContent(QWidget *parent=0);
 	QString name() const;
+		
+	QIcon icon() const
+	{
+	   return KIcon("configure-other");
+	}
+	
     private:
 	QFileDialog 		*fDialog;
 	QListView   		*listV;

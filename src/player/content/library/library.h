@@ -20,7 +20,12 @@ class library :public core::abstractContent
 	library(QWidget *parent=0);
 	virtual ~library();
 	QString name() const;	
-
+	
+	QIcon icon() const
+	{
+	   return KIcon("server-database");
+	}
+	
     private:
 
 	QWidget *buttonWidget;

@@ -17,6 +17,7 @@
 #include<KDirModel>
 // #include"folderProxyModel.h"
 #include"myFileSystemModel.h"
+#include<KLineEdit>
 // #include <kfileplacesmodel.cpp>
 class folderContent :public core::abstractContent
 {
@@ -24,16 +25,21 @@ class folderContent :public core::abstractContent
 public:
     folderContent(QWidget *parent=0);
     const QList<QString> getChildren();
-
+    
     QString name() const;
+    
+    QIcon icon() const	
+    {
+	   return KIcon("folder-sound");
+    }
 
 
 private:
     void loaded();
     void unloaded()
     {
-	core::contentHdl->removeMenu(m);
-	delete m;
+	 core::contentHdl->removeMenu(m);
+	 delete m;
     }
   
     core::abstractMenu *m;
@@ -53,6 +59,7 @@ private:
     QAction *backAction;
     QAction *forwardAction;
 
+    KLineEdit *searchLine;
 
 public slots:
 

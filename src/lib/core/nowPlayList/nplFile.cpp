@@ -11,27 +11,31 @@ core::nplFile::nplFile(QString s)
         
     if (file==0 )
     {
-	qDebug()<<"null file";
+	   qDebug()<<"null file";
         ok=false;
     }
     else if(!core::exists(s) )
     {
-	ok=false;
+	   qDebug()<<"file does not exist";
+	   ok=false;
     }
     else
     {
       //if the file is valid we read the info we are soure that we will use.
 //         file->load();
-	connect(db,SIGNAL(updated(audioFiles::audioFile)),this,SLOT(emitChanged(audioFiles::audioFile) ) ) ;
+	   qDebug()<<"conn "<<file->path();
+	   connect(db,SIGNAL(updated(audioFiles::audioFile)),this,SLOT(emitCh(audioFiles::audioFile) ) ) ;
     }
 
 }
 
-void core::nplFile::emitChanged(audioFiles::audioFile f)
+void core::nplFile::emitCh(audioFiles::audioFile f)
 {
+  qDebug()<<"RE";
     if(f.path()==file->path() )
     {
-	nplTrack::emitChanged();
+	   qDebug()<<"ER";
+	   nplTrack::emitChanged();
     }
 }
 
@@ -43,7 +47,7 @@ core::nplTrack* core::nplFile::clone()
 void core::nplFile::play()
 {
     int c=file->tag(COUNTER).toInt();
-    file->setTag(COUNTER,QVariant(c+1) );
+//     file->setTag(COUNTER,QVariant(c+1) );
 }
 
 QVariant core::nplFile::artist()

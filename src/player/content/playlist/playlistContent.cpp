@@ -175,7 +175,7 @@ void playlistContent::toolBarInit()
     
     searchLine =new KLineEdit(this);
     searchLine->setClearButtonShown(true);
-    searchLine->setClickMessage("Search");
+    searchLine->setClickMessage(tr("Search") );
     searchLine->setFixedWidth(300);
     searchLine->setVisible(false);
     searchAction=toolBar->addWidget(searchLine);
@@ -408,8 +408,6 @@ standardItem* playlistContent::head( standardItem *item)
 
 void playlistContent::search()
 {
-    QString s=searchLine->text();
-    QString search;
-    
+    QString s=searchLine->text();    
     trackProxy->setFilterFixedString(s);
 }

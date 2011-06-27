@@ -3,7 +3,7 @@
 #include<QHBoxLayout>
 #include <QSpacerItem>
 #include"artistDelegate.h"
-// #include<libraryWidget.h>
+#include<views.h>
 
 using namespace core;
 
@@ -12,7 +12,7 @@ library::library(QWidget *parent)
 {
 //     quer=new queryGrt();
   
-    addSubmenu(QString(tr("Artist")));
+    addSubmenu(QString(tr("Artist")),views::decor->tagIcon(ARTIST) );
     stack=new QStackedWidget(this);
 
     artistV=new QListView(this);

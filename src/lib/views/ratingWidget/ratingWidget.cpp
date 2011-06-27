@@ -33,7 +33,6 @@ void views::ratingWidget::paintEvent(QPaintEvent *event)
 
 QSize views::ratingWidget::sizeHint() const
 {
-//     return QSize(10,20);
     int numPix =ratingPainter.maxRating();    
     
     QSize pSize( pixSize*numPix + spacing()*(numPix-1) ,pixSize);

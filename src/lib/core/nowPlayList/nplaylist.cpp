@@ -57,9 +57,8 @@ void core::nplaylist::loadSavedPlaylist()
 	   KSharedConfigPtr config=core::config->configFile("nowPlaylist");	
 	   KConfigGroup group( config, "list" );	
 	   QStringList l=group.readEntry("list", QStringList() );
-	   
-	   if(!l.isEmpty() )
-		addMediaList(l,0);    
+	   		
+	   addMediaList(l,0);    
     }
 }
 

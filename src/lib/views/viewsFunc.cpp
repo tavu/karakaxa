@@ -1,5 +1,6 @@
 #include"viewsFunc.h"
 #include"../../files/tagsTable.h"
+#include<QDebug>
 QString views::prettyLength(int l)
 {
     QString s;
@@ -29,33 +30,33 @@ QString views::prettySize(int n)
 QVariant views::pretyTag(QVariant var, int t)
 {
     using namespace audioFiles;
+    
     if (t==LENGTH )
     {
-	if ( var.toInt()==0)
-	{
-		return QVariant();
-	}
-	return prettyLength(var.toInt() );
+	   if ( var.toInt()==0)
+	   {
+		    return QVariant();
+	   }
+	   return prettyLength(var.toInt() );
     }
-    if(t==YEAR || t==BITRATE || t==TRACK)
+    else if(t==YEAR || t==BITRATE || t==TRACK)
     {
-	if(var.toInt()==0 )
-	{
-	    return QVariant();
-	}
-	else
-	{
-	    return var;
-	}
+	   if(var.toInt()==0 )
+	   {
+		  return QVariant();
+	   }
+	   else
+	   {
+		  return var;
+	   }
     }
-    if(t==RATING || COUNTER)
+    else if(t==RATING || t==COUNTER)
     {
-	return var;
+	   return var;
     }
     else
     {
-	QString s=var.toString();
-	return QVariant(s);
+	   return QVariant(var.toString().simplified() );
     }
 }
 

@@ -55,6 +55,7 @@ class nplTrack :public QObject
   
       void emitChanged()	
       {
+	   qDebug()<<"hET";
 	   emit changed();
       }
 };

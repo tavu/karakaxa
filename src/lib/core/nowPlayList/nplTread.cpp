@@ -111,14 +111,18 @@ void nplTread::addPlaylist(const QString& url)
 void nplTread::addSingleFile(const QString& url)
 {
     nplPointer tr=core::nplTrack::getNplTrack(url);
-    list<<tr;
-       	  
-    if(tr->type()==NPLAUDIOFILE)		
-    {				 
-	   audioFile file(url);		 
-	   file.load();	
+    if(!tr.isNull() )
+    {
+	   list<<tr;
+
+	   if(tr->type()==NPLAUDIOFILE)		
+	   {				 
+		  audioFile file(url);		 
+		  file.load();	
+	   }
+
     }
-    
+       	      
     if(list.size()>=size )	
     {
 	npList->insert(list,pos);

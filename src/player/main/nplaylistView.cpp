@@ -12,11 +12,13 @@
 #define FONT_SIZE 10
 
 nplaylistView::nplaylistView(QWidget *parent)
-        :QTreeView(parent)
+        :QTreeView(parent),
+        onDrag(false)
 {
     setRootIsDecorated(false);
   
     setDragDropMode( QAbstractItemView::DragDrop );
+    setDragDropOverwriteMode(false);
     setSelectionMode(QAbstractItemView::ExtendedSelection);
 
     setDropIndicatorShown(true);
@@ -192,19 +194,19 @@ void nplaylistView::contextMenuEvent(QContextMenuEvent *e)
 void nplaylistView::dragEnterEvent ( QDragEnterEvent * event )
 {
     onDrag=true;
-    event->accept();
+    QTreeView::dragEnterEvent(event);
 }
 
 void nplaylistView::dragLeaveEvent ( QDragLeaveEvent* event )
 {
 	   onDrag=false;
-        QAbstractItemView::dragLeaveEvent ( event );
+        QTreeView::dragLeaveEvent ( event );
 }
 
 void nplaylistView::dropEvent ( QDropEvent* event )
 {
 	 onDrag=false;
-	 QTreeView::dropEvent(event);
+	 QTreeView::dropEvent(event);	 
 }
 
 
@@ -219,7 +221,18 @@ void nplaylistView::drawRow ( QPainter * painter, const QStyleOptionViewItem & o
 
     if(onDrag)
     {
-	   itemDelegate()->setProperty("dropIn",dropIndicatorPosition());
+	   if(dropIndicatorPosition()==AboveItem )
+	   {
+		itemDelegate()->setProperty("dropIn",1);
+	   }
+	   else if(dropIndicatorPosition()==BelowItem )
+	   {
+		  itemDelegate()->setProperty("dropIn",2);
+	   }
+	   else//this sould be onViewport
+	   {
+		  itemDelegate()->setProperty("dropIn",3);
+	   }	   
     }
     else
     {
@@ -230,8 +243,8 @@ void nplaylistView::drawRow ( QPainter * painter, const QStyleOptionViewItem & o
     
 void nplaylistView::paintEvent(QPaintEvent * event)
 {
-        
-  QPainter painter(viewport());  
-  drawTree(&painter, event->region());
+//      QTreeView::paintEvent(event);
+    QPainter painter(viewport());  
+    drawTree(&painter, event->region());
    
 }

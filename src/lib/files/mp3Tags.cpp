@@ -442,60 +442,61 @@ QVariant audioFiles::mp3Tags::tag(tagsEnum t) const
 
     switch (t)
     {
-    case TITLE:
-    {
-        return title();
-    }
-    case ALBUM:
-    {
-        return album();
-    }
-    case ARTIST:
-    {
-        return artist();
-    }
-    case LEAD_ARTIST:
-    {
-        return leadArtist();
-    }
-    case COMPOSER:
-    {
-        return composer();
-    }
-    case GENRE:
-    {
-        return genre();
-    }
-    case COMMENT:
-    {
-        return comment();
-    }
-    case TRACK:
-    {
-        return track();
-    }
-    case YEAR:
-    {
-        return year();
-    }
-    case LENGTH:
-    {
-        return length();
-    }
-    case RATING:
-    {
-        return rating();
-    }
-    case BITRATE:
-    {
-        return bitrate();
-    }
-    default:
-    {
-        err=NS_TAG;
-        return QVariant();
+	   qDebug()<<"MP#";
+	   case TITLE:
+	   {
+		  return title();
+	   }
+	   case ALBUM:
+	   {
+		  return album();
+	   }
+	   case ARTIST:
+	   {
+		  return artist();
+	   }
+	   case LEAD_ARTIST:
+	   {
+		  return leadArtist();
+	   }
+	   case COMPOSER:
+	   {
+		  return composer();
+	   }
+	   case GENRE:
+	   {
+		  return genre();
+	   }
+	   case COMMENT:
+	   {
+		  return comment();
+	   }
+	   case TRACK:
+	   {
+		  return track();
+	   }
+	   case YEAR:
+	   {
+		  return year();
+	   }
+	   case LENGTH:
+	   {
+		  return length();
+	   }
+	   case RATING:
+	   {
+		  return rating();
+	   }
+	   case BITRATE:
+	   {
+		  return bitrate();
+	   }
+	   default:
+	   {
+		  err=NS_TAG;
+		  return QVariant();
 
-    }
+	   }
     }
 }
 

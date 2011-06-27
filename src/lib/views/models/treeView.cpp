@@ -68,13 +68,13 @@ void views::treeView::mouseMoveEvent(QMouseEvent *event)
         }
         else
         {
-	    headerRepaint();
+		  headerRepaint();
             QTreeView::mouseMoveEvent(event);
         }
     }
     else
     {
-	headerRepaint();
+	   headerRepaint();
         QTreeView::mouseMoveEvent(event);
     }
 }
@@ -127,7 +127,7 @@ void views::treeView::setModel ( QAbstractItemModel * model )
     if(delegate->ratingColumn()>-1)
     {
 	connect(model,SIGNAL(rowsInserted ( const QModelIndex, int, int )),this ,SLOT(updateStarWidget(QModelIndex, int, int) ) );
-// 	connect(model,SIGNAL(modelReset () ),this ,SLOT(updateStarWidget() ) );
+ 	connect(model,SIGNAL(modelReset () ),this ,SLOT(updateStarWidget() ) );
 	connect(model,SIGNAL(dataChanged ( const QModelIndex &, const QModelIndex& ) ),this,SLOT(dataChanged ( const QModelIndex &, const QModelIndex& ) ) );
     }
 }
@@ -219,17 +219,21 @@ void views::treeView::updateStarWidget(QModelIndex parent, int start, int end)
 {    
     for(int i=start;i<=end;i++)
     {
-	QModelIndex item=model()->index(i,ratingColumn(),parent );
-	bool b;
-	item.data().toInt(&b);
-	
-	if(b)
-	{
- 	    openPersistentEditor(item);
-	}
+	   QModelIndex item=model()->index(i,ratingColumn(),parent );
+	   bool b;
+	   item.data().toInt(&b);
+	   
+	   if(b)
+	   {
+		  openPersistentEditor(item);
+	   }
     }
 }
 
+void views::treeView::updateStarWidget()
+{
+    updateStarWidget(QModelIndex(),0,model()->rowCount() );
+}
 
 
 void views::treeView::commitData ( QWidget * editor ) 
@@ -309,19 +313,28 @@ void views::treeView::leaveEvent (QEvent *)
 void views::treeView::play(const QModelIndex index)
 {
     core::nplList list;
+    int row=index.row();
     for (int i=0;i<model()->rowCount(index.parent() );i++)
     {
 	 QModelIndex in=model()->index(i,0,index.parent() );
 	 if(in.isValid() )
 	 {
-	    QUrl u=model()->data(in,URL_ROLE).toUrl();
-	    list<<core::nplTrack::getNplTrack(u);
+	    QUrl u=in.data(URL_ROLE).toUrl();
+	    core::nplPointer t=core::nplTrack::getNplTrack(u);
+	    if(!t.isNull() )
+	    {
+		  list<<t;
+	    }
+	    else if(in.row()<index.row() )
+	    {
+		  row--;
+	    }
 	 }
     }        
     
     core::npList->clear();
     core::npList->insert(list,0);
     
-    core::engine->play(index.row() );
+    core::engine->play(row );
 }
 

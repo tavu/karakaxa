@@ -18,6 +18,11 @@ public:
     ~editTrackContent();
 
     QString name() const;
+    	
+    QIcon icon() const	
+    {	
+	   return KIcon("document-edit");
+    }
 
 private:
 
@@ -53,6 +58,7 @@ private:
 
     QDialogButtonBox *buttons;
 
+    views::ratingWidget *stars;
 
 public slots:
 
@@ -75,16 +81,17 @@ class editTrackMenu :public core::abstractMenu
       
       bool canShow(QUrl &u ,bool multFiles)
       {	  
-	  if(core::isAudio(u.toLocalFile() ) )
-	  {
-	      s=u.toLocalFile();
-	      return true;
-	  }
+		if(core::isAudio(u.toLocalFile() ) )
+		{
+		    s=u.toLocalFile();
+		    return true;
+		}
+		return false;
       }
       
       QAction* action()
       {
-	  return act;
+		return act;
       }
     
     private:

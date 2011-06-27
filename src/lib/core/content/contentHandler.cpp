@@ -15,7 +15,8 @@ core::contentHandler::contentHandler()
     stack=new QStackedWidget();
     stack->setMinimumSize(QSize(0,0) );
     _toolBar=new KToolBar( 0,true,false );
-    _toolBar->setAutoFillBackground(false);
+    _toolBar->setStyleSheet("QToolBar {background-color: transparent; }");
+//     _toolBar->setAutoFillBackground(false);
 }
 
 QFrame* core::contentHandler::contentView() const
@@ -86,7 +87,7 @@ void core::contentHandler::itemChanger(const QModelIndex &index)
 {
     if(!index.isValid() )
     {
-	return;
+	 return;
     }
     
     abstractContent *content;
@@ -98,8 +99,15 @@ void core::contentHandler::itemChanger(const QModelIndex &index)
     {
 	content=contentList.at(index.row());
     }
-
-    view->expand(index);
+    
+    if(currentContent()==content && view->isExpanded(index) )
+    {
+	   view->collapse(index);
+    }
+    else
+    {    
+	   view->expand(index);
+    }
 
     activateContent(content,true);
     content->updateContent(model->itemFromIndex(index) );
@@ -158,18 +166,19 @@ void core::contentHandler::addContent(abstractContent *content, bool activate)
     
     if(content->toolBar!=0)
     {
-  	content->toolBar->setVisible(false);
-	QAction *a=_toolBar->addWidget(content->toolBar);
-	content->toolBarAction=a;
-	a->setVisible(false);
- 	content->toolBar->setVisible(true);
+	   content->toolBar->setVisible(false);
+	   content->toolBar->setStyleSheet("QToolBar {background-color: transparent; }");
+	   QAction *a=_toolBar->addWidget(content->toolBar);
+	   content->toolBarAction=a;
+	   a->setVisible(false);
+	   content->toolBar->setVisible(true);
     }
     
     if (activate)
     {
         view->setCurrentIndex( model->indexFromItem(content->item()) );
         activateContent(content,true);
-	content->updateContent(content->item() );
+	   content->updateContent(content->item() );
     }
 }
 

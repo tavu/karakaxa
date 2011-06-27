@@ -22,7 +22,7 @@ QVariant views::trackItem::data(int column, int role) const
     
     if(role==Qt::DisplayRole || role==Qt::ToolTipRole)
     {
-	return views::pretyTag(file.tag(column),column );
+	   return views::pretyTag(file.tag(column),column );	   
     }
     if(role==URL_ROLE)
     {
