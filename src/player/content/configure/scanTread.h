@@ -26,15 +26,25 @@ class scanTread :public  QThread//, public QObject
 	    return filesImported;
 	}
 	QByteArray albumKey(albumEntry e);
+		
+	void scan()
+	{
+	    start();
+	}
+	
 
     protected:
 	void run();
+	
+
 	
 	QMap<QString,QString> images;
 	QMap<int, albumEntry> albums;
 	QString image(albumEntry &al);
 	
 	QHash<int,int> allAlbums;
+	
+	int _step;
 	
 	
     private:

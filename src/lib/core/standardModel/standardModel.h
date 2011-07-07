@@ -39,11 +39,11 @@ class standardItem :public QObject
       standardItem* takeRow(int row) ;
       
       //insert  row(s) at position row
-      virtual bool insertRows ( int row, const QList< standardItem* >& items ) ;
+      virtual bool insertRows ( int row, const QList< standardItem* >& items );                  
       virtual bool insertRow ( int row, standardItem * item );
       virtual bool appendRow ( standardItem * item );
 
-      virtual bool clear();
+      virtual void clear();
       //return the row of the item
       int row() const;
       
@@ -80,9 +80,19 @@ class standardItem :public QObject
       
     protected:
       void prealocateChildren(int n);
+      int freeChildrenSpace()
+      {
+	  return children.capacity()-children.size();
+      }
+      
+      void squeezeChildren()
+      {
+	  children.squeeze();
+      }
+      
+      
       void insert(int row,standardItem *item);
       
-      int childrenNum;
       QVector<standardItem *>children;
       standardModel *_model;
       
@@ -97,6 +107,11 @@ class standardItem :public QObject
       inline void beginRemoveRows(int first, int last );
       
       inline void endRemoveRows();
+      
+      void beginInsertRows(int start,int end);
+      
+      void endInsertRows();
+      
       
     private:	
 	int _row;

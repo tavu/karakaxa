@@ -7,29 +7,39 @@ using namespace audioFiles;
 
 core::queryGrt::queryGrt(QObject* parent)
   :QObject(parent),
+  thr(this),
   q(0)
 {
    connect(core::db,SIGNAL(changed()),this,SLOT(setNeedUpdate()) );
    connect(core::db,SIGNAL(updated(audioFiles::audioFile)),this,SLOT(setNeedUpdate()) );
+   
+   connect(&thr,SIGNAL(finished()),this,SLOT(selectionFinished()) );
 }
 
 core::queryGrt::queryGrt(core::queryGrt::abstractQuery *qe,QObject* parent)
-  :QObject(parent)
+  :QObject(parent),
+  thr(this)
 {
-    q=qe;
+   q=qe;
    connect(core::db,SIGNAL(changed()),this,SLOT(setNeedUpdate()) );
    connect(core::db,SIGNAL(updated(audioFiles::audioFile)),this,SLOT(setNeedUpdate()) );
+   
+   connect(&thr,SIGNAL(finished()),this,SLOT(selectionFinished()) );
 }
+
+
 
 
 bool core::queryGrt::select()
 {
+    emit selectionCalled();
     _needUpdate=false;
-    if(q==0||!q->isValid() )
+    thr.files.clear();
+    if(q==0||!q->isValid() ||thr.isRunning() )
     {
 	return false;
     }
-        
+/*        
     QSqlDatabase dBase=db->getDatabase();
     
     {
@@ -77,6 +87,10 @@ bool core::queryGrt::select()
     emit selectionMade();
     
     return true;
+    */
+
+   thr.start();
+   return true;
 }
 
 
@@ -597,5 +611,7 @@ core::queryGrt::tagQuery::tagQuery(core::queryGrt::tagQuery* t)
     revert=t->revert;
 }
 
-
-
+void core::queryGrt::selectionFinished()
+{
+   emit selectionMade();
+}

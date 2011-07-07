@@ -21,9 +21,9 @@ folderContent::folderContent(QWidget *parent)
 
     model = new myFileSystemModel(this);
 
-    model->dirLister()->setMimeFilter(core::config->files()<<DIRECTORYM);
+//     model->dirLister()->setMimeFilter(core::config->files()<<DIRECTORYM);
 
-    proxyM=new QSortFilterProxyModel(this);
+    proxyM=new folderProxyModel(this);
     proxyM->setSourceModel(model);
     proxyM->setFilterCaseSensitivity(Qt::CaseInsensitive);
     
@@ -81,7 +81,7 @@ folderContent::folderContent(QWidget *parent)
 //     f2->setFrameShape(QFrame::HLine);
 //     layout->addWidget(f2);
     
-    layout->addWidget(view);
+    layout->addWidget(view);    
 
     setLayout(layout);
 

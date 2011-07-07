@@ -6,16 +6,15 @@
 #include<QHash>
 
 scanTread::scanTread()
-        :QThread()
+        :QThread(),
+        _step(20)
 {
     itemNumber=0;
     filesImported=0;
     stopped=false;
     QStringList l;
-//     l<<player::config.files()<<player::config.playListFiles();
-//     dirL.setMimeFilter(l);
-//
-//      connect(this,SIGNAL(finished() ),this ,SLOT(deleteLater () ),Qt::QueuedConnection );
+
+    //      connect(this,SIGNAL(finished() ),this ,SLOT(deleteLater () ),Qt::QueuedConnection );
 }
 
 void scanTread::findItemN(QString dir)
@@ -35,34 +34,36 @@ bool scanTread::scanFolder(KUrl url)
 
     QLinkedList<QString> dirs;
     
-    QStringList l;
     QFileInfoList infoList=dir.entryInfoList(QDir::AllEntries|QDir::NoDotAndDotDot|QDir::NoSymLinks);    
     
     for (int i=0;i<infoList.size();i++)     
-    {		
+    {
 	  if(stopped)
 	  {
 	       quit();
 	       return true;
-	  }
+	  }	  
 	  if(core::isPlaylist(infoList.at(i).absoluteFilePath() ) )
 	  {
 	      importer.importPl(infoList.at(i).absoluteFilePath() );
-	  }
+	  }	  
 	  else if(core::isAudio(infoList.at(i).absoluteFilePath() ) )
 	  {	      	      
 	      albumEntry al=importer.import(infoList.at(i).absoluteFilePath());
 	      albums.insert(al.id,al);
 	      filesImported++;
-	      emit imported(filesImported);
+	      
+	      if(filesImported%_step==0)
+	      {
+		  emit imported(filesImported);
+	      }
 	  }
 	  else if(core::isImage(infoList.at(i).absoluteFilePath() ) )
 	  {
 	      QString s=core::titleFromPath( infoList.at(i).absoluteFilePath() );
-	      s=s.toUpper();
+ 	      s=s.toUpper();
 	      
 	      images.insert(s,infoList.at(i).absoluteFilePath() );
-	      qDebug()<<infoList.at(i).absoluteFilePath();
 	  }
 	  else if(core::isDirectory(infoList.at(i).absoluteFilePath()) )
 	  {
@@ -83,11 +84,10 @@ bool scanTread::scanFolder(KUrl url)
      
     albums.clear();
     images.clear();
+    
     QLinkedList<QString>::iterator dirIt;
     for (dirIt=dirs.begin();dirIt!=dirs.end();dirIt++)
     {
-	
-// 	qDebug()<<"FOLDER "<<images.value("FOLDER" );
 	scanFolder( *dirIt ) ;    
     }    
     return true;
@@ -132,15 +132,14 @@ QString scanTread::image(albumEntry &al)
 {
     QString ret;
     int num=0;
-//     static QHash<int,int> allAlbums;
     
     int val=allAlbums.value(al.id);
     
     if(val==3)
     { 
 	return ret;
-    }
-
+    }                
+    
     ret=images.value(al.album.toUpper() );
     num=3;
     if(ret.isNull() && val<2 )
@@ -150,7 +149,7 @@ QString scanTread::image(albumEntry &al)
     }
     if(ret.isNull() && val<1 )
     {
-	if(images.begin()!=images.end() )
+	if(!images.isEmpty() )
 	{
 	  ret=images.begin().value();
 	}	
@@ -161,6 +160,6 @@ QString scanTread::image(albumEntry &al)
     {
 	allAlbums.insert(al.id,num);
     }
-//     qDebug()<<"Album "<<al.album<<"	"<<ret;
+
     return ret;
 }

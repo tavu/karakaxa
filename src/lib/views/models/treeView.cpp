@@ -321,7 +321,7 @@ void views::treeView::play(const QModelIndex index)
 	 {
 	    QUrl u=in.data(URL_ROLE).toUrl();
 	    core::nplPointer t=core::nplTrack::getNplTrack(u);
-	    if(!t.isNull() )
+	    if(!t.isNull() && t->isValid() )
 	    {
 		  list<<t;
 	    }
@@ -330,10 +330,15 @@ void views::treeView::play(const QModelIndex index)
 		  row--;
 	    }
 	 }
-    }        
+    }
     
     core::npList->clear();
     core::npList->insert(list,0);
+    
+    if(list.size() != model()->rowCount(index.parent() ) )
+    {
+	core::status->addError(tr("Some media could not be inserted to playlist") );
+    }
     
     core::engine->play(row );
 }

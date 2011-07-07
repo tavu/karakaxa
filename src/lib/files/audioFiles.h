@@ -50,6 +50,7 @@ enum errors
     DBERR		
 };
 
+extern const int BEST_COVER;
 
 
 
@@ -70,6 +71,9 @@ extern  QLinkedList<audioFile>	fileList;
 
 
 fileTags* getFileTags(const QString path);
+
+int coverMark(const QString &album, const QString &cover);
+
 };
 
 #include"fileTags.h"

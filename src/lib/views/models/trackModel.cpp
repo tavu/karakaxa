@@ -35,17 +35,24 @@ QVariant views::trackItem::data(int column, int role) const
 
 bool views::trackItem::setData(const QVariant& value, int column, int role)
 {
-    file.setTag(column,value);
-    dataChanged(column,column);
+    if(role==Qt::DisplayRole ||role==Qt::EditRole )
+    {
+	file.setTag(column,value);
+	if(file.error()==OK)
+	{
+	    dataChanged(column,column);
+	    return true;
+	}
+    }
     
-    return true;
+    return false;
 }
 
 
 views::trackModelItem::trackModelItem()
-  :q(0)
-{
-
+  :standardItem(),
+  q(0)
+{   
 }
 
 QVariant views::trackModelItem::headerData(int section, Qt::Orientation orientation, int role) const
@@ -75,7 +82,9 @@ void views::trackModelItem::setQueryG(core::queryGrt* qe)
     }
     q=qe;
     q->setParent(this);
-    connect(q,SIGNAL(selectionMade() ),this,SLOT(addItems() ),Qt::QueuedConnection );
+    connect(q,SIGNAL(selectionMade() ),this,SLOT(addItems() ) );
+    connect(q,SIGNAL(selectionCalled()),this,SLOT(clearSlot()) );
+//     connect(q,SIGNAL(newItems(QVector<audioFiles::audioFile>)),this,SLOT(addItems(QVector<audioFiles::audioFile>) ),Qt::QueuedConnection );
 //     connect(q,SIGNAL(inserted(audioFiles::audioFile,int) ),this,SLOT(addItem(audioFile &,int) ),Qt::QueuedConnection );
 //     connect(q,SIGNAL(removed(audioFiles::audioFile,int)),this,SLOT(removeItem(audioFiles::audioFile&,int)),Qt::QueuedConnection );
     
@@ -87,18 +96,21 @@ void views::trackModelItem::setQueryG(core::queryGrt* qe)
 
 void views::trackModelItem::addItems()
 {
-    clear();
+  
+    prealocateChildren(q->size() );
+    int k=rowCount();
+    beginInsertRows(0,q->size()-1 );
     
     for(int i=0;i<q->size();i++)
-    {
-	audioFile *f=q->at(i);
-	if(f!=0)
-	{
-	    standardItem *item=getItem(*f);
-	    appendRow(item);
-	} 	
-    }    
+    {        
+	audioFiles::audioFile f=q->at(i);
+	standardItem *item=getItem(f);
+	insert(i,item);
+    }
+    
+    endInsertRows();        
 }
+
 
 void views::trackModelItem::addItem(audioFile f, int pos)
 {

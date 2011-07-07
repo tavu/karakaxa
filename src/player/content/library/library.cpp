@@ -144,6 +144,7 @@ void library::toolBarInit()
     searchLine =new KLineEdit(this);
     searchLine->setClearButtonShown(true);
     searchLine->setClickMessage("Search");
+    searchLine->setPalette(palette() );
     toolBar->setToolButtonStyle( Qt::ToolButtonIconOnly );
 
     backAction = new QAction( KIcon( "go-previous" ),"go back", this );

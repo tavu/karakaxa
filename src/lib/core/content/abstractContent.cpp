@@ -46,21 +46,12 @@ void core::abstractContent::addSubmenu(const QString& s, QIcon icon)
 {
     QStandardItem *it;
     it=new QStandardItem(icon,s);
-/*    if(!icon.isNull() )
-    {      
-	it=new QStandardItem(s);
-    }
-    else
-    {
-	it=new QStandardItem(icon,s);
-    }
-    */
+
     item()->appendRow(it);
 }
 
 void core::abstractContent::addSubmenu(const int pos, const QString& s, QIcon icon)
 {
-//     QStandardItem *it=new QStandardItem(icon,s);
     QStandardItem *it=new QStandardItem(s);
     _item->insertRow(pos,it);
 }

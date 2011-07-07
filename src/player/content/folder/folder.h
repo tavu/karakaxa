@@ -15,7 +15,7 @@
 #include<QListView>
 #include<KToolBar>
 #include<KDirModel>
-// #include"folderProxyModel.h"
+#include"folderProxyModel.h"
 #include"myFileSystemModel.h"
 #include<KLineEdit>
 // #include <kfileplacesmodel.cpp>
@@ -45,7 +45,7 @@ private:
     core::abstractMenu *m;
     myFileSystemModel *model;
     KDirModel *dirModel;
-    QSortFilterProxyModel  *proxyM;
+    folderProxyModel  *proxyM;
 
     KFilePlacesModel *navigatorModel;
     views::treeView *view;

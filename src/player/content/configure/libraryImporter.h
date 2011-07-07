@@ -15,6 +15,12 @@ class libraryImporter :public QObject
         libraryImporter();
         ~libraryImporter();
         albumEntry import(const QString &url);
+	
+	albumEntry importAudio(const QString &url)
+	{
+	    return import(url);
+	}
+	
 	bool importPl(const QString &path );
 	
         void saveAlbumArt(const QString& albumArt, const albumEntry& al);

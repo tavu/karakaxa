@@ -19,6 +19,27 @@ audioFiles::fileTags* audioFiles::getFileTags(const QString path)
     return ret;
 }
 
+int audioFiles::coverMark(const QString &al, const QString &cov)
+{
+    QString album=al.toUpper();
+
+    QString cover=core::titleFromPath(cov);
+    
+    if(album==cover)
+    {
+	return 3;
+    }
+    
+    if(cover==QString("FOLDER" ) )
+    {
+	return 2;
+    }
+    
+    return 1;
+}
+
+const int audioFiles::BEST_COVER=3;
+
 namespace audioFiles
 {
   QLinkedList<audioFile>	fileList;

@@ -156,6 +156,7 @@ void mainWindow::conViewInit()
 //     conViewDock->setWidget(conView);
 
     conView->setPalette(decor->palette());
+//     contentHdl->toolBar()->setPalette(decor->palette());
     conView->setAutoFillBackground(true);
     setCentralWidget(conView); 
     

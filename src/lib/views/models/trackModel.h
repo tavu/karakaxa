@@ -69,6 +69,10 @@ class trackModelItem :public standardItem
 	void addItem(audioFile f, int pos);
 	void addItems();
 	void removeItem(audioFiles::audioFile ,int pos);
+	void clearSlot()
+	{
+	    clear();
+	}
 	
     protected:
 

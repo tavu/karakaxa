@@ -7,6 +7,7 @@
 // #include"../coreNamespace.h"
 // using namespace core;
 #include <QDomElement>
+#include"queryThr.h"
 
 namespace core
 {
@@ -43,8 +44,7 @@ class queryGrt :public QObject
 		virtual bool isValid() const =0;
 // 		virtual bool match(const audioFiles::audioFile &f) const =0;
 		virtual abstractQuery * clone()=0;
-// 		virtual QDomElement xml(QDomDocument &doc)=0;
-		
+// 		virtual QDomElement xml(QDomDocument &doc)=0;		
 	};
 	
 	class matchQuery :public abstractQuery
@@ -120,9 +120,7 @@ class queryGrt :public QObject
 	      QVariant value;
 	      bool revert;
 	      QString q;
-	};
-
-	
+	};	
 	
     public:
 	queryGrt(QObject *parent=0);
@@ -158,23 +156,23 @@ class queryGrt :public QObject
 	    return q->text().prepend("select distinct * from trackView where ");
 	}
 		
-	QVector<audioFiles::audioFile*> result()
+	QVector<audioFiles::audioFile> result()
 	{
-	    return files;
+	    return thr.files;
 	}
 	
-	audioFiles::audioFile* at(int n)
+	//use this function after selectionMade signal
+	audioFiles::audioFile at(int n)
 	{
-	    if(n<0||n>=files.size() )
+	    if(n<0||n>=thr.files.size() )
 	    {
- 		return 0;
+ 		return audioFiles::audioFile();
 	    }
 	    
-	    return files[n];
+	    return thr.files[n];
 	}
 	
 	bool select();
-// 	bool update();
 	
 	bool needUpdate()
 	{
@@ -183,14 +181,23 @@ class queryGrt :public QObject
 	
 	int size()
 	{
-	    return files.size();
+	    return thr.files.size();
+	}
+	
+	int step()
+	{
+	    return thr.step;
+	}
+	
+	void setStep(int n)
+	{
+	    thr.step=n;
 	}
 	
     private:
 	abstractQuery *q;
-	QVector<audioFiles::audioFile*> files;
+	queryThr thr;
 	bool _needUpdate;
-	QMap<QString ,audioFiles::audioFile*> map;
 	
     private slots:
 	void setNeedUpdate()
@@ -198,8 +205,11 @@ class queryGrt :public QObject
 	    _needUpdate=true;
 	}
 	
+	void selectionFinished();	
+	
 	
     signals:
+	void selectionCalled();
 	void selectionMade();
 	void inserted(audioFiles::audioFile,int pos);
 	void removed(audioFiles::audioFile,int pos);

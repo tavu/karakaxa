@@ -13,7 +13,7 @@ libraryImporter::libraryImporter()
         name("importer")
 {
 //      connect(this,SIGNAL(error(QString) ),&player::errors,SLOT(setError(QString)),Qt::QueuedConnection);
-    database=db->clone(name);
+    database=db->getDatabase();
     isConnected=database.open();
 
     if (!isConnected)
@@ -41,7 +41,7 @@ albumEntry libraryImporter::import(const QString &url)
 	{
 	    var[i]=f.tag((tagsEnum)i,audioFile::ONDATAB|audioFile::SELECT);
 	}
-    }
+    }    
     QVariant *v;
     
     if(!var[LEAD_ARTIST].toString().isEmpty() )
@@ -108,7 +108,7 @@ QString libraryImporter::error()
 
 libraryImporter::~libraryImporter()
 {
-    database.close();
+    db->closeDatabase(database);
 }
 
 void libraryImporter::saveAlbumArt(const QString &albumArt , const albumEntry &al)

@@ -16,7 +16,7 @@ core::contentHandler::contentHandler()
     stack->setMinimumSize(QSize(0,0) );
     _toolBar=new KToolBar( 0,true,false );
     _toolBar->setStyleSheet("QToolBar {background-color: transparent; }");
-//     _toolBar->setAutoFillBackground(false);
+    _toolBar->setAutoFillBackground(true);
 }
 
 QFrame* core::contentHandler::contentView() const
@@ -160,6 +160,7 @@ void core::contentHandler::addContent(abstractContent *content, bool activate)
     stack->addWidget(content);
     model->appendRow( content->item() );
     content->setParent(stack);
+    content->setPalette(stack->palette() );
     content->setMinimumSize(QSize(0,0) );
     content->loaded();
     
@@ -167,7 +168,8 @@ void core::contentHandler::addContent(abstractContent *content, bool activate)
     if(content->toolBar!=0)
     {
 	   content->toolBar->setVisible(false);
-	   content->toolBar->setStyleSheet("QToolBar {background-color: transparent; }");
+	   content->toolBar->setAutoFillBackground(true);
+// 	   content->toolBar->setStyleSheet("QToolBar {background-color: transparent; }");
 	   QAction *a=_toolBar->addWidget(content->toolBar);
 	   content->toolBarAction=a;
 	   a->setVisible(false);

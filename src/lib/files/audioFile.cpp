@@ -285,43 +285,38 @@ QVariant  audioFiles::audioFile::albumArtist()
 QString audioFiles::audioFile::cover()
 {
     fdb=new fileToDb(path() );
-    QString s=fdb->albumArt(albumId(),err);
-    return s;
+    QString coverPath=fdb->albumArt(albumId(),err);
     
-  /*
-    //if albumArt is null we haven't search for covers yet.
-    if (!albumArt.isNull() )
+    //if there is no album art on database we search on directory
+    if(coverPath.isNull() )
     {
-        return albumArt;
-    }
-
-    QDir dir(folder() );
-    QFileInfoList infoList=dir.entryInfoList( player::config.imagefiles());
-
-    //first list all image files
-    infoList=dir.entryInfoList( player::config.imagefiles());
-
-    QString tmp;
-    //for every image file
-    for (int i=0;i<infoList.size();i++)
-    {
-        albumArt=infoList.at(i).absoluteFilePath();
-        tmp=player::titleFromPath(albumArt);
-        //if the file named folder we use tha image
-        //else we use just a random one(at the last place of the list)
-        if (tmp.compare("FOLDER",Qt::CaseInsensitive)==0 )
-        {
-            break;
-        }
-
-    }
-    //if there is not cover we set albumArt to empty to avoid search again
-    if (albumArt.isNull())
-    {
-        albumArt=QString("");
-    }
-    return albumArt;
-    */
+	QDir dir(core::folder(path() ) );
+	QFileInfoList infoList=dir.entryInfoList(QDir::Files|QDir::NoDotAndDotDot); 
+	
+	int mark=0;
+	for (int i=0;i<infoList.size();i++)     
+	{
+	      QString p=infoList.at(i).absoluteFilePath();
+	      if(core::isImage(p) )
+	      {
+		  int num=coverMark( tag(ALBUM).toString(),p);
+		  
+		  //thats the best image for cover		  
+		  if(num==BEST_COVER)
+		  {
+		      return p;
+		  }
+		  //we found a better image
+		  if(num>mark)
+		  {
+		      mark=num;
+		      coverPath=p;		      
+		  }
+	      }
+	}
+    }    
+    
+    return coverPath;
 }
 
 int audioFiles::audioFile::size()

@@ -36,12 +36,12 @@ class configureContent :public core::abstractContent
 	QLabel			scanInf;
 	QLabel			info;
 	scanTread 		*scThread;
-	QCheckBox			*rememberPl;
+	QCheckBox		*rememberPl;
 
 	QDialogButtonBox 	*DbButtons;
-	QLineEdit			*dbNameL;
-	QLineEdit			*dbUserL;
-	QLineEdit			*dbPassL;
+	QLineEdit		*dbNameL;
+	QLineEdit		*dbUserL;
+	QLineEdit		*dbPassL;
 	
 	QLabel 			dbNameS;
 	QLabel 			dbUserS;

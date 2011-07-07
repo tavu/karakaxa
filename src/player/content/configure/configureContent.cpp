@@ -11,8 +11,8 @@ using namespace core;
 configureContent::configureContent(QWidget *parent)
         :abstractContent(parent),
         dbNameS(QObject::tr("database Name:")),
-	   dbUserS(QObject::tr("User:")),
-	   dbPassS(QObject::tr("password:"))
+	dbUserS(QObject::tr("User:")),
+	dbPassS(QObject::tr("password:"))
 {
     QLabel *l=new QLabel(this);
 
@@ -32,7 +32,7 @@ configureContent::configureContent(QWidget *parent)
     layout->addWidget(rememberPl);
     layout->addStretch();
 
-    layout->setContentsMargins(20,20,50,20);
+    layout->setContentsMargins(10,10,50,10);
     setLayout(layout);
     
     connect(rememberPl,SIGNAL(stateChanged(int) ),this,SLOT(rememberPlSlot(int) ) );
@@ -86,26 +86,7 @@ void configureContent::libconfInit()
     dbUserL->setMinimumWidth(150);
     dbPassL->setMinimumWidth(150);
     
-    DbButtons=new QDialogButtonBox(QDialogButtonBox::Apply|QDialogButtonBox::Cancel,Qt::Horizontal,this);
-    
-//     QBoxLayout *hlayout=new QBoxLayout(QBoxLayout::LeftToRight);
-//     hlayout->addWidget(scanB);
-//     hlayout->addWidget(cancelB);
-//     hlayout->addStretch();
-//     hlayout->addWidget(&info);
-//     hlayout->addWidget(bar);
-// 
-// 
-//     QGridLayout *gl=new QGridLayout(groupB);
-//     gl->addWidget(&dbNameS,0,0);
-//     gl->addWidget(dbNameL,0,1);
-//     
-//     
-//     gl->addWidget(listV,0,2,3,1);
-//     gl->addWidget(addFolder,0,3);
-//     gl->addWidget(removeFolder,1,3);
-//     gl->addLayout(hlayout,4,0);
-//     gl->addWidget(&scanInf,4,1);
+    DbButtons=new QDialogButtonBox(QDialogButtonBox::Apply|QDialogButtonBox::Cancel,Qt::Horizontal,this);    
 
      QGridLayout *gl=new QGridLayout(groupB);
      gl->addWidget(&dbNameS,0,0);
@@ -176,13 +157,20 @@ void configureContent::scan()
 
 
     info.setText("");
-    scThread->start();
+    scThread->scan();
 }
 
 void configureContent::prepare(const int num)
 {
-    bar->setMaximum(num);
-    scanInf.setText("Scanning..");
+    if(num==0)
+    {
+	bar->hide();
+    }
+    else
+    {
+      bar->setMaximum(num);
+      scanInf.setText("Scanning..");
+    }
 
 }
 

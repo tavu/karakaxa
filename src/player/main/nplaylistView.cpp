@@ -131,7 +131,7 @@ void nplaylistView::duplicate()
 	}
     }
 
-    npList->insert(l,list.last().row()+1 );
+    npList->insert(l,list.last().row() );
 }
 
 void nplaylistView::remove()

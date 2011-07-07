@@ -169,7 +169,7 @@ void core::nplaylist::duplicate(const int pos)
     }
     nplList list;
     list<<nplTrack::getNplTrack(u);
-    insert(list,pos+1 );
+    insert(list,pos );
 }
 
 void core::nplaylist::clear()

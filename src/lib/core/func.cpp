@@ -115,6 +115,8 @@ void core::init()
       
       
       qRegisterMetaType<audioFiles::audioFile>("audioFile");
+      qRegisterMetaType<QVector<audioFiles::audioFile> >("QVector<audioFiles::audioFile>");
+      qRegisterMetaType<QVector<audioFiles::audioFile> >("QVector<audioFile>");
       qRegisterMetaType<audioFiles::audioFile>("audioFiles::audioFile");
       
       status=new playetStatus();
