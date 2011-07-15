@@ -9,6 +9,7 @@
 #include<QMenu>
 #include"treeViewDelegate.h"
 #include"treeViewHeader.h"
+#include"../editors/tagEditor.h"
 // #include"editTrack.h"
 
 namespace views
@@ -28,6 +29,12 @@ class treeView :public QTreeView
 	virtual int 	ratingColumn() const;
 	virtual void 	setNotHide(int n);
 	virtual int	notHide();
+	
+	void setEditorFactory(tagEditorFactory *f)
+	{
+	    delegate->setEditorFactory(f);
+	}
+	
 
     protected:
 	QPoint startPos;
@@ -49,7 +56,7 @@ class treeView :public QTreeView
 	void updateStarWidget();
 	virtual void dataChanged ( const QModelIndex & topLeft, const QModelIndex & bottomRight );
 	virtual void closeEditor ( QWidget * editor, QAbstractItemDelegate::EndEditHint hint );
-	virtual void play(const QModelIndex index);
+	virtual void play(const QModelIndex index);		
 	
     signals:
 	void showContextMenu(QModelIndex,QModelIndexList);

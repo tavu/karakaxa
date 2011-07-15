@@ -196,7 +196,6 @@ void core::nplaylist::clear()
 
 int core::nplaylist::size()
 {
-     
 
     int ret=trackList.size();
      

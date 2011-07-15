@@ -14,13 +14,15 @@
 #include <kiconeffect.h>
 #include <QVariant>
 #include<QStyle>
-
+#include"../editors/ratingEditor.h"
+#include<QDebug>
 #include<QStylePainter>
 views::treeViewDelegate::treeViewDelegate(QObject *parent)    
     :QItemDelegate(parent),    
     rating(-1),
     ITEM_HEIGH(18),
     FONT_SIZE(11),
+    editorFactory(0),
     _paintValidRole(true)
 {
   font.setPointSize(FONT_SIZE);            
@@ -101,25 +103,34 @@ void views::treeViewDelegate::paint ( QPainter * painter, const QStyleOptionView
 
 QWidget* views::treeViewDelegate::createEditor(QWidget *parent,const QStyleOptionViewItem &option,const QModelIndex &index) const
 {
-    if(index.column()==rating)
+    if(editorFactory!=0)
     {
-	ratingWidget *w=new  ratingWidget(parent);
-	w->setPixmapSize(sizeHint(option,index).height());
-	connect(w,SIGNAL(ratingChanged(int) ),this, SLOT(commitEditor()));
+ 	int tag=editorFactory->tagFromIndex(index);
+	qDebug()<<"TAG "<<tag;
+	if(tag>0)
+	{
+	    
+	    tagEditor *editor=editorFactory->createEditor(tag,parent);
+	    connect(editor,SIGNAL(valueChanged(QVariant) ),this, SLOT(commitEditor()));
+	    return editor;
+	}
+    }
+    else if(index.column()==rating)
+    {
+	ratingEditor *w=new  ratingEditor(parent);
+	w->ratingW()->setPixmapSize(sizeHint(option,index).height());
+	connect(w,SIGNAL(valueChanged(QVariant) ),this, SLOT(commitEditor()));
 	return w;
 	
-    }    
-    return QItemDelegate::createEditor(parent,option,index);    
+    }
+    return 0;    
 }
 
 void views::treeViewDelegate::setEditorData(QWidget *editor,const QModelIndex &index) const
 {
-     if(index.column()==rating)
-     {
-	ratingWidget *s=static_cast<ratingWidget*>(editor);
-	s->setRating(index.data().toInt() );
-     }
-     QItemDelegate::setEditorData(editor,index);
+     tagEditor *e= static_cast<tagEditor*>(editor);
+  
+     e->setValue(index.data() );     
 }
 
 QSize views::treeViewDelegate::sizeHint ( const QStyleOptionViewItem & option, const QModelIndex & index ) const
@@ -144,15 +155,8 @@ void views::treeViewDelegate::setItemHeigh(int k)
 
 void views::treeViewDelegate::setModelData(QWidget *editor,QAbstractItemModel *model,const QModelIndex &index) const
 {
-    if (index.column() == rating) 
-    {
-        ratingWidget *s = qobject_cast<ratingWidget *>(editor);        
-	model->setData(index, QVariant(s->rating() ) );
-    } 
-    else 
-    {
-        QItemDelegate::setModelData(editor, model, index);
-    }
+    tagEditor *e= static_cast<tagEditor*>(editor);
+    model->setData(index, QVariant(e->value() ) );
 }
 
 void views::treeViewDelegate::setRatingColumn(const int n)
@@ -167,6 +171,12 @@ int views::treeViewDelegate::ratingColumn() const
 
 void views::treeViewDelegate::commitEditor()
 {
-    ratingWidget *editor = qobject_cast<ratingWidget *>(sender());
-    emit commitData(editor);
+     QWidget *editor = qobject_cast<QWidget *>(sender());
+     emit commitData(editor);
+}
+
+void views::treeViewDelegate::setEditorFactory(views::tagEditorFactory* f)
+{
+    editorFactory=f;
+    setRatingColumn(f->columnFromTag(audioFiles::RATING) );
 }

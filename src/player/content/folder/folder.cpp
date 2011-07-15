@@ -1,4 +1,5 @@
 #include"folder.h"
+#include"folderEditorFactory.h"
 
 #include<QTableView>
 #include<KIcon>
@@ -28,7 +29,8 @@ folderContent::folderContent(QWidget *parent)
     proxyM->setFilterCaseSensitivity(Qt::CaseInsensitive);
     
     view=new views::treeView(this,"Folder view");
-    view->setRatingColumn(DIRCOLUMN+RATING);
+    view->setEditorFactory(new folderEditorFactory(this) );
+//     view->setRatingColumn(DIRCOLUMN+RATING);
     view->setModel(proxyM);
 //     view->setFrameShape(QFrame::StyledPanel);
 

@@ -3,6 +3,7 @@
 
 #include<QItemDelegate>
 #include<QPen>
+#include"../editors/tagEditor.h"
 // #include"../playerNamespace/rattingWidget/kratingpainter.h"
 // #include "myTreeView.h"
 
@@ -21,7 +22,8 @@ class treeViewDelegate :public QItemDelegate
 	void setItemHeigh(int k);
 	virtual void setRatingColumn(const int n);
 	int ratingColumn() const;
-	QWidget* createEditor(QWidget *parent,const QStyleOptionViewItem &option,const QModelIndex &index) const;
+	QWidget* createEditor(QWidget *parent,const QStyleOptionViewItem &option,const QModelIndex &index) const;	
+	
 	void setEditorData(QWidget *editor,const QModelIndex &index) const;
 	void setModelData(QWidget *editor,QAbstractItemModel *model,const QModelIndex &index) const;	
 	
@@ -35,6 +37,7 @@ class treeViewDelegate :public QItemDelegate
 	   _paintValidRole=b;
 	}
 
+	void setEditorFactory(tagEditorFactory *f);
 	
     private:
 	 int rating;
@@ -49,6 +52,9 @@ class treeViewDelegate :public QItemDelegate
 	QFont font;
 	mutable QPen pen;
 	bool _paintValidRole;
+	
+	tagEditorFactory *editorFactory;
+	
 // 	KRatingPainter ratingPainter;
 	
     private slots:
