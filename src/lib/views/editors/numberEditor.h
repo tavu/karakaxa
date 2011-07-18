@@ -18,9 +18,12 @@ class numberEditor :public tagEditor
 	:tagEditor(tag,parent)
 	{
 	    edit=new QSpinBox(this);
+	    edit->setMaximum(3000);
+	    edit->setMinimum(0);
 	    QHBoxLayout *l=new QHBoxLayout(this);
 	    
 	    l->addWidget(edit);
+	    l->setContentsMargins(0,0,0,0);
 	    
 	    connect(edit,SIGNAL(valueChanged()),this,SLOT(valueChanger()) );
 	}
