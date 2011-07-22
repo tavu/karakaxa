@@ -155,6 +155,24 @@ class queryGrt :public QObject
 	    
 	    return q->text().prepend("select distinct * from trackView where ");
 	}
+	
+	
+	QString queryString(int t) const
+	{
+	    if( q==0 || !q->isValid())
+	    {
+		return QString();
+	    }
+	    
+	    QString ret("select distinct ");
+	    QString s=tagToSql(t);
+	    if(s.isEmpty() )
+	    {
+		  return QString();
+	    }
+	    ret=ret.append(s).append(" from trackView where " ).append(q->text() );
+	    return ret;
+	}
 		
 	QVector<audioFiles::audioFile> result()
 	{
@@ -193,6 +211,25 @@ class queryGrt :public QObject
 	{
 	    thr.step=n;
 	}
+	
+	static QString queryStringAll()
+	{
+	   return QString("select * from trackView");
+	}
+	
+	static QString queryStringAll(int t)
+	{
+	    
+	    QString ret("select distinct ");
+	    QString s=tagToSql(t);
+	    if(s.isEmpty() )
+	    {
+		  return QString();
+	    }
+	    ret=ret.append(s).append(" from trackView" );
+	    return ret;
+	}
+	
 	
     private:
 	abstractQuery *q;

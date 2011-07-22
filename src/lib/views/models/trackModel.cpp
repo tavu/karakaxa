@@ -98,7 +98,6 @@ void views::trackModelItem::addItems()
 {
   
     prealocateChildren(q->size() );
-    int k=rowCount();
     beginInsertRows(0,q->size()-1 );
     
     for(int i=0;i<q->size();i++)

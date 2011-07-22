@@ -28,8 +28,10 @@ folderContent::folderContent(QWidget *parent)
     proxyM->setSourceModel(model);
     proxyM->setFilterCaseSensitivity(Qt::CaseInsensitive);
     
-    view=new views::treeView(this,"Folder view");
-    view->setEditorFactory(new folderEditorFactory(this) );
+    view=new views::treeView(this,"Folder view");    
+    folderEditorFactory *fact=new folderEditorFactory(this);
+    fact->setProxyModel(proxyM);
+    view->setEditorFactory(fact);
 //     view->setRatingColumn(DIRCOLUMN+RATING);
     view->setModel(proxyM);
 //     view->setFrameShape(QFrame::StyledPanel);
@@ -40,9 +42,7 @@ folderContent::folderContent(QWidget *parent)
 
     toolBar=new KToolBar(this);
     toolBar->setToolButtonStyle( Qt::ToolButtonIconOnly );
-//     toolBar->setIconDimensions( 16 );
 
-    //add navigation actions
     backAction = new QAction( KIcon( "go-previous" ),"go back", this );
     toolBar->addAction( backAction );
     connect( backAction, SIGNAL( triggered( bool) ), this, SLOT( back() ) );
@@ -77,11 +77,6 @@ folderContent::folderContent(QWidget *parent)
     f->setFrameShape(QFrame::HLine);
     layout->addWidget(f);
     layout->addWidget(navigator);
-//     layout->addWidget(toolBar);
-            
-//     QFrame *f2=new QFrame(this);
-//     f2->setFrameShape(QFrame::HLine);
-//     layout->addWidget(f2);
     
     layout->addWidget(view);    
 
@@ -89,15 +84,14 @@ folderContent::folderContent(QWidget *parent)
 
     connect(view,SIGNAL(clicked ( const QModelIndex) ),this,SLOT(setDir(const QModelIndex) ) );
    
-     readSettings();
+    readSettings();
+    
     connect(navigator,SIGNAL(urlChanged (KUrl) ),this,SLOT(showUrl(KUrl) ) );
    
-//       navigator->setUrl(QDir::homePath());
-
-//      cd(QDir::homePath());
-
     connect(qApp,SIGNAL(aboutToQuit() ),this,SLOT(writeSettings() ) );
-//     readSettings();
+    
+    connect(view,SIGNAL(showContextMenu(QModelIndex,QModelIndexList) ),this,SLOT(showContexMenuSlot(QModelIndex, QModelIndexList) ) );
+
 }
 
 const QList<QString> folderContent::getChildren()
@@ -188,4 +182,37 @@ void folderContent::loaded()
 {
     m=new folderContextMenu(this);
     core::contentHdl->addMenu(m);
+}
+
+void folderContent::showContexMenuSlot(QModelIndex index, QModelIndexList list)
+{
+    QUrl u=index.data(URL_ROLE).toUrl();    
+    QMenu *menu=new QMenu(this);
+    	  
+    QAction *act=new QAction(KIcon("document-edit"),tr("Edit track information"),this );	
+    connect(act,SIGNAL(triggered(bool)),this,SLOT(edit()) );
+    menu->addAction(act);
+   
+    m->setShow(false);
+    
+    core::contentHdl->contextMenu(menu,KUrl(u),!list.isEmpty() );
+    if(!menu->isEmpty() )
+    {
+	menu->exec( QCursor::pos() );
+    }
+    m->setShow(true);
+    
+    menu->deleteLater();
+}
+
+void folderContent::edit()
+{
+//     QModelIndex in=view->currentIndex();
+    view->edit( view->currentIndex() );
+}
+
+void folderContent::unloaded()
+{
+  core::contentHdl->removeMenu(m);
+  delete m;  
 }

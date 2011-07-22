@@ -18,7 +18,7 @@
 #include<QDebug>
 #include<QStylePainter>
 views::treeViewDelegate::treeViewDelegate(QObject *parent)    
-    :QItemDelegate(parent),    
+    :QStyledItemDelegate(parent),    
     rating(-1),
     ITEM_HEIGH(18),
     FONT_SIZE(11),
@@ -105,23 +105,22 @@ QWidget* views::treeViewDelegate::createEditor(QWidget *parent,const QStyleOptio
 {
     if(editorFactory!=0)
     {
- 	int tag=editorFactory->tagFromIndex(index);
-	qDebug()<<"TAG "<<tag;
-	if(tag>0)
-	{
-	    
-	    tagEditor *editor=editorFactory->createEditor(tag,parent);
-	    connect(editor,SIGNAL(valueChanged(QVariant) ),this, SLOT(commitEditor()));
-	    return editor;
-	}
+	   int tag=editorFactory->tagFromIndex(index);
+	   qDebug()<<"TAG "<<tag;
+	   if(tag>-1)
+	   {
+		  
+		  tagEditor *editor=editorFactory->createEditor(tag,parent);
+		  connect(editor,SIGNAL(valueChanged(QVariant) ),this, SLOT(commitEditor()));
+		  return editor;
+	   }
     }
     else if(index.column()==rating)
     {
-	ratingEditor *w=new  ratingEditor(parent);
-	w->ratingW()->setPixmapSize(sizeHint(option,index).height());
-	connect(w,SIGNAL(valueChanged(QVariant) ),this, SLOT(commitEditor()));
-	return w;
-	
+	   ratingWidget *w=new  ratingWidget(parent);
+	   w->setPixmapSize(sizeHint(option,index).height());
+	   connect(w,SIGNAL(valueChanged(QVariant) ),this, SLOT(commitEditor()));
+	   return w;	
     }
     return 0;    
 }
@@ -135,9 +134,10 @@ void views::treeViewDelegate::setEditorData(QWidget *editor,const QModelIndex &i
 
 QSize views::treeViewDelegate::sizeHint ( const QStyleOptionViewItem & option, const QModelIndex & index ) const
 {       
-    QSize ret=QItemDelegate::sizeHint ( option,index );
+//     QSize ret=QStyledItemDelegate::sizeHint ( option,index );
+    QSize ret=index.data(Qt::SizeHintRole).toSize();
     if(ret.isEmpty() )	 
-	 return QSize(ITEM_HEIGH,ITEM_HEIGH);
+	 return QSize(option.rect.width(),ITEM_HEIGH);
     
     return ret;
 }
@@ -177,6 +177,26 @@ void views::treeViewDelegate::commitEditor()
 
 void views::treeViewDelegate::setEditorFactory(views::tagEditorFactory* f)
 {
+    if(editorFactory!=0)
+    {
+	   delete editorFactory;
+    }
+    
     editorFactory=f;
+    editorFactory->setParent(this);
     setRatingColumn(f->columnFromTag(audioFiles::RATING) );
+}
+
+
+void views::treeViewDelegate::updateEditorGeometry(QWidget *editor,const QStyleOptionViewItem &option, const QModelIndex &index ) const
+{
+//     qDebug()<<"geo";
+    QStyledItemDelegate::updateEditorGeometry(editor,option,index);
+    return ;
+    QSize s=sizeHint(option,index);      
+    QRect r=option.rect;
+    r.setSize(s);
+    editor->setFixedSize(s);
+//     editor->setFixedHeight(s.height() );
+//     editor->setGeometry(option.rect);
 }

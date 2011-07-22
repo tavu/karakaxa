@@ -53,7 +53,7 @@ views::decoration::decoration()
     qreal h,sat,v;
     c.getHslF (&h,&sat,&v);
 //     c.setHsl(h+10,sat-50,l+50);
-    c.setHslF(h,sat*0.4,v*1.35);
+    c.setHslF(h,sat*0.4,v*1.30);
 //     c.setHslF(h,sat*0.4,v*1.30);
 //      c.setHslF(h,sat*0.37,v*1.35);
 //     c.setHslF(h,sat*0.45,v*1.37);

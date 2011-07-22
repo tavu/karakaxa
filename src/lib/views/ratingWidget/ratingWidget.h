@@ -4,19 +4,30 @@
 // #include"../../files/tagsTable.h"
 #include"kratingpainter.h"
 #include<QWidget>
+#include"../editors/tagEditor.h"
 namespace views
 {
-class ratingWidget :public QWidget
+class ratingWidget :public tagEditor
 {
     Q_OBJECT
     public:
       ratingWidget(QWidget *parent=0);
       inline void setRating(int s)
       {
-	  _rating=s;
-	  hoverRating=s;
-	  update();
+		_rating=s;
+		hoverRating=s;
+		update();
       }
+      
+	 void setValue(const QVariant& v)
+	 {
+		setRating(v.toInt() );
+	 }
+	 
+	 QVariant value()
+	 {
+		return QVariant(rating() );
+	 }
       
       inline int rating()
       {

@@ -3,17 +3,19 @@
 #include<kiconeffect.h>
 #include<QPainter>
 #include<QMouseEvent>
+#include"../../files/audioFiles.h"
 
 /*
     Most of this code is from amarok.
 */
 
 views::ratingWidget::ratingWidget(QWidget *parent)
-    :QWidget(parent),
+    :tagEditor(audioFiles::RATING,parent),
     _rating(0),
     hoverRating(-1),
     pixSize(20)
 {
+    ratingPainter.setAlignment( Qt::AlignLeft);
     setMouseTracking(true);
 }
 
@@ -61,6 +63,7 @@ void views::ratingWidget::mousePressEvent( QMouseEvent *e )
             hoverRating = _rating = ratingFromPos;
             update();
             emit ratingChanged( _rating );
+		  emit valueChanged(QVariant(_rating ) );
         }
     }
 }

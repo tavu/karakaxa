@@ -19,6 +19,9 @@
 #include"myFileSystemModel.h"
 #include<KLineEdit>
 // #include <kfileplacesmodel.cpp>
+
+class folderContextMenu;
+
 class folderContent :public core::abstractContent
 {
     Q_OBJECT
@@ -36,13 +39,9 @@ public:
 
 private:
     void loaded();
-    void unloaded()
-    {
-	 core::contentHdl->removeMenu(m);
-	 delete m;
-    }
-  
-    core::abstractMenu *m;
+    void unloaded();
+    
+    folderContextMenu *m;
     myFileSystemModel *model;
     KDirModel *dirModel;
     folderProxyModel  *proxyM;
@@ -74,6 +73,8 @@ public slots:
   private slots:
     void cleanup();
     void showUrl(KUrl);
+    void showContexMenuSlot(QModelIndex index, QModelIndexList list);
+    void edit();
     
 
     
@@ -85,7 +86,7 @@ class folderContextMenu :public core::abstractMenu
     public:
 	
 	folderContextMenu(folderContent *c)
-	  :abstractMenu(), f(c)
+	  :abstractMenu(), f(c) , _show(true)
 	{	    
 	     act=new QAction(KIcon("folder"),tr("go to folder"),this);
 	     connect(act,SIGNAL(triggered() ),this,SLOT(cd() ) );
@@ -98,7 +99,7 @@ class folderContextMenu :public core::abstractMenu
 	virtual bool canShow(QUrl &u ,bool multFiles)
 	{
 	    this->u=KUrl(u);
-	    if(this->u.isLocalFile() )
+	    if(this->u.isLocalFile() && _show  )
 	    {
 		this->u=u;
 		return true;
@@ -111,11 +112,17 @@ class folderContextMenu :public core::abstractMenu
 	{
 	    return act;
 	}
+	
+	void setShow(bool b)
+	{
+	    _show=b;
+	}
     
     private:      
       folderContent *f;
       QAction *act;
       KUrl u;
+      bool _show ;
 
     private slots:
 	void cd()	

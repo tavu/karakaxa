@@ -38,7 +38,7 @@ QVariant myFileSystemModel::data(const QModelIndex &index, int role) const
 
     if (role==Qt::DisplayRole)
     {
-	QVariant var;
+	   QVariant var;
         KFileItem item=itemForIndex(index);
         if (item.isDir() )	return QVariant();
 	
@@ -102,7 +102,7 @@ int myFileSystemModel::infoC()
 
 Qt::ItemFlags myFileSystemModel::flags ( const QModelIndex & index ) const
 {
-    return KDirModel::flags(index) | Qt::ItemIsSelectable |Qt::ItemIsDragEnabled;
+    return KDirModel::flags(index) | Qt::ItemIsSelectable |Qt::ItemIsDragEnabled |Qt::ItemIsEditable;
 }
 
 KUrl myFileSystemModel::url( int row) const

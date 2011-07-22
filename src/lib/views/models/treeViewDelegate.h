@@ -1,7 +1,7 @@
 #ifndef TREEVIEWDELEGATE_H
 #define TREEVIEWDELEGATE_H
 
-#include<QItemDelegate>
+#include<QStyledItemDelegate>
 #include<QPen>
 #include"../editors/tagEditor.h"
 // #include"../playerNamespace/rattingWidget/kratingpainter.h"
@@ -10,7 +10,7 @@
 namespace views
 {
 
-class treeViewDelegate :public QItemDelegate
+class treeViewDelegate :public QStyledItemDelegate
 {
 
     Q_OBJECT
@@ -41,7 +41,7 @@ class treeViewDelegate :public QItemDelegate
 	
     private:
 	 int rating;
-
+	 void updateEditorGeometry(QWidget *editor,const QStyleOptionViewItem &option, const QModelIndex &/* index */) const;
 /*	QPixmap decoration(const QStyleOptionViewItem &option, const QModelIndex &index) const;
 	QPixmap toPixmap(const QStyleOptionViewItem& option, const QIcon& icon, const QModelIndex &index) const;
  */     

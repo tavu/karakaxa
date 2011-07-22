@@ -39,8 +39,9 @@ views::treeView::treeView(QWidget *parent,QString name)
 	   connect(qApp,SIGNAL(aboutToQuit() ),this,SLOT(writeSettings() ) ); 
     }
     setEditTriggers(QAbstractItemView::SelectedClicked);
-    connect(this,SIGNAL(doubleClicked  ( const QModelIndex) ),this,SLOT(play(const QModelIndex) ) );
+    connect(this,SIGNAL(doubleClicked  ( const QModelIndex) ),this,SLOT(play(const QModelIndex) ) );    
 
+//     setStyleSheet("QTreeView::item { height: 40px; }");
 }
 
 void views::treeView::mousePressEvent(QMouseEvent *event)
