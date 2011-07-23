@@ -8,6 +8,7 @@
 #include<QAbstractListModel>
 #include<QVariant>
 #include<core.h>
+#include "albumWidget.h"
 
 class albumModel :public QAbstractListModel
 {
@@ -46,8 +47,6 @@ class albumModel :public QAbstractListModel
 
 	QSize itemSize;
 	QSize maxSize;
-	QSize minSize;
-	QSize imageSize;
 	QIcon *artistIcon;
 	QIcon *songIcon;
 	QIcon *albumIcon;
@@ -64,5 +63,18 @@ class albumModel :public QAbstractListModel
 
 	void resizePix();
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #endif

@@ -181,7 +181,7 @@ void views::treeView::writeSettings()
         
     KSharedConfigPtr config=core::config->configFile();
     KConfigGroup group( config, objectName() );
-    group.writeEntry( "list", QVariant(header()->saveState() ));
+    group.writeEntry( "state", QVariant(header()->saveState() ));
     group.config()->sync(); 
     
     

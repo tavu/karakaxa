@@ -15,7 +15,7 @@ albumModel::albumModel(QObject *parent)
     maxSize.setWidth(190);
 
     itemSize.setHeight(150);
-    itemSize.setWidth(180);
+    itemSize.setWidth(150);
 
 }
 
@@ -29,13 +29,8 @@ void albumModel::resize(QSize &s)
     else
     {
 	itemSize=s;
-// 	itemSize.setHeight(s.height()-10);
- 	itemSize.setWidth(itemSize.width()-10);
     }
-//     resizePix();
-    imageSize=itemSize;
-    imageSize.setHeight(itemSize.height()-TEXT_H-15);
-    imageSize.setWidth(itemSize.width()-20);
+    
     layoutChanged();
 }
 

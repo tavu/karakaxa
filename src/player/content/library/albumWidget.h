@@ -1,6 +1,7 @@
 #ifndef ALBUMWIDGET_H
 #define ALBUMWIDGET_H
 #include<QListWidget>
+class albumModel;
 class albumWidget :public QListView
 {
     Q_OBJECT
@@ -9,7 +10,11 @@ public:
     QSize sizeHint () const;
 public slots:
     void scrollR();
-    void scrollL();    
+    void scrollL();  
+    
+    void updateEditors();
+    
+    void setModel(albumModel *m);
 
 protected:
     void wheelEvent(QWheelEvent *event);
