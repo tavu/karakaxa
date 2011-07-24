@@ -1,6 +1,7 @@
 #include"viewsFunc.h"
 #include"../../files/tagsTable.h"
 #include<QDebug>
+
 QString views::prettyLength(int l)
 {
     QString s;
@@ -130,6 +131,6 @@ QString views::tagName(int t)
 
 void views::init()
 {
-
-    decor = new decoration;   
+   
+    decor = new decoration; 
 }

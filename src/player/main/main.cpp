@@ -12,7 +12,9 @@ int main(int argc, char *argv[])
 {
     KAboutData aboutData("player",NULL,ki18n("player"),VERSION);
 //ki18n("A new music player"),KLocalizedString(),KAboutData::License_GPL
-
+    aboutData.setLicense(KAboutData::License_GPL_V3);
+    
+    aboutData.addAuthor(ki18n("Ταβουλάρης Νίκος (tavu)"),ki18n("Developer"),"nik.tavu@gmail.com");
 
     KCmdLineArgs::init( argc, argv, &aboutData );
 //     QApplication app(argc,argv);

@@ -12,12 +12,18 @@
 #include"urlRole.h"
 #include <decoration.h>
 // class editTrack;
+
+#include<QModelIndexList>
+Q_DECLARE_METATYPE(QModelIndexList)
+
+
 views::treeView::treeView(QWidget *parent,QString name)
         :QTreeView(parent)
 {
 //     setFrameShape(QFrame::NoFrame);
     setHeader(new treeViewHeader(this));
     setUniformRowHeights(true);
+    setAlternatingRowColors(true);
       
     delegate=new treeViewDelegate(this);
     setItemDelegate(delegate);
@@ -129,26 +135,27 @@ void views::treeView::setModel ( QAbstractItemModel * model )
     {
 	connect(model,SIGNAL(rowsInserted ( const QModelIndex, int, int )),this ,SLOT(updateStarWidget(QModelIndex, int, int) ) );
  	connect(model,SIGNAL(modelReset () ),this ,SLOT(updateStarWidget() ) );
-	connect(model,SIGNAL(dataChanged ( const QModelIndex &, const QModelIndex& ) ),this,SLOT(dataChanged ( const QModelIndex &, const QModelIndex& ) ) );
+ 	connect(model,SIGNAL(dataChanged ( const QModelIndex &, const QModelIndex& ) ),this,SLOT(dataChanged ( const QModelIndex &, const QModelIndex& ) ) );
     }
 }
 
 void views::treeView::dataChanged ( const QModelIndex & topLeft, const QModelIndex & bottomRight )
 {
+//     qDebug()<<"ET";
      if(bottomRight.column()>ratingColumn() )
      {
- 	for(int i=topLeft.row();i<=bottomRight.row();i++)
- 	{
-	    
-	    QModelIndex item=model()->index(i,ratingColumn(),topLeft.parent() );
-	    bool b;
-	    item.data().toInt(&b);
-	
-	    if(b)
-	    {
- 		openPersistentEditor(item);
-	    }
- 	}
+	   for(int i=topLeft.row();i<=bottomRight.row();i++)
+	   {
+		  
+		  QModelIndex item=model()->index(i,ratingColumn(),topLeft.parent() );
+		  bool b;
+		  item.data().toInt(&b);
+	   
+		  if(b)
+		  {
+		    openPersistentEditor(item);
+		  }
+	   }
      }
   
 }
@@ -239,42 +246,26 @@ void views::treeView::updateStarWidget()
 
 void views::treeView::commitData ( QWidget * editor ) 
 {    
-//     trackUrl *m=dynamic_cast<trackUrl*>(model());
-//     
-//     if(m!=0)
-//     {
-// 	QModelIndexList list=selectedIndexes();
-// 
-// 	if (!list.isEmpty() )
-// 	{
-// 	    foreach(QModelIndex i,list)
-// 	    {
-// 		if (i.column()==list.at(0).column() )
-// 		{
-// 		    m->urlList<<m->url(i.row());
-// 		}
-// 	    }
-// 	}
-//     }
-//     QTreeView::commitData(editor);
-   
-    audioFiles::fileList.clear();
+
+    qDebug()<<"commit";
     QModelIndexList list=selectedIndexes();
-    if (!list.isEmpty() )	
-    {
-	foreach(QModelIndex i,list)	
-	{	
-	    if (i.column()==list.at(0).column() )	
-	    {	
-		QUrl u=i.data(URL_ROLE).toUrl();
-		if(u.isValid() )
-		{
-		    audioFile f(u.toLocalFile());
-		    audioFiles::fileList.append(f);
-		}
-	    }
-	}
+    QModelIndexList l;
+    
+    if (!list.isEmpty() )
+    { 	
+ 	   int column=currentIndex().column();
+ 	   foreach(QModelIndex i,list)
+ 	   {
+ 		  if (i.column()==column )	
+ 		  {
+ 		    l<<i;
+ 		  }
+ 	   }
     }
+        
+    QVariant var=QVariant::fromValue(l);
+    itemDelegate()->setProperty("modelList",var );  
+
     
     QTreeView::commitData(editor);
 }
@@ -283,8 +274,8 @@ void views::treeView::commitData ( QWidget * editor )
 void views::treeView::closeEditor ( QWidget * editor, QAbstractItemDelegate::EndEditHint hint )
 {
     qDebug()<<"closing editor";
-    audioFiles::fileList.clear();
-    QTreeView::closeEditor(editor,hint);   
+    QTreeView::closeEditor(editor,hint);                
+//     viewport()->update();
 }
 
 void views::treeView::headerRepaint()
@@ -303,9 +294,7 @@ void views::treeView::headerRepaint()
 }
 
 void views::treeView::leaveEvent (QEvent *) 
-{
-//       Q_UNUSED(event);
-  
+{ 
      QWidget * viewport = header()->viewport();
      header()->setProperty("highlight",QVariant(-1) );
      viewport->update();

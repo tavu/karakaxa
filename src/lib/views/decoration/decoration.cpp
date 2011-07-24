@@ -46,21 +46,8 @@ views::decoration::decoration()
     defaultS=KGlobal::dirs()->findResource("data",QString("player/icons/karakaxa.png"));
     playerIcon=KIcon(defaultS);
     
-    pal=qApp->palette();
-//     QColor c(180,189,213);
-    QColor c=KColorScheme(QPalette::Active, KColorScheme::Selection).background().color();
-//     QColor c=KColorScheme(QPalette::Active, KColorScheme:).background().color();
-    qreal h,sat,v;
-    c.getHslF (&h,&sat,&v);
-//     c.setHsl(h+10,sat-50,l+50);
-    c.setHslF(h,sat*0.4,v*1.30);
-//     c.setHslF(h,sat*0.4,v*1.30);
-//      c.setHslF(h,sat*0.37,v*1.35);
-//     c.setHslF(h,sat*0.45,v*1.37);
-
-    pal.setColor(QPalette::Base,pal.color(QPalette::Window) );
-    pal.setColor(QPalette::AlternateBase,c );
-    pal.setColor(QPalette::Window,c);
+    initPalete();
+    
 }
 
 KIcon views::decoration::tagIcon(int t)
@@ -148,6 +135,25 @@ QPixmap views::decoration::toPixmap(const QStyleOptionViewItem &option, const QI
     const QSize size = icon.actualSize(s, mode, state);
     return icon.pixmap(size, mode, state);
 }
+
+void views::decoration::initPalete()
+{
+    pal=qApp->palette();
+    QColor c=KColorScheme(QPalette::Active, KColorScheme::Selection).background().color();
+//     QColor c=KColorScheme(QPalette::Active, KColorScheme:).background().color();
+    qreal h,sat,v;
+    c.getHslF (&h,&sat,&v);
+
+    c.setHslF(h,sat*0.4,v*1.30);
+    
+    pal.setColor(QPalette::Base,pal.color(QPalette::Window) );
+    pal.setColor(QPalette::Window,c);
+    c.setAlpha(30);
+    pal.setColor(QPalette::AlternateBase,c );
+    
+
+}
+
 
 namespace views
 {

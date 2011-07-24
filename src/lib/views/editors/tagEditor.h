@@ -3,6 +3,7 @@
 
 #include<QWidget>
 #include<QModelIndex>
+#include<QModelIndexList>
 namespace views
 {
 
@@ -52,6 +53,14 @@ class tagEditorFactory :public QObject
 	{
 	    return tagEditor::getEditor(tag,parent);
 	}
+	
+	tagEditor* createEditor(const QModelIndex &index, QWidget *parent=0 ) const
+	{
+	   int tag=tagFromIndex(index);
+	   return createEditor(tag,parent);
+	}
+	
+	virtual bool setModelData(tagEditor *editor,QAbstractItemModel *model,const QModelIndex &index,const QModelIndexList &list);
 	
 	//for error return -1
 	virtual int tagFromIndex(const QModelIndex &index) const

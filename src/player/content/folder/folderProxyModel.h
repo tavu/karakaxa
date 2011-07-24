@@ -13,6 +13,7 @@ class folderProxyModel :public QSortFilterProxyModel
     protected:
 	bool filterAcceptsRow ( int source_row, const QModelIndex & source_parent ) const;
 	bool lessThan ( const QModelIndex & left, const QModelIndex & right ) const;
+	bool setData( const QModelIndex & index, const QVariant & value, int role);
 };
 
 #endif

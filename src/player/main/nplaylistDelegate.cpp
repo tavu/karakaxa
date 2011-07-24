@@ -131,8 +131,10 @@ void nplDelegate::paint ( QPainter * painter, const QStyleOptionViewItem & optio
 	 painter->setOpacity(0.5);
     }
     
-    QApplication::style()->drawItemText(painter,rect,align,QApplication::palette (),true,text);
-        
+//     QApplication::style()->drawItemText(painter,rect,align,QApplication::palette (),true,text);
+
+    drawDisplay(painter,option,rect,text,align);
+       
     painter->restore();
     
     int dropIn=property("dropIn").toInt();    
@@ -141,4 +143,16 @@ void nplDelegate::paint ( QPainter * painter, const QStyleOptionViewItem & optio
 QSize nplDelegate::sizeHint ( const QStyleOptionViewItem & option, const QModelIndex & index ) const
 {
     return QSize(100,20);
+}
+
+void nplDelegate::drawDisplay(QPainter* painter, const QStyleOptionViewItem& option,QRect& rect, QString& text,int align) const
+{
+    painter->save();
+
+    text=text.simplified();
+
+    QString elideText=option.fontMetrics.elidedText(text,Qt::ElideRight,rect.width() );
+    
+    painter->drawText( rect,align|Qt::ElideRight, elideText,&rect);
+    painter->restore();
 }

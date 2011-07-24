@@ -30,7 +30,8 @@ folderContent::folderContent(QWidget *parent)
     
     view=new views::treeView(this,"Folder view");    
     folderEditorFactory *fact=new folderEditorFactory(this);
-    fact->setProxyModel(proxyM);
+    fact->setModel(proxyM);
+    fact->setView(view);
     view->setEditorFactory(fact);
 //     view->setRatingColumn(DIRCOLUMN+RATING);
     view->setModel(proxyM);
@@ -188,10 +189,16 @@ void folderContent::showContexMenuSlot(QModelIndex index, QModelIndexList list)
 {
     QUrl u=index.data(URL_ROLE).toUrl();    
     QMenu *menu=new QMenu(this);
-    	  
-    QAction *act=new QAction(KIcon("document-edit"),tr("Edit track information"),this );	
-    connect(act,SIGNAL(triggered(bool)),this,SLOT(edit()) );
-    menu->addAction(act);
+
+    	   QAction *act=new QAction(KIcon("document-edit"),tr("edit"),this );	
+	   connect(act,SIGNAL(triggered(bool)),this,SLOT(edit()) );
+	   menu->addAction(act);
+    
+    if(! (model->flags(index) & Qt::ItemIsEditable) )
+    {
+	   act->setEnabled(false);
+    }
+    
    
     m->setShow(false);
     

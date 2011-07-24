@@ -9,6 +9,7 @@ public:
     nplDelegate(QObject * parent = 0 );
     void	paint ( QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index ) const;
     QSize	sizeHint ( const QStyleOptionViewItem & option, const QModelIndex & index ) const;
+    void drawDisplay(QPainter* painter, const QStyleOptionViewItem& option,QRect& rect, QString& text,int align) const;
 };
 
 #endif

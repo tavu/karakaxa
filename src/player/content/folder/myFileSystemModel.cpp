@@ -57,14 +57,19 @@ QVariant myFileSystemModel::data(const QModelIndex &index, int role) const
 
 bool myFileSystemModel::setData( const QModelIndex & index, const QVariant & value, int role)
 {
-    KFileItem item=itemForIndex(index);
-    audioFile f(item.url().toLocalFile() );
-    int filde=index.column()-DIRCOLUMN;
-    f.setTag(filde,value);
+    int tag=index.column()-DIRCOLUMN;
+    QUrl u=index.data(URL_ROLE).toUrl();
+    
+    if(u.isValid() )
+    {
+	   audioFile f(u.toLocalFile() );
+	   f.setTag(tag,value);
+  	   emit dataChanged(index,index);
+	   return true;
+    }
     
     return true;
 }
-
 
 QVariant myFileSystemModel::headerData ( int section, Qt::Orientation orientation, int role ) const
 {
@@ -102,7 +107,26 @@ int myFileSystemModel::infoC()
 
 Qt::ItemFlags myFileSystemModel::flags ( const QModelIndex & index ) const
 {
-    return KDirModel::flags(index) | Qt::ItemIsSelectable |Qt::ItemIsDragEnabled |Qt::ItemIsEditable;
+    Qt::ItemFlags f= KDirModel::flags(index) | Qt::ItemIsSelectable |Qt::ItemIsDragEnabled;
+    
+    if(index.column()<DIRCOLUMN)
+    {
+	   return f;
+    }
+    else
+    {
+	   int tag=index.column()-DIRCOLUMN;
+	   
+	   if(tag==audioFiles::COUNTER||tag==audioFiles::BITRATE ||tag==LENGTH)
+	   {
+		  return f;
+	   }
+	   else 
+	   {
+		  return f|Qt::ItemIsEditable;
+	   }
+    }
+    
 }
 
 KUrl myFileSystemModel::url( int row) const

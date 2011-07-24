@@ -2,6 +2,7 @@
 #include<core.h>
 #include<QUrl>
 #include<views.h>
+#define DIRCOLUMN 7
 bool folderProxyModel::filterAcceptsRow ( int row, const QModelIndex &parent ) const
 {
     QModelIndex index=sourceModel()->index(row, 0, parent);
@@ -47,4 +48,9 @@ bool folderProxyModel::lessThan ( const QModelIndex & left, const QModelIndex & 
     }
     
     return QSortFilterProxyModel::lessThan(left,right);    
+}
+
+bool folderProxyModel::setData( const QModelIndex & index, const QVariant & value, int role)
+{
+    return QSortFilterProxyModel::setData(index,value,role);
 }

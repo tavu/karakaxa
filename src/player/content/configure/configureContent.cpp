@@ -32,7 +32,7 @@ configureContent::configureContent(QWidget *parent)
     layout->addWidget(rememberPl);
     layout->addStretch();
 
-    layout->setContentsMargins(10,10,50,10);
+    layout->setContentsMargins(10,10,10,10);
     setLayout(layout);
     
     connect(rememberPl,SIGNAL(stateChanged(int) ),this,SLOT(rememberPlSlot(int) ) );
@@ -67,14 +67,14 @@ void configureContent::libconfInit()
     QPushButton *addFolder=new QPushButton(KIcon("list-add"),tr("Add Folder"),this);
     QPushButton *removeFolder=new QPushButton(KIcon("list-remove"),tr("Remove Folder"),this);
     scanB=new QPushButton(tr("Scan"),this);
-    scanB->setFixedWidth(100);
+    scanB->setMaximumWidth(100);
 
     cancelB=new QPushButton(tr("cancel"));
-    cancelB->setFixedWidth(100);
+    cancelB->setMaximumWidth(100);
     cancelB->setDisabled(true);
 
     bar=new QProgressBar(this);
-    bar->setFixedWidth(200);
+    bar->setMaximumWidth(200);
     bar->hide();
 
     dbNameL = new QLineEdit(db->dataBName(),this);    

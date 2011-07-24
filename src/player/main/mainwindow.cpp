@@ -6,7 +6,7 @@
 #include<QString>
 #include <QTextCodec>
 #include<QApplication>
-// #include "../content/library/library.h"
+#include<QMenuBar>
 // #include "../content/folder/folder.h"
 // #include "../content/playlist/playlistContent.h"
 // #include "../content/configure/configureContent.h"
@@ -15,22 +15,26 @@
 #include<KConfig>
 #include<KConfigGroup>
 #include<views.h>
+#include<QHeaderView>
+#include <kcmdlineargs.h>
 
 #include"content/library/library.h"
 #include"content/folder/folder.h"
 #include"content/playlist/playlistContent.h"
 #include"content/configure/configureContent.h"
 #include"content/edit/editTrackContent.h"
-
+#include<KHelpMenu>
+#include<KMenuBar>
+#include<KMenu>
 #define ICONZISE QSize(35,35)
 
 using namespace views;
 using namespace core;
 
-#include<QHeaderView>
+
 
 mainWindow::mainWindow()
-        :QMainWindow()
+        :KMainWindow()
 {    
     core::init();
     views::init();
@@ -38,38 +42,21 @@ mainWindow::mainWindow()
     setIconSize(ICONZISE);
     setWindowIcon(decor->logo() );
     
-    
-    pal=palette();
-    pal.setColor(QPalette::Base,pal.color(QPalette::Window) );
-    QColor c(180,189,213);
-    pal.setColor(QPalette::Window,c );
-//     pal.setColor(QPalette::Link,QColor(0,0,255) );
-//     pal.setColor(QPalette::Window,QColor(175,194,237) );
+       
 
-//     QColor c(180,189,213);
-     
-//     c.setNamedColor("playerBlue");
-    
-//      pal.setColor(QPalette::AlternateBase,c );
-     
-//      pal.setColor(QPalette::Base,c );
-
-//     qApp->setPalette(pal);
-//     core::pal=pal;
-//     core::pal.setColor(QPalette::Base,pal.color(QPalette::Window) );
-    
-
-    setMenuBar(0);
+//     setMenuBar(0);
     infoInit();
     conTreeInit();
     conViewInit();    
     nplViewInit();    
     toolBarInit();                    
+    createMenus();
     createTrayIcon();
-
+    
+    
     setStatusBar(new views::statusBar(this) );    
      
-    lockDock();
+//     lockDock();
 
     connect( core::engine ,SIGNAL(stateChanged ( Phonon::State) ),this, SLOT( stateChanged ( Phonon::State) ) );
     
@@ -128,8 +115,8 @@ mainWindow::~mainWindow()
 inline void mainWindow::infoInit()
 {
     info=new playingInfo(this);
-    info->setFixedHeight(165);
-    info->setMinimumWidth(150);
+    info->setFixedHeight(100);
+//     info->setMinimumWidth(150);
     
     infoDock=new QDockWidget(this);
     infoDock->setWidget(info);
@@ -138,8 +125,8 @@ inline void mainWindow::infoInit()
 
     info->setPalette(views::decor->palette());
     
-    infoDock->setWindowTitle(tr("playing track info") );
-    infoDock->setObjectName("playingTrackInfodf");    
+    infoDock->setWindowTitle(tr("playing track information") );
+    infoDock->setObjectName("playingTrackInfo");    
     infoDock->setAutoFillBackground(true);
 
     addDockWidget ( Qt::LeftDockWidgetArea, infoDock,Qt::Horizontal);    
@@ -150,21 +137,10 @@ void mainWindow::conViewInit()
     QFrame *conView=contentHdl->contentView();
     conView->setFrameStyle(QFrame::StyledPanel);
     conView->setFrameShadow(QFrame::Raised);
-//     conViewDock=new QDockWidget(this);
-//      conViewDock->setWindowTitle("content Dock");
-//     conViewDock->setObjectName("contentDock");
-//     conViewDock->setWidget(conView);
 
     conView->setPalette(decor->palette());
-//     contentHdl->toolBar()->setPalette(decor->palette());
     conView->setAutoFillBackground(true);
     setCentralWidget(conView); 
-    
-    
-    
-//     conViewDock->setPalette(pal);
-
-    
 }
 
 void mainWindow::conTreeInit()
@@ -174,10 +150,9 @@ void mainWindow::conTreeInit()
     conTree->setHeaderHidden(true);
     conTree->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding );
     conTree->setAutoFillBackground(true);
-//     conTree->setHeaderLabel("Content");
 
     conTreeDock =new QDockWidget(this);
-    conTreeDock->setWindowTitle("select content");
+    conTreeDock->setWindowTitle("contents");
     conTreeDock->setObjectName("contentTree");
 
     conTree->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding );
@@ -223,9 +198,8 @@ void mainWindow::nplViewInit()
     nplView->setPalette(pal);
         
     nplView->header()->setStyleSheet(s);
-    viewport = nplView->viewport();
 
-    connect( engine ,SIGNAL(trackChanged ( QString) ),viewport, SLOT(update() ) );
+//     connect( engine ,SIGNAL(trackChanged ( QString) ),nplView->viewport(), SLOT(update() ) );
 
     KToolBar *t=new KToolBar(this);
 
@@ -259,18 +233,16 @@ void mainWindow::nplViewInit()
 }
 
 void mainWindow::toolBarInit()
-{ 
+{      
     toolBar=new QToolBar(this);
-
-//     QPalette p=QApplication::palette();
-
-    toolBar->setObjectName("buttonsToolBar");
-//     toolBar->setToolButtonStyle( Qt::ToolButtonIconOnly );
-//     toolBar->setIconSize(ICONZISE );
-//     toolBar->setMovable(true);
-
+    
+//     info->setFixedWidth(160);  
+    toolBar->setIconSize(ICONZISE);
+    
+        
+    
     previousAction = new QAction(  views::decor->previous() ,"play previous", this );
-    toolBar->addAction( previousAction );
+   toolBar ->addAction( previousAction );
     connect(previousAction,SIGNAL(triggered( bool)),engine,SLOT(previous() ) );
 
     playAction = new QAction(  views::decor->play(),"play-pause", this );
@@ -280,19 +252,30 @@ void mainWindow::toolBarInit()
     nextAction = new QAction(  views::decor->next(),"play next", this );
     toolBar->addAction( nextAction );
     connect(nextAction,SIGNAL(triggered( bool)),engine,SLOT(next() ) );
+
     
     slider = new Phonon::SeekSlider(this);
     slider->setMediaObject(core::engine->getMediaObject() );
     slider->setIconVisible(false);
+    
     toolBar->addWidget(slider);
     
+                
     volumeB=new views::volumeBar(this);
     volumeB->setFixedWidth(150);
     toolBar->addWidget(volumeB);
-    
-    toolBar->setAutoFillBackground(false);
+           
    
+    
+    
     addToolBar ( Qt::TopToolBarArea,toolBar);
+
+    toolBar->setAutoFillBackground(false);
+            
+//     toolBar->setFixedHeight(110);
+
+    toolBar->setObjectName("buttonsToolBar");
+
 
 }
 
@@ -302,17 +285,39 @@ void mainWindow::lockDock()
     const QFlags<QDockWidget::DockWidgetFeature> features = QDockWidget::NoDockWidgetFeatures;
 
     conTreeDock->setFeatures(features);
-    conTreeDock->setTitleBarWidget(0);
 
     nplViewDock->setFeatures(features);
+//     nplViewDock->titleBarWidget()->hide();
     nplViewDock->setTitleBarWidget(new QWidget(nplViewDock));
 
     infoDock->setFeatures(features);
     infoDock->setTitleBarWidget(new QWidget(infoDock));
 
-    toolBar->setMovable(false);
-    
+    toolBar->setMovable(false);    
 }
+
+void mainWindow::unlockDock()
+{
+    const QFlags<QDockWidget::DockWidgetFeature> features = QDockWidget::DockWidgetMovable|QDockWidget::DockWidgetClosable;
+
+    conTreeDock->setFeatures(features);
+
+
+    nplViewDock->setFeatures(features);        
+    QWidget *w=nplViewDock->titleBarWidget();
+    conTreeDock->setTitleBarWidget(0);
+    delete w;
+//     nplViewDock->setTitleBarWidget(new QWidget(nplViewDock));
+
+    infoDock->setFeatures(features);
+    w=infoDock->titleBarWidget();
+    infoDock->setTitleBarWidget(0);
+    delete w;
+    
+    toolBar->setMovable(true);    
+}
+
+
 
 void mainWindow::stateChanged(Phonon::State state)
 {
@@ -353,9 +358,10 @@ void mainWindow::writeSettings()
     KSharedConfigPtr config=core::config->configFile();
     KConfigGroup group( config, "MainWindow" );
     group.writeEntry("geometry", QVariant(saveGeometry() ) );
-    group.writeEntry("fullscreen", QVariant(isFullScreen() ) );
+//     group.writeEntry("fullscreen", QVariant(isFullScreen() ) );
     group.writeEntry( "state", QVariant(saveState() ) );
-    group.writeEntry( "infoDockHeight", QVariant(info->height()) );
+    group.writeEntry( "layoutLocked", QVariant(lockLayout->isChecked() ) );
+//     group.writeEntry( "infoDockHeight", QVariant(info->height()) );
     group.config()->sync();
 
   
@@ -366,18 +372,24 @@ void mainWindow::readSettings()
     KSharedConfigPtr config=core::config->configFile();
     KConfigGroup group( config, "MainWindow" );
     restoreGeometry(group.readEntry("geometry",QByteArray() ) );
-//     _fullScreen=group.readEntry("fullscreen",false );
-    int infoHeight=group.readEntry( "infoDockHeight",0 );
+    lockLayout->setChecked(group.readEntry("layoutLocked",false) );
+    
+    
+//     int infoHeight=group.readEntry( "infoDockHeight",0 );
     
     restoreState(group.readEntry("state",QByteArray()) );
+    if(lockLayout->isChecked() )
+    {
+	   lockDock();
+    }
 }
 
 void mainWindow::createTrayIcon()
 {
      trayIcon=new QSystemTrayIcon(decor->logo(),this);
      QMenu *trayIconMenu = new QMenu(this);
-     QAction *quitAction = new QAction(KIcon("application-exit"), tr("&Quit"), this);
-     connect(quitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
+//      QAction *quitAction = new QAction(KIcon("application-exit"), tr("&Quit"), this);
+//      connect(quitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
     
     trayIconMenu->addAction(volumeB->action());
     trayIconMenu->addSeparator();
@@ -409,4 +421,42 @@ void mainWindow::iconActivated(QSystemTrayIcon::ActivationReason reason)
 		activateWindow();
 	 }
     }  
+}
+
+
+void mainWindow::createMenus()
+{
+    playerMenu=menuBar()->addMenu(tr("&Player"));
+
+    quitAction = new QAction(KIcon("application-exit"), tr("&Quit"), this);
+    
+    connect(quitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
+    
+
+    playerMenu->addAction(previousAction);    
+    playerMenu->addAction(playAction);    
+    playerMenu->addAction(nextAction);    
+    playerMenu->addAction(volumeB->action());
+    playerMenu->addSeparator();    
+    playerMenu->addAction(quitAction);
+    
+    
+    viewMenu=menuBar()->addMenu(tr("&View"));    
+    
+    lockLayout=new QAction(tr("&lock layout"),viewMenu);
+    lockLayout->setCheckable(true);
+    connect(lockLayout,SIGNAL(triggered(bool)),this,SLOT(changeLockLayout(bool)) );
+    
+    viewMenu->addAction(infoDock->toggleViewAction() );
+    viewMenu->addAction(nplViewDock->toggleViewAction() );
+    viewMenu->addAction(conTreeDock->toggleViewAction() );
+    viewMenu->addAction(lockLayout );
+    
+    KHelpMenu *helpMenu=new KHelpMenu(this,KCmdLineArgs::aboutData(),false);
+    KMenu *s_helpMenu=helpMenu->menu();
+    helpMenu->action( KHelpMenu::menuHelpContents )->setVisible( false );    
+//     helpMenu->action( KHelpMenu::menuWhatsThis )->setVisible( false );
+//     helpMenu->action( KHelpMenu::menuAboutApp )->setVisible( false );       
+    menuBar()->addMenu(s_helpMenu);
+
 }

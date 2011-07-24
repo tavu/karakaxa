@@ -14,7 +14,7 @@
 // #include"../mainWidget.h"
 #include <QDockWidget>
 #include<core.h>
-#include <QMainWindow>
+#include <KMainWindow>
 #include<QTreeWidget>
 #include<QStackedWidget>
 #include"contentTree.h"
@@ -24,7 +24,7 @@
 #include<KIcon>
 #include"nplaylistView.h"
 #include"playingInfo.h"
-class mainWindow :public QMainWindow
+class mainWindow :public KMainWindow
 {
     Q_OBJECT
     public:
@@ -49,24 +49,30 @@ class mainWindow :public QMainWindow
 	QDockWidget 	*nplViewDock;
 	QDockWidget      *infoDock;
 
-	QWidget  *conTreeDockT;
-	QWidget  *nplViewDockT;
-	QWidget  *infoDockT;
+// 	QWidget  *conTreeDockT;
+// 	QWidget  *nplViewDockT;
+// 	QWidget  *infoDockT;
+	
 	//for the toolBar
 	QAction *playAction;
 	QAction *nextAction;
-	QAction *previousAction;
-	
+	QAction *previousAction;	
 	views::volumeBar *volumeB;
-	
-	
 	Phonon::SeekSlider *slider;
+	
 	QLabel *timeLabel;
 	QLabel *progressLabel;    
 
-	QWidget * viewport;
+	//for the menu bar
+	QMenu *playerMenu;
+	QMenu *settingsMenu;
+	QMenu *helpMenu;
+	QMenu *viewMenu;
+	
+	QAction *lockLayout;
+	QAction *quitAction;
+	
 
-	QPalette pal;
 	//fuctions
 	inline void toolBarInit();
 	inline void nplViewInit();
@@ -75,11 +81,13 @@ class mainWindow :public QMainWindow
 	inline void defaultContent();
 	inline void infoInit();
 	inline void createTrayIcon();
+	inline void createMenus();
 	
 
 	void writeSettings();
 // 	bool _fullScreen;
 	void lockDock();
+	void unlockDock();
 	
 	void readSettings();
 
@@ -92,6 +100,18 @@ class mainWindow :public QMainWindow
 	{
 	    hide();
 	    writeSettings();
+	}
+	
+	void changeLockLayout(bool b)
+	{
+	   if(b)
+	   {
+		    lockDock();
+	   }
+	   else
+	   {
+		  unlockDock();
+	   }
 	}
 
 

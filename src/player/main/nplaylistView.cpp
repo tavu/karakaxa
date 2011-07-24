@@ -25,6 +25,7 @@ nplaylistView::nplaylistView(QWidget *parent)
     setDragEnabled( true );
 
     connect(this,SIGNAL(doubleClicked(QModelIndex ) ),this, SLOT(play(const QModelIndex) ) );
+    connect( engine ,SIGNAL(trackChanged ( QString) ),viewport(), SLOT(update() ) );
 }
 
 void nplaylistView::mousePressEvent(QMouseEvent *event)

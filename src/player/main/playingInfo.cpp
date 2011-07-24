@@ -23,32 +23,38 @@ playingInfo::playingInfo(QWidget *parent)
 //     cover->setFrameStyle(QFrame::Panel | QFrame::Raised);
         
     stars=new views::ratingWidget(this);
-    stars->setMaximumWidth(100);    
+//     stars->setMaximumWidth(100);    
 
     titleT=new scrolText(tr("Empty"),this);
     titleT->setBold(true);
     albumT= new scrolText(tr("Empty"),this);
     artistT= new scrolText(tr("Empty"),this);
-    commentT= new scrolText(tr("Empty"),this);
-    genreT=new scrolText(tr("Empty"),this);
+//     commentT= new scrolText(tr("Empty"),this);
+//     genreT=new scrolText(tr("Empty"),this);
     
     titleIcon=new QLabel(this);
     albumIcon=new QLabel(this);
-    commentIcon=new QLabel(this);
-    genreIcon=new QLabel(this);
+//     commentIcon=new QLabel(this);
+//     genreIcon=new QLabel(this);
     artistIcon=new QLabel(this);    
      
     titleIcon->setPixmap(decor->tagIcon(TITLE).pixmap(ICONZISE ));
     albumIcon->setPixmap(decor->tagIcon(ALBUM).pixmap(ICONZISE ));
-    commentIcon->setPixmap(decor->tagIcon(COMMENT).pixmap(ICONZISE ));
-    genreIcon->setPixmap(decor->tagIcon(GENRE).pixmap(ICONZISE ));
+//     commentIcon->setPixmap(decor->tagIcon(COMMENT).pixmap(ICONZISE ));
+//     genreIcon->setPixmap(decor->tagIcon(GENRE).pixmap(ICONZISE ));
     artistIcon ->setPixmap(decor->tagIcon(ARTIST).pixmap(ICONZISE ));
     
     QFormLayout *formLayout=new QFormLayout();    
     formLayout->addRow(stars);
-    formLayout->addRow(commentIcon,commentT);
-    formLayout->addRow(genreIcon,genreT);
+//     formLayout->addRow(commentIcon,commentT);
+//     formLayout->addRow(genreIcon,genreT);
+     formLayout->addRow(titleIcon,titleT);
+	formLayout->addRow(artistIcon,artistT);
+	formLayout->addRow(albumIcon,albumT);
+    
     formLayout->setContentsMargins(0,0,0,0);
+    
+    
     QHBoxLayout *hLayout=new QHBoxLayout();
     hLayout->addWidget(cover);
     hLayout->addLayout(formLayout);
@@ -74,9 +80,9 @@ playingInfo::playingInfo(QWidget *parent)
     
     
     
-    mainLayout->addRow(titleIcon,titleT);
-    mainLayout->addRow(albumIcon,albumT);
-    mainLayout->addRow(artistIcon,artistT);
+//     mainLayout->addRow(titleIcon,titleT);
+//     mainLayout->addRow(albumIcon,albumT);
+//     mainLayout->addRow(artistIcon,artistT);
 
     
     
@@ -103,7 +109,7 @@ playingInfo::playingInfo(QWidget *parent)
 
 QSize playingInfo::sizeHint() const
 {
-    return QSize(100,185);
+    return QSize(70,65);
 }
 
 
@@ -125,8 +131,7 @@ void playingInfo::update()
 }
 
 void playingInfo::getInfo()
-{
-    qDebug()<<"EDFHGS";
+{   
     if (track.isNull())
     {
         qDebug()<<"playingInfo: can't get informarion file is null";
@@ -136,8 +141,8 @@ void playingInfo::getInfo()
     titleT->setText(track->tag(TITLE).toString() );
     albumT->setText(track->tag(ALBUM).toString() );
     artistT->setText(track->tag(ARTIST).toString() );
-    commentT->setText(track->tag(COMMENT).toString() );
-    genreT->setText(track->tag(GENRE).toString() );
+//     commentT->setText(track->tag(COMMENT).toString() );
+//     genreT->setText(track->tag(GENRE).toString() );
     
     cover->setCover(track->cover() );
     stars->setRating(track->tag(RATING).toInt());
@@ -148,7 +153,7 @@ void playingInfo::setRating(int n)
 {
     if (track.isNull())
     {
-	return ;
+	 return ;
     }
   
     audioFile *f=new audioFile(track->path() );

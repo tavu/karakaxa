@@ -17,6 +17,10 @@
 #include"../editors/ratingEditor.h"
 #include<QDebug>
 #include<QStylePainter>
+
+#include<QModelIndexList>
+Q_DECLARE_METATYPE(QModelIndexList)
+
 views::treeViewDelegate::treeViewDelegate(QObject *parent)    
     :QStyledItemDelegate(parent),    
     rating(-1),
@@ -34,15 +38,7 @@ void views::treeViewDelegate::paint ( QPainter * painter, const QStyleOptionView
 
     painter->save();
     painter->setRenderHint(QPainter::Antialiasing, true);
-    
-    if (index.row()%2==1)
-    {
-        painter->save();
-        painter->setOpacity(0.2);
-        painter->fillRect(option.rect,option.palette.window());
-        painter->restore();
-    }    
-	     
+     
 	
 	painter->setOpacity(0.8);    
      pen.setWidth(2);
@@ -105,15 +101,13 @@ QWidget* views::treeViewDelegate::createEditor(QWidget *parent,const QStyleOptio
 {
     if(editorFactory!=0)
     {
-	   int tag=editorFactory->tagFromIndex(index);
-	   qDebug()<<"TAG "<<tag;
-	   if(tag>-1)
+	   QWidget *w=editorFactory->createEditor(index,parent);
+	   if(index.column()==rating)
 	   {
-		  
-		  tagEditor *editor=editorFactory->createEditor(tag,parent);
-		  connect(editor,SIGNAL(valueChanged(QVariant) ),this, SLOT(commitEditor()));
-		  return editor;
+// 		  w->setPixmapSize(sizeHint(option,index).height());
+		  connect(w,SIGNAL(valueChanged(QVariant) ),this, SLOT(commitEditor()));
 	   }
+	   return w;
     }
     else if(index.column()==rating)
     {
@@ -129,7 +123,7 @@ void views::treeViewDelegate::setEditorData(QWidget *editor,const QModelIndex &i
 {
      tagEditor *e= static_cast<tagEditor*>(editor);
   
-     e->setValue(index.data() );     
+     e->setValue(index.data() );
 }
 
 QSize views::treeViewDelegate::sizeHint ( const QStyleOptionViewItem & option, const QModelIndex & index ) const
@@ -154,9 +148,20 @@ void views::treeViewDelegate::setItemHeigh(int k)
 
 
 void views::treeViewDelegate::setModelData(QWidget *editor,QAbstractItemModel *model,const QModelIndex &index) const
-{
-    tagEditor *e= static_cast<tagEditor*>(editor);
-    model->setData(index, QVariant(e->value() ) );
+{    
+    tagEditor *e= static_cast<tagEditor*>(editor);     
+    qDebug()<<"seting data";		    	
+    QVariant  v=property("modelList");
+	
+    QModelIndexList list=qvariant_cast<QModelIndexList>(v);    
+    if(editorFactory!=0 )
+    { 	  
+	   editorFactory->setModelData(e,model,index,list);
+    }
+    else
+    {	
+	   model->setData(index, QVariant(e->value() ) );
+    }   
 }
 
 void views::treeViewDelegate::setRatingColumn(const int n)
@@ -171,8 +176,13 @@ int views::treeViewDelegate::ratingColumn() const
 
 void views::treeViewDelegate::commitEditor()
 {
-     QWidget *editor = qobject_cast<QWidget *>(sender());
+     tagEditor *editor = qobject_cast<tagEditor *>(sender());
      emit commitData(editor);
+	
+	if(editor->tag()!=audioFiles::RATING &&ratingColumn() >= 0)
+	{
+ 	   emit closeEditor(editor);
+	}
 }
 
 void views::treeViewDelegate::setEditorFactory(views::tagEditorFactory* f)
@@ -190,13 +200,10 @@ void views::treeViewDelegate::setEditorFactory(views::tagEditorFactory* f)
 
 void views::treeViewDelegate::updateEditorGeometry(QWidget *editor,const QStyleOptionViewItem &option, const QModelIndex &index ) const
 {
-//     qDebug()<<"geo";
     QStyledItemDelegate::updateEditorGeometry(editor,option,index);
     return ;
     QSize s=sizeHint(option,index);      
     QRect r=option.rect;
     r.setSize(s);
     editor->setFixedSize(s);
-//     editor->setFixedHeight(s.height() );
-//     editor->setGeometry(option.rect);
 }

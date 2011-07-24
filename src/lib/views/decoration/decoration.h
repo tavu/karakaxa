@@ -77,6 +77,8 @@ class decoration
 	    return playerIcon;
 	}
 	
+	inline void initPalete();
+	
 	
 	QPixmap cover(const QString &path);
 	

@@ -4,6 +4,7 @@
 #include<QString>
 #include<QVariant>
 #include<QUrl>
+
 namespace core
 {
   
