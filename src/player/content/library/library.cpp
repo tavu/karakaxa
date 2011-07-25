@@ -42,7 +42,9 @@ library::library(QWidget *parent)
     
     connect(artistV,SIGNAL(activated ( const QModelIndex) ),this ,SLOT( artistActivated(const QModelIndex&) ) );
 
-//     connect(db,SIGNAL(changed() ),this,SLOT(dbChanged() ) );
+    connect(db,SIGNAL(changed() ),this,SLOT(dbChanged() ) );
+    
+    connect(db,SIGNAL(updated(audioFiles::audioFile)),this,SLOT(checkNeedUpdates(audioFiles::audioFile)) );   
 
     
 
@@ -106,14 +108,12 @@ void library::activated(const int n)
     }
     else if(stack->currentWidget()== artistV )    
     {	
-	artistM->updateQueries();	
+	 artistM->updateQueries();	
     }	
     else if(stack->currentWidget()== albumTrV )
     {		
-	albumTrV->updateQueries();	
-    }
-//     qDebug()<<"F "<<albumTrV->isVisible();
-    
+	 albumTrV->updateQueries();	
+    }    
 }
 
 QString library::name() const
@@ -172,68 +172,39 @@ void library::search(const QString & text)
     searchQ->clear();   
     if(!text.isEmpty() )
     {
-	QLinkedList<tagsEnum>::iterator i=searchTagL.begin();
-      	for(i=searchTagL.begin();i!=searchTagL.end();i++)
-	{
-	    queryGrt::tagQuery *t=new queryGrt::tagQuery(*i,queryGrt::CONTAINS,text);
-	    searchQ->append(t);
-// 	    searchTagsL<<queryGrt::query(*i,queryGrt::CONTAINS,s);
-	}
+	   QLinkedList<tagsEnum>::iterator i=searchTagL.begin();
+		    
+	   for(i=searchTagL.begin();i!=searchTagL.end();i++)
+	   {
+		  queryGrt::tagQuery *t=new queryGrt::tagQuery(*i,queryGrt::CONTAINS,text);
+		  searchQ->append(t);
+    // 	    searchTagsL<<queryGrt::query(*i,queryGrt::CONTAINS,s);
+	   }
     }
-    albumTrV->setNeedUpdate(true);
+    albumTrV->setAlbumNeedUpdate(true);
+    albumTrV->setTrackNeedUpdate(true);
     artistM->setNeedUpdate(true);
     
     if(stack->currentWidget()==artistV )
     {
-	artistM->updateQueries();
+	 artistM->updateQueries();
     }
     else      
     {
-	albumTrV->updateQueries();
+	 albumTrV->updateQueries();
     }
-//     artistV->setSearch(search);
-  /*
-    QString s=searchLine->text();
-    QString search;
-    if(!s.isEmpty() )
-    {
-    	QLinkedList<tagsEnum>::iterator i=searchTagL.begin();
-	QStringList searchTagsL;
-	    
-	for(i=searchTagL.begin();i!=searchTagL.end();i++)
-	{
-	  searchTagsL<<queryGrt::query(*i,queryGrt::CONTAINS,s);
-	}	
-// 	search=queryGrt::connectOr(searchTagsL);
-	qDebug()<<search;
-    }
-    albumTrV->setSearch(search);
-    artistV->setSearch(search);
-    */
-}
-
-void library::toAlbum(const QString &s1,const QString &s2)
-{
-//     albumTrV->setArtist(s1,s2);
-//     stack->setCurrentWidget(albumTrV);
 }
 
 void library::goToArtist()
 {
     stack->setCurrentWidget(artistV);
-    if(artistM->needUpdate() )
-    {
-	artistM->updateQueries();
-    }
+    artistM->updateQueries();
 }
 
 void library::goToAlbum()
 {
     stack->setCurrentWidget(albumTrV);
-    if(albumTrV->needUpdate() )
-    {
-	albumTrV->updateQueries();
-    }
+    albumTrV->updateQueries();    
 }
 
 void library::artistActivated(const QModelIndex &index )
@@ -243,39 +214,50 @@ void library::artistActivated(const QModelIndex &index )
     goToAlbum();
 }
 
-
-void library::artistNeedUpdate(audioFile f)
-{
-    foreach(audioFiles::changes c,f.tagChanged() )
-    {
-	if(c.tag==ARTIST || c.tag==LEAD_ARTIST )
-	{
-	    if(artistV->isVisible() )
-	    {
-		artistM->updateQueries();
-	    }
-	    else
-	    {
-		artistM->setNeedUpdate(true);
-	    }
-	    break;
-	}
-    }
-}
-
 void library::dbChanged()
 {
     artistM->setNeedUpdate(true);
-    albumTrV->setNeedUpdate(true);
+    albumTrV->setAlbumNeedUpdate(true);
+    albumTrV->setTrackNeedUpdate(true);
     
-	
+    	
     if(artistV->isVisible() )	
     {
       artistM->updateQueries();
     }	
     else if(albumTrV->isVisible() )	
-    {
-	    
+    {    
       albumTrV->updateQueries();
     }
 }
+
+void library::checkNeedUpdates(audioFile f)
+{     
+    foreach(audioFiles::changes c ,f.tagChanged() )
+    {
+	   if(c.tag==ALBUM ||c.tag==ARTIST || c.tag==LEAD_ARTIST )
+	   {
+		  albumTrV->setAlbumNeedUpdate(true);
+		  artistM->setNeedUpdate(true);
+		  break ;
+	   }
+	   else if(searchQ->isValid() && searchTagL.contains((tagsEnum)c.tag) )
+	   {
+		    albumTrV->setAlbumNeedUpdate(true);
+		    artistM->setNeedUpdate(true);
+		    break ;
+	   }
+    }
+    
+    albumTrV->setTrackNeedUpdate(true);      
+    
+    if(artistV->isVisible() )	
+    {
+	   artistM->updateQueries();
+    }	
+    else if(albumTrV->isVisible() )	
+    {    
+	   albumTrV->updateQueries();
+    }
+}
+

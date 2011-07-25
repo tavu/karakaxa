@@ -16,7 +16,7 @@ class artistModel :public QStringListModel
 	void updateQueries();
 	void setSearch(core::queryGrt::matchQuery *qe)
 	{
-	    q=qe;
+		q=qe;
 	    _needUpdate=true;
 	}
 	

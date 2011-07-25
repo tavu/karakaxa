@@ -16,14 +16,18 @@ class myFileSystemModel :public KDirModel
 	myFileSystemModel(QObject *parent=0);
 	int columnCount( const QModelIndex & parent=QModelIndex() ) const;
 	QVariant data(const QModelIndex &index, int role) const;
-	bool setData( const QModelIndex & index, const QVariant & value, int role);
-	bool setSingleData( const QModelIndex & index, const QVariant & value, int role);
+	bool setData( const QModelIndex & index, const QVariant & value, int role);	
 	QVariant headerData ( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const ;
 	void updateTrack(audioFile *f);
 	int infoC();
+	
+	int tag(const QModelIndex &index)
+	{
+	   return index.column()-DIRCOLUMN;
+	}
 
 	Qt::ItemFlags flags ( const QModelIndex & index ) const;
-	virtual KUrl url( int row) const;
+	KUrl url( int row) const;
 
     private:
 	

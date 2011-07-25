@@ -17,7 +17,7 @@ class PlayerConfigure
       static QStringList imagefiles();
       static QStringList playListFiles();
       static QString saveLocation( const QString &directory = QString() );
-      static KSharedConfigPtr configFile(const QString &s =QString("player.conf") );      
+      static KSharedConfigPtr configFile(const QString &s =QString("player.conf") );
 	 
   private:
 //       static QStringList supportesFilesList;

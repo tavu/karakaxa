@@ -423,7 +423,7 @@ bool core::queryGrt::matchQuery::isValid() const
 {
     if(queries.isEmpty() )
     {
-	return false;
+	 return false;
     }
     bool ret=true;    
     foreach(abstractQuery *q,queries)

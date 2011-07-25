@@ -30,24 +30,23 @@ class library :public core::abstractContent
 
 	QWidget *buttonWidget;
 
-	QListView *artistV;
-	artistModel  *artistM;
-	albumTrack  *albumTrV;
+	QListView 	*artistV;
+	artistModel  	*artistM;
+	albumTrack  	*albumTrV;
 	QStackedWidget *stack;
 
 	QIcon playIcon;
 
-// 	KToolBar *toolBar;
-	QAction *backAction;
-	QAction *forwardAction;
-	KLineEdit *searchLine;
+	QAction 		*backAction;
+	QAction 		*forwardAction;
+	KLineEdit 	*searchLine;
 
-	QPushButton *refresh;
+ 	QPushButton 	*refresh;
 
 	QLinkedList<tagsEnum> searchTagL;
 	
  	core::queryGrt::matchQuery *searchQ;
-// 	
+
 	//functions
 	void buttonInit();
 	void inline toolBarInit();
@@ -56,15 +55,12 @@ class library :public core::abstractContent
 	QString searchString;
 	
     public slots:
-	void artistActivated(const QModelIndex& index);
-      
-	void artistNeedUpdate(audioFiles::audioFile f);
-      
-	void toAlbum(const QString &s1,const QString &s2);
+	void artistActivated(const QModelIndex& index);            
 	void goToArtist();
 	void goToAlbum();
 	
 	void dbChanged();
+	void checkNeedUpdates(audioFiles::audioFile f);
     //      private slots:
 	void search(const QString& text);
 	

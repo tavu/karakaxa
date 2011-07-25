@@ -190,13 +190,20 @@ void folderContent::showContexMenuSlot(QModelIndex index, QModelIndexList list)
     QUrl u=index.data(URL_ROLE).toUrl();    
     QMenu *menu=new QMenu(this);
 
-    	   QAction *act=new QAction(KIcon("document-edit"),tr("edit"),this );	
-	   connect(act,SIGNAL(triggered(bool)),this,SLOT(edit()) );
-	   menu->addAction(act);
+    QAction *act=new QAction(KIcon("document-edit"),tr("edit"),this );		
+    connect(act,SIGNAL(triggered(bool)),this,SLOT(edit()) );	
+    menu->addAction(act);
     
-    if(! (model->flags(index) & Qt::ItemIsEditable) )
+    QString s=index.data(URL_ROLE).toUrl().toLocalFile();
+    int tag=model->tag(index);
+    if(!isAudio(s) || tag==audioFiles::COUNTER||tag==audioFiles::BITRATE ||tag==LENGTH ||tag<0)
     {
+// 	   qDebug()<<"A "<<isAudio(index.data(URL_ROLE).toUrl().toLocalFile() );
 	   act->setEnabled(false);
+    }
+    else
+    {
+	   act->setEnabled(true);
     }
     
    

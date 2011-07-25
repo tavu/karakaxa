@@ -80,7 +80,7 @@ class editTrackMenu :public core::abstractMenu
       }
       
       bool canShow(QUrl &u ,bool multFiles)
-      {	  
+      {
 		if(core::isAudio(u.toLocalFile() ) )
 		{
 		    s=u.toLocalFile();

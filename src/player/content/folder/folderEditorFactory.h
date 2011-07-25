@@ -4,6 +4,7 @@
 #include<QSortFilterProxyModel>
 #include<views.h>
 #include<QThread>
+#include<core.h>
 
 class folderEditorFactory :public views::tagEditorFactory
 {
@@ -23,7 +24,11 @@ class folderEditorFactory :public views::tagEditorFactory
 	
 	int tagFromIndex(const QModelIndex &index) const
 	{	  
-	   QModelIndex in=model->mapToSource(index);	   
+	   QModelIndex in=model->mapToSource(index);
+	   if(!core::isAudio(in.data(URL_ROLE).toUrl().toLocalFile() ) )
+	   {
+		  return -1;
+	   }
 	   return tagFromColumn(in.column() );
 	}
 	

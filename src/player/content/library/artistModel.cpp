@@ -29,9 +29,7 @@ QVariant artistModel::data(const QModelIndex &index, int role) const
     }
     if (role==Qt::DecorationRole)
     {
-	return artistPic;
-// 	  pic=pic.scaled(size, Qt::KeepAspectRatio,Qt::SmoothTransformation);
-//         return decor.artistPic();
+	   return artistPic;
     }
     if (role==Qt::SizeHintRole)
     {
@@ -47,7 +45,11 @@ QVariant artistModel::data(const QModelIndex &index, int role) const
 
 void artistModel::updateQueries()
 {
-//     beginResetModel();
+    if(!_needUpdate )
+    {
+	   return ;
+    }
+    
     if(q!=0 && q->isValid() )
     {
 	setStringList(core::queryGrt::artists(q) );
@@ -56,7 +58,6 @@ void artistModel::updateQueries()
     {
 	setStringList(core::queryGrt::artists() );
     }
-//     endResetModel();
 }
 
 

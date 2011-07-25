@@ -46,10 +46,16 @@ bool core::isStream(const QUrl url)
 }
 
 bool core::isAudio(const QString &url)
-{
+{     
+    if(isPlaylist(url) )
+    {
+/*	   qDebug()<<"PLL";*/
+	   return false;
+    }
+    
     KMimeType::Ptr type = KMimeType::findByUrl(url );
-
-    QStringList l=config->files();
+    QStringList l=config->files();    
+    
     if (l.contains(type->name() ) )
     {
         return true;

@@ -13,7 +13,8 @@ using namespace core;
 albumTrack::albumTrack(QWidget *parent)
         :QWidget(parent),
         searchQ(0),
-        _needUpdate(false)
+        _albumNeedUpdate(false),
+	   _trackNeedUpdate(false)
 {
     labelInit();
     albumVInit();
@@ -40,13 +41,8 @@ albumTrack::albumTrack(QWidget *parent)
     vLayout->addWidget(splitter);
     setLayout(vLayout);
     
-    connect(albumV,SIGNAL(activated ( const QModelIndex) ),this ,SLOT( albumActivated(const QModelIndex&) ) );
-    
-    connect(db,SIGNAL(updated(audioFiles::audioFile ) ),this,SLOT(albumsNeedUpdate(audioFiles::audioFile ) ) );
-    
+    connect(albumV,SIGNAL(activated ( const QModelIndex) ),this ,SLOT( albumActivated(const QModelIndex&) ) );    
     connect(qApp,SIGNAL(aboutToQuit()),this,SLOT(writeSettings()) );
-//     connect(db,SIGNAL(changed()),this,SLOT(setNeedUpdateTrue() ) );
-      
 }
 
 void albumTrack::trackVInit()
@@ -56,12 +52,9 @@ void albumTrack::trackVInit()
     proxyM=new QSortFilterProxyModel(this);        
     
     trmItem=new views::trackModelItem();
-//     trackM->appendRow(trmItem);
-
     trackV->setRatingColumn(RATING);
     trackV->setEditTriggers(QAbstractItemView::SelectedClicked);
 
-//     trackV->setModel(trackM);
     trackV->setNotHide(TITLE);
     
     queryGen=new queryGrt(this);    
@@ -93,7 +86,6 @@ void albumTrack::labelInit()
     pLabel=new QLabel(this);
 
     QPixmap pix=views::decor->tagIcon(ARTIST).pixmap(18,18);
-//     pix=views::decor.artist().toPixmap();    
 
     pLabel->setPixmap(pix);
 }
@@ -110,8 +102,6 @@ void albumTrack::albumVInit()
 
     albumV->setVerticalScrollMode(QAbstractItemView::ScrollPerItem);
 
-//     albumV->setPalette(player::pal);
-
     albumV->setFrameStyle(QFrame::NoFrame);
     albumV->setViewMode(QListView::IconMode);
     albumV->setUniformItemSizes (true);
@@ -123,9 +113,6 @@ void albumTrack::albumVInit()
     albumV->setMinimumHeight(80);
     albumV->setSizePolicy(QSizePolicy::Ignored,QSizePolicy::Ignored);
 
-//     QSizePolicy p;
-//     p.setHorizontalPolicy(QSizePolicy::Ignored);
-
     albumW=new QWidget(this);
     albumW->setSizePolicy(QSizePolicy::Ignored,QSizePolicy::Fixed);
    
@@ -135,10 +122,7 @@ void albumTrack::albumVInit()
 
     hLayout->setContentsMargins(0,0,0,0);
     hLayout->setSpacing(0);
-    hLayout->addWidget(albumV);
-    
-//     albumM->update();
-
+    hLayout->addWidget(albumV);    
 }
 
 void albumTrack::goToArtist(QString& s)
@@ -154,18 +138,7 @@ void albumTrack::goToArtist(QString& s)
 void albumTrack::albumActivated(const QModelIndex &n)
 {    
     int albumId=albumM->albumId(n.row() );
-/*
-    QString s;
-    if (search.isEmpty() )
-    {
-        s=queryGrt::tracks(albumId);
-    }
-    else
-    {
-        s=queryGrt::tracks(albumId,search);	
-    }
-    trackM->setFilter(s);
-*/
+
    queryGrt::tagQuery *quer=new queryGrt::tagQuery();
    
    quer->init(ALBUM_ID,queryGrt::EQUAL,QVariant(albumId) );
@@ -176,39 +149,40 @@ void albumTrack::albumActivated(const QModelIndex &n)
       andQ->append(searchQ->clone());
    }
    queryGen->select();
-   
-   qDebug()<<queryGen->queryString();
-
 }
 
 void albumTrack::updateQueries()
 {      
-    albumM->update();
-    QModelIndex in=albumM->index(0,0);
-    albumActivated(in);
-	
-    _needUpdate=true;	
-
-}
-
-void albumTrack::albumsNeedUpdate(audioFile f)
-{    
-    foreach(audioFiles::changes c ,f.tagChanged() )
+    if(_albumNeedUpdate)
     {
-	if(c.tag==ALBUM ||c.tag==ARTIST || c.tag==LEAD_ARTIST )
-	{
-	    if(isVisible() )
-	    {
-		updateQueries();
-	    }
-	    else
-	    {
-		_needUpdate=true;
-	    }
-	    break;
-	}
+	   int currentAlbumId=albumM->albumId(albumV->currentIndex().row() );
+	   albumM->update();
+	   
+	   QModelIndex in;
+	   int i;
+	   for(i=0;i<albumM->rowCount();i++)
+	   {
+		  if(albumM->albumId(i)==currentAlbumId )
+		  {
+			 in=albumM->index(i,0);
+			 break ;
+		  }
+	   }
+	   if(i==albumM->rowCount() )
+	   {
+		  in=albumM->index(0,0);
+	   }
+	   
+	   albumActivated(in);
+	   _albumNeedUpdate=false;
+    }
+    else if(_trackNeedUpdate)
+    {
+	   queryGen->select();
+	   _trackNeedUpdate=false;
     }
 }
+
 
 void albumTrack::showContexMenuSlot(QModelIndex index, QModelIndexList list)
 {
@@ -236,7 +210,7 @@ void albumTrack::readSettings()
     KSharedConfigPtr config=core::config->configFile();
     KConfigGroup group( config, "albumTrack" );
     QList<int> l;
-//     l<<100<<200;
+    
     l<<group.readEntry("albumSize",100 );
     l<<group.readEntry("trackVSize",200 );
     splitter->setSizes(l);

@@ -13,9 +13,9 @@ QString 	titleFromPath(const QString &path);
 bool   		isStream(const QString s);
 bool   		isStream(const QUrl url);
 bool 		isDirectory(const QString &url);
-bool		isPlaylist(const QString &url);
+bool			isPlaylist(const QString &url);
 bool 		isAudio(const QString &url);
-bool		isImage(const QString &url);
+bool			isImage(const QString &url);
 
 QString 	format(QString path);
 

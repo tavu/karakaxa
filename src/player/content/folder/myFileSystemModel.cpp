@@ -28,7 +28,7 @@ QVariant myFileSystemModel::data(const QModelIndex &index, int role) const
 {   
     if(role == URL_ROLE)
     {
-	   return QVariant(itemForIndex(index).url() );
+	   return QVariant(url(index.row() ) );
     }
   
     if (index.column()<DIRCOLUMN)
@@ -107,9 +107,9 @@ int myFileSystemModel::infoC()
 
 Qt::ItemFlags myFileSystemModel::flags ( const QModelIndex & index ) const
 {
-    Qt::ItemFlags f= KDirModel::flags(index) | Qt::ItemIsSelectable |Qt::ItemIsDragEnabled;
-    
-    if(index.column()<DIRCOLUMN)
+    static Qt::ItemFlags f= Qt::ItemIsEnabled | Qt::ItemIsSelectable |Qt::ItemIsDragEnabled|Qt::ItemIsEditable;
+    return f;
+/*    if(index.column()<DIRCOLUMN)
     {
 	   return f;
     }
@@ -117,16 +117,21 @@ Qt::ItemFlags myFileSystemModel::flags ( const QModelIndex & index ) const
     {
 	   int tag=index.column()-DIRCOLUMN;
 	   
+	   //the tag is not editable
 	   if(tag==audioFiles::COUNTER||tag==audioFiles::BITRATE ||tag==LENGTH)
 	   {
 		  return f;
 	   }
-	   else 
+	   else if(core::isAudio(url(index.row() ).toLocalFile() ) )
 	   {
-		  return f|Qt::ItemIsEditable;
+// 		  qDebug()<<"DO";
+		  return f|Qt::ItemIsEditable;		  
 	   }
-    }
-    
+	   else
+	   {
+		  return f;
+	   }
+    } */
 }
 
 KUrl myFileSystemModel::url( int row) const

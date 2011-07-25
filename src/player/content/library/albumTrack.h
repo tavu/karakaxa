@@ -23,12 +23,17 @@ class albumTrack :public QWidget
 	
 	bool needUpdate()
 	{
-	    return _needUpdate && queryGen->needUpdate();
+// 	    return _needUpdate && queryGen->needUpdate();
 	}
 	
-	void setNeedUpdate(bool t)
+	void setAlbumNeedUpdate(bool t)
 	{
-	    _needUpdate=t;
+	    _albumNeedUpdate=t;
+	}
+
+	void setTrackNeedUpdate(bool t)
+	{
+	   _trackNeedUpdate=t;
 	}
 
     private:
@@ -68,7 +73,8 @@ class albumTrack :public QWidget
 
 	QWidget *albumW;
 	
-	bool _needUpdate;
+	bool _albumNeedUpdate;
+	bool _trackNeedUpdate;
 
     
 
@@ -80,21 +86,14 @@ class albumTrack :public QWidget
 	{
 	    albumM->setSearch(q);
 	    searchQ=q;
-	    _needUpdate=true;
+	    _trackNeedUpdate=true;
+	    _albumNeedUpdate=true;
 	}
 	
 	void showContexMenuSlot(QModelIndex index, QModelIndexList list) ;
 
     //      private slots:
 	void albumActivated(const QModelIndex &n);
-	
-	void albumsNeedUpdate(audioFiles::audioFile f);
-	
-	void setNeedUpdateTrue()
-	{
-	    _needUpdate=true;
-	}
-
 };
 
 #endif
