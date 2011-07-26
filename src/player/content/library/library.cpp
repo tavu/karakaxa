@@ -10,8 +10,6 @@ using namespace core;
 library::library(QWidget *parent)
         :abstractContent(parent)
 {
-//     quer=new queryGrt();
-  
     addSubmenu(QString(tr("Artist")),views::decor->tagIcon(ARTIST) );
     stack=new QStackedWidget(this);
 
@@ -44,61 +42,13 @@ library::library(QWidget *parent)
 
     connect(db,SIGNAL(changed() ),this,SLOT(dbChanged() ) );
     
-    connect(db,SIGNAL(updated(audioFiles::audioFile)),this,SLOT(checkNeedUpdates(audioFiles::audioFile)) );   
-
-    
-
+    connect(db,SIGNAL(updated(audioFiles::audioFile)),this,SLOT(checkNeedUpdates(audioFiles::audioFile)) );       
 }
 
 library::~library()
 {
     delete searchQ;
 }
-/*
-void library::updateQueriesSlot()
-{   
-    qDebug()<<"update queries";
-    if(artistV->isVisible() )
-    {
-      qDebug()<<"artistV";
-	artistV->updateQueries();
-	needUpdate =0b10;
-    }
-    else if(albumTrV->isVisible() )
-    {
-      qDebug()<<"trackV";
-	albumTrV->updateQueries();
-	needUpdate =0b01;
-    }
-    else
-    {
-      needUpdate =0b11;
-    }
-}
-*/
-void library::updateQueries(int n)
-{
-//     qDebug()<<"library update";
-//     if(n==database::DBCHANGED)
-//     {
-// 	artistV->update();
-// 	albumTrV->update();
-// 	albumTrV->updateTrack();
-//     }
-//     else
-//     {
-// 	tagsEnum t=(tagsEnum)n;
-// 	if(t==ARTIST||t==LEAD_ARTIST||t==ALBUM)
-// 	{	
-// 	    artistV->update();
-// 	    albumTrV->update();	
-// 	}   
-//     }
-//     albumTrV->updateTrack();    
-//     needUpdate=-1;
-}
-
-
 
 void library::activated(const int n)
 {    
@@ -121,23 +71,6 @@ QString library::name() const
     return QString(tr("Library") );
 }
 
-void library::buttonInit()
-{
-    QSize buttonSize(34, 28);
-    refresh=new QPushButton(this);
-    playIcon = style()->standardIcon(QStyle::SP_MediaPlay);
-    refresh->setIcon(playIcon);
-
-    refresh->setFlat(true);
-    QHBoxLayout *hlayout = new QHBoxLayout();
-    refresh->setMinimumSize(buttonSize);
-    hlayout->addWidget(refresh);
-    buttonWidget->setLayout(hlayout);
-
-    buttonWidget->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-}
-
-
 void library::toolBarInit()
 {
     toolBar=new KToolBar(this);
@@ -158,8 +91,6 @@ void library::toolBarInit()
 
     connect( forwardAction, SIGNAL( triggered( bool) ), this, SLOT( goToAlbum() ) );
 
-//     QSpacerItem s;
-//     toolBar->addWidget(&s);
     toolBar->addWidget(searchLine);
 
 //     connect(searchLine,SIGNAL(editingFinished () ),this,SLOT(search() ) );
@@ -178,7 +109,6 @@ void library::search(const QString & text)
 	   {
 		  queryGrt::tagQuery *t=new queryGrt::tagQuery(*i,queryGrt::CONTAINS,text);
 		  searchQ->append(t);
-    // 	    searchTagsL<<queryGrt::query(*i,queryGrt::CONTAINS,s);
 	   }
     }
     albumTrV->setAlbumNeedUpdate(true);

@@ -13,7 +13,6 @@ class folderEditorFactory :public views::tagEditorFactory
 	folderEditorFactory(QObject *parent) :tagEditorFactory(parent){}
 	int tagFromColumn(int column) const
 	{
-// 	    qDebug()<<"COL "<<column-7;
 	    return column-7;
 	}
 	

@@ -69,6 +69,8 @@ void albumTrack::trackVInit()
     proxyM->setSourceModel(trackM);
     trackV->setModel(proxyM);
     
+    trackV->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
+    
 
     connect(trackV,SIGNAL(showContextMenu(QModelIndex,QModelIndexList)),this,SLOT(showContexMenuSlot(QModelIndex,QModelIndexList))); 
 //     trackV->setStyleSheet("QAbstractItemView {background-color: transparent; }");
@@ -211,7 +213,8 @@ void albumTrack::readSettings()
     KConfigGroup group( config, "albumTrack" );
     QList<int> l;
     
-    l<<group.readEntry("albumSize",100 );
+    l<<group.readEntry("albumSize",50 );
     l<<group.readEntry("trackVSize",200 );
+//     l<<50<<200;
     splitter->setSizes(l);
 }

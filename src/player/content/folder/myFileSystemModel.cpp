@@ -109,29 +109,6 @@ Qt::ItemFlags myFileSystemModel::flags ( const QModelIndex & index ) const
 {
     static Qt::ItemFlags f= Qt::ItemIsEnabled | Qt::ItemIsSelectable |Qt::ItemIsDragEnabled|Qt::ItemIsEditable;
     return f;
-/*    if(index.column()<DIRCOLUMN)
-    {
-	   return f;
-    }
-    else
-    {
-	   int tag=index.column()-DIRCOLUMN;
-	   
-	   //the tag is not editable
-	   if(tag==audioFiles::COUNTER||tag==audioFiles::BITRATE ||tag==LENGTH)
-	   {
-		  return f;
-	   }
-	   else if(core::isAudio(url(index.row() ).toLocalFile() ) )
-	   {
-// 		  qDebug()<<"DO";
-		  return f|Qt::ItemIsEditable;		  
-	   }
-	   else
-	   {
-		  return f;
-	   }
-    } */
 }
 
 KUrl myFileSystemModel::url( int row) const

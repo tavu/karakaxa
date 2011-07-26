@@ -12,13 +12,28 @@ albumWidget::albumWidget(QWidget *parent)
 // 	setResizeMode(QListView::Adjust);
 	setSpacing(0);
  	setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-//     setWindowOpacity(0);
+	horizontalScrollBar()->hide();
+	connect(horizontalScrollBar(),SIGNAL(rangeChanged(int,int)),this,SLOT(updateScroolBar()) );
 }
 
 void albumWidget::setModel(albumModel *m)
 {
     QListView::setModel(m);
 //     connect(model(),SIGNAL(modelReset() ),this,SLOT(updateEditors() ) );
+}
+
+void albumWidget::updateScroolBar()
+{
+     
+    if(horizontalScrollBar()->maximum()==0 )
+    {
+	   horizontalScrollBar()->hide();
+    }
+    else
+    {
+	   horizontalScrollBar()->show();
+    }
+    
 }
 
 
@@ -61,18 +76,7 @@ void albumWidget::resizeEvent(QResizeEvent* event)
     s.setWidth(s.height()-10);
     
     albumModel *m=static_cast<albumModel*>(model() );
-    m->resize(s);
-        
-    QListView::resizeEvent(event);
-  
-    if(horizontalScrollBar()->maximum()==0 )
-    {
-	   horizontalScrollBar()->hide();
-    }
-    else
-    {
-	   horizontalScrollBar()->show();
-    }
+    m->resize(s);        
 }
 
 void albumWidget::updateEditors()

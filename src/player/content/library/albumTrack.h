@@ -21,11 +21,6 @@ class albumTrack :public QWidget
 	void goToArtist(QString &s);
 	void updateQueries();
 	
-	bool needUpdate()
-	{
-// 	    return _needUpdate && queryGen->needUpdate();
-	}
-	
 	void setAlbumNeedUpdate(bool t)
 	{
 	    _albumNeedUpdate=t;
@@ -50,8 +45,6 @@ class albumTrack :public QWidget
 	QSortFilterProxyModel *proxyM;
 	views::trackModelItem *trmItem;
 
-    //     QString search;
-
 	QString artist;
 
 	albumWidget *albumV;
@@ -60,9 +53,7 @@ class albumTrack :public QWidget
 	core::queryGrt *queryGen;
 	core::queryGrt::tagQuery *quer;
 	core::queryGrt::matchQuery *andQ;
-	core::queryGrt::matchQuery *searchQ;
-    
-//     treeViewDelegate *trackD;
+	core::queryGrt::matchQuery *searchQ;   
 
 
 	QLabel *sLabel;
@@ -91,8 +82,6 @@ class albumTrack :public QWidget
 	}
 	
 	void showContexMenuSlot(QModelIndex index, QModelIndexList list) ;
-
-    //      private slots:
 	void albumActivated(const QModelIndex &n);
 };
 

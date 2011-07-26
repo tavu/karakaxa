@@ -20,7 +20,6 @@ void loadInfoThr::updateTracks()
 {	
 	while(!canceled)
 	{
-		qDebug()<<"P "<<iter->path();
 		iter->load();
 		mutex->lock();
 		iter++;
@@ -77,7 +76,6 @@ void loadInfoThr::addItems(QLinkedList<audioFiles::audioFile> &l)
 
 void loadInfoThr::cleanup()
 {
-//     terminate();
     cancel();
     wait();
     fileList.clear();

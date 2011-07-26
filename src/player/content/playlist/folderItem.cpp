@@ -51,7 +51,6 @@ void folderItem::fetchMore()
  	    folderItem *i=new folderItem(el);
   	    insertRowWithNoElement(rowCount(),i);
 	}
-	qDebug()<<el.tagName();
 	i++;
     }    
 }

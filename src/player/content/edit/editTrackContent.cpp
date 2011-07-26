@@ -199,8 +199,6 @@ void editTrackContent::save()
     if(stars->rating() != file->tag(RATING,audioFile::ONCACHE ).toInt() )
     {
 	   qDebug()<<"edit rating";
-	   qDebug()<<"R "<<file->tag(RATING,audioFile::ONCACHE ).toInt();
-	   qDebug()<<"R "<<stars->rating();
 	   tags<<RATING;
 	   values<<QVariant(stars->rating() );	   
     }

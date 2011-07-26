@@ -198,7 +198,6 @@ void folderContent::showContexMenuSlot(QModelIndex index, QModelIndexList list)
     int tag=model->tag(index);
     if(!isAudio(s) || tag==audioFiles::COUNTER||tag==audioFiles::BITRATE ||tag==LENGTH ||tag<0)
     {
-// 	   qDebug()<<"A "<<isAudio(index.data(URL_ROLE).toUrl().toLocalFile() );
 	   act->setEnabled(false);
     }
     else

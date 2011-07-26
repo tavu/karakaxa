@@ -15,6 +15,7 @@ public slots:
     void updateEditors();
     
     void setModel(albumModel *m);
+    void updateScroolBar();
 
 protected:
     void wheelEvent(QWheelEvent *event);

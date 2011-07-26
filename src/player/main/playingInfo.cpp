@@ -134,7 +134,7 @@ void playingInfo::getInfo()
 {   
     if (track.isNull())
     {
-        qDebug()<<"playingInfo: can't get informarion file is null";
+        core::status->addErrorP("playingInfo: can't get informarion file is null");
         return;
     }
 
