@@ -33,8 +33,8 @@ class library :public core::abstractContent
 	albumTrack  	*albumTrV;
 	QStackedWidget *stack;
 
-	QAction 		*backAction;
-	QAction 		*forwardAction;
+	QAction		*backAction;
+	QAction 	*forwardAction;
 	KLineEdit 	*searchLine;
 
 
@@ -52,7 +52,7 @@ class library :public core::abstractContent
 	void goToAlbum();
 	
 	void dbChanged();
-	void checkNeedUpdates(audioFiles::audioFile f);
+	void checkNeedUpdates();
 	void search(const QString& text);
 
     

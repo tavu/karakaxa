@@ -41,15 +41,18 @@ class folderEditorFactory :public views::tagEditorFactory
 	  view=v;
 	}
 	
-	bool setModelData(views::tagEditor* editor, QAbstractItemModel* model, const QModelIndex& index, const QModelIndexList& list);
+ 	bool setModelData(views::tagEditor* editor, QAbstractItemModel* model, const QModelIndex& index, const QModelIndexList& list)
+	{
+	    bool b=tagEditorFactory::setModelData(editor,model,index,list);
+	}
 	
     private:
 	  	   
 	   QAbstractItemView *view;
 	   QSortFilterProxyModel *model;
 	   
-    private slots:
-	   void thrFinished();
+    protected slots:
+	   void done();
 };
 
 

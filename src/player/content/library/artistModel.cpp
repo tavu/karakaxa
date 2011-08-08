@@ -8,13 +8,13 @@ using namespace core;
 artistModel::artistModel(QObject *parent)
         :QStringListModel(parent),
         q(0),
-        _needUpdate(false)
+        _needUpdate(true)
 {
     size.setHeight(100);
     size.setWidth(100);
     itemSize.setHeight(100);
     artistPic=views::decor->tagIcon(ARTIST).pixmap(50,50);
-       
+    artistQ=new core::artistQueryGrt(this);    
 }
 
 
@@ -45,19 +45,36 @@ QVariant artistModel::data(const QModelIndex &index, int role) const
 
 void artistModel::updateQueries()
 {
+    /*
     if(!_needUpdate )
     {
 	   return ;
     }
+    if(q->isValid() )
+    {
+	artistQ->setQuery(q->clone() );
+    }
+    else
+    {
+	artistQ->setQuery(0);
+    }
+    */
     
-    if(q!=0 && q->isValid() )
+    if(artistQ->needUpdate() )
+    {
+	qDebug()<<"ARTIST UP";
+	artistQ->select();
+	qDebug()<<artistQ->queryString();
+	setStringList(artistQ->result());
+    }        
+/*    if(q!=0 && q->isValid() )
     {
 	setStringList(core::queryGrt::artists(q) );
     }
     else
     {
 	setStringList(core::queryGrt::artists() );
-    }
+    }*/
 }
 
 

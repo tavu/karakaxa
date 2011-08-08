@@ -15,8 +15,7 @@ library::library(QWidget *parent)
 
     artistV=new QListView(this);
     artistM=new artistModel(this);    
-    artistV->setModel(artistM);
-    artistM->updateQueries();
+    artistV->setModel(artistM);    
     artistV->setItemDelegate(new artistDelegate() );
     
     albumTrV=new albumTrack(this);    
@@ -26,7 +25,7 @@ library::library(QWidget *parent)
 
     searchQ=new queryGrt::matchQuery(queryGrt::OR);
     artistM->setSearch(searchQ);
-    albumTrV->setSearch(searchQ);
+//     albumTrV->setSearch(searchQ);
     
     toolBarInit();
     QVBoxLayout *layout = new QVBoxLayout();
@@ -40,9 +39,11 @@ library::library(QWidget *parent)
     
     connect(artistV,SIGNAL(activated ( const QModelIndex) ),this ,SLOT( artistActivated(const QModelIndex&) ) );
 
-    connect(db,SIGNAL(changed() ),this,SLOT(dbChanged() ) );
+//     connect(db,SIGNAL(changed() ),this,SLOT(dbChanged() ) );
     
-    connect(db,SIGNAL(updated(audioFiles::audioFile)),this,SLOT(checkNeedUpdates(audioFiles::audioFile)) );       
+    connect(artistM->queryGrt(),SIGNAL(updateNeeded()),this,SLOT(checkNeedUpdates()) );
+    connect(views::editMultFiles::self(),SIGNAL(multipleFilesEdited()),this,SLOT(checkNeedUpdates()) );
+    artistM->updateQueries();
 }
 
 library::~library()
@@ -100,7 +101,8 @@ void library::toolBarInit()
 
 void library::search(const QString & text)
 {    
-    searchQ->clear();   
+//     searchQ->clear();
+    queryGrt::matchQuery searchQ(queryGrt::OR);
     if(!text.isEmpty() )
     {
 	   QLinkedList<tagsEnum>::iterator i=searchTagL.begin();
@@ -108,12 +110,15 @@ void library::search(const QString & text)
 	   for(i=searchTagL.begin();i!=searchTagL.end();i++)
 	   {
 		  queryGrt::tagQuery *t=new queryGrt::tagQuery(*i,queryGrt::CONTAINS,text);
-		  searchQ->append(t);
+		  searchQ.append(t);
 	   }
     }
-    albumTrV->setAlbumNeedUpdate(true);
-    albumTrV->setTrackNeedUpdate(true);
-    artistM->setNeedUpdate(true);
+//     albumTrV->setAlbumNeedUpdate(true);
+//     albumTrV->setTrackNeedUpdate(true);
+//     artistM->setNeedUpdate(true);
+
+    albumTrV->setSearch(&searchQ);
+    artistM->setSearch(&searchQ);
     
     if(stack->currentWidget()==artistV )
     {
@@ -161,8 +166,9 @@ void library::dbChanged()
     }
 }
 
-void library::checkNeedUpdates(audioFile f)
+void library::checkNeedUpdates()
 {     
+    /*
     foreach(audioFiles::changes c ,f.tagChanged() )
     {
 	   if(c.tag==ALBUM ||c.tag==ARTIST || c.tag==LEAD_ARTIST )
@@ -188,6 +194,13 @@ void library::checkNeedUpdates(audioFile f)
     else if(albumTrV->isVisible() )	
     {    
 	   albumTrV->updateQueries();
+    }
+    
+    */
+    
+    if(artistV->isVisible() && !views::editMultFiles::isEditing() )
+    {
+	artistM->updateQueries();
     }
 }
 

@@ -33,14 +33,21 @@ class albumModel :public QAbstractListModel
 	    return 1;
 	}
 	
-	void setSearch(core::queryGrt::matchQuery *qe)
+	void setSearch(core::queryGrt::abstractQuery *qe)
 	{
-	    searchQ=qe;
+// 	    searchQ=qe;
+	    albumGrt->setQuery(qe);
 	}
 	
 	void setArtist(const QString &s)
 	{
 	    artist=s;
+	    albumGrt->setArtist(s);
+	}
+	
+	const core::albumQueryGrt* queryGrt()
+	{
+	    return albumGrt;
 	}
 	
     private:
@@ -57,9 +64,10 @@ class albumModel :public QAbstractListModel
 	
 	QString artist;
 	
-	core::queryGrt::matchQuery *searchQ;
+	core::queryGrt::abstractQuery *searchQ;
+	core::albumQueryGrt *albumGrt;
 	
-	QList<core::queryGrt::album> albums;
+	QList<core::album> albums;
 
 	void resizePix();
 };

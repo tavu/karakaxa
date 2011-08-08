@@ -74,7 +74,7 @@ class playlistContent :public core::abstractContent
 	  
 	  void 			toolBarInit();	 
 	  
-	  core::queryGrt	*quer;
+	  core::filesQueryGrt	*quer;
 	  views::trackModelItem	*smItem;
 	  
       public slots:

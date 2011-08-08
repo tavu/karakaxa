@@ -1,5 +1,6 @@
 #include"folderEditorFactory.h"
 
+/*
 bool folderEditorFactory::setModelData(views::tagEditor* editor, QAbstractItemModel* model, const QModelIndex& index, const QModelIndexList& list)
 {
 //     return tagEditorFactory::setModelData(editor,model,index,list);
@@ -34,10 +35,16 @@ bool folderEditorFactory::setModelData(views::tagEditor* editor, QAbstractItemMo
     return true;
 }
 
-void folderEditorFactory::thrFinished()
+*/
+
+
+void folderEditorFactory::done()
 {    
-     delete sender();
-	view->viewport()->update();
+//      delete sender();
+     views::tagEditorFactory::done();
+     view->viewport()->update();
+     
+     
 }
 
 

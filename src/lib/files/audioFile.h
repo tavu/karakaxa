@@ -57,7 +57,7 @@ class audioFile :public QObject
 	    return cache->path();
 	}
 	
-	QVariant tag(int t,const short int f=DEFAULTF) const;
+	QVariant 			tag(int t,const short int f=DEFAULTF) const;
 	
 	QVariant			albumArtist();
 	QString				cover();

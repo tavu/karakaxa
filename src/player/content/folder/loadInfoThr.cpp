@@ -10,7 +10,7 @@ loadInfoThr::loadInfoThr(QObject *parent)
 
 void loadInfoThr::run()
 {
-    canceled=false;
+     canceled=false;
      core::db->getDatabase();
      updateTracks();
      core::db->closeDatabase();

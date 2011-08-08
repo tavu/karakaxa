@@ -13,7 +13,7 @@
 #include<KConfigGroup>
 
 using namespace core;
-#define DIRECTORYM "inode/directory"
+// #define DIRECTORYM "inode/directory"
 folderContent::folderContent(QWidget *parent)
         :abstractContent(parent)
 {

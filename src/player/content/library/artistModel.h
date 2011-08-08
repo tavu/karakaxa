@@ -14,10 +14,18 @@ class artistModel :public QStringListModel
 	artistModel(QObject *parent = 0);
 	QVariant data(const QModelIndex &item, int role) const;
 	void updateQueries();
-	void setSearch(core::queryGrt::matchQuery *qe)
+	void setSearch(core::queryGrt::abstractQuery *qe)
 	{
-		q=qe;
-	    _needUpdate=true;
+// 	    q=qe;
+	    if(qe->isValid())
+	    {
+		artistQ->setQuery(qe->clone());
+	    }
+	    else
+	    {
+		artistQ->setQuery(0);
+	    }
+// 	    _needUpdate=true;
 	}
 	
 	void setNeedUpdate(bool t)
@@ -30,14 +38,21 @@ class artistModel :public QStringListModel
 	    return _needUpdate;
 	}
 	
+	const core::artistQueryGrt * queryGrt()
+	{
+	    return artistQ;
+	}
+	
     private:
 
 	QSize size;
 	QSize itemSize;
 	QPixmap artistPic;
 	
-	core::queryGrt::matchQuery *q;
+	core::queryGrt::abstractQuery *q;
+	core::artistQueryGrt *artistQ;
 	bool _needUpdate;
+	
     
     public slots:    
       

@@ -9,7 +9,7 @@ playlistContent::playlistContent(QWidget *parent)
         :abstractContent(parent),
         needUpdate(false)
 {    
-    quer=new queryGrt(this);
+    quer=new filesQueryGrt(this);
     smItem=new views::trackModelItem();
     smItem->setQueryG(quer);
     

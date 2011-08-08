@@ -11,120 +11,141 @@
 
 namespace core
 {
+  
+struct album
+{
+    QString name;
+    QString artist;
+    int id;
+    QString cover; 
+};
+typedef struct album album;
 
+  
+  
 class queryGrt :public QObject
 {
-    Q_OBJECT
+    Q_OBJECT	
     public:
-	
-      static const short int MATCHQ=0;
-      static const short int TAGQ=1;
       
+	static const short int MATCHQ=0;
+	static const short int TAGQ=1;
+
 	enum equal
 	{
-	    EQUAL=0,
-	    STARTS,
-	    ENDS,
-	    CONTAINS,
-	    GREATER,
-	    LESS
+	  EQUAL=0,
+	  STARTS,
+	  ENDS,
+	  CONTAINS,
+	  GREATER,
+	  LESS  
 	};
 
 	enum MATCH
 	{
-	    AND=0,
-	    OR
+	  AND=0,
+	  OR  
 	};
-	
+
 	class abstractQuery
 	{
-	    public:
-		virtual QString text() const =0;
-		virtual short int type() const =0;
-		virtual bool isValid() const =0;
-// 		virtual bool match(const audioFiles::audioFile &f) const =0;
-		virtual abstractQuery * clone()=0;
-// 		virtual QDomElement xml(QDomDocument &doc)=0;		
+
+	    public:	
+	      virtual QString text() const =0;	
+	      virtual short int type() const =0;	
+	      virtual bool isValid() const =0;
+	      virtual bool match(const audioFiles::audioFile &f) const =0;	
+	      virtual abstractQuery * clone()=0; 
 	};
-	
+		
 	class matchQuery :public abstractQuery
 	{
-	    public:
-		matchQuery(MATCH m);
-		~matchQuery();
+		
+	      public:
+		
+		matchQuery(MATCH m);	
+		~matchQuery();		
 		matchQuery(matchQuery *mq);
-		
-		short int type() const 
-		{
-		    return MATCHQ;
+			
+		short int type() const 	
+		{		    
+		    return MATCHQ;	  
 		}
-		bool isValid() const;
 		
+		bool isValid() const;	
 		QString text() const;
 		bool append(abstractQuery *q);
-// 		bool match(const audioFiles::audioFile &f) const;
-		abstractQuery * clone()
+
+	 	bool match(const audioFiles::audioFile &f) const;
+		abstractQuery * clone()	
 		{
 		    return new matchQuery(this);
 		}
+			
 		void clear();
+
+		private:
 		
-	    private:
-		bool valid;
-		MATCH matchType;
-		QList<abstractQuery*> queries;
-		QString q;
+		    bool valid;		
+		    MATCH matchType;		
+		    QList<abstractQuery*> queries;		
+		    QString q;  
 	};
-	
+
 	class tagQuery :public abstractQuery
 	{
-	    public:
-	      tagQuery();
-	      tagQuery(int t,equal e,QVariant var,bool n=false);
-	      tagQuery(tagQuery *t);
-	      
-	      short int type() const
-	      {
-		  return TAGQ;
-	      }
-	      bool isValid() const
-	      {
-		  return valid;
-	      }
-	      
-	      bool isReverted() const
-	      {
-		  return revert;
-	      }
-	      
-	      void setRevert(bool r)
-	      {
-		  revert=r;
-	      }
-	      
-	      abstractQuery * clone()		
-	      {
-		  return new tagQuery(this);
-	      }
-// 	      QDomElement xml(QDomDocument &doc);
-	      
-	      void init(int t,equal e,QVariant var,bool n=false);
-// 	      bool match(const audioFiles::audioFile &f);
-	      QString text() const;
-	    
-	    private:
-	      bool valid;
-	      
-	      int tag;
-	      equal eq;
-	      QVariant value;
-	      bool revert;
-	      QString q;
-	};	
-	
-    public:
+		    
+		public:
+		
+		    tagQuery();	    
+		    tagQuery(int t,equal e,QVariant var,bool n=false);
+		    tagQuery(tagQuery *t);
+		      
+		    
+		    short int type() const	    
+		    {
+			  return TAGQ;
+		    }
+		      
+		    bool isValid() const
+		    {
+			return valid;
+		    }
+		      
+		    bool isReverted() const
+		    {
+			return revert;
+		    }
+		      
+		    void setRevert(bool r)
+		    {
+			revert=r;
+		    }
+		      
+		    abstractQuery * clone()		
+		    {
+			return new tagQuery(this);
+		    }
+		      
+		    void init(int t,equal e,QVariant var,bool n=false);
+		    bool match(const audioFiles::audioFile &f) const;
+		    QString text() const;
+			    
+		  private:
+		    
+		    bool valid;	    
+		    int tag;	    
+		    equal eq;	   
+		    QVariant value;	   
+		    bool revert;	   
+		    QString q;	  
+	};
+    
+    
+	//class members
+      
 	queryGrt(QObject *parent=0);
-	queryGrt(core::queryGrt::abstractQuery* qe,QObject *parent=0);
+	queryGrt(abstractQuery* qe,QObject *parent=0);
 	
 	QString filter() const
 	{
@@ -142,38 +163,61 @@ class queryGrt :public QObject
 	
 	void setQuery(abstractQuery *qe)
 	{
+	    if(q!=0)
+		delete q;
 	    q=qe;
 	    _needUpdate=true;
 	}
 	
-	QString queryString() const
+	virtual QString queryString() const=0;
+	virtual bool select()=0;
+	
+	bool needUpdate() const
 	{
-	    if( q==0 || !q->isValid())
-	    {
-		return QString();
-	    }
-	    
-	    return q->text().prepend("select distinct * from trackView where ");
+	    return _needUpdate;
 	}
 	
+	static QString tagToSql(int t);
 	
-	QString queryString(int t) const
+    protected:
+	abstractQuery *q;
+	bool _needUpdate;		
+	
+    protected slots:
+	
+	virtual void setNeedUpdate(const audioFiles::audioFile f);
+      
+	void setNeedUpdate()
 	{
-	    if( q==0 || !q->isValid())
-	    {
-		return QString();
-	    }
-	    
-	    QString ret("select distinct ");
-	    QString s=tagToSql(t);
-	    if(s.isEmpty() )
-	    {
-		  return QString();
-	    }
-	    ret=ret.append(s).append(" from trackView where " ).append(q->text() );
-	    return ret;
+	    _needUpdate=true;
 	}
+	
+    signals:
+	void updateNeeded();
+
+};
+
+
+
+
+class filesQueryGrt :public queryGrt
+{
+    Q_OBJECT	
+    public:
+	filesQueryGrt(QObject *parent=0);
+	filesQueryGrt(abstractQuery* qe,QObject *parent=0);	
+	
 		
+	QString queryString() const
+ 	{
+ 	    if( q==0 || !q->isValid())
+ 	    {
+ 		return QString();
+ 	    }
+ 	    
+ 	    return q->text().prepend("select distinct * from trackView where ");
+ 	}
+				
 	QVector<audioFiles::audioFile> result()
 	{
 	    return thr.files;
@@ -191,12 +235,7 @@ class queryGrt :public QObject
 	}
 	
 	bool select();
-	
-	bool needUpdate()
-	{
-	    return _needUpdate;
-	}
-	
+		
 	int size()
 	{
 	    return thr.files.size();
@@ -211,79 +250,122 @@ class queryGrt :public QObject
 	{
 	    thr.step=n;
 	}
-	
-	static QString queryStringAll()
-	{
-	   return QString("select * from trackView");
-	}
-	
-	static QString queryStringAll(int t)
-	{
-	    
-	    QString ret("select distinct ");
-	    QString s=tagToSql(t);
-	    if(s.isEmpty() )
-	    {
-		  return QString();
-	    }
-	    ret=ret.append(s).append(" from trackView" );
-	    return ret;
-	}
-	
+		
 	
     private:
-	abstractQuery *q;
 	queryThr thr;
-	bool _needUpdate;
 	
     private slots:
-	void setNeedUpdate()
-	{
-	    _needUpdate=true;
-	}
-	
-	void selectionFinished();	
-	
+	void selectionFinished();
 	
     signals:
 	void selectionCalled();
-	void selectionMade();
-	void inserted(audioFiles::audioFile,int pos);
-	void removed(audioFiles::audioFile,int pos);
-	
+	void selectionMade();			
+};
 
-	
+class tagQueryGrt :public queryGrt
+{
+    Q_OBJECT
     public:
-      
-	struct album
+	tagQueryGrt(QObject *parent=0) :queryGrt(parent),tag_(0)
 	{
-	  QString name;
-	  int id;
-	  QString cover;
-	};
-	typedef struct album album;
-
-	//return all the albums
-	static QList<album> albums();
-	//return all the albums that has the files from q
-	static QList<album> albums(abstractQuery *qe);
+	}
 	
-	//return all the albums from that artist and also contained in q
-	static QList<album> albums(QString artist,abstractQuery *qe);
-
-	//return all the album from that artists
-	static QList<album> albums(QString artist);
+	QString queryString() const;
+	void setTag(int t)
+	{
+	    tag_=t;
+	    _needUpdate=true;
+	}
 	
-	//return all tha artist
-	static QStringList artists();
-	//return all the artist that has the files from q
-	static QStringList artists(const abstractQuery *qe);
+	int tag()
+	{
+	    return tag_;
+	}
+	
+	bool select();
+	QStringList result()
+	{
+	    return list;
+	}
+	
+    private slots:
+	void setNeedUpdate(const audioFiles::audioFile f);
+	
+    private:
+	int tag_;
+	QStringList list;
+};
 
+class artistQueryGrt :public queryGrt
+{
+    Q_OBJECT
+    public:
+	artistQueryGrt(QObject *parent=0) :queryGrt(parent)
+	{
+	}
+	
+	QString queryString() const;
 
+	bool select();
+	QStringList result()
+	{
+	    return list;
+	}
+	
+    private slots:
+	void setNeedUpdate(const audioFiles::audioFile f);
+	
+    private:
+	QStringList list;
+};
+
+class albumQueryGrt :public queryGrt
+{
+    Q_OBJECT
+    public:
+	albumQueryGrt(QObject *parent=0) :queryGrt(parent)
+	{
+	}
+	
+	QString queryString() const;
+
+	bool select();
+	QList<album> result()
+	{
+	    return list;
+	}
+	
+	void setArtist(const QString &a)
+	{
+	    artist_=a;
+	    _needUpdate=true;	    
+	}
+	
+	QString artist()
+	{
+	    return artist_;
+	}
+	
+	QStringList albums()
+	{
+	    QStringList l;
+	    l.reserve(list.size() );
+	    foreach(album a,list)
+	    {
+		l.append(a.name);
+	    }
+	    return l;
+	}
+	
+    private slots:
+	void setNeedUpdate(const audioFiles::audioFile f);
 
     private:
-	static QString tagToSql(int t);
-
+	QList<album> list;
+	QString artist_;
 };
+
+
 };
 #endif

@@ -56,11 +56,12 @@ void albumTrack::trackVInit()
     trackV->setEditTriggers(QAbstractItemView::SelectedClicked);
 
     trackV->setNotHide(TITLE);
+    trackV->setEditorFactory(new views::trackEditor(this) );
     
-    queryGen=new queryGrt(this);    
-    quer=new queryGrt::tagQuery();
+    queryGen=new core::filesQueryGrt(this);
+//     quer=new queryGrt::tagQuery();
     andQ=new queryGrt::matchQuery(queryGrt::AND);
-    andQ->append(quer);
+//     andQ->append(quer);
     queryGen->setQuery(andQ);
     
     trmItem->setQueryG(queryGen);
@@ -69,10 +70,11 @@ void albumTrack::trackVInit()
     proxyM->setSourceModel(trackM);
     trackV->setModel(proxyM);
     
-    trackV->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
-    
+    trackV->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);    
 
     connect(trackV,SIGNAL(showContextMenu(QModelIndex,QModelIndexList)),this,SLOT(showContexMenuSlot(QModelIndex,QModelIndexList))); 
+    connect(queryGen,SIGNAL(updateNeeded()),this,SLOT(checkNeedUpdates()) );
+    connect(albumM->queryGrt(),SIGNAL(updateNeeded()),this,SLOT(checkNeedUpdates()) );
 //     trackV->setStyleSheet("QAbstractItemView {background-color: transparent; }");
     
 }
@@ -155,11 +157,12 @@ void albumTrack::albumActivated(const QModelIndex &n)
 
 void albumTrack::updateQueries()
 {      
-    if(_albumNeedUpdate)
+//     qDebug()<<queryGen->queryString();
+    if(albumM->queryGrt()->needUpdate() )
     {
 	   int currentAlbumId=albumM->albumId(albumV->currentIndex().row() );
 	   albumM->update();
-	   
+
 	   QModelIndex in;
 	   int i;
 	   for(i=0;i<albumM->rowCount();i++)
@@ -176,12 +179,13 @@ void albumTrack::updateQueries()
 	   }
 	   
 	   albumActivated(in);
-	   _albumNeedUpdate=false;
+// 	   _albumNeedUpdate=false;
     }
-    else if(_trackNeedUpdate)
+    else if(queryGen->needUpdate())
     {
 	   queryGen->select();
-	   _trackNeedUpdate=false;
+// 	   qDebug()<<queryGen->queryString();
+// 	   _trackNeedUpdate=false;
     }
 }
 
@@ -217,4 +221,12 @@ void albumTrack::readSettings()
     l<<group.readEntry("trackVSize",200 );
 //     l<<50<<200;
     splitter->setSizes(l);
+}
+
+void albumTrack::checkNeedUpdates()
+{
+    if(isVisible() && !views::editMultFiles::isEditing())
+    {
+	updateQueries();
+    }
 }

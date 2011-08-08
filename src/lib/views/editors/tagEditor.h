@@ -4,6 +4,7 @@
 #include<QWidget>
 #include<QModelIndex>
 #include<QModelIndexList>
+#include"editMultFiles.h"
 namespace views
 {
 
@@ -38,10 +39,10 @@ class tagEditor :public QWidget
 
 class tagEditorFactory :public QObject
 {
-//     Q_OBJECT
+    Q_OBJECT
     
     public:
-	tagEditorFactory(QObject *parent=0) :QObject(parent)	
+	tagEditorFactory(QObject *parent=0) :QObject(parent),thr(0)
 	{}
 
 	//returns the tag for that index. For error return -1.
@@ -68,6 +69,22 @@ class tagEditorFactory :public QObject
 // 	    return 0;
  	    return tagFromColumn(index.column() );
 	}
+	
+	
+      protected:
+	editMultFiles::editFiles *thr;
+	
+      protected slots:
+	
+	  virtual void done()
+	  {
+	      if(thr!=0)
+	      {
+		delete thr;
+		thr=0;
+	      }
+	  }
+	  
 };
 
 };

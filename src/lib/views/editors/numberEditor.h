@@ -25,7 +25,7 @@ class numberEditor :public tagEditor
 	    l->addWidget(edit);
 	    l->setContentsMargins(0,0,0,0);
 	    
-	    connect(edit,SIGNAL(valueChanged()),this,SLOT(valueChanger()) );
+	    connect(edit,SIGNAL(valueChanged(int)),this,SLOT(valueChanger()) );
 	}
 	
 	void setValue(const QVariant &v)

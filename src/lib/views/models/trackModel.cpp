@@ -9,7 +9,7 @@ views::trackItem::trackItem(audioFiles::audioFile f)
   :standardItem(),
   file(f)
 {
-
+//     connect(&f,SIGNAL(changed() )
 }
 
 
@@ -74,7 +74,7 @@ QVariant views::trackModelItem::headerData(int section, Qt::Orientation orientat
 }
 
 
-void views::trackModelItem::setQueryG(core::queryGrt* qe)
+void views::trackModelItem::setQueryG(core::filesQueryGrt* qe)
 {
     if(q!=0)
     {

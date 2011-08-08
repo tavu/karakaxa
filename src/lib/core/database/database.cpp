@@ -11,7 +11,7 @@
 #include"../func.h"
 #include"../status/playerStatus.h"
 core::database::database()
-        :QObject()	
+        :QObject()
 {
     db=QSqlDatabase::addDatabase("QMYSQL");
     readSettings();
@@ -241,10 +241,10 @@ const QString core::database::trackTable()
 }
 
 
-QSqlDatabase core::database::clone(const QString &s)
-{
-    return db.cloneDatabase ( db, s );
-}
+// QSqlDatabase core::database::clone(const QString &s)
+// {
+//     return db.cloneDatabase ( db, s );
+// }
 
 core::database::~database()
 {

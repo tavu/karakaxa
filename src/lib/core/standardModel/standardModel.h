@@ -73,10 +73,10 @@ class standardItem :public QObject
       virtual QVariant headerData ( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const;
 
       //the type of the default item
-      static const int StandardType;;
+      static const int StandardType;
       
       //pass this role to the data function to get the type
-      static const int typeRole; 
+      static const int typeRole;
       
     protected:
       void prealocateChildren(int n);

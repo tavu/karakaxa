@@ -10,6 +10,7 @@ namespace views
 
 class trackItem :public standardItem
 {    
+    Q_OBJECT
     public:
 	trackItem(audioFiles::audioFile f);
 	virtual int columnCount() const
@@ -18,9 +19,48 @@ class trackItem :public standardItem
 	}
        
 	virtual bool setData (const QVariant &value,int column, int role );
-	virtual QVariant data (int column, int role = Qt::UserRole + 1 ) const;	
+	virtual QVariant data (int column, int role = Qt::UserRole + 1 ) const;
+	
+	virtual Qt::ItemFlags flags ( int column) const
+	{
+	    return standardItem::flags(column) |Qt::ItemIsEditable;
+	}
+	
     protected:
 	audioFiles::audioFile file;
+	
+    protected slots:
+	void changed()
+	{
+	    standardItem::dataChanged(0,FRAME_NUM-1);
+	}
+	
+};
+
+class trackEditor :public tagEditorFactory
+{
+  
+    public:
+	trackEditor(QObject* parent = 0) :tagEditorFactory(parent){}
+		
+	virtual int tagFromColumn(const int column) const
+	{
+	    if(column<0||column>FRAME_NUM)
+	    {
+		return -1;
+	    }
+	    return column;
+	}
+	
+	virtual int columnFromTag(const int tag) const
+	{
+	    if(tag<0||tag>FRAME_NUM)
+	    {
+		return -1;
+	    }
+	    return tag;
+	}
+    
 };
   
   
@@ -58,12 +98,12 @@ class trackModelItem :public standardItem
 	    return QVariant();
 	}
 	
-	core::queryGrt* queryG()
+	core::filesQueryGrt* queryG()
 	{
 	    return q;
 	}
 	
-	void setQueryG(core::queryGrt *qe);
+	void setQueryG(core::filesQueryGrt *qe);
 	
     public slots:
 	void addItem(audioFile f, int pos);
@@ -79,7 +119,7 @@ class trackModelItem :public standardItem
 	//this function returns a trackItem pointer.
 	//is usefull if u want to use a subclass of trackItem.
 	virtual standardItem* getItem(audioFiles::audioFile &f);
-	core::queryGrt *q;  
+	core::filesQueryGrt *q;  
 	
 };
 

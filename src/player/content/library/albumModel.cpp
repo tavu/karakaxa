@@ -16,6 +16,8 @@ albumModel::albumModel(QObject *parent)
 
     itemSize.setHeight(150);
     itemSize.setWidth(150);
+    
+    albumGrt=new core::albumQueryGrt(this);
 
 }
 
@@ -119,15 +121,25 @@ int albumModel::albumId(const int row)
 
 void albumModel::update()
 {
+//     if(!albumGrt->needUpdate() )
+//     {
+// 	return ;
+//     }
     beginResetModel(); 
+    /*
+    albumGrt->setArtist(artist);
     if(searchQ!=0 && searchQ->isValid() )
     {
-	albums=core::queryGrt::albums(artist,searchQ);
+	albumGrt->setQuery(searchQ->clone() );
     }
     else
     {
-	albums=core::queryGrt::albums(artist);
+	albumGrt->setQuery(0);	
     }
+    */
+    qDebug()<<albumGrt->queryString();
+    albumGrt->select();
+    albums=albumGrt->result();
     endResetModel();
 }
 

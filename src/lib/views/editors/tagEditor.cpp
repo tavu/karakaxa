@@ -3,8 +3,8 @@
 #include"ratingEditor.h"
 #include"../ratingWidget/ratingWidget.h"
 #include"numberEditor.h"
+#include"../models/urlRole.h"
 #include"../../files/audioFiles.h"
-
 
 views::tagEditor* views::tagEditor::getEditor(int tag,QWidget *parent)
 {       
@@ -60,8 +60,36 @@ views::tagEditor* views::tagEditor::getEditor(int tag,QWidget *parent)
 
 bool views::tagEditorFactory::setModelData(tagEditor* editor, QAbstractItemModel* model, const QModelIndex& index, const QModelIndexList& list)
 {
-    foreach(QModelIndex in,list)
+    if(editor->tag()==audioFiles::RATING)
     {
-	   model->setData(in,editor->value() ); 
+	   model->setData(index,editor->value());
+	   return true;
+    }      
+    
+    if(list.isEmpty() )
+    {
+	   model->setData(index,editor->value() );
     }
+    else
+    {	   
+	   QList<audioFiles::audioFile>l;
+	   l.reserve(list.size() );
+	   foreach(QModelIndex in,list)
+	   {
+		  QUrl u=in.data(URL_ROLE).toUrl();
+		  if(u.isValid() )
+		  {
+			 l<<audioFiles::audioFile(u.toLocalFile() );
+		  }
+	   }
+
+	   thr=new editMultFiles::editFiles(this);
+	   thr->setFiles(l);
+	   thr->setTag(editor->tag() );
+	   thr->setValue(editor->value());
+	   connect(thr,SIGNAL(finished()),this,SLOT(done())); 
+	   thr->start();
+    }
+    
+    return true;
 }

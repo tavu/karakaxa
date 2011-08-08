@@ -21,7 +21,6 @@ class ratingEditor :public tagEditor
 	    l->setContentsMargins(0,0,0,0);
 	    l->addWidget(stars);
 	    
-	    QWidget *w=new QWidget(this);
 	    connect(stars,SIGNAL(ratingChanged(int)),this,SLOT(valueChanger(int )) );
 	}
 	

@@ -50,10 +50,10 @@ class albumTrack :public QWidget
 	albumWidget *albumV;
 	views::treeView *trackV;
 	
-	core::queryGrt *queryGen;
-	core::queryGrt::tagQuery *quer;
+	core::filesQueryGrt *queryGen;
+// 	core::queryGrt::tagQuery *quer;
 	core::queryGrt::matchQuery *andQ;
-	core::queryGrt::matchQuery *searchQ;   
+	core::queryGrt::abstractQuery *searchQ;   
 
 
 	QLabel *sLabel;
@@ -73,14 +73,26 @@ class albumTrack :public QWidget
       
 	void writeSettings();
       
-	void setSearch(core::queryGrt::matchQuery *q)
+	void setSearch(core::queryGrt::abstractQuery *q)
 	{
-	    albumM->setSearch(q);
-	    searchQ=q;
-	    _trackNeedUpdate=true;
-	    _albumNeedUpdate=true;
+	    if(q->isValid())
+	    {
+		albumM->setSearch(q->clone());
+// 		core::queryGrt::matchQuery *m=new core::queryGrt::matchQuery(andQ);
+// 		andQ->append(q);
+		searchQ=q->clone();
+	    }
+	    else
+	    {
+// 		queryGen->setQuery(0);
+		albumM->setSearch(0);
+		searchQ=0;
+	    }
+// 	    _trackNeedUpdate=true;
+// 	    _albumNeedUpdate=true;
 	}
 	
+	void checkNeedUpdates();
 	void showContexMenuSlot(QModelIndex index, QModelIndexList list) ;
 	void albumActivated(const QModelIndex &n);
 };

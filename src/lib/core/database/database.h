@@ -1,21 +1,24 @@
 #ifndef DATABASE_H
 #define DATABASE_H
+
 #include<QSqlDatabase>
 #include<QSqlError>
 #include<QSqlQuery>
 #include<QVariant>
 #include<QMessageBox>
 #include<QObject>
-// #include "playerNamespace.h"
+
 #include"../files/audioFile.h"
-// #include"../nowPlayList/nplTrack.h"
+
 namespace core
 {
+// class editMultFiles;
+
 class database :public QObject
 {    
     Q_OBJECT
     public:
-	friend class audioFiles::audioFile;
+ 	friend class audioFiles::audioFile;
 // 	static int DBCHANGED;
       
 	database();
@@ -28,8 +31,8 @@ class database :public QObject
 
 
 	const QString error();
-	QSqlDatabase clone(const QString &s);
-	QStringList getArtists(const QString &path);
+// 	QSqlDatabase clone(const QString &s);
+// 	QStringList getArtists(const QString &path);
 		
 	const QString trackTable();
 
@@ -60,19 +63,18 @@ class database :public QObject
 	bool createConnection();
 	void readSettings();
 	void writeSettings();
-	
-// 	
-	inline QString dataBName()
+
+	QString dataBName()
 	{
 	    return dbName;
 	}
 	
-	inline QString dataBUser()
+	QString dataBUser()
 	{
 	    return dbUser;
 	}
 	
-	inline QString dataBPass()
+	QString dataBPass()
 	{
 	    return dbPass;
 	}

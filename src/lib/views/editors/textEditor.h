@@ -6,7 +6,7 @@
 #include <QHBoxLayout>
 #include <QVariant>
 #include"../core.h"
-#include <QSqlQueryModel>
+#include <QStringListModel>
 namespace views
 {
 
@@ -30,12 +30,12 @@ class textEditor :public tagEditor
     private:
       
 	 QLineEdit *edit;
-	 core::queryGrt  *q;
+	 core::tagQueryGrt  *q;
 	 core::queryGrt::tagQuery tagQ;
 	  
 	 QCompleter *comp;
-	 
-	 QSqlQueryModel completerM;
+	 	 
+	 QStringListModel completerM;
 	 
     private slots:
 	
