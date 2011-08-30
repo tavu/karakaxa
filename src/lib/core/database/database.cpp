@@ -94,14 +94,25 @@ void core::database::writeSettings()
 
 QSqlDatabase core::database::getDatabase()
 {
+    mutex.lock();
     if(QThread::currentThread()==core::mainThr() )
     {
+	if(!db.isOpen() )
+	{
+	    status->addErrorP("database is closed: "+db.lastError().text() );
+	    if(!db.open() )
+	    {
+		status->addErrorP("database error: "+db.lastError().text() );
+	    }
+	}
+
+	mutex.unlock();	
 	return db;
     }
     else
     {	
  	QString name=apprName(QThread::currentThread() );
-	mutex.lock();
+	
 	
 	dBEntry* dbE=dBMap[name];
 	QSqlDatabase newDb;
@@ -119,10 +130,17 @@ QSqlDatabase core::database::getDatabase()
 	    dbE->used++;
 	    newDb=QSqlDatabase::database(name,false);
 	}
-	 
-	mutex.unlock();
-	newDb.open();
+	
+	if(!newDb.isOpen() )
+	{
+	    if(!newDb.open() )
+	    {
+		status->addErrorP("database error: "+db.lastError().text() );
+	    }
+	}	
+	mutex.unlock();	
 	return newDb;
+	
     }
 }
 

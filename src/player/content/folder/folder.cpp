@@ -187,6 +187,11 @@ void folderContent::loaded()
 
 void folderContent::showContexMenuSlot(QModelIndex index, QModelIndexList list)
 {
+    if(!index.isValid() )
+    {
+	return ;
+    }
+  
     QUrl u=index.data(URL_ROLE).toUrl();    
     QMenu *menu=new QMenu(this);
 

@@ -24,42 +24,46 @@ const short int audioFiles::audioFile::DEFAULTF=SELECT|ONDATAB|ONCACHE|LOAD_FILE
 audioFiles::audioFile::audioFile()
         :QObject(),
         fileSize(0),
-        saveFlag(false),
+        saveFlag(true),
         cache(0),
         fdb(0)
-{
+{    
 }
 
 audioFiles::audioFile::audioFile(const QString url)
         :QObject(),
         fileSize(0),
-        saveFlag(false)
+        saveFlag(true)
 {
-    cache=audioFiles::fileCache::getFileCache(url);    
+    cache=audioFiles::fileCache::getFileCache(url);
+    
+//     connect(cache,SIGNAL(changed(QList<tagChanges>) ),this,SLOT(emitChanged(QList<tagChanges>) ) );
 }
 
 audioFiles::audioFile::audioFile(QSqlRecord r, bool force)
     :QObject(),
      fileSize(0),
-     saveFlag(false)
+     saveFlag(true)
 {
     cache=audioFiles::fileCache::getFileCache(r.value(PATH+1).toString() );
     cache->setRecord(r,force);
+//     connect(cache,SIGNAL(changed(QList<tagChanges>) ),this,SLOT(emitChanged(QList<tagChanges>) ) );
 }
 
 
-audioFiles::audioFile::audioFile(const audioFile& f)
+audioFiles::audioFile::audioFile(const audioFile &f)
         :QObject(),
-        saveFlag(false)
+        saveFlag(true)
 {
      if( !f.path().isEmpty() )
      {
 	cache=audioFiles::fileCache::getFileCache(f.path() );
+// 	connect(cache,SIGNAL(changed(QList<tagChanges>) ),this,SLOT(emitChanged(QList<tagChanges>) ) );
      }
-     
-     changes=f.changes;
+//      changes.clear();
+     changes.append(f.changes);
      fileSize=f.fileSize;
-    
+
 }
 
 
@@ -152,7 +156,7 @@ QVariant audioFiles::audioFile::tag(int t, const short int f) const
 
     if (f & LOAD_FILE)
     {
-	   cache->loadTags();
+	cache->loadTags();
         ret=cache->tagFromFile((tagsEnum) t, err);
 	
 	//if we have loaded the tags information but there is no title frame and the TITLEFP is seted we return the file name.
@@ -187,32 +191,29 @@ bool audioFiles::audioFile::setTag(int t,QVariant var)
     if(!prepareToSave())
     {
 	   return false;
-    } 
-    int f=0;
-    int dberr;         
+    }      
     
     fdb->setAlbum ( tag(ALBUM,ONDATAB).toString()  );
     fdb->setArtist( tag(ARTIST,ONDATAB).toString() );
     
     file->setTag( (tagsEnum)t,var);
     err=file->error();
-    qDebug()<<"edit "<<var<<err;
-    if(err==OK || err==NS_TAG)
+    
+    if(err==OK)
     {
-	dberr=fdb->setTag(t,var);	
+	cache->setTag((tagsEnum)t,var,1);
+	err=fdb->setTag(t,var);
     }
-        
-    if(err!=NS_TAG)
-    {
-	f=f|1;
+    else if(err==NS_TAG)
+    {	
+	err=fdb->setTag(t,var);
     }
-    if(dberr==OK)
+      
+    if(err==OK)
     {
-      f=f|2;
+      cache->setTag((tagsEnum)t,var,2);
     }
     
-    cache->setTag((tagsEnum)t,var,f);
-    err=dberr;    
 
     tagChanges change;
     change.tag=t;
@@ -220,20 +221,15 @@ bool audioFiles::audioFile::setTag(int t,QVariant var)
     change.error=err;
     
     changes<<change;
-            
-    if(!saveFlag)
-    {
-	save();
-    }
+        
+    save();
 
     if(err==OK||err==NOTINDB)
     {
 	return true;  
     }
-    else
-    {
-	return false;
-    }
+
+    return false;
 }
 
 void audioFiles::audioFile::setTags(QList<int> tags,QList<QVariant> values)
@@ -254,14 +250,15 @@ void audioFiles::audioFile::setTags(QList<int> tags,QList<QVariant> values)
 	return ;
     }
     
-    saveFlag=true;
+    saveFlag=false;
     for(int i=0;i<tags.size();i++ )
     {
 	setTag(tags.at(i),values.at(i) );
     }
     
+    saveFlag=true;
     save();
-    saveFlag=false;    
+      
 }
 
 QVariant  audioFiles::audioFile::albumArtist()
@@ -354,7 +351,7 @@ int audioFiles::audioFile::albumId()
 
 bool audioFiles::audioFile::prepareToSave()
 {
-    if(saveFlag)
+    if(!saveFlag)
     {
       err=OK;
       return true;
@@ -384,6 +381,11 @@ bool audioFiles::audioFile::prepareToSave()
 
 void audioFiles::audioFile::save()
 {
+    if(!saveFlag)
+    {
+	return;
+    }
+    
     file->save();
     int e=fdb->commit();
     
@@ -391,14 +393,19 @@ void audioFiles::audioFile::save()
     {
 	err=e;
     }
-    
-    cache->savingEnd();
+        
     delete file;    
     file=0;
     delete fdb;
     fdb=0;
     
-    core::db->updateSig(*this);
+    cache->savingEnd(changes );
+    
+    audioFile f(*this);
+    qDebug()<<"save "<<f.tagChanged().size();
+    core::db->updateSig(f);
+    
+    
 }
 
 void audioFiles::audioFile::load(const short int f)
@@ -433,14 +440,14 @@ void audioFiles::audioFile::load(const short int f)
 
 audioFiles::audioFile* audioFiles::audioFile::operator=(const audioFile &f)
 {
-    saveFlag=false;
+    saveFlag=true;
 
     if(f.cache!=0)
     {
 	cache=audioFiles::fileCache::getFileCache(f.path() );
     }
     
-    changes=f.changes;
+    changes.append(f.changes);
     fileSize=f.fileSize;
     return this;
 }

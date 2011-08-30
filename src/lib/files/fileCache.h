@@ -7,6 +7,7 @@
 #include<QReadWriteLock>
 #include"fileTags.h"
 #include"audioFiles.h"
+#include<QSharedMemory>
 // #include<player.h>
 
 namespace audioFiles
@@ -39,7 +40,7 @@ class fileCache
       QVariant 	tagFromDb(int t, int& err);
       void 	setTag(tagsEnum t,QVariant var,int f=3);
       void 	lockForSaving();
-      void 	savingEnd();
+      void 	savingEnd(QList<tagChanges> &l);
       
   private:
       fileCache(QString path);
@@ -65,6 +66,8 @@ class fileCache
       static QMutex gMutex;
       QMutex loadMutex;
 
+//   signals:
+//       void changed(QList<tagChanges>);
       
 };
 

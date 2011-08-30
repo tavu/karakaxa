@@ -89,6 +89,7 @@ class playlistContent :public core::abstractContent
 	  void removeSlot();
 	  void save();
 	  void contextMenuSlot(QModelIndex index);
+	  void contextMenuForTracks(QModelIndex index, QModelIndexList list);
 	  void updateQueries();
 	  standardItem* head(standardItem* item);
 };

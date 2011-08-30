@@ -48,9 +48,9 @@ class database :public QObject
 	    emit(changed() );
 	}
 	
-	inline void updateSig(audioFiles::audioFile &f)
+	inline void updateSig(audioFiles::audioFile f)
 	{
-	    emit(updated(f) );
+	    emit updated(f) ;
 	}
 	
 	inline bool isConnected()

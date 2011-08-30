@@ -15,15 +15,6 @@
 namespace audioFiles
 {
 
-struct changes
-{
-  int 	 tag;
-  QVariant value;
-  int error;
-};
-typedef struct changes tagChanges;
-
-
 class audioFile :public QObject
 {
 //     using namespace audioFiles;
@@ -41,7 +32,7 @@ class audioFile :public QObject
 
 	audioFile();
 	audioFile(const QString);
-	audioFile(const audioFiles::audioFile& f);
+	audioFile(const audioFiles::audioFile &f);
 	audioFile(QSqlRecord r,bool force=false);
 	
 	audioFile* operator=(const audioFile &f);
@@ -132,7 +123,14 @@ class audioFile :public QObject
 	QList<tagChanges> changes;
 	
 
-//    protected slots:
+    protected slots:
+	void emitChanged(QList<tagChanges> l)
+	{
+	    emit changed(l);
+	}
+	
+    signals:
+      void changed(QList<tagChanges>);
 
 // 	void recordClean();
 

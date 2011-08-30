@@ -28,7 +28,7 @@ playlistContent::playlistContent(QWidget *parent)
     trackV->setEditTriggers(QAbstractItemView::SelectedClicked);
     trackV->setNotHide(TITLE);
     trackV->setFrameShape(QFrame::StyledPanel);
-        
+    trackV->setEditorFactory(new views::trackEditor(this) );
     
     treeModel=new standardModel(this);    
              
@@ -105,6 +105,7 @@ playlistContent::playlistContent(QWidget *parent)
     setLayout(layout);
     
     connect(treeV,SIGNAL(showContextMenu(QModelIndex,QModelIndexList) ),this,SLOT(contextMenuSlot(QModelIndex)) );
+    connect(trackV,SIGNAL(showContextMenu(QModelIndex,QModelIndexList) ),this,SLOT(contextMenuForTracks(QModelIndex,QModelIndexList)) );
     connect(treeV, SIGNAL(activated(QModelIndex)), this, SLOT(activationSlot(QModelIndex) )) ;
     
     
@@ -216,6 +217,7 @@ void playlistContent::addFolderSlot()
     i->appendRow(f);
     
     treeV->expand( proxyM->mapFromSource(treeModel->indexFromItem(i,0) ) );
+    qDebug()<<"ED";
     treeV->edit( proxyM->mapFromSource( treeModel->indexFromItem(f,0) ) );
 
     
@@ -410,4 +412,26 @@ void playlistContent::search()
 {
     QString s=searchLine->text();    
     trackProxy->setFilterFixedString(s);
+}
+
+void playlistContent::contextMenuForTracks(QModelIndex index, QModelIndexList list)
+{
+    if(!index.isValid() )
+    {
+	return ;
+    }
+    
+    QUrl u=index.data(URL_ROLE).toUrl();    
+    QMenu *menu=new QMenu(this);
+    
+    QAction *act=new QAction(KIcon("document-edit"),tr("edit"),menu );
+    connect(act,SIGNAL(triggered(bool)),trackV,SLOT(editCurrent()) );
+    menu->addAction(act);
+    
+    core::contentHdl->contextMenu(menu,KUrl(u),!list.isEmpty() );
+    if(!menu->isEmpty() )
+    {
+	menu->exec( QCursor::pos() );
+    }
+    menu->deleteLater();    
 }

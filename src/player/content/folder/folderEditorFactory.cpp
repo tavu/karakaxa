@@ -42,16 +42,7 @@ void folderEditorFactory::done()
 {    
 //      delete sender();
      views::tagEditorFactory::done();
-     view->viewport()->update();
-     
-     
+     view->viewport()->update();          
 }
 
 
-void editThr::run()
-{
-    foreach(audioFiles::audioFile f,fileList)
-    {
- 	   f.setTag(tag,value);
-    }
-}

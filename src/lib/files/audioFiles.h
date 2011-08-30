@@ -36,6 +36,15 @@ enum tagsEnum
 };
 */
 
+
+struct changes
+{
+  int 	 	tag;
+  QVariant 	value;
+  int 		error;
+};
+typedef struct changes tagChanges;
+
 enum errors
 {
     OK=0		,

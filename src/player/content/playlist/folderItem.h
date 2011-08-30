@@ -27,6 +27,7 @@ class folderItem :public core::xmlItem
 	{
 	    sizeHint=s;
 	}
+	
 //  	static const int FOLDER_ITEM;
     protected:
       QSize sizeHint;

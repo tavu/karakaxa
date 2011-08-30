@@ -23,7 +23,7 @@ core::nplFile::nplFile(QString s)
     {
       //if the file is valid we read the info we are soure that we will use.
 //         file->load();
-	   qDebug()<<"conn "<<file->path();
+// 	   qDebug()<<"conn "<<file->path();
 	   connect(db,SIGNAL(updated(audioFiles::audioFile)),this,SLOT(emitCh(audioFiles::audioFile) ) ) ;
     }
 
@@ -31,10 +31,8 @@ core::nplFile::nplFile(QString s)
 
 void core::nplFile::emitCh(audioFiles::audioFile f)
 {
-  qDebug()<<"RE";
     if(f.path()==file->path() )
     {
-	   qDebug()<<"ER";
 	   nplTrack::emitChanged();
     }
 }

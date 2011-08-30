@@ -38,13 +38,9 @@ class folderEditorFactory :public views::tagEditorFactory
 	
 	void setView(QAbstractItemView *v)
 	{
-	  view=v;
+	    view=v;
 	}
 	
- 	bool setModelData(views::tagEditor* editor, QAbstractItemModel* model, const QModelIndex& index, const QModelIndexList& list)
-	{
-	    bool b=tagEditorFactory::setModelData(editor,model,index,list);
-	}
 	
     private:
 	  	   
@@ -54,25 +50,4 @@ class folderEditorFactory :public views::tagEditorFactory
     protected slots:
 	   void done();
 };
-
-
-class editThr :public QThread
-{
-    public:
-	   editThr(int tag,QVariant value,const QLinkedList<audioFiles::audioFile> &l,QObject* parent = 0) :QThread(parent) 
-	   {
-		fileList=l;
-		this->tag=tag;
-		this->value=value;
-	   };
-	   
-    protected:
-	   void run();
-	   int tag;
-	   QVariant value;
-	   QLinkedList<audioFiles::audioFile> fileList;
-	   
-};
-
-
 #endif

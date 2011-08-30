@@ -30,9 +30,19 @@ class trackItem :public standardItem
 	audioFiles::audioFile file;
 	
     protected slots:
-	void changed()
+	void changed(audioFiles::audioFile f)
 	{
-	    standardItem::dataChanged(0,FRAME_NUM-1);
+	    if(f.path()==file.path() )
+	    {
+		if(f.tagChanged().size()==1)
+		{
+		    standardItem::dataChanged(f.tagChanged().at(0).tag );
+		}
+		else
+		{
+		    standardItem::dataChanged(0,FRAME_NUM-1);
+		}
+	    }
 	}
 	
 };

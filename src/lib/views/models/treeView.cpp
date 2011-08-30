@@ -112,6 +112,11 @@ void views::treeView::performDrag()
 
     }
     
+    if(urls.isEmpty() )
+    {
+	return ;
+    }
+    
     QMimeData *mimeData = new QMimeData;
     mimeData->setUrls(urls);
 
@@ -135,13 +140,15 @@ void views::treeView::setModel ( QAbstractItemModel * model )
     {
 	connect(model,SIGNAL(rowsInserted ( const QModelIndex, int, int )),this ,SLOT(updateStarWidget(QModelIndex, int, int) ) );
  	connect(model,SIGNAL(modelReset () ),this ,SLOT(updateStarWidget() ) );
- 	connect(model,SIGNAL(dataChanged ( const QModelIndex &, const QModelIndex& ) ),this,SLOT(dataChanged ( const QModelIndex &, const QModelIndex& ) ) );
+//  	connect(model,SIGNAL(dataChanged ( const QModelIndex &, const QModelIndex& ) ),this,SLOT(dataChanged ( const QModelIndex &, const QModelIndex& ) ) );
     }
 }
 
 void views::treeView::dataChanged ( const QModelIndex & topLeft, const QModelIndex & bottomRight )
 {
 //     qDebug()<<"ET";
+     QTreeView::dataChanged(topLeft,bottomRight);
+     return ;
      if(bottomRight.column()>ratingColumn() )
      {
 	   for(int i=topLeft.row();i<=bottomRight.row();i++)

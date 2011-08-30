@@ -47,6 +47,7 @@ albumTrack::albumTrack(QWidget *parent)
 
 void albumTrack::trackVInit()
 {
+    using namespace views;
     trackV=new views::treeView(this,"TRACKVIEW");
     trackM=new standardModel(this);
     proxyM=new QSortFilterProxyModel(this);        
@@ -75,6 +76,8 @@ void albumTrack::trackVInit()
     connect(trackV,SIGNAL(showContextMenu(QModelIndex,QModelIndexList)),this,SLOT(showContexMenuSlot(QModelIndex,QModelIndexList))); 
     connect(queryGen,SIGNAL(updateNeeded()),this,SLOT(checkNeedUpdates()) );
     connect(albumM->queryGrt(),SIGNAL(updateNeeded()),this,SLOT(checkNeedUpdates()) );
+    
+    connect(editMultFiles::self(),SIGNAL(finished() ),this,SLOT(checkNeedUpdates()) );
 //     trackV->setStyleSheet("QAbstractItemView {background-color: transparent; }");
     
 }
@@ -192,8 +195,18 @@ void albumTrack::updateQueries()
 
 void albumTrack::showContexMenuSlot(QModelIndex index, QModelIndexList list)
 {
+    if(!index.isValid() )
+    {
+	return ;
+    }
+    
     QUrl u=index.data(URL_ROLE).toUrl();    
     QMenu *menu=new QMenu(this);
+    
+    QAction *act=new QAction(KIcon("document-edit"),tr("edit"),menu );
+    connect(act,SIGNAL(triggered(bool)),this,SLOT(trackEdit()) );
+    menu->addAction(act);
+    
     core::contentHdl->contextMenu(menu,KUrl(u),!list.isEmpty() );
     if(!menu->isEmpty() )
     {
@@ -225,8 +238,9 @@ void albumTrack::readSettings()
 
 void albumTrack::checkNeedUpdates()
 {
+    qDebug()<<"UP "<<isVisible()<<" "<<views::editMultFiles::isEditing();
     if(isVisible() && !views::editMultFiles::isEditing())
-    {
+    {	
 	updateQueries();
     }
 }

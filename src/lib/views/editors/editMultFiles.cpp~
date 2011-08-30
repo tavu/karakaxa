@@ -14,12 +14,13 @@ void views::editMultFiles::editFiles::run()
 void views::editMultFiles::finishedSlot()
 {
     num--;
+//     qDebug()<<"EDITTT";
     if(num==0)
     {
-	qDebug()<<"EDITTT";
-	multFilesEmiter();
+// 	qDebug()<<"EDITTT";
+// 	multFilesEmiter();
 	p=0;
-	deleteLater();
+	emit finished();
     }
 }
 

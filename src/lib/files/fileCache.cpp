@@ -2,7 +2,7 @@
 #include"fileCache.h"
 #include<QDebug>
 #include"fileToDb.h"
-// 
+#include"../core/func.h"
 // #define DATAB 1
 // #define FILE  2
 
@@ -151,7 +151,7 @@ void audioFiles::fileCache::setTag(tagsEnum t, QVariant var,int f)
     }
     if(! record.isEmpty() && (f& 2) )
     {
-	lock.lockForRead();
+	lock.lockForWrite();
 	record.setValue(t+1,var);
 	lock.unlock();
     }
@@ -195,7 +195,7 @@ audioFiles::fileCache* audioFiles::fileCache::getFileCache(QString path)
 void audioFiles::fileCache::releaseFileCache(QString path)
 {
     gMutex.lock();
-    fileCacheS *t=fileCacheMap.value(path );
+    fileCacheS *t=fileCacheMap.value(path);
 
     if (t==0)
     {
@@ -229,12 +229,13 @@ void audioFiles::fileCache::releaseFileCache(audioFiles::fileCache *cache)
 
 void fileCache::lockForSaving()
 {
-    loadMutex.lock();
+     loadMutex.lock();
 }
 
-void fileCache::savingEnd()
+void fileCache::savingEnd(QList<tagChanges> &l)
 {
     loadMutex.unlock();
+//     emit changed(l);
 }
 
 

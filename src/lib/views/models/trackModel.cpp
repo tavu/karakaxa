@@ -9,7 +9,7 @@ views::trackItem::trackItem(audioFiles::audioFile f)
   :standardItem(),
   file(f)
 {
-//     connect(&f,SIGNAL(changed() )
+    connect(core::db,SIGNAL(updated(audioFiles::audioFile)),this,SLOT(changed(audioFiles::audioFile)) );
 }
 
 
@@ -40,7 +40,7 @@ bool views::trackItem::setData(const QVariant& value, int column, int role)
 	file.setTag(column,value);
 	if(file.error()==OK)
 	{
-	    dataChanged(column,column);
+// 	    dataChanged(column,column);
 	    return true;
 	}
     }

@@ -4,6 +4,7 @@
 #include<QThread>
 #include"../files/audioFile.h"
 // #include "func.h"
+#include<QDebug>
 
 namespace views
 {
@@ -41,7 +42,7 @@ public:
     }
     
     class editFiles :public  QThread 
-    {	
+    {
 	public:
 	      editFiles(QObject* parent = 0);
 
@@ -91,7 +92,8 @@ private:
     
     void multFilesEmiter()	
     {
-	emit multipleFilesEdited();
+      qDebug()<<"FF";
+	emit finished();
     }
     
     void prepare(editFiles *p)
@@ -104,7 +106,7 @@ private slots:
   void finishedSlot();
     
 signals:
-    void multipleFilesEdited();
+    void finished();
 
     
     

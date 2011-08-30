@@ -82,9 +82,9 @@ void configureContent::libconfInit()
     dbPassL = new QLineEdit(db->dataBPass(),this);
     dbPassL->setEchoMode(QLineEdit::Password);
     
-    dbNameL->setMinimumWidth(150);
-    dbUserL->setMinimumWidth(150);
-    dbPassL->setMinimumWidth(150);
+//     dbNameL->setMinimumWidth(150);
+//     dbUserL->setMinimumWidth(150);
+//     dbPassL->setMinimumWidth(150);
     
     DbButtons=new QDialogButtonBox(QDialogButtonBox::Apply|QDialogButtonBox::Cancel,Qt::Horizontal,this);    
 

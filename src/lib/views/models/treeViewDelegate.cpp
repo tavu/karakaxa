@@ -116,14 +116,20 @@ QWidget* views::treeViewDelegate::createEditor(QWidget *parent,const QStyleOptio
 	   connect(w,SIGNAL(valueChanged(QVariant) ),this, SLOT(commitEditor()));
 	   return w;	
     }
-    return 0;    
+    return QStyledItemDelegate::createEditor(parent,option,index);    
 }
 
 void views::treeViewDelegate::setEditorData(QWidget *editor,const QModelIndex &index) const
 {
-     tagEditor *e= static_cast<tagEditor*>(editor);
-  
-     e->setValue(index.data() );
+      if(editorFactory!=0)
+      {
+	  tagEditor *e= static_cast<tagEditor*>(editor);  
+	  e->setValue(index.data() );
+      }
+      else
+      {
+	  QStyledItemDelegate::setEditorData(editor,index);
+      }
 }
 
 QSize views::treeViewDelegate::sizeHint ( const QStyleOptionViewItem & option, const QModelIndex & index ) const
@@ -149,18 +155,19 @@ void views::treeViewDelegate::setItemHeigh(int k)
 
 void views::treeViewDelegate::setModelData(QWidget *editor,QAbstractItemModel *model,const QModelIndex &index) const
 {    
-    tagEditor *e= static_cast<tagEditor*>(editor);     
-    qDebug()<<"seting data";		    	
-    QVariant  v=property("modelList");
-	
-    QModelIndexList list=qvariant_cast<QModelIndexList>(v);    
     if(editorFactory!=0 )
-    { 	  
+    { 	
+	  tagEditor *e= static_cast<tagEditor*>(editor);     
+	  qDebug()<<"seting data";		    	
+	  QVariant  v=property("modelList");
+	
+	   QModelIndexList list=qvariant_cast<QModelIndexList>(v);      
 	   editorFactory->setModelData(e,model,index,list);
     }
     else
     {	
-	   model->setData(index, QVariant(e->value() ) );
+	QStyledItemDelegate::setModelData(editor,model,index);
+// 	model->setData(index, QVariant(e->value() ) );
     }   
 }
 
@@ -176,13 +183,14 @@ int views::treeViewDelegate::ratingColumn() const
 
 void views::treeViewDelegate::commitEditor()
 {
-     tagEditor *editor = qobject_cast<tagEditor *>(sender());
+     QWidget *editor = qobject_cast<QWidget *>(sender());
      emit commitData(editor);
-	
-	if(editor->tag()!=audioFiles::RATING &&ratingColumn() >= 0)
-	{
+/*	
+    if(editor->tag()!=audioFiles::RATING &&ratingColumn() >= 0)
+    {
  	   emit closeEditor(editor);
-	}
+    }
+    */
 }
 
 void views::treeViewDelegate::setEditorFactory(views::tagEditorFactory* f)
@@ -201,7 +209,7 @@ void views::treeViewDelegate::setEditorFactory(views::tagEditorFactory* f)
 void views::treeViewDelegate::updateEditorGeometry(QWidget *editor,const QStyleOptionViewItem &option, const QModelIndex &index ) const
 {
     QStyledItemDelegate::updateEditorGeometry(editor,option,index);
-    return ;
+//     return ;
     QSize s=sizeHint(option,index);      
     QRect r=option.rect;
     r.setSize(s);

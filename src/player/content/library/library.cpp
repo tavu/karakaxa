@@ -42,7 +42,7 @@ library::library(QWidget *parent)
 //     connect(db,SIGNAL(changed() ),this,SLOT(dbChanged() ) );
     
     connect(artistM->queryGrt(),SIGNAL(updateNeeded()),this,SLOT(checkNeedUpdates()) );
-    connect(views::editMultFiles::self(),SIGNAL(multipleFilesEdited()),this,SLOT(checkNeedUpdates()) );
+    connect(views::editMultFiles::self(),SIGNAL(finished()),this,SLOT(checkNeedUpdates()) );
     artistM->updateQueries();
 }
 

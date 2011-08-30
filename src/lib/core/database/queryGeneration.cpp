@@ -370,7 +370,7 @@ QString core::albumQueryGrt::queryString() const
 	    {
 		QString s=artist_;
 		database::toSqlSafe(s);
-		ret=ret.append("AND artist_album.artist="+s );
+		ret=ret.append("AND artist_album.artist= '"+s+"'" );
 	    }
 	}
 	else

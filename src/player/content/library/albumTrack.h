@@ -95,6 +95,11 @@ class albumTrack :public QWidget
 	void checkNeedUpdates();
 	void showContexMenuSlot(QModelIndex index, QModelIndexList list) ;
 	void albumActivated(const QModelIndex &n);
+	
+	void trackEdit()
+	{
+	    trackV->edit( trackV->currentIndex() );
+	}
 };
 
 #endif
