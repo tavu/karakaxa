@@ -98,23 +98,30 @@ void core::nplaylist::insertSlot(nplList list, int pos)
     
     int newPos=pos;
     
+    qDebug()<<"IN "<<pos<<" "<<pos+list.size();
     model->beginInsertRows(QModelIndex(), pos,pos+list.size()-1 );
     for(int i=0;i<list.size();i++)
     {
+	   
+	   trackList.insert (newPos,list[i] );		
+	   totalLength+=list[i]->tag(LENGTH).toInt();
+	   newPos++;
+	   /*
 	   if(!list[i].isNull() && list[i]->isValid() )
 	   {
 		  newPos++;
 		  trackList.insert (newPos,list[i] );
 		  totalLength+=list[i]->tag(LENGTH).toInt();
 	   }
+	   */
     }
     
     model->endInsertRows();
 
-    if(newPos-pos<list.size() )
-    {
-	   core::status->addError(tr("Some media coulbn't be inserted") );
-    }
+//     if(newPos-pos<list.size() )
+//     {
+// 	   core::status->addError(tr("Some media coulbn't be inserted") );
+//     }
 	
     emit( inserted(newPos-pos ) );
     return ;
@@ -229,7 +236,12 @@ void core::nplaylist::addMediaList(const QStringList &list,int pos)
 
 void core::nplaylist::move(int from,int pos)
 {     
-    trackList.move(from,pos);     
+    if(from==pos)
+	 return ;
+
+    model->beginMoveRows(QModelIndex(), from, from, QModelIndex(), pos);
+    trackList.move(from,pos);   
+    model->endMoveRows();
 }
 
 QString core::nplaylist::url(int n)
@@ -252,11 +264,11 @@ QString core::nplaylist::playUrl(int n)
      
     QString ret;
     if (n>=trackList.size() || n<0 )
-    {
-         
+    {         
         return ret;
     }
-
+    
+//     playing.clear();
     playing=trackList.at(n);
     ret=playing->path();
      

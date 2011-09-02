@@ -93,7 +93,7 @@ bool nplModel::dropMimeData ( const QMimeData *data, Qt::DropAction action, int 
 
     if (reorderL.size()==0 )
     {
-        npList->addMediaList( data->urls(),row-1 );
+        npList->addMediaList( data->urls(),row );
     }
     else
     {
@@ -117,31 +117,17 @@ void nplModel::reorder(int r)
     set<int>::const_iterator it=reorderL.begin();
 
     int n=0;
-//     while (it!=reorderL.end() )
-//     {
-//         if (*it<r)
-//         {
-//             npList->move(*it-n,r-1);
-//             n++;
-//         }
-//         else
-//         {
-//             npList->move(*it,r);
-//         }
-//         it++;
-//     }
-    
     for(;it!=reorderL.end();it++)
-    {		
-	if(*it<r)
-	{
-	    npList->move(*it-n,r-1);
-	    n++;
-	}
-	else
-	{
-	    npList->move(*it,r);
-	}
+    {
+	   if(*it<r )
+	   {
+		  npList->move(*it-n,r-1);
+		  n++;
+	   }
+	   else
+	   {
+		  npList->move(*it,r);
+	   }
     }
 }
 

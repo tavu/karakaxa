@@ -10,6 +10,7 @@
 
 #include"nowPlayList/nplaylist.h"
 #include"nowPlayList/nplClass.h"
+#include"nowPlayList/nplTrack.h"
 
 #include"playlist/playlistClass.h"
 

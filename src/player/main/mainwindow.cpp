@@ -180,7 +180,8 @@ void mainWindow::nplViewInit()
     nplModel *m=new nplModel(this);
     nplView->setModel(m);
     nplView->setDragDropMode(QAbstractItemView::DragDrop);
-    nplView->setAcceptDrops(true);        
+    nplView->setAcceptDrops(true);
+    nplView->setColumnHidden(1,true);
    
     nplView->setItemDelegate(new nplDelegate(this) );    
 

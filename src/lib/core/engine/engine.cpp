@@ -34,7 +34,7 @@ void core::soundEngine::init()
 }
 
 bool core::soundEngine::play(int n)
-{
+{    
     mutex.lock();
     QString s=npList->playUrl(n);
 
@@ -44,8 +44,8 @@ bool core::soundEngine::play(int n)
         return false;
     }
 
-    mediaObject->setCurrentSource(s);
-    mediaObject->play();
+     mediaObject->setCurrentSource(s);
+     mediaObject->play();
     mutex.unlock();
 
     return true;

@@ -270,13 +270,13 @@ QVariant  audioFiles::audioFile::albumArtist()
     }
     
     QString s=tag(LEAD_ARTIST).toString();
-    s.simplified();
+    s=s.simplified();
     if ( !s.isEmpty() )
     {
         return QVariant(s);
     }
 
-    return file->artist();
+    return tag(ARTIST);
 }
 
 QString audioFiles::audioFile::cover()

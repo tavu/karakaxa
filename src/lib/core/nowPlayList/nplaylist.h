@@ -52,6 +52,12 @@ class nplaylist :public QObject
 	QStringList getList();
 	int getLength();
 	nplPointer getPlayingTrack();
+	
+	int getPlayingPos()
+	{
+	   return trackList.indexOf(playing,0);
+	}
+	
 	int size();
 	inline void setModel(core::nplAbstractModel *model)
 	{

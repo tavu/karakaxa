@@ -11,21 +11,23 @@
 #include<set>
 #define FONT_SIZE 10
 
+#include<nplaylistDelegate.h>
+
 nplaylistView::nplaylistView(QWidget *parent)
         :QTreeView(parent),
         onDrag(false)
 {
     setRootIsDecorated(false);
-  
+    setAlternatingRowColors(true);
     setDragDropMode( QAbstractItemView::DragDrop );
     setDragDropOverwriteMode(false);
     setSelectionMode(QAbstractItemView::ExtendedSelection);
-
+//     setUniformRowHeights(true);
     setDropIndicatorShown(true);
     setDragEnabled( true );
 
-    connect(this,SIGNAL(doubleClicked(QModelIndex ) ),this, SLOT(play(const QModelIndex) ) );
-    connect( engine ,SIGNAL(trackChanged ( QString) ),viewport(), SLOT(update() ) );
+//     connect(this,SIGNAL(doubleClicked(QModelIndex ) ),this, SLOT(play(const QModelIndex) ) );
+    connect( engine ,SIGNAL(trackChanged ( QString) ),viewport(), SLOT(update()) );
 }
 
 void nplaylistView::mousePressEvent(QMouseEvent *event)
@@ -125,11 +127,11 @@ void nplaylistView::duplicate()
 
     foreach(QModelIndex index,list)
     {
-	if(index.column()==0 )
-	{
-	    nplPointer p=npList->getTrack(index.row());
-	    l<<nplPointer(p->clone() );
-	}
+	   if(index.column()==0 )
+	   {
+		  nplPointer p=npList->getTrack(index.row());
+		  l<<nplPointer(p->clone() );
+	   }
     }
 
     npList->insert(l,list.last().row() );
@@ -144,7 +146,6 @@ void nplaylistView::remove()
     for(int i=0;i<list.size();i++)
     {
         rowL.insert(list.at(i).row() );
-
     }
     int n=0;
     
@@ -159,6 +160,8 @@ void nplaylistView::remove()
 
 void nplaylistView::keyPressEvent(QKeyEvent *event)
 {
+    QTreeView::keyPressEvent(event);
+    return ;
     if (event->key()==Qt::Key_A)
     {
         selectAll();
@@ -230,7 +233,7 @@ void nplaylistView::drawRow ( QPainter * painter, const QStyleOptionViewItem & o
 	   {
 		  itemDelegate()->setProperty("dropIn",2);
 	   }
-	   else//this sould be onViewport
+	   else
 	   {
 		  itemDelegate()->setProperty("dropIn",3);
 	   }	   
@@ -249,3 +252,12 @@ void nplaylistView::paintEvent(QPaintEvent * event)
     drawTree(&painter, event->region());
    
 }
+
+
+void nplaylistView::mouseDoubleClickEvent(QMouseEvent* event)
+{
+//     QTreeView::mouseDoubleClickEvent(event);
+     QModelIndex index=indexAt( viewport()->mapFromGlobal(QCursor::pos() )  );
+	engine->play(index.row() );
+}
+
