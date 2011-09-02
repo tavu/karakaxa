@@ -232,6 +232,7 @@ void nplDelegate::drawContent(QPainter* painter, const QStyleOptionViewItem& opt
     qApp->style()->drawItemPixmap(painter,option.rect,Qt::AlignLeft|Qt::AlignVCenter,pix);
     QRect r=option.rect;
     r.setX(r.x()+40);
+    r.setWidth(r.width()-3);
     QRect up=r;
     QRect down=r;
     
@@ -280,120 +281,14 @@ void nplDelegate::drawContent(QPainter* painter, const QStyleOptionViewItem& opt
 QSize nplDelegate::sizeHint ( const QStyleOptionViewItem & option, const QModelIndex & index ) const
 {
 //     return QSize();
-    return QSize(700,45);
+    return QSize(10000,45);
 }
 
 void nplDelegate::drawDisplay(QPainter* painter, const QStyleOptionViewItem& option,QRect& rect, QString& text) const 
 {
-    QString elideText=option.fontMetrics.elidedText(text,Qt::ElideRight,rect.width() );
-    
-    if(option.state & QStyle::State_Selected)
-    {
-		QPalette pal=option.palette;
-		pal.setBrush(QPalette::Text, Qt::white);
-    }
+    QString elideText=option.fontMetrics.elidedText(text,Qt::ElideRight,rect.width() );    
     
     QRect r=option.fontMetrics.boundingRect(elideText);
     painter->drawText( rect,Qt::AlignLeft|Qt::AlignVCenter |Qt::ElideRight, elideText,&r);  
 }
 
-void nplDelegate::updateEditorGeometry(QWidget* editor, const QStyleOptionViewItem& option, const QModelIndex& index) const
-{
-    QStyledItemDelegate::updateEditorGeometry(editor, option, index);
-    
-    editor->setFixedHeight(option.rect.height());
-    
-    qDebug()<<"UPE";
-}
-
-void nplDelegate::setEditorData(QWidget* editor, const QModelIndex& index) const
-{
-    nplWidget *w=static_cast<nplWidget*>(editor);
-    w->updateInfo();
-}
-
-
-nplWidget::nplWidget(QWidget* parent, int row): QFrame(parent)
-{
-//     setAutoFillBackground(true);
-    pointer=npList->getTrack(row);  
-    this->row=row;
-    qDebug()<<"RR "<<row<<pointer->path();
-        
-    QWidget* spacer = new QWidget(this);
-    spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Ignored);
-    
-    QFont font=titleL.font();
-    font.setBold(true);
-    titleL.setFont(font);
-    
-    QPalette pal=palette();
-    QColor color(Qt::black);
-    color.setAlpha(100);
-    pal.setColor(QPalette::Text, color);
-    artistL.setPalette(pal);
-    QFrame *f=new QFrame(this);
-    f->setFrameStyle(QFrame::StyledPanel|QFrame::Raised);
-    f->setFrameShape(QFrame::HLine);
-        
-    iconL.setPixmap(views::decor->tagIcon(-1).pixmap(40,40) );
-    
-    QGridLayout  *l=new QGridLayout (this);
-    l->addWidget(&iconL,0,0,2,1,Qt::AlignLeft);
-    l->addWidget(&trackL,0,1,Qt::AlignLeft);
-    l->addWidget(&titleL,0,2,Qt::AlignLeft);
-    l->setColumnStretch(2,1);
-//     l->addWidget(spacer,0,3);
-    l->addWidget(&artistL,1,1,1,-1,Qt::AlignLeft);
-    l->addWidget(spacer,2,1,1,-1,Qt::AlignLeft);
-    l->addWidget(f,2,0,2,-1);          
-//     artistL.setDisabled(true);
-    l->setContentsMargins(0,2,0,0);
-//     l->setSpacing(0);
-    l->setHorizontalSpacing(0);
-    l->setVerticalSpacing(0);
-//     updateInfo();
-    
-}
-
-void nplWidget::updateInfo()
-{
-    int t=pointer->tag(TRACK).toInt();
-    
-    if(t==0)
-    {
-	 trackL.hide();
-    }
-    else
-    {
-	   trackL.setText(QString::number(t)+" " );
-    }
-    
-    qDebug()<<"title "<<pointer->tag(TITLE);
-    
-    titleL.setText(pointer->tag(TITLE).toString() );
-    QString s=pointer->artist().toString();
-    s=s.simplified();
-    if(s.isEmpty() )
-    {
-	   s=QString("Unknown");
-    }
-    artistL.setText("by "+s);
-}
-void nplWidget::setPlaying()
-{
-//  	 setFrameStyle(QFrame::StyledPanel|QFrame::Raised);
-//       iconL.setPixmap(views::decor->play().pixmap(30,30));
-}
-
-void nplWidget::mouseDoubleClickEvent(QMouseEvent* event)
-{
-//     QWidget::mouseDoubleClickEvent(event); 
-    engine->play(row);
-}
-
-QWidget* nplDelegate::createEditor ( QWidget * parent, const QStyleOptionViewItem & option, const QModelIndex & index ) const
-{
-    nplWidget *w=new nplWidget(parent,index.row() );
-    return w;
-}

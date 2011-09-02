@@ -66,7 +66,7 @@ QVariant nplModel::headerData ( int section, Qt::Orientation orientation, int ro
 	}
 	if(role==Qt::DisplayRole)
 	{
-	    return QVariant();
+	    return tr("Playlist");
 	}
     }
     if(section==1)

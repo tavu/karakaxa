@@ -22,7 +22,8 @@ nplaylistView::nplaylistView(QWidget *parent)
     setDragDropMode( QAbstractItemView::DragDrop );
     setDragDropOverwriteMode(false);
     setSelectionMode(QAbstractItemView::ExtendedSelection);
-//     setUniformRowHeights(true);
+    setUniformRowHeights(true);
+    setHeaderHidden(true);
     setDropIndicatorShown(true);
     setDragEnabled( true );
 

@@ -18,16 +18,6 @@ class nplaylistView :public QTreeView
 	   Qt::DropActions supportedDropActions () const;
 	   int sizeHintForColumn(int column) const;
 	   
-	   void setModel(QAbstractItemModel *model)
-	   {
-		  QAbstractItemModel *m=QTreeView::model();
-		  QTreeView::setModel(model); 
-		  if(m!=0)
-		  {
-			 disconnect(m, 0, this, 0);
-		  }
-		  connect(model,SIGNAL(rowsInserted ( const QModelIndex, int, int )),this ,SLOT(inserted(QModelIndex,int,int)) );
-        }
     private:
 	   QPoint startPos;
 	   QAction *removeAction;
