@@ -4,12 +4,12 @@ use karakaxa;
 create table IF NOT EXISTS library_folders(
      path varchar(255) not null,
      PRIMARY KEY(path)
-)default charset=utf8 collate=utf8_general_ci TYPE=innodb;
+)default charset=utf8 collate=utf8_general_ci TYPE=myisam;
 
 create table IF NOT EXISTS playlists(
      path varchar(255) not null,
      PRIMARY KEY(path)
-)default charset=utf8 collate=utf8_general_ci TYPE=innodb;
+)default charset=utf8 collate=utf8_general_ci TYPE=myisam;
 
 
 create table IF NOT EXISTS artists(
@@ -17,7 +17,7 @@ create table IF NOT EXISTS artists(
      name varchar(255),
      unique(name),
      PRIMARY KEY(id)
-)default charset=utf8 collate=utf8_general_ci TYPE=innodb;
+)default charset=utf8 collate=utf8_general_ci TYPE=myisam;
 
 create table IF NOT EXISTS albums(
      id int(10) not null auto_increment,
@@ -27,21 +27,21 @@ create table IF NOT EXISTS albums(
      foreign key(artist) references artists(id),
      PRIMARY KEY(id),
      unique(name,artist)
-)default charset=utf8 collate=utf8_general_ci TYPE=innodb;
+)default charset=utf8 collate=utf8_general_ci TYPE=myisam;
 
 create table IF NOT EXISTS genres(
      id int(10) not null auto_increment,
      name varchar(255),
      unique(name),
      PRIMARY KEY(id)
-)default charset=utf8 collate=utf8_general_ci TYPE=innodb;
+)default charset=utf8 collate=utf8_general_ci TYPE=myisam;
 
 create table IF NOT EXISTS composers(
      id int(10) not null auto_increment,
      name varchar(255),
      unique(name),
      PRIMARY KEY(id)
-)default charset=utf8 collate=utf8_general_ci TYPE=innodb;
+)default charset=utf8 collate=utf8_general_ci TYPE=myisam;
 
 create table IF NOT EXISTS tracks(
      id int(10) not null auto_increment,
@@ -79,7 +79,7 @@ create table IF NOT EXISTS tracks(
 
      unique(path),
      PRIMARY KEY(id)
-)default charset=utf8 collate=utf8_general_ci TYPE=innodb;
+)default charset=utf8 collate=utf8_general_ci TYPE=myisam;
 
 
 create table IF NOT EXISTS track_artists(
@@ -89,7 +89,7 @@ create table IF NOT EXISTS track_artists(
      foreign key(artist) references artists(id),
      foreign key(track) references tracks(id),
      primary key(artist,track)
-)default charset=utf8 collate=utf8_general_ci TYPE=innodb;
+)default charset=utf8 collate=utf8_general_ci TYPE=myisam;
 
 
 #=====================procedures=========================
@@ -259,19 +259,19 @@ CREATE OR REPLACE VIEW artist_album(artist,album,image,id) AS
 CREATE OR REPLACE VIEW trackView 	AS
      select
 	  albums.id		as album_id	,
-	  tracknumber	 			,
-	  title					,
-	  albums.name		as album	,
-	  artists.name		as artist	,
+	  tracknumber	 				,
+	  title						,
+	  albums.name		as album		,
+	  artists.name		as artist		,
 	  leadArtists.name	as leadArtist	,
-	  comment 				,
-	  genres.name   	as genre	,
+	  comment 					,
+	  genres.name   	as genre		,
 	  composers.name 	as composer	,
-	  length				,
-	  rating 				,
-	  year 					,
-	  bitrate 				,	  
-	  path					,
+	  length						,
+	  rating 						,
+	  year 						,
+	  bitrate 					,
+	  path						,
 	  count					
 	  
      from tracks,artists,albums,genres,composers,leadArtists
