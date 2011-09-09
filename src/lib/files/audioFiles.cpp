@@ -42,34 +42,34 @@ int audioFiles::bestCover( const QLinkedList<QString> &covers,QString album,QStr
 {
     int mark=0;
     album=album.toUpper();
-    foreach(QString s,covers)
+    foreach(QString c,covers)
     {
-	   s=core::titleFromPath(s);
+	   QString s=core::titleFromPath(c);
 	   s=s.toUpper();
 	   
 	   if(s==album)
 	   {
-		  cover=s;
+		  cover=c;
 		  mark=5;
 	   }
 	   else if(s==QString("FOLDER") && mark<4 )
 	   {
-		  cover=s;
+		  cover=c;
 		  mark=4;
 	   }
-	   else if(s==QString("FROND") && mark<3 )
+	   else if(s==QString("FRONT") && mark<3 )
 	   {
-		  cover=s;
+		  cover=c;
 		  mark=3;
 	   }
-	   else if(s.contains("FROND") && mark<3 )
+	   else if(s.contains("FRONT") && mark<2 )
 	   {
-		  cover=s;
+		  cover=c;
 		  mark=2;
 	   }
 	   else if(mark<2)
 	   {
-		  cover=s;
+		  cover=c;
 		  mark=1;
 	   }
     }

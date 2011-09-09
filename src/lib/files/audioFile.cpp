@@ -285,7 +285,7 @@ QString audioFiles::audioFile::cover()
     QString coverPath=fdb->albumArt(albumId(),err);
     
     //if there is no album art on database we search on directory
-    if(coverPath.isNull() )
+    if(coverPath.isEmpty() )
     {
 	   QLinkedList<QString> covers; 
 	   QDir dir(core::folder(path() ) );
@@ -303,6 +303,7 @@ QString audioFiles::audioFile::cover()
  	   audioFiles::bestCover(covers,album,coverPath);	
     }    
     
+    qDebug()<<"COVER "<<coverPath;
     return coverPath;
 }
 

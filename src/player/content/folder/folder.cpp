@@ -133,11 +133,11 @@ void folderContent::setDir(const QModelIndex index)
 void folderContent::showUrl(KUrl url)
 {
     model->dirLister()->openUrl(url);
+    searchLine->clear();
 }
 
 void folderContent::cd(KUrl url)
-{
-    searchLine->clear();
+{    
     navigator->setUrl( url );
 }
 
