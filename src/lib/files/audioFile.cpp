@@ -303,7 +303,6 @@ QString audioFiles::audioFile::cover()
  	   audioFiles::bestCover(covers,album,coverPath);	
     }    
     
-    qDebug()<<"COVER "<<coverPath;
     return coverPath;
 }
 

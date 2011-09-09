@@ -264,12 +264,12 @@ void core::libraryImporter::createTmpTable()
     QSqlQuery q(database);
     
     
-    q.exec("CREATE TEMPORARY TABLE tracksTmp 	LIKE tracks");
-    q.exec("CREATE TEMPORARY TABLE genresTmp 	LIKE genres");
-    q.exec("CREATE TEMPORARY TABLE artistsTmp 	LIKE artists");
-    q.exec("CREATE TEMPORARY TABLE albumsTmp 	LIKE albums");
-    q.exec("CREATE TEMPORARY TABLE composersTmp LIKE composers");    
-    q.exec("CREATE TEMPORARY TABLE playlistsTmp LIKE playlists");   
+    q.exec("CREATE  TABLE tracksTmp 	LIKE tracks");
+    q.exec("CREATE  TABLE genresTmp 	LIKE genres");
+    q.exec("CREATE  TABLE artistsTmp 	LIKE artists");
+    q.exec("CREATE  TABLE albumsTmp 	LIKE albums");
+    q.exec("CREATE  TABLE composersTmp LIKE composers");    
+    q.exec("CREATE  TABLE playlistsTmp LIKE playlists");   
 }
 
 void core::libraryImporter::save()
@@ -310,7 +310,32 @@ void core::libraryImporter::save()
     {
 	qDebug()<<q.lastError().text();
     }
-
+    
+    if(!q.exec("drop table artistsTmp") )
+    {
+	qDebug()<<q.lastError().text();
+    }    
+    if(!q.exec("drop table genresTmp") )
+    {
+	qDebug()<<q.lastError().text();
+    }
+    if(!q.exec("drop table albumsTmp") )
+    {
+	qDebug()<<q.lastError().text();
+    }  
+    if(!q.exec("drop table composersTmp") )
+    {
+	qDebug()<<q.lastError().text();
+    }  
+    if(!q.exec("drop table tracksTmp") )
+    {
+	qDebug()<<q.lastError().text();
+    }  
+    if(!q.exec("drop table playlistsTmp") )
+    {
+	qDebug()<<q.lastError().text();
+    }  
+  
         
     
 //     if (!database.commit() )
