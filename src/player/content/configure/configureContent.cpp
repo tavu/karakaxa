@@ -11,16 +11,16 @@ using namespace core;
 configureContent::configureContent(QWidget *parent)
         :abstractContent(parent),
         dbNameS(QObject::tr("database Name:")),
-	dbUserS(QObject::tr("User:")),
-	dbPassS(QObject::tr("password:"))
+	   dbUserS(QObject::tr("User:")),
+	   dbPassS(QObject::tr("password:"))
 {
     QLabel *l=new QLabel(this);
 
     l->setText("Player Configuration");
-    QFont font;
-    font.setBold(true);
-    font.setPointSize(10);
-    l->setFont(font);
+//     QFont font;
+//     font.setBold(true);
+//     font.setPointSize(10);
+//     l->setFont(font);
 
     QVBoxLayout *layout = new QVBoxLayout();
     libconfInit();
@@ -69,24 +69,16 @@ void configureContent::libconfInit()
     scanB=new QPushButton(tr("Scan"),this);
     scanB->setMaximumWidth(100);
 
-    cancelB=new QPushButton(tr("cancel"));
-    cancelB->setMaximumWidth(100);
-    cancelB->setDisabled(true);
-
-    bar=new QProgressBar(this);
-    bar->setMaximumWidth(200);
-    bar->hide();
-
     dbNameL = new QLineEdit(db->dataBName(),this);    
     dbUserL = new QLineEdit(db->dataBUser(),this);
     dbPassL = new QLineEdit(db->dataBPass(),this);
     dbPassL->setEchoMode(QLineEdit::Password);
     
-//     dbNameL->setMinimumWidth(150);
-//     dbUserL->setMinimumWidth(150);
-//     dbPassL->setMinimumWidth(150);
+     dbNameL->setMinimumWidth(150);
+     dbUserL->setMinimumWidth(150);
+     dbPassL->setMinimumWidth(150);
     
-    DbButtons=new QDialogButtonBox(QDialogButtonBox::Apply|QDialogButtonBox::Cancel,Qt::Horizontal,this);    
+     DbButtons=new QDialogButtonBox(QDialogButtonBox::Apply|QDialogButtonBox::Cancel,Qt::Horizontal,this);    
 
      QGridLayout *gl=new QGridLayout(groupB);
      gl->addWidget(&dbNameS,0,0);
@@ -102,13 +94,7 @@ void configureContent::libconfInit()
      gl->addWidget(removeFolder,3,3);
     
      gl->setRowMinimumHeight(4,45);
-     gl->addWidget(scanB,5,0);
-     gl->addWidget(cancelB,5,1);
-     gl->addWidget(&scanInf,5,2,Qt::AlignRight);
-     gl->addWidget(bar,5,3);
-     gl->addWidget(&info,6,3,Qt::AlignRight);
-     
-     
+     gl->addWidget(scanB,5,0);          
      
      gl->setColumnStretch(0,0);     
      gl->setColumnStretch(1,1);     
@@ -120,7 +106,7 @@ void configureContent::libconfInit()
     groupB->setLayout(gl);
     
     
-    connect(scanB,SIGNAL(clicked() ),this,SLOT(scan()));
+    connect(scanB,SIGNAL(clicked() ),core::db,SLOT(scan()));
     connect(addFolder,SIGNAL(clicked() ),this,SLOT(addLibraryFolder() ) );
     connect(removeFolder,SIGNAL(clicked() ),this,SLOT(removeLibraryFolder() ) );
     connect(DbButtons, SIGNAL(clicked(QAbstractButton* ) ), this, SLOT(DbButtonClicked(QAbstractButton*) ));
@@ -131,67 +117,12 @@ void configureContent::DbButtonClicked(QAbstractButton *button)
     if (DbButtons->buttonRole(button)==QDialogButtonBox::ApplyRole)
     {
         db->dBConnect(dbNameL->text(),dbUserL->text(),dbPassL->text());
-	db->setUpDb();
+	   db->setUpDb();
     }
 
     dbNameL->setText(db->dataBName());
     dbUserL->setText(db->dataBUser());
     dbPassL->setText(db->dataBPass());
-}
-
-void configureContent::scan()
-{
-    bar->setRange(0,0);
-    scanB->setDisabled(true);
-    cancelB->setDisabled(false);
-    bar->setRange(0,0);
-    bar->show();
-    scanInf.setText("Starting..");
-    scThread=new scanTread();
-
-    connect(scThread,SIGNAL(itemsNum(const int)),this,SLOT(prepare(const int)), Qt::QueuedConnection );
-    connect(scThread,SIGNAL(imported(const int)),bar,SLOT(setValue(const int)), Qt::QueuedConnection );
-    connect(scThread, SIGNAL(finished () ),this,SLOT(scanDone()), Qt::QueuedConnection);
-//       connect(scThread, SIGNAL(canceled(int) ),this,SLOT(canceled(int)), Qt::QueuedConnection);
-    connect(cancelB, SIGNAL(pressed() ),scThread,SLOT(stop()), Qt::QueuedConnection);
-
-
-    info.setText("");
-    scThread->scan();
-}
-
-void configureContent::prepare(const int num)
-{
-    if(num==0)
-    {
-	bar->hide();
-    }
-    else
-    {
-      bar->setMaximum(num);
-      scanInf.setText("Scanning..");
-    }
-
-}
-
-void configureContent::scanDone()
-{
-    scThread->disconnect();
-    scanB->setDisabled(false);
-    cancelB->setDisabled(true);
-
-    QString s("Imported %1 files");
-    if (scThread->isStoped() )
-    {
-        scanInf.setText("Canceled");
-    }
-    else
-    {
-        bar->setValue(bar->maximum() );
-        scanInf.setText("completed");
-    }
-    info.setText(s.arg(QString::number( scThread->importedNum() ) ) );
-    delete scThread;
 }
 
 void configureContent::addLibraryFolder()

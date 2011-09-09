@@ -79,11 +79,10 @@ class editTrackMenu :public core::abstractMenu
 	  connect(act,SIGNAL(triggered(bool)),this,SLOT(activated()) );
       }
       
-      bool canShow(QUrl &u ,bool multFiles)
+      bool canShow()
       {
-		if(core::isAudio(u.toLocalFile() ) )
+		if(core::isAudio(url().toLocalFile() ) )
 		{
-		    s=u.toLocalFile();
 		    return true;
 		}
 		return false;
@@ -96,12 +95,11 @@ class editTrackMenu :public core::abstractMenu
     
     private:
       QAction *act;
-      QString s;
       
     public slots:
 	void activated()
 	{
-	    editTrackContent *c=new editTrackContent(s);
+	    editTrackContent *c=new editTrackContent(url().toLocalFile());
 	    core::contentHdl->addContent(c,true);
 	}
 	

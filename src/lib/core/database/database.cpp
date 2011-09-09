@@ -10,11 +10,14 @@
 #include<QThread>
 #include"../func.h"
 #include"../status/playerStatus.h"
+#include"scanTread.h"
+
 core::database::database()
         :QObject()
 {
     db=QSqlDatabase::addDatabase("QMYSQL");
     readSettings();
+    _isScanning=false;
 }
 
 bool core::database::createConnection()
@@ -100,10 +103,7 @@ QSqlDatabase core::database::getDatabase()
 	if(!db.isOpen() )
 	{
 	    status->addErrorP("database is closed: "+db.lastError().text() );
-	    if(!db.open() )
-	    {
-		status->addErrorP("database error: "+db.lastError().text() );
-	    }
+	    createConnection();
 	}
 
 	mutex.unlock();	
@@ -293,8 +293,41 @@ QSqlQuery core::database::playlists()
   return q;
 }
 
+void core::database::scan()
+{
+    mutex.lock();
+    if(_isScanning )
+    {
+	   mutex.unlock();
+	   return ;
+    }
+    else
+    {
+	   _isScanning=true;
+	   mutex.unlock();
+	   scanThread *sc=new scanThread(this);
+	   QStringList libraryF=core::db->getLibraryFolders();
+	   sc->setDirs(libraryF);
+	   connect(sc,SIGNAL(finished()),this,SLOT(scanFinished()),Qt::QueuedConnection);	   
+	   emit scanStart(sc);
+	   connect(sc,SIGNAL(finished()),sc,SLOT(deleteLater()));
+	   sc->scan();
+	   
+    }
+    
+}
+
+void core::database::scanFinished()
+{
+    mutex.lock();
+    _isScanning=false;
+    mutex.unlock();
+}
+
+
 namespace core
 {
     database *db;
 };
-// int database::DBCHANGED=FRAME_NUM;
+
+

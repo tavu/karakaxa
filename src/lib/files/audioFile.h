@@ -51,24 +51,25 @@ class audioFile :public QObject
 	QVariant 			tag(int t,const short int f=DEFAULTF) const;
 	
 	QVariant			albumArtist();
-	QString				cover();
+	QString			cover();
 
-	bool 				setTag(int t,QVariant var);
+	bool 			setTag(int t,QVariant var);
 	void				setTags(QList<int> tags,QList<QVariant> values);
 	int 				albumId();
 
 
-	QString	folder();
+	QString			folder();
 
-	int size();
+	int 				size();
 
-	QString format();
+	QString 			format();
 
-	inline int error() const
+	int 		error() const
 	{
 	    //return the last error
 	    return err;
 	}
+	
 	inline int status() const
 	{
 	    //return an int that shows from where the last tag was loaded
@@ -99,6 +100,8 @@ class audioFile :public QObject
 	    }
 	    cache->setRecord(r,force);
 	}
+	
+	bool inDataBase(bool force=false);
 	
     private:	
       

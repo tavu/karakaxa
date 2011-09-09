@@ -44,8 +44,9 @@ bool core::soundEngine::play(int n)
         return false;
     }
 
-     mediaObject->setCurrentSource(s);
-     mediaObject->play();
+	 qDebug()<<"SET SOURCE";
+      mediaObject->setCurrentSource(s);
+      mediaObject->play();
     mutex.unlock();
 
     return true;

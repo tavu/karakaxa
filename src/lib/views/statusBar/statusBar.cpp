@@ -3,14 +3,18 @@
 #include"../../core/status/playerStatus.h"
 #include"../../core/nowPlayList/nplaylist.h"
 #include"../viewsFunc.h"
+#include"../../core/database/scanTread.h"
+
 using namespace core;
 views::statusBar::statusBar(QWidget *parent)
         :QStatusBar(parent),
-        timeOut(7000)
+        timeOut(7000),
+        scanW(0)
 {
     label=new QLabel(this);
+//     label->setText(prettyLength(0));
     setSizeGripEnabled(false);
-    setFixedHeight(25);
+    setFixedHeight(35);
     QFrame *f=new QFrame(this);
     f->setFrameStyle(QFrame::VLine);
 
@@ -22,6 +26,8 @@ views::statusBar::statusBar(QWidget *parent)
     connect(npList,SIGNAL(inserted(int) ),this,SLOT(setTrackTime() ), Qt::QueuedConnection );
     connect(npList,SIGNAL(removed(int) ),this,SLOT(setTrackTime() ), Qt::QueuedConnection );
     connect(npList,SIGNAL(cleared() ),this,SLOT(setTrackTime() ), Qt::QueuedConnection );
+    
+    connect(db,SIGNAL(scanStart(core::scanThread*)),this,SLOT(addScan(core::scanThread*)),Qt::QueuedConnection );
 }
 
 void views::statusBar::showMessage(const QString &s,int time)
@@ -63,4 +69,29 @@ views::statusBar::~statusBar()
 //       delete f;
 //       delete bar;
 
+}
+
+void views::statusBar::addScan(core::scanThread* sc)
+{   
+    if(scanW!=0)
+    {
+	 removeWidget(scanW);
+	 delete scanW;
+    }
+    scanW=sc->widget();
+    scanW->setFixedWidth(230);
+    insertPermanentWidget(0,scanW);
+    
+    QTimer *t=new QTimer(scanW);
+    t->setInterval(5000);
+    connect(t,SIGNAL(timeout()),this,SLOT(scanDone()));
+    connect(sc,SIGNAL(finished()),t,SLOT(start()) );
+//     connect(sc,SIGNAL(finished()),this,SLOT(scanDone()));
+}
+
+void views::statusBar::scanDone()
+{
+    removeWidget(scanW);
+    delete scanW;
+    scanW=0;
 }

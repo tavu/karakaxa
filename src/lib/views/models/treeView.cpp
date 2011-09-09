@@ -89,28 +89,8 @@ void views::treeView::mouseMoveEvent(QMouseEvent *event)
 void views::treeView::performDrag()
 {
     QModelIndexList list=selectedIndexes();
-    
-    if (list.isEmpty() )	return;
-    
-    QList<QUrl> urls;
-    qSort(list.begin(), list.end());
-    QModelIndexList::const_iterator it=list.begin();
-
-    while (it!=list.end() )
-    {
-	int r=(*it).row();
-	QUrl u=it->data(URL_ROLE).toUrl();
-	if(u.isValid() )
-	{
-	    urls.append(u);
-	}
-
-        while ( it!=list.end() && (*it).row()==r )
-        {
-            it++;
-        }
-
-    }
+        
+    QList<QUrl> urls=getUrls(list);
     
     if(urls.isEmpty() )
     {
@@ -340,3 +320,32 @@ void views::treeView::play(const QModelIndex index)
     core::engine->play(row );
 }
 
+QList<QUrl> views::treeView::getUrls(const QModelIndexList &list)
+{
+    QList<QUrl> urls;    
+    
+    if(list.isEmpty() )
+    {
+	   return urls;
+    }
+    
+//     qDebug()<<"SI "<<list.size();
+    
+    int k=list.at(0).column();
+    
+    foreach(QModelIndex index,list)
+    {
+	   if(index.column()==k)
+	   {
+		  QUrl u=index.data(URL_ROLE).toUrl();
+		  
+		  if(u.isValid() )
+		  {
+			 urls.append(u);
+		  }
+	   }
+    }    
+  
+    return urls;
+}
+	

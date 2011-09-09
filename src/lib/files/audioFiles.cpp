@@ -38,7 +38,47 @@ int audioFiles::coverMark(const QString &al, const QString &cov)
     return 1;
 }
 
-const int audioFiles::BEST_COVER=3;
+int audioFiles::bestCover( const QLinkedList<QString> &covers,QString album,QString &cover)
+{
+    int mark=0;
+    album=album.toUpper();
+    foreach(QString s,covers)
+    {
+	   s=core::titleFromPath(s);
+	   s=s.toUpper();
+	   
+	   if(s==album)
+	   {
+		  cover=s;
+		  mark=5;
+	   }
+	   else if(s==QString("FOLDER") && mark<4 )
+	   {
+		  cover=s;
+		  mark=4;
+	   }
+	   else if(s==QString("FROND") && mark<3 )
+	   {
+		  cover=s;
+		  mark=3;
+	   }
+	   else if(s.contains("FROND") && mark<3 )
+	   {
+		  cover=s;
+		  mark=2;
+	   }
+	   else if(mark<2)
+	   {
+		  cover=s;
+		  mark=1;
+	   }
+    }
+    
+    return mark;
+}
+
+
+const int audioFiles::BEST_COVER=5;
 
 namespace audioFiles
 {

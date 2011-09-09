@@ -6,6 +6,7 @@
 #include<QMutex>
 #include<QSqlQuery>
 #include<QSqlError>
+#include<QDebug>
 // #include"../core/database/database.h"
 // #include<player.h>
 // #include"playerNamespace.h"
@@ -29,6 +30,7 @@ class fileToDb
 	void setAlbum(const QString &s)
 	{
 	    _album=s;
+	    qDebug()<<"fdb al "<<_album;
 	}
 	
 	void setArtist(const QString &s)
@@ -41,6 +43,12 @@ class fileToDb
 // 	void save();
 	static QSqlRecord 	record(const QString path,int &err);
 	QString			albumArt(const int albumId,int &err);
+	
+	void 			cleanUp();
+	void 			clearArtist();
+	void 			clearAlbum();
+	void 			clearGenre();
+	void 			clearComposer();
 	
     private:
 	int 	setTitle (const QString path,const QString &s);
@@ -58,7 +66,7 @@ class fileToDb
 
     
     
-	QString		_album;
+	QString	_album;
 	QString 	_artist;
 	QString 	_path;
 	int 		_id;

@@ -25,6 +25,7 @@ class nplTread :public  QThread//, public QObject
 	void addPlaylist(const QString &url);
 	void addSingleFile(const QString &url);
 	void cleanUp();
+	static bool trackLessThan(nplPointer a,nplPointer b);
 	
     protected:
 	void run();

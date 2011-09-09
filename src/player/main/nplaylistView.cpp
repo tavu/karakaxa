@@ -190,12 +190,17 @@ void nplaylistView::contextMenuEvent(QContextMenuEvent *e)
 	   QMenu *m=new QMenu(tr("More"),menu );
 	   m->setPalette(menu->palette());
 	   menu->addMenu(m);
-	   core::contentHdl->contextMenu(m,currentIndex().data(URL_ROLE).toUrl(),!selectedIndexes().isEmpty());
+	   
+	   QModelIndexList list=selectedIndexes();
+	   QList<QUrl>urls=views::treeView::getUrls(list);
+	   
+	   core::contentHdl->contextMenu(m,currentIndex().data(URL_ROLE).toUrl(),urls);
 		  
 	   menu->exec( e->globalPos() );
 	   delete menu;
     }
 }
+
 void nplaylistView::dragEnterEvent ( QDragEnterEvent * event )
 {
     onDrag=true;
@@ -259,6 +264,10 @@ void nplaylistView::mouseDoubleClickEvent(QMouseEvent* event)
 {
 //     QTreeView::mouseDoubleClickEvent(event);
      QModelIndex index=indexAt( viewport()->mapFromGlobal(QCursor::pos() )  );
-	engine->play(index.row() );
+	
+	if(index.isValid() )
+	{
+	   engine->play(index.row() );
+	}
 }
 

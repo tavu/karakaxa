@@ -4,7 +4,6 @@
 #include<QListView>
 #include <QStringListModel>
 #include<QGroupBox>
-#include"scanTread.h"
 #include<QLabel>
 #include<QProgressBar>
 #include <QCheckBox>
@@ -30,18 +29,13 @@ class configureContent :public core::abstractContent
 	QStringList		sList;
 	QGroupBox 		*groupB;
 
-	QPushButton 		*scanB;
-	QPushButton 		*cancelB;
-	QProgressBar 		*bar;
-	QLabel			scanInf;
-	QLabel			info;
-	scanTread 		*scThread;
-	QCheckBox		*rememberPl;
+	QPushButton 		*scanB;	
+	QCheckBox			*rememberPl;
 
 	QDialogButtonBox 	*DbButtons;
-	QLineEdit		*dbNameL;
-	QLineEdit		*dbUserL;
-	QLineEdit		*dbPassL;
+	QLineEdit			*dbNameL;
+	QLineEdit			*dbUserL;
+	QLineEdit			*dbPassL;
 	
 	QLabel 			dbNameS;
 	QLabel 			dbUserS;
@@ -54,9 +48,6 @@ class configureContent :public core::abstractContent
     private slots:
 	void addLibraryFolder();
 	void removeLibraryFolder();
-	void scanDone();
-	void scan();
-	void prepare(const int num);
 	void DbButtonClicked(QAbstractButton*);
 	void rememberPlSlot(int);
 };

@@ -27,6 +27,7 @@ int main(int argc, char *argv[])
 
     
     int ret=app.exec();
+//     sleep(5);
     core::cleanUp();
     return ret;
 }

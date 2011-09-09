@@ -235,12 +235,23 @@ void core::nplaylist::addMediaList(const QStringList &list,int pos)
 
 
 void core::nplaylist::move(int from,int pos)
-{     
+{         
     if(from==pos)
 	 return ;
-
-    model->beginMoveRows(QModelIndex(), from, from, QModelIndex(), pos);
+  
+    qDebug()<<"POS "<<from<<" "<<pos;
+    
+    if(from<pos)
+    {
+	   model->beginMoveRows(QModelIndex(), from, from, QModelIndex(),pos+1);
+    }
+    else 
+    {
+	 model->beginMoveRows(QModelIndex(), from, from, QModelIndex(),pos);
+    }
+            
     trackList.move(from,pos);   
+    
     model->endMoveRows();
 }
 
@@ -388,7 +399,7 @@ void core::nplaylist::informTrack()
 {
    if(!playing.isNull() )
    {
-      playing->play();
+//       playing->play();
    }
 }
 

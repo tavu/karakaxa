@@ -35,34 +35,34 @@ class treeView :public QTreeView
 	    delegate->setEditorFactory(f);
 	}
 	
+	static QList<QUrl> getUrls(const QModelIndexList &list);
 
     protected:
-	QPoint startPos;
-	views::treeViewDelegate *delegate;
+	   QPoint startPos;
+	   views::treeViewDelegate *delegate;
 
-	virtual void mouseMoveEvent(QMouseEvent *event);
-	virtual void performDrag();
-	virtual void contextMenuEvent(QContextMenuEvent *e);
-	void headerRepaint();
-	virtual void leaveEvent(QEvent*)  ;		
+	   virtual void mouseMoveEvent(QMouseEvent *event);
+	   virtual void performDrag();
+	   virtual void contextMenuEvent(QContextMenuEvent *e);
+	   void headerRepaint();
+	   virtual void leaveEvent(QEvent*)  ;		
 
-    protected slots:
-	virtual void commitData ( QWidget * editor ) ;
+	   protected slots:
+	   virtual void commitData ( QWidget * editor ) ;
 
-    public slots:
-	virtual void writeSettings();
-	virtual void readSettings();
-	virtual void updateStarWidget(QModelIndex parent, int start, int end);
-	void updateStarWidget();
-	virtual void dataChanged ( const QModelIndex & topLeft, const QModelIndex & bottomRight );
-	virtual void closeEditor ( QWidget * editor, QAbstractItemDelegate::EndEditHint hint );
-	virtual void play(const QModelIndex index);
-	
-	void editCurrent()
-	{
-	    edit(currentIndex() );
-	}
-	
+	   public slots:
+	   virtual void writeSettings();
+	   virtual void readSettings();
+	   virtual void updateStarWidget(QModelIndex parent, int start, int end);
+	   void updateStarWidget();
+	   virtual void dataChanged ( const QModelIndex & topLeft, const QModelIndex & bottomRight );
+	   virtual void closeEditor ( QWidget * editor, QAbstractItemDelegate::EndEditHint hint );
+	   virtual void play(const QModelIndex index);
+	   
+	   void editCurrent()
+	   {
+		  edit(currentIndex() );
+	   }	   
 	
     signals:
 	void showContextMenu(QModelIndex,QModelIndexList);

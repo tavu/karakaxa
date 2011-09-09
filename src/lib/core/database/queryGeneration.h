@@ -5,21 +5,13 @@
 #include<QVector>
 #include<QDebug>
 // #include"../coreNamespace.h"
-// using namespace core;
+#include"album.h"
 #include <QDomElement>
 #include"queryThr.h"
 
 namespace core
 {
   
-struct album
-{
-    QString name;
-    QString artist;
-    int id;
-    QString cover; 
-};
-typedef struct album album;
 
   
   
@@ -331,7 +323,7 @@ class albumQueryGrt :public queryGrt
 	QString queryString() const;
 
 	bool select();
-	QList<album> result()
+	QList<albumEntry> result()
 	{
 	    return list;
 	}
@@ -351,7 +343,7 @@ class albumQueryGrt :public queryGrt
 	{
 	    QStringList l;
 	    l.reserve(list.size() );
-	    foreach(album a,list)
+	    foreach(albumEntry a,list)
 	    {
 		l.append(a.name);
 	    }
@@ -362,7 +354,7 @@ class albumQueryGrt :public queryGrt
 	void setNeedUpdate(const audioFiles::audioFile f);
 
     private:
-	QList<album> list;
+	QList<albumEntry> list;
 	QString artist_;
 };
 

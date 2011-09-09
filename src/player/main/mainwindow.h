@@ -92,7 +92,9 @@ class mainWindow :public KMainWindow
 	void readSettings();
 
 	void closeEvent(QCloseEvent *event);
-    
+// 	void keyPressEvent ( QKeyEvent * event );
+	
+	
     public slots:
 	void stateChanged(Phonon::State state);
 	void iconActivated(QSystemTrayIcon::ActivationReason reason);

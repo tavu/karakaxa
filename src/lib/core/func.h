@@ -8,8 +8,8 @@
 namespace core
 {
   
-QString 	folder(QString path) ;
-QString 	titleFromPath(const QString &path);
+QString 		folder(QString path) ;
+QString 		titleFromPath(const QString &path);
 bool   		isStream(const QString s);
 bool   		isStream(const QUrl url);
 bool 		isDirectory(const QString &url);
@@ -17,13 +17,13 @@ bool			isPlaylist(const QString &url);
 bool 		isAudio(const QString &url);
 bool			isImage(const QString &url);
 
-QString 	format(QString path);
+QString 		format(QString path);
 
-// void 		editTrack(const QString &s);
+
 void 		init();
 void 		cleanUp();
-bool		exists(const QString &url);
-QThread*	mainThr();
+bool			exists(const QString &url);
+QThread*		mainThr();
 
 int getRandomN(int min,int max);
 

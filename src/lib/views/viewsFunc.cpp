@@ -7,10 +7,21 @@ QString views::prettyLength(int l)
     QString s;
     int min=l/60;
     int hour=min/60;
+    min=min-hour*60;
     int sec=l%60;
 
-    s.append(QString::number(min)+':'+QString::number(sec));
-
+    s.append(QString::number(sec));
+    if(sec<10)
+    {
+	 s.prepend(QString::number(0) );
+    }
+    
+    s.prepend(QString::number(min)+':');
+    if(min<10)
+    {
+	 s.prepend(QString::number(0) );
+    }               
+    
     if (hour>0)
     {
         s.prepend(QString::number(hour)+':');

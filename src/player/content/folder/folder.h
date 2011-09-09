@@ -96,13 +96,11 @@ class folderContextMenu :public core::abstractMenu
 	    delete act;
 	}
 	
-	virtual bool canShow(QUrl &u ,bool multFiles)
+	virtual bool canShow()
 	{
-	    this->u=KUrl(u);
-	    if(this->u.isLocalFile() && _show  )
+	    if(url().isLocalFile() && _show  )
 	    {
-		this->u=u;
-		return true;
+		  return true;
 	    }
 	    
 	    return false;
@@ -121,13 +119,12 @@ class folderContextMenu :public core::abstractMenu
     private:      
       folderContent *f;
       QAction *act;
-      KUrl u;
       bool _show ;
 
     private slots:
 	void cd()	
 	{
-	    f->cd(core::folder(u.toLocalFile()) );
+	    f->cd(core::folder(url().toLocalFile()) );
 	    core::contentHdl->setCurrentContent(f);
 	}
 	

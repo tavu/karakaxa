@@ -104,11 +104,11 @@ int audioFiles::fileToDb::setTag(int t, QVariant var)
 
 int audioFiles::fileToDb::commit()
 {
-    if (!databs.commit() )
-    {
-        qDebug()<<"Seting genre error: "<<databs.lastError().text();
-        return DBERR;
-    }
+//     if (!databs.commit() )
+//     {
+//         qDebug()<<"Seting genre error: "<<databs.lastError().text();
+//         return DBERR;
+//     }
     return OK;
 
 }
@@ -120,7 +120,7 @@ int fileToDb::prepare()
         return DBERR;
     }
     
-    databs.transaction();
+//     databs.transaction();
     
     return OK;
 }
@@ -132,9 +132,8 @@ int audioFiles::fileToDb::setArtist (const QString path,const QString &s,const Q
     q.prepare("select artist,lead_artist,album from tracks where path=?");
     q.addBindValue(path );
     q.exec();
-    q.next();
 
-    if (!q.isValid())
+    if (!q.first())
     {
         return NOTINDB;
     }
@@ -164,8 +163,7 @@ int audioFiles::fileToDb::setArtist (const QString path,const QString &s,const Q
         
     q.prepare( "select id from leadArtists where name='' ");
     q.exec();
-    q.next();
-    if(q.isValid())
+    if(q.first())
     {
 	nullArtistId=q.value(0).toInt();
     }
@@ -177,16 +175,10 @@ int audioFiles::fileToDb::setArtist (const QString path,const QString &s,const Q
             qDebug()<<"Can't update album artist";
             return DBERR;
         }
-        q.prepare("delete from albums where id=?");
-        q.addBindValue( albumId );
-        q.exec();
-
+	   clearAlbum();
     }
 
-    //if there are more thracks on that album the databs will cansel the delete
-    q.prepare("delete from artists where id=?");
-    q.addBindValue( artistId );
-    q.exec();
+    clearArtist();
 
     return OK;
 }
@@ -197,9 +189,8 @@ int audioFiles::fileToDb::setAlbum (const QString path,const QString &s)
     q.prepare("select album from tracks where path=?");
     q.addBindValue(path );
     q.exec();
-    q.next();
 
-    if (!q.isValid())
+    if (!q.first())
     {
         return DBERR;
     }
@@ -232,10 +223,7 @@ int audioFiles::fileToDb::setAlbum (const QString path,const QString &s)
         return DBERR;
     }
 
-    //if there are more thracks on that album the databs will cansel the delete
-    q.prepare("delete from albums where id=?");
-    q.addBindValue( albumId );
-    q.exec();
+    clearAlbum();
 
     return OK;
 }
@@ -247,9 +235,8 @@ int audioFiles::fileToDb::setGenre (const QString path,const QString &s)
     q.prepare("select genre from tracks where path=?");
     q.addBindValue(path);
     q.exec();
-    q.next();
 
-    if (!q.isValid())
+    if (!q.first())
     {
         return NOTINDB;
     }
@@ -272,10 +259,7 @@ int audioFiles::fileToDb::setGenre (const QString path,const QString &s)
         return DBERR;
     }
 
-    //if there are more thracks on that album the databs will cansel the delete
-    q.prepare("delete from genres where id=?");
-    q.addBindValue( albumId );
-    q.exec();
+    clearGenre();
 
     return OK;
 }
@@ -286,9 +270,8 @@ int audioFiles::fileToDb::setLeadArtist (const QString path,const QString &s,con
     q.prepare("select lead_artist,album from tracks where path=?");
     q.addBindValue(path );
     q.exec();
-    q.next();
 
-    if (!q.isValid())
+    if (!q.first())
     {
         return NOTINDB;
     }
@@ -304,23 +287,20 @@ int audioFiles::fileToDb::setLeadArtist (const QString path,const QString &s,con
         return DBERR;
     }
 
-    QString k;
+    QString albumArtistS;
     if (s.isEmpty() )
     {
-        k=artist;
+        albumArtistS=artist;
     }
     else
     {
-        k=s;
+        albumArtistS=s;
     }
 
-    if (!setAlbumArtist(path,k,album,q) )
+    if (!setAlbumArtist(path,albumArtistS,album,q) )
     {
         return DBERR;
     }
-    q.prepare("delete from albums where id=?");
-    q.addBindValue( albumId );
-    q.exec();
 
     q.prepare( "update tracks SET lead_artist=@i where path=?");
     q.addBindValue(path);
@@ -332,12 +312,10 @@ int audioFiles::fileToDb::setLeadArtist (const QString path,const QString &s,con
         return DBERR;
     }
 
-
-    //if there are more thracks on that album the databs will cansel the delete
-    q.prepare("delete from artists where id=?");
-    q.addBindValue( LartistId );
-    q.exec();
-
+    clearAlbum();
+    clearArtist();
+    
+    
     return OK;
 }
 
@@ -347,9 +325,8 @@ int audioFiles::fileToDb::setComposer (const QString path,const QString &s)
     q.prepare("select composer from tracks where path=?");
     q.addBindValue(path );
     q.exec();
-    q.next();
 
-    if (!q.isValid())
+    if (!q.first())
     {
         qDebug()<<"probably file not exist in library";
         return NOTINDB;
@@ -375,10 +352,7 @@ int audioFiles::fileToDb::setComposer (const QString path,const QString &s)
         return DBERR;
     }
 
-    //if there are more thracks with that composer the databs will cansel the delete
-    q.prepare("delete from composers where id=?");
-    q.addBindValue( composerId );
-    q.exec();
+    clearComposer();
 
     return OK;
 }
@@ -388,16 +362,15 @@ bool audioFiles::fileToDb::setAlbumArtist(const QString &path,const QString &s,c
     q.prepare( "CALL get_album(?,?,@k)");
     q.addBindValue(album);
     q.addBindValue(s);
-
+   
+    
     if (!q.exec() )
     {
         qDebug()<<"On setAlbumArtist";
-        qDebug()<<"	can't set lead artist"<< q.lastError();
+        qDebug()<<"	can't set album artist"<< q.lastError();
 
         return false;
     }
-    q.exec("select @k");
-    q.next();
 
     q.prepare( "update tracks SET album=@k where path=?");
     q.addBindValue(path );
@@ -426,9 +399,8 @@ int audioFiles::fileToDb::setTitle(const QString path,const QString &s)
         q.prepare("select title from tracks where path=?");
         q.addBindValue(path );
         q.exec();
-        q.next();
-
-        if (!q.isValid())
+        
+	   if( !q.first() )
         {
             qDebug()<<"probably file not exist in library";
             return NOTINDB;
@@ -521,41 +493,39 @@ QSqlRecord audioFiles::fileToDb::record(const QString path,int &err)
     if (!databs.open() )
     {
          err=DBERR;
-	 core::db->closeDatabase(databs);
+	    core::db->closeDatabase(databs);
          return QSqlRecord();
     }
     
     QSqlRecord r;
     
     {
-	QSqlQuery q(databs );
+	 QSqlQuery q(databs );
 
-	q.prepare("select * from trackView where path=?");
-	q.addBindValue(path);
+	 q.prepare("select * from trackView where path=?");
+	 q.addBindValue(path);
 
-	if (!q.exec() )
-	{
-	    qDebug()<<"getting record error "<<q.lastError().text();
-	    err=DBERR;
+	 if (!q.exec() )
+	 {
+		qDebug()<<"getting record error "<<q.lastError().text();
+		err=DBERR;
 
-	    core::db->closeDatabase(databs);
- 	    r=QSqlRecord();
-	}
-	else
-	{	
-	    q.next();
-	    r=q.record();
-
-	    if (r.isEmpty() ||q.value(PATH).isNull() )
-	    {
-		err=NOTINDB;
+		core::db->closeDatabase(databs);
 		r=QSqlRecord();
-	    }
-	    else
-	    {
-		err=OK;
-	    }
-	}
+	 }
+	 else
+	 {
+		if(q.first() )
+		{		  
+		    r=q.record();
+		    err=OK;
+		}
+		else
+		{  
+		    r=QSqlRecord();
+		    err=NOTINDB;
+		}
+	 }
     }
     
     core::db->closeDatabase(databs);
@@ -576,7 +546,7 @@ QString audioFiles::fileToDb::albumArt(const int albumId,int &err)
         return QString();
     }
 
-    q.next();
+    q.first();
     err=OK;
     return q.value(0).toString();
 }
@@ -596,4 +566,60 @@ int audioFiles::fileToDb::setAlbumArt(const int albumId,QString art)
    }
 
     return OK;
+}
+
+void fileToDb::cleanUp()
+{
+    clearArtist();
+    clearAlbum();    
+    clearGenre();    
+    clearComposer();
+}
+
+void fileToDb::clearArtist()
+{	   
+	 QSqlQuery q(databs );
+	 
+	 q.prepare("delete from artists where artists.id not in (select tracks.lead_artist from tracks) and artists.id not in (select tracks.artist from tracks)");
+
+	 if (!q.exec() )
+	 {
+		qDebug()<<"setting albumArt error "<<q.lastError().text();		
+	 }    
+}
+
+void fileToDb::clearAlbum()
+{	   
+	 QSqlQuery q(databs );
+	 
+	 q.prepare("delete from albums where albums.id not in (select tracks.album from tracks)");
+
+	 if (!q.exec() )
+	 {
+		qDebug()<<"setting albumArt error "<<q.lastError().text();		
+	 }    
+}
+
+void fileToDb::clearGenre()
+{	   
+	 QSqlQuery q(databs );
+	 
+	 q.prepare("delete from genres where genres.id not in (select tracks.genre from tracks)");
+
+	 if (!q.exec() )
+	 {
+		qDebug()<<"setting albumArt error "<<q.lastError().text();		
+	 }    
+}
+
+void fileToDb::clearComposer()
+{	   
+	 QSqlQuery q(databs );
+	 
+	 q.prepare("delete from composers where composers.id not in (select tracks.composer from tracks)");
+
+	 if (!q.exec() )
+	 {
+		qDebug()<<"setting albumArt error "<<q.lastError().text();		
+	 }    
 }

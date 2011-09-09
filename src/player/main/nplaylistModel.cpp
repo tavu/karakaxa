@@ -117,6 +117,7 @@ void nplModel::reorder(int r)
     set<int>::const_iterator it=reorderL.begin();
 
     int n=0;
+    int k=0;
     for(;it!=reorderL.end();it++)
     {
 	   if(*it<r )
@@ -126,7 +127,8 @@ void nplModel::reorder(int r)
 	   }
 	   else
 	   {
-		  npList->move(*it,r);
+		  npList->move(*it,r+k);
+		  k++;
 	   }
     }
 }

@@ -8,7 +8,7 @@
 #include <QProgressBar>
 #include"nplStream.h"
 #include"playlist/abstractPlaylist.h"
-
+#include<QtAlgorithms>
 
 nplTread::nplTread()
         :QThread(),
@@ -78,6 +78,12 @@ void nplTread::addMedia(const QString &url)
 {
     if (core::isDirectory(url) )	
     {
+	 if(list.size()>0)
+	 {
+		npList->insert(list,pos);
+		pos+=list.size();
+		list.clear();
+	 }
       addDirectory(url);
     }
     else if(core::isPlaylist(url) )
@@ -151,20 +157,53 @@ void nplTread::setPos(int num)
 
 void nplTread::addDirectory(const QString &url)
 {
-    QDirIterator it(url,QDir::Files|QDir::NoDotAndDotDot,QDirIterator::Subdirectories);
-    QFileInfo info;
-    while (it.hasNext() && !canceled )
+//     QDirIterator it(url,QDir::Files|QDir::NoDotAndDotDot,QDirIterator::Subdirectories);
+//     QFileInfo info;
+    QLinkedList<QString> dirs;
+    
     {
-        it.next();
-        info=it.fileInfo();
-	
-	if(core::isAudio(info.filePath()) )
-	{
-	    addSingleFile(info.filePath());
-	}	
-	else if(core::isDirectory(info.filePath() ) )
-	{
-	    addDirectory(info.filePath() );
-	}
+	   nplList files;
+	   
+	   
+	   QDir dir(url);
+	   QFileInfoList infoList=dir.entryInfoList(QDir::AllEntries|QDir::NoDotAndDotDot|QDir::NoSymLinks);    
+	   
+	   for (int i=0;i<infoList.size() && !canceled ;i++)
+	   {
+		  if(core::isAudio(infoList.at(i).absoluteFilePath() ) )
+		  {		  
+			 nplPointer tr=core::nplTrack::getNplTrack(infoList.at(i).absoluteFilePath() );
+			 if(!tr.isNull() )
+			 {
+				files<<tr;
+				audioFile file(url);
+				file.load();
+			 }		
+		  }
+		  else if(core::isDirectory(infoList.at(i).absoluteFilePath()) )	 
+		  {
+			 dirs<<infoList.at(i).absoluteFilePath();
+		  }
+	   }
+	   
+	   qDebug()<<"ER "<<files.size();
+	   
+	   qSort(files.begin(),files.end(),trackLessThan);
+	   npList->insert(files,pos);
+	   pos+=files.size();    
     }
+	
+	foreach(QString s,dirs)
+	{
+		addDirectory(s);
+	}
+}
+
+bool nplTread::trackLessThan(nplPointer a,nplPointer b)
+{
+    int trackA,trackB;
+    trackA=a->tag(TRACK).toInt();
+    trackB=b->tag(TRACK).toInt();
+    
+    return trackA<trackB;
 }

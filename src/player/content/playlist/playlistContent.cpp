@@ -428,7 +428,9 @@ void playlistContent::contextMenuForTracks(QModelIndex index, QModelIndexList li
     connect(act,SIGNAL(triggered(bool)),trackV,SLOT(editCurrent()) );
     menu->addAction(act);
     
-    core::contentHdl->contextMenu(menu,KUrl(u),!list.isEmpty() );
+    QList<QUrl> urls=views::treeView::getUrls(list);
+    
+    core::contentHdl->contextMenu(menu,KUrl(u),urls );
     if(!menu->isEmpty() )
     {
 	menu->exec( QCursor::pos() );

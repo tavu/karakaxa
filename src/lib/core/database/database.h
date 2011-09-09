@@ -7,19 +7,20 @@
 #include<QVariant>
 #include<QMessageBox>
 #include<QObject>
+#include"album.h"
 
 #include"../files/audioFile.h"
 
 namespace core
 {
-// class editMultFiles;
+class scanThread;
 
 class database :public QObject
 {    
     Q_OBJECT
     public:
  	friend class audioFiles::audioFile;
-// 	static int DBCHANGED;
+
       
 	database();
 	~database();
@@ -28,12 +29,7 @@ class database :public QObject
 	void closeDatabase();
 	
 	QStringList getLibraryFolders();
-
-
 	const QString error();
-// 	QSqlDatabase clone(const QString &s);
-// 	QStringList getArtists(const QString &path);
-		
 	const QString trackTable();
 
 	void addLibraryFolder(QString s);
@@ -57,6 +53,8 @@ class database :public QObject
 	{
 	    return db.isOpen();
 	}
+	
+	
 	
 	
 	static void toSqlSafe(QString &s);	
@@ -99,6 +97,7 @@ class database :public QObject
 	QString dbPass;
 	
 	bool _isConnected;
+	bool _isScanning;
 	
 	QString apprName(QThread *thr);
 	QMutex mutex;
@@ -106,6 +105,14 @@ class database :public QObject
     signals:
 	void changed();
 	void updated(audioFiles::audioFile);
+	void scanStart(core::scanThread*);
+	
+    public slots:
+	 void scan();
+	 
+	 
+    private slots:
+	 void scanFinished();
 };
 
 extern database *db;

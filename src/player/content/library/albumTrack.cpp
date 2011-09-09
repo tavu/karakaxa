@@ -197,8 +197,10 @@ void albumTrack::showContexMenuSlot(QModelIndex index, QModelIndexList list)
 {
     if(!index.isValid() )
     {
-	return ;
+	 return ;
     }
+    
+//     qDebug()<<"LI "<<list.size();
     
     QUrl u=index.data(URL_ROLE).toUrl();    
     QMenu *menu=new QMenu(this);
@@ -207,7 +209,8 @@ void albumTrack::showContexMenuSlot(QModelIndex index, QModelIndexList list)
     connect(act,SIGNAL(triggered(bool)),this,SLOT(trackEdit()) );
     menu->addAction(act);
     
-    core::contentHdl->contextMenu(menu,KUrl(u),!list.isEmpty() );
+    QList<QUrl>urls=trackV->getUrls(list);
+    core::contentHdl->contextMenu(menu,KUrl(u),urls );
     if(!menu->isEmpty() )
     {
 	menu->exec( QCursor::pos() );

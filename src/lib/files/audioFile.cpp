@@ -113,7 +113,7 @@ QVariant audioFiles::audioFile::tag(int t, const short int f) const
     if (f & ONDATAB)
     {
 	//the first field of the record conteins the albumId
-	ret=cache->tagFromDb(t+1, err);
+	   ret=cache->tagFromDb(t+1, err);
         if (err==OK)
         {
 	    if (t==TITLE && ret.toString().isEmpty() && (f & TITLEFP) )
@@ -193,7 +193,7 @@ bool audioFiles::audioFile::setTag(int t,QVariant var)
 	   return false;
     }      
     
-    fdb->setAlbum ( tag(ALBUM,ONDATAB).toString()  );
+    fdb->setAlbum ( tag(ALBUM,ONDATAB|SELECT).toString()  );
     fdb->setArtist( tag(ARTIST,ONDATAB).toString() );
     
     file->setTag( (tagsEnum)t,var);
@@ -226,7 +226,7 @@ bool audioFiles::audioFile::setTag(int t,QVariant var)
 
     if(err==OK||err==NOTINDB)
     {
-	return true;  
+	 return true;  
     }
 
     return false;
@@ -287,30 +287,20 @@ QString audioFiles::audioFile::cover()
     //if there is no album art on database we search on directory
     if(coverPath.isNull() )
     {
-	QDir dir(core::folder(path() ) );
-	QFileInfoList infoList=dir.entryInfoList(QDir::Files|QDir::NoDotAndDotDot); 
-	
-	int mark=0;
-	for (int i=0;i<infoList.size();i++)     
-	{
-	      QString p=infoList.at(i).absoluteFilePath();
-	      if(core::isImage(p) )
-	      {
-		  int num=coverMark( tag(ALBUM).toString(),p);
-		  
-		  //thats the best image for cover		  
-		  if(num==BEST_COVER)
+	   QLinkedList<QString> covers; 
+	   QDir dir(core::folder(path() ) );
+	   QFileInfoList infoList=dir.entryInfoList(QDir::Files|QDir::NoDotAndDotDot); 
+	   
+	   for (int i=0;i<infoList.size();i++)  
+	   {
+		  if(core::isImage(infoList.at(i).absoluteFilePath() ) )
 		  {
-		      return p;
+			 covers<<infoList.at(i).absoluteFilePath();
 		  }
-		  //we found a better image
-		  if(num>mark)
-		  {
-		      mark=num;
-		      coverPath=p;		      
-		  }
-	      }
-	}
+	   }
+	   
+	   QString album=tag(ALBUM).toString();
+ 	   audioFiles::bestCover(covers,album,coverPath);	
     }    
     
     return coverPath;
@@ -363,17 +353,17 @@ bool audioFiles::audioFile::prepareToSave()
     
     if(file->isValid() )
     {
-      err=fdb->prepare();
+	   err=fdb->prepare();
     }
     else
     {
-	err=INVALID_FILE;
+	   err=INVALID_FILE;
     }    
     
     if(err==OK)
     {
-        cache->lockForSaving();
-	return true;
+	   cache->lockForSaving();
+	   return true;
     }
     
     return false;
@@ -473,6 +463,25 @@ QString audioFiles::audioFile::format()
       
     return core::format(path() );
 }
+
+bool audioFiles::audioFile::inDataBase(bool force)
+{
+    if( cache==0)
+    {
+	 err=INVALID_FILE;
+	 return false;
+    }
+    
+    err=cache->select(force);
+    
+    if(err==OK)
+    {
+	   return true;
+    }
+    
+    return false;
+}
+
 
 /*
 void audioFiles::audioFile::recordClean()

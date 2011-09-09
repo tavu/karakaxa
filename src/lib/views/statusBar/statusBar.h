@@ -5,7 +5,7 @@
 // #include".h"
 #include<QLabel>
 #include<QStatusBar>
-
+#include"../../core/database/database.h"
 #include"nowPlayList/nplaylist.h"
 
 namespace views
@@ -21,17 +21,20 @@ class statusBar :public QStatusBar
 	~statusBar();
 	void init();
   protected:    
-	int timeOut;
-	
+	int timeOut;	
 	QLabel *label;
-
+	QWidget *scanW;
+	
     public slots:
 	void showMessage(const QString &s,int time=-1);
 
     // 	  void setTrackTime(int l);
 
     private slots:
-	void setTrackTime();
+	 void setTrackTime();
+	 void addScan(core::scanThread *sc);
+	 
+	 void scanDone();	 	 
 
 
 };//class

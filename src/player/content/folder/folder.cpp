@@ -137,6 +137,7 @@ void folderContent::showUrl(KUrl url)
 
 void folderContent::cd(KUrl url)
 {
+    searchLine->clear();
     navigator->setUrl( url );
 }
 
@@ -189,7 +190,7 @@ void folderContent::showContexMenuSlot(QModelIndex index, QModelIndexList list)
 {
     if(!index.isValid() )
     {
-	return ;
+	 return ;
     }
   
     QUrl u=index.data(URL_ROLE).toUrl();    
@@ -212,11 +213,12 @@ void folderContent::showContexMenuSlot(QModelIndex index, QModelIndexList list)
     
    
     m->setShow(false);
+    QList<QUrl>urls=view->getUrls(list);
+    core::contentHdl->contextMenu(menu,KUrl(u),urls );
     
-    core::contentHdl->contextMenu(menu,KUrl(u),!list.isEmpty() );
     if(!menu->isEmpty() )
     {
-	menu->exec( QCursor::pos() );
+	 menu->exec( QCursor::pos() );
     }
     m->setShow(true);
     

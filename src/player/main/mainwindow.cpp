@@ -7,9 +7,7 @@
 #include <QTextCodec>
 #include<QApplication>
 #include<QMenuBar>
-// #include "../content/folder/folder.h"
-// #include "../content/playlist/playlistContent.h"
-// #include "../content/configure/configureContent.h"
+
 #include<QToolButton>
 #include<core.h>
 #include<KConfig>
@@ -461,3 +459,12 @@ void mainWindow::createMenus()
     menuBar()->addMenu(s_helpMenu);
 
 }
+
+// void mainWindow::keyPressEvent(QKeyEvent* event)
+// {
+//     if(event->key()==Qt::Key_Space)
+//     {
+// 	   engine->playPause();
+//     }
+//     QWidget::keyPressEvent(event);
+// }

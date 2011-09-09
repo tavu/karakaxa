@@ -341,7 +341,7 @@ bool core::albumQueryGrt::select()
 	    
 	while ( quer.next() ) 	
 	{
-	    album a;
+	    albumEntry a;
 	    a.id=quer.record().value(0).toInt();
 	    a.name=quer.record().value(1).toString();
 	    a.artist=quer.record().value(2).toString();

@@ -141,12 +141,12 @@ void core::init()
 }
 
 void core::cleanUp()
-{    
+{   
+    delete status;
     delete npList;
     delete engine;
     delete db;
-    delete config;
-    delete status;
+    delete config;    
     delete contentHdl;
     
 }

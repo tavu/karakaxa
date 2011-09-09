@@ -90,17 +90,14 @@ void core::contentHandler::itemChanger(const QModelIndex &index)
 	 return;
     }
     
-    abstractContent *content;
-    if(index.parent().isValid() )
+    abstractContent *cont=content(index);
+    
+    if(cont==0)
     {
-	content=contentList.at(index.parent().row());
-    }
-    else
-    {
-	content=contentList.at(index.row());
+	   return ;
     }
     
-    if(currentContent()==content && view->isExpanded(index) )
+    if(currentContent()==cont && view->isExpanded(index) )
     {
 	   view->collapse(index);
     }
@@ -109,8 +106,8 @@ void core::contentHandler::itemChanger(const QModelIndex &index)
 	   view->expand(index);
     }
 
-    activateContent(content,true);
-    content->updateContent(model->itemFromIndex(index) );
+    activateContent(cont,true);
+    cont->updateContent(model->itemFromIndex(index) );
 }
 
 core::abstractContent* core::contentHandler::currentContent() const
@@ -137,11 +134,11 @@ void core::contentHandler::activateContent(abstractContent *content ,bool save)
     
     if(save)
     {
-	history.append(content);
-	if (history.size()>MAX_HS)
-	{
-	    history.removeLast();
-	}
+	 history.append(content);
+	 if (history.size()>MAX_HS)
+	 {
+		history.removeLast();
+	 }
     }
 }
 
@@ -169,7 +166,7 @@ void core::contentHandler::addContent(abstractContent *content, bool activate)
     {
 	   content->toolBar->setVisible(false);
 	   content->toolBar->setAutoFillBackground(true);
-// 	   content->toolBar->setStyleSheet("QToolBar {background-color: transparent; }");
+	   
 	   QAction *a=_toolBar->addWidget(content->toolBar);
 	   content->toolBarAction=a;
 	   a->setVisible(false);
@@ -189,24 +186,24 @@ void core::contentHandler::removeContent(abstractContent *content)
     history.removeAll(content);
     if (isActive(content) )
     {
-	abstractContent *c=0;
+	   abstractContent *c=0;
         if (! history.isEmpty() )
         {
-	    c=history.last();
+		  c=history.last();
         }
         else
         {
-	    if(!contentList.isEmpty() )
-	    {
-		c=contentList.at(0);
-	    }
+		  if(!contentList.isEmpty() )
+		  {
+		    c=contentList.at(0);
+		  }
         }        
         if(c!=0)
-	{	  
-	  activateContent(c,false);
-	  view->setCurrentIndex( model->indexFromItem(c->item()) );
-	  c->updateContent(c->item() );
-	}
+	   {	  
+		activateContent(c,false);
+		view->setCurrentIndex( model->indexFromItem(c->item()) );
+		c->updateContent(c->item() );
+	   }
     }
 
     content->unloadContent();
@@ -260,17 +257,22 @@ void core::contentHandler::removeMenu(core::abstractMenu* m)
     mutex.unlock();
 }
 
-void core::contentHandler::contextMenu(QMenu* menu, QUrl u, bool multFiles)
+void core::contentHandler::contextMenu(QMenu* menu, QUrl u,const QList<QUrl> &urls)
 {
+  abstractMenu::_url=u;
+  abstractMenu::_urls=urls;
+  
   foreach(abstractMenu *m,menuList)
   {
-      if(m->canShow(u,multFiles) )	
+      if(m->canShow() )	
       {
-	menu->addAction(m->action() );	
+		menu->addAction(m->action() );	
       }
   }
 }
 
+QUrl core::abstractMenu::_url;
+QList<QUrl> core::abstractMenu::_urls;
 
 namespace core
 {

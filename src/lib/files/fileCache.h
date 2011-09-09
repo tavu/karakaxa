@@ -33,14 +33,14 @@ class fileCache
 	  return _path;
       }
       
-      int 	loadTags(bool force=false);
-      void 	setRecord(QSqlRecord &r, bool force=false);
-      int 	select(bool force=false);
+      int 		loadTags(bool force=false);
+      void 		setRecord(QSqlRecord &r, bool force=false);
+      int 		select(bool force=false);
       QVariant 	tagFromFile(tagsEnum t, int &err);
       QVariant 	tagFromDb(int t, int& err);
-      void 	setTag(tagsEnum t,QVariant var,int f=3);
-      void 	lockForSaving();
-      void 	savingEnd(QList<tagChanges> &l);
+      void 		setTag(tagsEnum t,QVariant var,int f=3);
+      void 		lockForSaving();
+      void 		savingEnd(QList<tagChanges> &l);
       
   private:
       fileCache(QString path);
