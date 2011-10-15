@@ -24,6 +24,7 @@
 #include<KIcon>
 #include"nplaylistView.h"
 #include"playingInfo.h"
+#include"nplaylistModel.h"
 class mainWindow :public KMainWindow
 {
     Q_OBJECT
@@ -49,9 +50,7 @@ class mainWindow :public KMainWindow
 	QDockWidget 	*nplViewDock;
 	QDockWidget      *infoDock;
 
-// 	QWidget  *conTreeDockT;
-// 	QWidget  *nplViewDockT;
-// 	QWidget  *infoDockT;
+	nplModel *nowPlayListM;
 	
 	//for the toolBar
 	QAction *playAction;

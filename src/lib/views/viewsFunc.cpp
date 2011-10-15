@@ -1,6 +1,7 @@
 #include"viewsFunc.h"
 #include"../../files/tagsTable.h"
 #include<QDebug>
+#include"actionMenu.h"
 
 QString views::prettyLength(int l)
 {
@@ -144,4 +145,11 @@ void views::init()
 {
    
     decor = new decoration; 
+    menus = new actionMenu;
+}
+
+void views::cleanUp()
+{
+    delete decor;
+    delete menus;
 }

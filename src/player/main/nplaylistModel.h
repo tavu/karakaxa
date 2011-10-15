@@ -20,7 +20,8 @@ class nplModel :public nplAbstractModel
     public:
 	nplModel( QObject * parent = 0);
 
-	QVariant data ( const QModelIndex & index, int role = Qt::DisplayRole ) const;	
+	QVariant data ( const QModelIndex & index, int role = Qt::DisplayRole ) const;
+	bool setData ( const QModelIndex & index, const QVariant & value, int role = Qt::EditRole );
 	int columnCount ( const QModelIndex & parent = QModelIndex() ) const ;
 	bool dropMimeData (const QMimeData * data, Qt::DropAction action, int row, int column, const QModelIndex &parent);
 	Qt::DropActions supportedDropActions () const;

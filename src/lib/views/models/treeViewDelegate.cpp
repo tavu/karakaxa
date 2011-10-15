@@ -121,13 +121,14 @@ QWidget* views::treeViewDelegate::createEditor(QWidget *parent,const QStyleOptio
 
 void views::treeViewDelegate::setEditorData(QWidget *editor,const QModelIndex &index) const
 {
-      if(editorFactory!=0)
+
+      tagEditor *e= qobject_cast<tagEditor*>(editor);  	
+      if(e!=0)
       {
-	  tagEditor *e= static_cast<tagEditor*>(editor);  
 	  e->setValue(index.data() );
       }
-      else
-      {
+      else 
+      {	  
 	  QStyledItemDelegate::setEditorData(editor,index);
       }
 }
@@ -166,8 +167,14 @@ void views::treeViewDelegate::setModelData(QWidget *editor,QAbstractItemModel *m
 // 	   qDebug()<<list.at(0).data(URL_ROLE).toUrl();
 	   editorFactory->setModelData(e,model,index,list);
     }
+    else if(index.column()==ratingColumn() )
+    {
+	tagEditor *e= static_cast<tagEditor*>(editor);     
+	qDebug()<<"seting data";
+	model->setData(index,e->value(),Qt::EditRole);
+    }
     else
-    {	
+    {
 	QStyledItemDelegate::setModelData(editor,model,index);
 // 	model->setData(index, QVariant(e->value() ) );
     }   

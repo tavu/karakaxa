@@ -21,6 +21,8 @@
 #include"content/playlist/playlistContent.h"
 #include"content/configure/configureContent.h"
 #include"content/edit/editTrackContent.h"
+#include"content/nowPlaylist/nowPlaylistContent.h"
+
 #include<KHelpMenu>
 #include<KMenuBar>
 #include<KMenu>
@@ -175,11 +177,15 @@ void mainWindow::nplViewInit()
 //     nplViewDockT=new QWidget(this);
     
     nplView =new nplaylistView(w);
-    nplModel *m=new nplModel(this);
-    nplView->setModel(m);
+    nowPlayListM=new nplModel(this);
+    nplView->setModel(nowPlayListM);
     nplView->setDragDropMode(QAbstractItemView::DragDrop);
     nplView->setAcceptDrops(true);
-    nplView->setColumnHidden(1,true);
+    nplView->setHeaderHidden(true);
+    for(int i=1;i<FRAME_NUM;i++)
+    {
+	nplView->setColumnHidden(i,true);
+    }
    
     nplView->setItemDelegate(new nplDelegate(this) );    
 
@@ -205,13 +211,13 @@ void mainWindow::nplViewInit()
     t->setToolButtonStyle( Qt::ToolButtonIconOnly );
     t->setIconSize(QSize(25,25) );    
 
-    QAction *clearAction = new QAction( KIcon("edit-clear-list"),"clear", this );
-    t->addAction( clearAction );
-    connect(clearAction,SIGNAL(triggered( bool)),npList,SLOT(clear() ) );
+//     QAction *clearAction = new QAction( KIcon("edit-clear-list"),"clear", this );
+    t->addAction( views::menus->clearPlaylist() );
+//     connect(clearAction,SIGNAL(triggered( bool)),npList,SLOT(clear() ) );
 
-    QAction *suffleAction = new QAction( KIcon("roll"),"clear", this );
-    t->addAction( suffleAction );
-    connect(suffleAction,SIGNAL(triggered( bool)),npList,SLOT(suffle() ) );
+//     QAction *suffleAction = new QAction( KIcon("roll"),"clear", this );
+    t->addAction( views::menus->sufflePlaylist() );
+//     connect(suffleAction,SIGNAL(triggered( bool)),npList,SLOT(suffle() ) );
 
     QVBoxLayout *l=new QVBoxLayout(w);
     l->addWidget(nplView);
@@ -332,10 +338,14 @@ void mainWindow::defaultContent()
       folderContent *f=new folderContent();
       playlistContent *pl=new playlistContent();
       configureContent *c=new configureContent();
-
+      nowPlaylistContent *n=new nowPlaylistContent();
+      n->setModel(nowPlayListM);
+      
       contentHdl->addContent(l);
       contentHdl->addContent(f);
       contentHdl->addContent(pl);
+      contentHdl->addContent(n);
+      
       contentHdl->addContent(c);
 
       contentHdl->setCurrentContent(l);

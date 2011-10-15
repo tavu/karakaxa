@@ -7,6 +7,7 @@
 #include"abstractContent.h"
 #include<QApplication>
 #define MAX_HS 20
+#define SIZE QSize(20,20)
 
 core::contentHandler::contentHandler()
         :QObject()
@@ -17,6 +18,7 @@ core::contentHandler::contentHandler()
     _toolBar=new KToolBar( 0,true,false );
     _toolBar->setStyleSheet("QToolBar {background-color: transparent; }");
     _toolBar->setAutoFillBackground(true);
+//     _toolBar->setIconSize(SIZE );
 }
 
 QFrame* core::contentHandler::contentView() const
@@ -164,6 +166,8 @@ void core::contentHandler::addContent(abstractContent *content, bool activate)
     
     if(content->toolBar!=0)
     {
+	   content->toolBar->setParent(_toolBar);
+// 	   content->toolBar->setIconSize(SIZE);
 	   content->toolBar->setVisible(false);
 	   content->toolBar->setAutoFillBackground(true);
 	   

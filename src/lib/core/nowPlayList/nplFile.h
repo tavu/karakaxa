@@ -25,7 +25,7 @@ class nplFile :public nplTrack
 	QString 	cover();
 	
 	nplTrack*	clone();
-	QVariant	artist();	
+	QVariant	artist();
 	QVariant	tag(int);
 	
 	audioFile*	getAudioFile();

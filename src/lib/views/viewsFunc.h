@@ -10,6 +10,7 @@ namespace views
     QVariant	pretyTag(QVariant var,int t);
     QString	tagName(int t);
     void	init();
+    void 	cleanUp();
 
 };
 

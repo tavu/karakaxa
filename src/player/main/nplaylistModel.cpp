@@ -20,7 +20,7 @@ nplModel::nplModel( QObject * parent)
 
 int nplModel::columnCount(const QModelIndex& parent) const
 {
-    return 2;
+    return FRAME_NUM;
 }
 
 
@@ -36,15 +36,8 @@ QVariant nplModel::data ( const QModelIndex & index, int role ) const
     if (role==Qt::DisplayRole || role==Qt::ToolTipRole)
     {	
 	 if (t.isNull())	return QVariant();
-	 
-	 if(index.column()==0)
-	 {
-		return t->tag(TRACK);
-	 }
-	 else
-	 {
-		return t->title();
-	 }	
+	 	 
+	 return t->tag(index.column());
     }
     if(role==URL_ROLE)
     {
@@ -58,27 +51,17 @@ QVariant nplModel::data ( const QModelIndex & index, int role ) const
 
 QVariant nplModel::headerData ( int section, Qt::Orientation orientation, int role ) const
 {
-    if(section==0)
+    if(role==Qt::DisplayRole)
     {
-	if(role==Qt::DecorationRole)
+	if (section==TRACK)
 	{
-	    return decor->tagIcon(TRACK);
+	    return QVariant(QString("#") );
 	}
-	if(role==Qt::DisplayRole)
-	{
-	    return tr("Playlist");
-	}
+	return QVariant(tagName( (tagsEnum)section) );
     }
-    if(section==1)
+    if(role==Qt::DecorationRole)
     {
-	if(role==Qt::DisplayRole)
-	{
-	    return tr("title");
-	}
-	if(role==Qt::DecorationRole)
-	{
-	    return decor->tagIcon(TITLE);
-	}
+	return QVariant(decor->tagIcon( section) );
     }
     return nplAbstractModel::headerData(section,orientation,role);
 }
@@ -153,3 +136,19 @@ Qt::ItemFlags nplModel::flags(const QModelIndex &index) const
     
     return Qt::ItemIsDragEnabled  | Qt::ItemIsEnabled |Qt::ItemIsSelectable;
 }
+
+bool nplModel::setData(const QModelIndex& index, const QVariant& value, int role)
+{
+    QString s=index.data(URL_ROLE).toUrl().toLocalFile();
+    audioFile f(s);
+    if(f.isValid() )
+    {
+	f.setTag(index.column(),value);
+	if(f.error()==OK)
+	{
+	    return true;
+	}
+    }
+    return false;
+}
+

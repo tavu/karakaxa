@@ -14,7 +14,7 @@
 #include<nplaylistDelegate.h>
 
 nplaylistView::nplaylistView(QWidget *parent)
-        :QTreeView(parent),
+        :views::treeView(parent),
         onDrag(false)
 {
     setRootIsDecorated(false);
@@ -23,19 +23,23 @@ nplaylistView::nplaylistView(QWidget *parent)
     setDragDropOverwriteMode(false);
     setSelectionMode(QAbstractItemView::ExtendedSelection);
     setUniformRowHeights(true);
-    setHeaderHidden(true);
+//     setHeaderHidden(true);
     setDropIndicatorShown(true);
     setDragEnabled( true );
 
+     _removeAction=new QAction(KIcon("list-remove"),tr("&Remove track"),this);
+    connect(_removeAction,SIGNAL(triggered( bool)),this,SLOT(remove() ) );
 //     connect(this,SIGNAL(doubleClicked(QModelIndex ) ),this, SLOT(play(const QModelIndex) ) );
     connect( engine ,SIGNAL(trackChanged ( QString) ),viewport(), SLOT(update()) );
+    
+    
 }
 
 void nplaylistView::mousePressEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton)
         startPos = event->pos();
-    QTreeView::mousePressEvent(event);
+    views::treeView::mousePressEvent(event);
 }
 
 void nplaylistView::mouseMoveEvent(QMouseEvent *event)
@@ -48,10 +52,10 @@ void nplaylistView::mouseMoveEvent(QMouseEvent *event)
             performDrag();
         }
         else
-            QTreeView::mouseMoveEvent(event);
+            views::treeView::mouseMoveEvent(event);
     }
     else
-        QTreeView::mouseMoveEvent(event);
+        views::treeView::mouseMoveEvent(event);
 }
 
 Qt::DropActions nplaylistView::supportedDropActions () const
@@ -109,9 +113,7 @@ QMenu* nplaylistView::createMenu()
     pal.setColor(QPalette::Base,pal.color(QPalette::Window) );
     menu->setPalette(pal);        
     
-    removeAction=new QAction(tr("&Remove track"),this);
-    connect(removeAction,SIGNAL(triggered( bool)),this,SLOT(remove() ) );
-    menu->addAction(removeAction);
+    menu->addAction(_removeAction);
 
     duplicateAction=new QAction(tr("&Duplicate track"),this);
     connect(duplicateAction,SIGNAL(triggered( bool)),this,SLOT(duplicate() ) );
@@ -169,7 +171,6 @@ void nplaylistView::keyPressEvent(QKeyEvent *event)
     }
 }
 
-
 void nplaylistView::contextMenuEvent(QContextMenuEvent *e)
 {
     if (indexAt(e->pos()).isValid() )
@@ -179,9 +180,7 @@ void nplaylistView::contextMenuEvent(QContextMenuEvent *e)
 	   pal.setColor(QPalette::Base,pal.color(QPalette::Window) );	
 	   menu->setPalette(pal);        	      
 		
-	   removeAction=new QAction(tr("&Remove track"),this);	
-	   connect(removeAction,SIGNAL(triggered( bool)),this,SLOT(remove() ) );	
-	   menu->addAction(removeAction);	    
+	   menu->addAction(_removeAction);	    
 
 	   duplicateAction=new QAction(tr("&Duplicate track"),this);	    	 
 	   connect(duplicateAction,SIGNAL(triggered( bool)),this,SLOT(duplicate() ) );	    	 
@@ -219,13 +218,6 @@ void nplaylistView::dropEvent ( QDropEvent* event )
 	 QTreeView::dropEvent(event);	 
 }
 
-
-void nplaylistView::play(const QModelIndex &i)
-{
-    core::engine->play(i.row() );
-}
-
-
 void nplaylistView::drawRow ( QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index ) const
 {
 
@@ -260,10 +252,10 @@ void nplaylistView::paintEvent(QPaintEvent * event)
 }
 
 
-void nplaylistView::mouseDoubleClickEvent(QMouseEvent* event)
+void nplaylistView::play(const QModelIndex &index)
 {
 //     QTreeView::mouseDoubleClickEvent(event);
-     QModelIndex index=indexAt( viewport()->mapFromGlobal(QCursor::pos() )  );
+//        QModelIndex index=indexAt( viewport()->mapFromGlobal(QCursor::pos() )  );
 	
 	if(index.isValid() )
 	{

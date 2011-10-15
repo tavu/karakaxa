@@ -44,17 +44,17 @@ class treeView :public QTreeView
 	   virtual void mouseMoveEvent(QMouseEvent *event);
 	   virtual void performDrag();
 	   virtual void contextMenuEvent(QContextMenuEvent *e);
-	   void headerRepaint();
+		   void headerRepaint();
 	   virtual void leaveEvent(QEvent*)  ;		
 
-	   protected slots:
+    protected slots:
 	   virtual void commitData ( QWidget * editor ) ;
-
-	   public slots:
+	
+    public slots:
 	   virtual void writeSettings();
 	   virtual void readSettings();
 	   virtual void updateStarWidget(QModelIndex parent, int start, int end);
-	   void updateStarWidget();
+		   void updateStarWidget();
 	   virtual void dataChanged ( const QModelIndex & topLeft, const QModelIndex & bottomRight );
 	   virtual void closeEditor ( QWidget * editor, QAbstractItemDelegate::EndEditHint hint );
 	   virtual void play(const QModelIndex index);
@@ -62,7 +62,7 @@ class treeView :public QTreeView
 	   void editCurrent()
 	   {
 		  edit(currentIndex() );
-	   }	   
+	   }
 	
     signals:
 	void showContextMenu(QModelIndex,QModelIndexList);

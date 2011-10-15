@@ -17,10 +17,10 @@ configureContent::configureContent(QWidget *parent)
     QLabel *l=new QLabel(this);
 
     l->setText("Player Configuration");
-//     QFont font;
-//     font.setBold(true);
-//     font.setPointSize(10);
-//     l->setFont(font);
+    QFont font=l->font();
+    font.setBold(true);
+    font.setPointSize(13);
+    l->setFont(font);
 
     QVBoxLayout *layout = new QVBoxLayout();
     libconfInit();

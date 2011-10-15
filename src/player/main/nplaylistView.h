@@ -6,7 +6,8 @@
 #include<QMouseEvent>
 #include<QLabel>
 #include<core.h>
-class nplaylistView :public QTreeView
+#include<views.h>
+class nplaylistView :public views::treeView
 {
     Q_OBJECT
     public:
@@ -18,9 +19,14 @@ class nplaylistView :public QTreeView
 	   Qt::DropActions supportedDropActions () const;
 	   int sizeHintForColumn(int column) const;
 	   
+	   QAction *removeAction()
+	   {
+	      return _removeAction;
+	   }
+	   
     private:
 	   QPoint startPos;
-	   QAction *removeAction;
+	   QAction *_removeAction;
 	   QAction *duplicateAction;
 
 
@@ -34,11 +40,11 @@ class nplaylistView :public QTreeView
 	   void drawRow ( QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index ) const;
 	   void paintEvent(QPaintEvent * event);
 	   void dropEvent ( QDropEvent * event );
-	   void mouseDoubleClickEvent ( QMouseEvent * event ) ;
+// 	   void mouseDoubleClickEvent ( QMouseEvent * event ) ;
 	   bool onDrag;
 	   
     public slots:
-	   void play(const QModelIndex &i);
+	   void play(const QModelIndex &index);
     private slots:
 	   void remove();	   
 	   void duplicate();
