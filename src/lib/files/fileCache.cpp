@@ -3,6 +3,7 @@
 #include<QDebug>
 #include"fileToDb.h"
 #include"../core/func.h"
+#include"audioFiles.h"
 // #define DATAB 1
 // #define FILE  2
 
@@ -12,7 +13,9 @@ using namespace audioFiles;
 audioFiles::fileCache::fileCache(QString path)
   :notInDb(false),
   tagsFlag(false),
-  tagTable(0)
+  tagTable(0),
+  file(0),
+  fdb(0)
 {
     _path=path;    
 }
@@ -30,26 +33,27 @@ int audioFiles::fileCache::loadTags(bool force)
     loadMutex.lock();
     if(tagTable!=0)
     {
-	if(force)
-	{
-	    delete tagTable;
-	}
-	else
-	{
-	    loadMutex.unlock();
-	    return OK;
-	}
+	   if(force)
+	   {
+		  delete tagTable;
+	   }
+	   else
+	   {
+		  loadMutex.unlock();
+		  return OK;
+	   }
     }
     
-    fileTags *file=audioFiles::getFileTags(_path);
+    file=audioFiles::getFileTags(_path);
     tagRecord *t=new tagRecord[FRAME_NUM];
     file->getTags(t);
     lock.lockForWrite();
     tagTable=t;
-    lock.unlock();   
-    loadMutex.unlock();
+    lock.unlock();       
     int err=file->error();
     delete file;
+    file=0;
+    loadMutex.unlock();
     return err;
 }
 
@@ -62,7 +66,7 @@ int audioFiles::fileCache::select(bool force)
 	loadMutex.unlock();
 	return NOTINDB;
     }
-    //if record is Empty and notInDb is false we have not select
+    //if the record is not empty we have alredy make a selection
     if(!record.isEmpty() && !force )
     {
 	loadMutex.unlock();
@@ -95,7 +99,8 @@ void fileCache::setRecord(QSqlRecord &r, bool force)
     
     if(record.isEmpty() || force )
     {
-	record=r;	
+	record=r;
+	notInDb=r.isEmpty();
     }
     
     lock.unlock();
@@ -128,7 +133,7 @@ QVariant audioFiles::fileCache::tagFromDb(int t, int &err)
     
     if(!record.isEmpty())
     {
-	ret=record.value(t);
+	ret=record.value(t+1);
 	err=OK;
     }
     else
@@ -140,27 +145,93 @@ QVariant audioFiles::fileCache::tagFromDb(int t, int &err)
   
 }
 
-void audioFiles::fileCache::setTag(tagsEnum t, QVariant var,int f)
+int audioFiles::fileCache::albumId(int &err)
 {
-    if(tagTable!=0 && (f & 1) )
+    int ret=-1;
+    lock.lockForRead();
+    if(notInDb)
+    {
+	 err=NOTINDB;
+    }    
+    else if(!record.isEmpty())
+    {
+	ret=record.value(1).toInt();
+	err=OK;
+    }
+    else
+    {
+	err=EMPTY_RECORD;
+    }
+    lock.unlock();
+    return ret;
+  
+}
+
+void fileCache::setTag(tagsEnum t, QVariant var, int& err)
+{    
+    if(!file->setTag(t,var) )
+    {
+	 qDebug()<<"edf "<<err;
+    }
+    err=file->error();
+    
+    qDebug()<<"ERrR "<<err;
+    
+    if(err==OK)
+    {
+	 tagTable[t].value=var;
+      tagTable[t].status=OK;
+	 if(fdb!=0 )
+	 {
+		err=fdb->setTag(t,var);
+		if(err!=OK)
+		{
+		    fdb->cleanUp();
+		}
+		else
+		{
+		    record.setValue(t+1,var);
+		}
+	 }
+    }
+    else if(err==NS_TAG)
+    {
+	 if(fdb!=0)
+	 {
+		err=fdb->setTag(t,var);
+		if(err!=OK)
+		{	
+		    fdb->cleanUp();
+		}		
+		else
+		{
+		    record.setValue(t+1,var);
+		}
+	 }
+    }
+}
+
+
+void audioFiles::fileCache::setTagFromFile(tagsEnum t, QVariant var)
+{    
+    if(tagTable!=0 )
     {
       lock.lockForWrite();
       tagTable[t].value=var;
       tagTable[t].status=OK;
       lock.unlock();
     }
-    if(! record.isEmpty() && (f& 2) )
-    {
-	lock.lockForWrite();
-	record.setValue(t+1,var);
-	lock.unlock();
-    }
 }
 
-
-
-
-
+void audioFiles::fileCache::setTagFromDb(tagsEnum t, QVariant var)
+{    
+    if(! record.isEmpty() )
+    {
+	 lock.lockForWrite();
+	 record.setValue(t+1,var);
+	 lock.unlock();
+    }
+}
 
 audioFiles::fileCache* audioFiles::fileCache::getFileCache(QString path)
 {
@@ -227,15 +298,46 @@ void audioFiles::fileCache::releaseFileCache(audioFiles::fileCache *cache)
     releaseFileCache(path);
 }
 
-void fileCache::lockForSaving()
+int audioFiles::fileCache::prepareToSave()
 {
-     loadMutex.lock();
+    int err=OK;
+    file=audioFiles::getFileTags(path()); 
+    if(!notInDb)
+    {
+	   fdb=new fileToDb(path() );
+    }
+    
+    if(file->isValid() )
+    {
+	   fdb->setAlbumC(record.value(ALBUM+1).toString() );
+	   fdb->setArtistC(record.value(ARTIST+1).toString());
+	   fdb->setLeadArtistC(record.value(LEAD_ARTIST+1).toString());
+	   fdb->setAlbumIdC(record.value(0).toInt());
+	   err=fdb->prepare();
+    }
+    else
+    {
+	   err=INVALID_FILE;
+    }        
+    
+    return err;
 }
 
-void fileCache::savingEnd(QList<tagChanges> &l)
+void fileCache::savingEnd()
 {
+    file->save();
+    delete file;
+    file=0;
+    
+    if(fdb!=0)
+    {
+	 fdb->end();
+	 delete fdb;
+	 fdb=0;
+    }
+    
+  
     loadMutex.unlock();
-//     emit changed(l);
 }
 
 

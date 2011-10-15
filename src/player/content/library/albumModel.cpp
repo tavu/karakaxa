@@ -137,7 +137,7 @@ void albumModel::update()
 	albumGrt->setQuery(0);	
     }
     */
-    qDebug()<<albumGrt->queryString();
+//     qDebug()<<albumGrt->queryString();
     albumGrt->select();
     albums=albumGrt->result();
     endResetModel();

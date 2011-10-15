@@ -47,7 +47,7 @@ typedef struct changes tagChanges;
 
 enum errors
 {
-    OK=0		,
+    OK=0			,
     NULL_FILE		,
     INVALID_FILE	,
     WRONG_FILETYPE	,

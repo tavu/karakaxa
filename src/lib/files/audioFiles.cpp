@@ -67,7 +67,7 @@ int audioFiles::bestCover( const QLinkedList<QString> &covers,QString album,QStr
 		  cover=c;
 		  mark=2;
 	   }
-	   else if(mark<2)
+	   else if(mark<1)
 	   {
 		  cover=c;
 		  mark=1;

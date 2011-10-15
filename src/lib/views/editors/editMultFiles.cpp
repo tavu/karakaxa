@@ -5,8 +5,9 @@ void views::editMultFiles::editFiles::run()
 {
     core::db->getDatabase();
     foreach(audioFiles::audioFile f,fileList)
-    {
-	f.setTag(tag_,value_);
+    {	   
+	   f.setTag(tag_,value_);
+	   qDebug()<<"ERer "<<f.error();
     }
     core::db->closeDatabase();   
 }

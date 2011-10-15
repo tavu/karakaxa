@@ -10,8 +10,7 @@ using namespace core;
 
 audioFiles::fileToDb::fileToDb(QString path)
 {
-  _path=path;
-  databs=core::db->getDatabase();
+  _path=path;  
 }
 
 
@@ -27,79 +26,78 @@ int audioFiles::fileToDb::setTag(int t, QVariant var)
     value=var;
     
     int err;  
-    switch (tag)
+    switch (t)
     {
-	case LEAD_ARTIST:
-	{	  
-	    err=setLeadArtist(_path,value.toString(),_artist,_album);
-	    break ;
-	}
-	case RATING:
-	{
-	    err=setRating(_path,value.toInt() );
-	    break ;
-	}
-	case COUNTER:
-	{
-	  err=setCounter(_path,value.toInt() );
-	    break ;
-	}
-	case COMPOSER:
-	{
-	    err=setComposer(_path,value.toString());	 
-	    break ;
-	}
-	case TITLE:
-	{
-	    err=setTitle(_path,value.toString() );	  
-	    break ;
-	}
-	case ALBUM:
-	{
-	    err=setAlbum(_path,value.toString());
-	    if(err==OK)
-	    {
-		_album=value.toString();
-	    }
-	    break ;
-	}
-	case ARTIST:
-	{
-	    err=setArtist(_path,value.toString(),_album );	    
-	    if(err==OK)
-	    {
-		_artist=value.toString();
-	    }
-	    break ;
-	}
-	case GENRE:
-	{
-	    err=setGenre(_path,value.toString() );	    
-	    break ;
-	}
-	case COMMENT:
-	{
-	    err=setComment(_path,value.toString());	    
-	    break ;
-	}
-	case TRACK:
-	{
-	    err=setTrack(_path,value.toInt() );	    
-	    break ;
-	}
-	case YEAR:
-	{
-	    err=setYear(_path,value.toInt() );
-	    break ;
-	}
-	default:
-	{
-	    err=UNOWN;
-	}
+	   case LEAD_ARTIST:
+	   {	  
+		  err=setLeadArtist(value.toString());
+		  break ;
+	   }
+	   case RATING:
+	   {
+		  err=setRating(value.toInt() );
+		  break ;
+	   }
+	   case COUNTER:
+	   {
+		err=setCounter(value.toInt() );
+		  break ;
+	   }
+	   case COMPOSER:
+	   {
+		  err=setComposer(value.toString());	 
+		  break ;
+	   }
+	   case TITLE:
+	   {
+		  err=setTitle(value.toString() );	  
+		  break ;
+	   }
+	   case ALBUM:
+	   {
+		  err=setAlbum(value.toString());
+		  if(err==OK)
+		  {
+		    _album=value.toString();
+		  }
+		  break ;
+	   }
+	   case ARTIST:
+	   {
+		  err=setArtist(value.toString() );	    
+		  if(err==OK)
+		  {
+		    _artist=value.toString();
+		  }
+		  break ;
+	   }
+	   case GENRE:
+	   {
+		  err=setGenre(value.toString() );	    
+		  break ;
+	   }
+	   case COMMENT:
+	   {
+		  err=setComment(value.toString());	    
+		  break ;
+	   }
+	   case TRACK:
+	   {
+		  err=setTrack(value.toInt() );	    
+		  break ;
+	   }
+	   case YEAR:
+	   {
+		  err=setYear(value.toInt() );
+		  break ;
+	   }
+	   default:
+	   {
+		  err=UNOWN;
+	   }
     }
 
-    return err;
-    
+    return err;    
 }
 
 int audioFiles::fileToDb::commit()
@@ -113,35 +111,28 @@ int audioFiles::fileToDb::commit()
 
 }
 
-int fileToDb::prepare()
+int audioFiles::fileToDb::prepare()
 {
+    databs=core::db->getDatabase();
     if (!databs.open() )
     {
         return DBERR;
-    }
-    
-//     databs.transaction();
+    }    
     
     return OK;
 }
 
+int audioFiles::fileToDb::end()
+{
+    return OK;
+}
 
-int audioFiles::fileToDb::setArtist (const QString path,const QString &s,const QString &album)
+
+
+int audioFiles::fileToDb::setArtist (const QString &s)
 {
     QSqlQuery q(databs );
-    q.prepare("select artist,lead_artist,album from tracks where path=?");
-    q.addBindValue(path );
-    q.exec();
 
-    if (!q.first())
-    {
-        return NOTINDB;
-    }
-
-    int artistId=q.value(0).toInt();
-    int LartistId=q.value(1).toInt();
-    int albumId=q.value(2).toInt();
-    int nullArtistId=-1;
     q.prepare("CALL get_artist (?,@i) ");
     q.addBindValue( s );
 
@@ -153,52 +144,45 @@ int audioFiles::fileToDb::setArtist (const QString path,const QString &s,const Q
     }
         
     q.prepare( "update tracks SET artist=@i where path=?");
-    q.addBindValue(path);
+    q.addBindValue(_path);
     if (!q.exec() )
     {
         qDebug()<<"can't set artist"<< q.lastError();
         return DBERR;
 
     }
-        
-    q.prepare( "select id from leadArtists where name='' ");
-    q.exec();
-    if(q.first())
+             
+    if(_leadArtist.trimmed().isEmpty() )
     {
-	nullArtistId=q.value(0).toInt();
+	     q.prepare("select artist from artist_album where id=?");
+		q.addBindValue( _albumId );
+		if (!q.exec())
+		{
+		  return DBERR;
+		}
+		
+		if(q.value(0).toString().trimmed().isEmpty() )
+		{
+		    if (!setAlbumArtist(s,q) )
+		    {
+			   qDebug()<<"Can't update album artist";
+			   return DBERR;
+		    }
+		    clearAlbum();
+		}
     }
     
-    if(nullArtistId==LartistId)
-    {
-        if (!setAlbumArtist(path,s,album,q) )
-        {
-            qDebug()<<"Can't update album artist";
-            return DBERR;
-        }
-	   clearAlbum();
-    }
-
     clearArtist();
 
     return OK;
 }
 
-int audioFiles::fileToDb::setAlbum (const QString path,const QString &s)
+int audioFiles::fileToDb::setAlbum (const QString &s)
 { 
     QSqlQuery q(databs );
-    q.prepare("select album from tracks where path=?");
-    q.addBindValue(path );
-    q.exec();
 
-    if (!q.first())
-    {
-        return DBERR;
-    }
-
-    int albumId=q.value(0).toInt();
-
-    q.prepare("select artist into @j from artist_album where id=?");
-    q.addBindValue( albumId );
+    q.prepare("select artist,image into @j,@k from artist_album where id=?");
+    q.addBindValue( _albumId );
 
     if (!q.exec())
     {
@@ -215,13 +199,33 @@ int audioFiles::fileToDb::setAlbum (const QString path,const QString &s)
     }
 
     q.prepare( "update tracks SET album=@i where path=?");
-    q.addBindValue(path );       
+    q.addBindValue(_path );       
     
     if (!q.exec())
     {
         qDebug()<<"Setting album error: "<<databs.lastError().text();
         return DBERR;
     }
+         
+    q.prepare( "update albums SET image=@k where id=@i");
+    q.addBindValue(_path );       
+    
+    if (!q.exec())
+    {
+        qDebug()<<"Setting album error: "<<databs.lastError().text();
+        return DBERR;
+    }
+    
+     
+    q.prepare( "select @i");      
+    
+    if (!q.exec())
+    {
+        qDebug()<<"Setting album error: "<<databs.lastError().text();
+        return DBERR;
+    }
+    
+    _albumId=q.value(0).toInt();
 
     clearAlbum();
 
@@ -229,19 +233,9 @@ int audioFiles::fileToDb::setAlbum (const QString path,const QString &s)
 }
 
 
-int audioFiles::fileToDb::setGenre (const QString path,const QString &s)
+int audioFiles::fileToDb::setGenre (const QString &s)
 {
-    QSqlQuery q(databs );
-    q.prepare("select genre from tracks where path=?");
-    q.addBindValue(path);
-    q.exec();
-
-    if (!q.first())
-    {
-        return NOTINDB;
-    }
-
-    int albumId=q.value(0).toInt();
+    QSqlQuery q(databs);
 
     q.prepare("CALL get_genre (?,@i) ");
     q.addBindValue( s );
@@ -252,7 +246,7 @@ int audioFiles::fileToDb::setGenre (const QString path,const QString &s)
     }
 
     q.prepare( "update tracks SET genre=@i where path=?");
-    q.addBindValue(path );
+    q.addBindValue(_path );
 
     if (!q.exec() )
     {
@@ -264,20 +258,9 @@ int audioFiles::fileToDb::setGenre (const QString path,const QString &s)
     return OK;
 }
 
-int audioFiles::fileToDb::setLeadArtist (const QString path,const QString &s,const QString &artist,const QString &album)
+int audioFiles::fileToDb::setLeadArtist (const QString &s)
 {
-    QSqlQuery q(databs );
-    q.prepare("select lead_artist,album from tracks where path=?");
-    q.addBindValue(path );
-    q.exec();
-
-    if (!q.first())
-    {
-        return NOTINDB;
-    }
-
-    int LartistId=q.value(0).toInt();
-    int albumId=q.value(1).toInt();
+    QSqlQuery q(databs );    
 
     q.prepare("CALL get_artist (?,@i) ");
     q.addBindValue( s );
@@ -290,25 +273,24 @@ int audioFiles::fileToDb::setLeadArtist (const QString path,const QString &s,con
     QString albumArtistS;
     if (s.isEmpty() )
     {
-        albumArtistS=artist;
+        albumArtistS=_artist;
     }
     else
     {
         albumArtistS=s;
     }
 
-    if (!setAlbumArtist(path,albumArtistS,album,q) )
-    {
-        return DBERR;
-    }
-
     q.prepare( "update tracks SET lead_artist=@i where path=?");
-    q.addBindValue(path);
-
+    q.addBindValue(_path);    
 
     if (!q.exec() )
     {
         qDebug()<<"Can't update album lead artist"<<q.lastError();
+        return DBERR;
+    }
+         
+    if (!setAlbumArtist(albumArtistS,q) )
+    {
         return DBERR;
     }
 
@@ -319,11 +301,69 @@ int audioFiles::fileToDb::setLeadArtist (const QString path,const QString &s,con
     return OK;
 }
 
-int audioFiles::fileToDb::setComposer (const QString path,const QString &s)
+bool audioFiles::fileToDb::setAlbumArtist(const QString &artist,QSqlQuery &q)
+{
+    q.prepare( "CALL get_album(?,?,@k)");
+    q.addBindValue(_album);
+    q.addBindValue(artist);
+       
+    if (!q.exec() )
+    {
+        qDebug()<<"On setAlbumArtist";
+        qDebug()<<"	can't set album artist"<< q.lastError();
+
+        return false;
+    }
+
+    q.prepare( "update tracks SET album=@k where path=?");
+    q.addBindValue(_path );
+
+    if (!q.exec() )
+    {
+        qDebug()<<"On setAlbumArtist";
+        qDebug()<<"	Can't update album lead artist"<<q.lastError();
+
+        return false;
+    }
+            
+    q.prepare("select image into @i from artist_album where id=?");
+    q.addBindValue( _albumId );
+
+    if (!q.exec())
+    {
+        return DBERR;
+    }
+        
+    q.prepare( "update albums SET image=@i where id=@k");        
+    
+    if (!q.exec())
+    {
+        qDebug()<<"Setting album error: "<<databs.lastError().text();
+        return DBERR;
+    }
+    
+     
+    q.prepare( "select @k");      
+    
+    if (!q.exec())
+    {
+        qDebug()<<"Setting album error: "<<databs.lastError().text();
+        return DBERR;
+    }
+    
+    _albumId=q.value(0).toInt();
+
+    clearAlbum();        
+    
+    return true;
+}
+
+
+int audioFiles::fileToDb::setComposer (const QString &s)
 {
     QSqlQuery q(databs );
     q.prepare("select composer from tracks where path=?");
-    q.addBindValue(path );
+    q.addBindValue(_path );
     q.exec();
 
     if (!q.first())
@@ -344,7 +384,7 @@ int audioFiles::fileToDb::setComposer (const QString path,const QString &s)
     }
 
     q.prepare( "update tracks SET composer=@i where path=?");
-    q.addBindValue(path );
+    q.addBindValue(_path );
 
     if (!q.exec() )
     {
@@ -357,47 +397,19 @@ int audioFiles::fileToDb::setComposer (const QString path,const QString &s)
     return OK;
 }
 
-bool audioFiles::fileToDb::setAlbumArtist(const QString &path,const QString &s,const QString &album,QSqlQuery &q)
+
+int audioFiles::fileToDb::setTitle(const QString &s)
 {
-    q.prepare( "CALL get_album(?,?,@k)");
-    q.addBindValue(album);
-    q.addBindValue(s);
-   
-    
-    if (!q.exec() )
-    {
-        qDebug()<<"On setAlbumArtist";
-        qDebug()<<"	can't set album artist"<< q.lastError();
-
-        return false;
-    }
-
-    q.prepare( "update tracks SET album=@k where path=?");
-    q.addBindValue(path );
-
-    if (!q.exec() )
-    {
-        qDebug()<<"On setAlbumArtist";
-        qDebug()<<"	Can't update album lead artist"<<q.lastError();
-
-        return false;
-    }
-    return true;
-}
-
-
-int audioFiles::fileToDb::setTitle(const QString path,const QString &s)
-{
-    QSqlQuery q(databs );
+    QSqlQuery q(databs);
 
     q.prepare( "update tracks SET title=? where path=?");
     q.addBindValue(s);
-    q.addBindValue(path );
+    q.addBindValue(_path );
 
     if (!q.exec() )
     {
         q.prepare("select title from tracks where path=?");
-        q.addBindValue(path );
+        q.addBindValue(_path );
         q.exec();
         
 	   if( !q.first() )
@@ -411,12 +423,12 @@ int audioFiles::fileToDb::setTitle(const QString path,const QString &s)
     return OK;
 }
 
-int audioFiles::fileToDb::setComment (const QString path,const QString &s)
+int audioFiles::fileToDb::setComment (const QString &s)
 {
     QSqlQuery q(databs );
     q.prepare( "update tracks SET comment=? where path=?");
     q.addBindValue(s);
-    q.addBindValue(path );
+    q.addBindValue(_path );
 
     if (!q.exec() )
     {
@@ -426,12 +438,12 @@ int audioFiles::fileToDb::setComment (const QString path,const QString &s)
     return OK;
 }
 
-int audioFiles::fileToDb::setYear (const QString path, const unsigned int &year)
+int audioFiles::fileToDb::setYear (const unsigned int &year)
 {
     QSqlQuery q(databs );
     q.prepare( "update tracks SET year=? where path=?");
     q.addBindValue(QVariant(year) );
-    q.addBindValue(path );
+    q.addBindValue(_path );
 
     if (!q.exec() )
     {
@@ -441,12 +453,12 @@ int audioFiles::fileToDb::setYear (const QString path, const unsigned int &year)
     return OK;
 }
 
-int audioFiles::fileToDb::setTrack (const QString path,const unsigned int &track)
+int audioFiles::fileToDb::setTrack (const unsigned int &track)
 {
     QSqlQuery q(databs );
     q.prepare( "update tracks SET tracknumber=? where path=?");
     q.addBindValue(QVariant(track) );
-    q.addBindValue(path );
+    q.addBindValue(_path );
 
     if (!q.exec() )
     {
@@ -456,12 +468,12 @@ int audioFiles::fileToDb::setTrack (const QString path,const unsigned int &track
     return OK;
 }
 
-int audioFiles::fileToDb::setRating (const QString path,const unsigned int &rating)
+int audioFiles::fileToDb::setRating (const unsigned int &rating)
 {
     QSqlQuery q(databs );
     q.prepare( "update tracks SET rating=? where path=?");
     q.addBindValue(QVariant(rating) );
-    q.addBindValue(path);
+    q.addBindValue(_path);
 
     if (!q.exec() )
     {
@@ -471,12 +483,12 @@ int audioFiles::fileToDb::setRating (const QString path,const unsigned int &rati
     return OK;
 }
 
-int audioFiles::fileToDb::setCounter(const QString path,const unsigned int &num )
+int audioFiles::fileToDb::setCounter(const unsigned int &num )
 {
     QSqlQuery q(databs );
     q.prepare( "update tracks SET count=? where path=?");
     q.addBindValue(QVariant(num) );
-    q.addBindValue(path );
+    q.addBindValue(_path );
 
     if (!q.exec() )
     {

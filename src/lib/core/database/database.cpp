@@ -172,6 +172,8 @@ void core::database::closeDatabase()
 	    QSqlDatabase::removeDatabase(name);
 	    dBMap.remove(name);
 	    delete dbE;
+	    
+	    qDebug()<<"close "<<name;
 	}
     }	 
     mutex.unlock();    

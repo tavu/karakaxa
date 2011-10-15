@@ -72,7 +72,7 @@ class tagEditorFactory :public QObject
 	
 	
       protected:
-	editMultFiles::editFiles *thr;
+	   editMultFiles::editFiles *thr;
 	
       protected slots:
 	
@@ -80,8 +80,8 @@ class tagEditorFactory :public QObject
 	  {
 	      if(thr!=0)
 	      {
-		delete thr;
-		thr=0;
+		    delete thr;
+		    thr=0;
 	      }
 	  }
 	  

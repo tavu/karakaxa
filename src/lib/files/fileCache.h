@@ -8,6 +8,7 @@
 #include"fileTags.h"
 #include"audioFiles.h"
 #include<QSharedMemory>
+#include<fileToDb.h>
 // #include<player.h>
 
 namespace audioFiles
@@ -38,9 +39,18 @@ class fileCache
       int 		select(bool force=false);
       QVariant 	tagFromFile(tagsEnum t, int &err);
       QVariant 	tagFromDb(int t, int& err);
-      void 		setTag(tagsEnum t,QVariant var,int f=3);
-      void 		lockForSaving();
-      void 		savingEnd(QList<tagChanges> &l);
+	  
+	 int 		albumId(int &err);
+	 
+	 
+	 void 		setTag(tagsEnum t,QVariant var,int &err);
+      void 		setTagFromFile(tagsEnum t,QVariant var);
+	 void 		setTagFromDb(tagsEnum t,QVariant var);
+	 	 
+	 
+	 int 		prepareToSave();
+	 
+      void 		savingEnd();
       
   private:
       fileCache(QString path);
@@ -51,7 +61,10 @@ class fileCache
       bool tagsFlag;
       QString _path;   
       
-      QReadWriteLock lock;
+	 fileTags *file;
+	 fileToDb *fdb;
+      
+	 QReadWriteLock lock;
       
 //       voidplayer::fileTags();
       

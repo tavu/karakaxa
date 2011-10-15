@@ -3,6 +3,7 @@
 #include<QPushButton>
 #include<QPainter>
 #include<QFormLayout>
+#include<cstdlib>
 
 using namespace core;
 using namespace views;
@@ -14,9 +15,6 @@ editTrackContent::editTrackContent(QString url,QWidget *parent)
     file=new audioFile(url);
     file->load(audioFile::LOAD_FILE);
 
-    path=new QLineEdit(file->path(),this);
-    path->setContextMenuPolicy(Qt::NoContextMenu);
-
     cw=new coverWidget(this);
     cw->setSize(decor->coverSize());
     cw->setCover(file->cover());
@@ -24,27 +22,24 @@ editTrackContent::editTrackContent(QString url,QWidget *parent)
     infoInit();
     tagInit();
     buttons=new QDialogButtonBox(QDialogButtonBox::Ok|QDialogButtonBox::Apply|QDialogButtonBox::Cancel,Qt::Horizontal,this);
-    stars=new views::ratingWidget(this);
-    stars->setRating(file->tag(RATING,audioFile::ONCACHE).toInt() );
     
     QVBoxLayout *vLayout=new QVBoxLayout();
     QGridLayout *gr=new QGridLayout();
 
-    stars->setFixedSize(140,30);
-//     stars->setFixedHeight(30);
+    editors[RATING]->setFixedSize(140,30);
+
     gr->addWidget(cw,0,0,2,1);
-    gr->addWidget(stars,0,1,Qt::AlignLeft);
+    gr->addWidget(editors[RATING],0,1,Qt::AlignLeft);
     gr->addWidget(infoW,1,1);
     gr->addItem(new QSpacerItem(1,1,QSizePolicy::Ignored,QSizePolicy::Ignored),2,1);
     vLayout->addLayout(gr);
 
     vLayout->addWidget(tagW);
-    vLayout->addWidget(path);
+    vLayout->addWidget(editors[PATH]);
     vLayout->addWidget(buttons,Qt::AlignLeft);
     vLayout->addStretch();
     
     setLayout(vLayout);
-
 
     connect(buttons, SIGNAL(clicked(QAbstractButton* ) ), this, SLOT(clicked(QAbstractButton*) ));
 
@@ -63,43 +58,49 @@ editTrackContent::~editTrackContent()
 
 void editTrackContent::tagInit()
 {
-    
+
+    for(int i=0;i<FRAME_NUM;i++)
+    {
+	   if(i==COMMENT)
+	   {
+		  editors[i]=0;
+		  continue;
+	   }
+	   
+	   editors[i]=views::tagEditor::getEditor(i,this);
+	   if(editors[i]==0)
+	   {
+		continue;
+	   }
+
+	   QVariant v=file->tag(i,audioFile::ONCACHE & ~audioFile::TITLEFP);
+	   editors[i]->setValue(v);
+    }
+  
+    commentL=new QTextEdit(this);
+    commentL->setPlainText(file->tag(COMMENT,audioFile::ONCACHE).toString());
+        
     tagW=new QWidget(this);
     QFormLayout *form = new QFormLayout();
     form->setLabelAlignment(Qt::AlignLeft);
 
-    titleL=new QLineEdit(file->tag(TITLE,audioFile::ONCACHE & ~audioFile::TITLEFP).toString(),this );
-    albumL=new QLineEdit(file->tag(ALBUM,audioFile::ONCACHE).toString(),this );
-    artistL=new QLineEdit(file->tag(ARTIST,audioFile::ONCACHE).toString(),this );
-    leadArtistL=new QLineEdit(file->tag(LEAD_ARTIST,audioFile::ONCACHE).toString(),this );
-    commentL=new QTextEdit(this );
-    commentL->setPlainText(file->tag(COMMENT,audioFile::ONCACHE).toString());
-    composerL=new QLineEdit(file->tag(COMPOSER,audioFile::ONCACHE).toString(),this );
-    genreL=new QLineEdit(file->tag(GENRE,audioFile::ONCACHE).toString(),this );
-    yearL=new QSpinBox(this );
-    trackL=new QSpinBox(this );
-
-    yearL->setValue(file->tag(YEAR,audioFile::ONCACHE).toInt() );
-    trackL->setValue(file->tag(TRACK,audioFile::ONCACHE).toInt() );
-
     year.setText(tr("Year:") );
 
     QHBoxLayout *hLayout=new QHBoxLayout();
-    hLayout->addWidget(trackL);
+    hLayout->addWidget(editors[TRACK] );
     hLayout->addWidget(&year);
-    hLayout->addWidget(yearL);
-    hLayout->addWidget(yearL);
+    hLayout->addWidget(editors[YEAR]);
 
-    form->addRow(tr("Title: "),titleL);
-    form->addRow(tr("Album: "),albumL);    
-    form->addRow(tr("Artist: "),artistL);
-    form->addRow(tr("Lead Artist: "),leadArtistL);
-    form->addRow(tr("Genre:"),genreL);
-    form->addRow(tr("Composer: "),composerL);
+    form->addRow(tr("Title: "),editors[TITLE]);
+    form->addRow(tr("Album: "),editors[ALBUM]);    
+    form->addRow(tr("Artist: "),editors[ARTIST]);
+    form->addRow(tr("Lead Artist: "),editors[LEAD_ARTIST]);
+    form->addRow(tr("Genre:"),editors[GENRE]);
+    form->addRow(tr("Composer: "),editors[COMPOSER]);
     form->addRow(tr("Track:"),hLayout);
     form->addRow(tr("Comment "),commentL);
 
-    tagW->setLayout(form);
+    tagW->setLayout(form);    
 }
 
 void editTrackContent::infoInit()
@@ -126,84 +127,33 @@ void editTrackContent::infoInit()
 
 void editTrackContent::save()
 {
-    QList<int> tags;
-    QList<QVariant> values;
-  
-    if (titleL->text()!=file->tag(TITLE,audioFile::ONCACHE | ~audioFile::TITLEFP ).toString() )
-    {
-        qDebug()<<"edit title";
-	   tags<<TITLE;
-	   values<<QVariant(titleL->text() );
-    }
-
-    if (albumL->text()!=file->tag(ALBUM,audioFile::ONCACHE ).toString() )
-    {
-        qDebug()<<"edit album";
-	   tags<<ALBUM;
-	   values<<QVariant(albumL->text() );
-    }
-
-    if (artistL->text()!=file->tag(ARTIST,audioFile::ONCACHE ).toString() )
-    {
-        qDebug()<<"edit artist";
-	   tags<<ARTIST;
-	   values<<QVariant(artistL->text() ); 
-    }
-    
-    
-    if (leadArtistL->text()!=file->tag(LEAD_ARTIST,audioFile::ONCACHE ).toString() )
-    {
-        qDebug()<<"edit leadArtist ";
-	   qDebug()<<"S "<<file->tag(LEAD_ARTIST).toString();
-	   qDebug()<<"S "<<leadArtistL->text() ;
-	   tags<<LEAD_ARTIST;
-	   values<<QVariant(leadArtistL->text() );        
-    }
-
-
-    if (composerL->text()!=file->tag(COMPOSER,audioFile::ONCACHE ).toString() )
-    {
-        qDebug()<<"edit composer";
-	   tags<<COMPOSER;
-	   values<<QVariant(composerL->text() );        
-    }
-    
-    if (genreL->text() != file->tag(GENRE,audioFile::ONCACHE ).toString() )
-    {
-        qDebug()<<"edit genre";
-	   tags<<GENRE;
-	   values<<QVariant(genreL->text() );        
-    }
-
-    if (commentL->toPlainText() != file->tag(COMMENT,audioFile::ONCACHE ).toString() )
-    {
-        qDebug()<<"edit comment";
+	 QList<int> tags;
+	 QList<QVariant> values;
+      
+      for(int i=0;i<FRAME_NUM;i++)
+	 {
+		if(editors[i]==0)
+		{
+		  continue;
+		}
+		
+		if(editors[i]->value() != file->tag(i,audioFile::ONCACHE | ~audioFile::TITLEFP ) )
+		{	
+		    qDebug()<<"editing "<<views::tagName(i);
+		    tags<<i;
+		    values<<editors[i]->value();
+		}
+	 }
+	 
+	
+	if (commentL->toPlainText() != file->tag(COMMENT,audioFile::ONCACHE ).toString() )
+	{
+        qDebug()<<"editing comment";
 	   tags<<COMMENT;
 	   values<<QVariant(commentL->toPlainText() );        
-    }
-    
-    if(yearL->value() != file->tag(YEAR,audioFile::ONCACHE ).toInt() )
-    {
-	 qDebug()<<"edit year";
-	 tags<<YEAR;
-	 values<<QVariant(yearL->value() );
-    }
-    
-    if(trackL->value() != file->tag(TRACK,audioFile::ONCACHE ).toInt() )
-    {
-	   qDebug()<<"edit track";
-	   tags<<TRACK;
-	   values<<QVariant(trackL->value() );	
-    }
-    
-    if(stars->rating() != file->tag(RATING,audioFile::ONCACHE ).toInt() )
-    {
-	   qDebug()<<"edit rating";
-	   tags<<RATING;
-	   values<<QVariant(stars->rating() );	   
-    }
-    
-    file->setTags(tags,values);
+	}
+        
+	file->setTags(tags,values);
 }
 
 void editTrackContent::clicked(QAbstractButton * button)

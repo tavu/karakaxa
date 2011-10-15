@@ -5,6 +5,7 @@
 #include"numberEditor.h"
 #include"../models/urlRole.h"
 #include"../../files/audioFiles.h"
+#include "pathEditor.h"
 
 views::tagEditor* views::tagEditor::getEditor(int tag,QWidget *parent)
 {       
@@ -50,6 +51,10 @@ views::tagEditor* views::tagEditor::getEditor(int tag,QWidget *parent)
 	   case ARTIST:
 	   {
 		  return new textEditor(ARTIST,parent);
+	   }
+	   case PATH:
+	   {
+		  return new pathEditor(PATH,parent);
 	   }
 	   default:
 	   {

@@ -159,9 +159,11 @@ void views::treeViewDelegate::setModelData(QWidget *editor,QAbstractItemModel *m
     { 	
 	  tagEditor *e= static_cast<tagEditor*>(editor);     
 	  qDebug()<<"seting data";		    	
-	  QVariant  v=property("modelList");
+	  QVariant  v=property("modelList");	  	  
 	
 	   QModelIndexList list=qvariant_cast<QModelIndexList>(v);      
+	   
+// 	   qDebug()<<list.at(0).data(URL_ROLE).toUrl();
 	   editorFactory->setModelData(e,model,index,list);
     }
     else

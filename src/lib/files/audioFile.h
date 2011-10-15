@@ -64,13 +64,15 @@ class audioFile :public QObject
 
 	QString 			format();
 
-	int 		error() const
+	
+	
+	int error() const
 	{
 	    //return the last error
 	    return err;
 	}
 	
-	inline int status() const
+	int status() const
 	{
 	    //return an int that shows from where the last tag was loaded
 	    return stat;
@@ -105,7 +107,8 @@ class audioFile :public QObject
 	
     private:	
       
-	bool prepareToSave();
+	bool setTagPrivate(int t,QVariant var); 
+	 
 	void save();	
 	mutable int err;
 	mutable int stat;

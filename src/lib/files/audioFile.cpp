@@ -92,7 +92,9 @@ QVariant audioFiles::audioFile::tag(int t, const short int f) const
     
 */
     QVariant ret;
-         
+    stat=-1;  
+    err=UNOWN;
+    
     if(cache==0)
     {
 	err=INVALID_FILE;
@@ -107,120 +109,71 @@ QVariant audioFiles::audioFile::tag(int t, const short int f) const
     }    
     if (t==PATH)
     {
-	stat=-1;
+	   stat=-1;
         return path();
     }
+    
+    
     if (f & ONDATAB)
     {
-	//the first field of the record conteins the albumId
-	   ret=cache->tagFromDb(t+1, err);
+	   ret=cache->tagFromDb(t, err);
         if (err==OK)
         {
-	    if (t==TITLE && ret.toString().isEmpty() && (f & TITLEFP) )
-	    {	    
-		stat= TITLEFP;
-		ret=core::titleFromPath(path());
-		return ret;
-	    }
 	    stat=ONDATAB;
-	    return ret;
         }
     }
-    if (f & ONCACHE)
+    else if (f & ONCACHE)
     {	      
 	stat=ONCACHE;
 	ret=cache->tagFromFile((tagsEnum) t, err);
-	
-	//if we have loaded the tags information but there is no title frame and the TITLEFP is seted we return the file name.
-	if (t==TITLE && ret.toString().isEmpty() && (f & TITLEFP) && err!=TAGS_NOT_LOADED)
-        {	    
- 	    stat= TITLEFP;
- 	    ret=core::titleFromPath(path());
-        }
-        if(err==OK)
-	{
-	    return ret;
-	} 
     }
 
-    if (f & SELECT)
+    if ( (ret.isNull() ||!ret.isValid() ) && (f & SELECT) )
     {
        err=cache->select();
-       if(err==OK)
-       {
-	  stat=SELECT;
-	  QString s=cache->tagFromDb((tagsEnum) t, err).toString().trimmed();	  
-	  ret=QVariant(s);
-       }
+	  stat=SELECT;	
+	  ret=cache->tagFromDb((tagsEnum) t, err);
     }
 
-    if (f & LOAD_FILE)
+    if ( (ret.isNull() ||!ret.isValid() ) && (f & LOAD_FILE) )
     {
-	cache->loadTags();
+	   cache->loadTags();
         ret=cache->tagFromFile((tagsEnum) t, err);
-	
-	//if we have loaded the tags information but there is no title frame and the TITLEFP is seted we return the file name.
-	if (t==TITLE && ret.toString().isEmpty() && (f & TITLEFP) && err!=TAGS_NOT_LOADED)
-        {	    
-	    stat= TITLEFP;
- 	    ret=core::titleFromPath(path());
-	    return ret;
-        }
         stat=ONCACHE;
-        return ret;
     }
-    err=UNOWN;
-    stat=-1;
-    return ret;        
+    
+    	if (t==TITLE && ret.toString().isEmpty() && (f & TITLEFP) )
+	{
+	    stat= TITLEFP;
+ 	    ret=core::titleFromPath(path());        	  
+	 }
+
+	 return ret;        
 }
 
-bool audioFiles::audioFile::setTag(int t,QVariant var)
-{            
+bool audioFiles::audioFile::setTag(int t, QVariant var)
+{
     if(cache==0)
     {
 	   err=INVALID_FILE;
 	   return false;
     }
-  
+         
     if(t>=FRAME_NUM || t<0)
     {
 	   err=UNOWN;
 	   return false;
-    }    
+    }
   
-    if(!prepareToSave())
+    cache->select(true);
+    cache->loadTags();
+    err=cache->prepareToSave();
+    if(err!=OK)
     {
 	   return false;
-    }      
-    
-    fdb->setAlbum ( tag(ALBUM,ONDATAB|SELECT).toString()  );
-    fdb->setArtist( tag(ARTIST,ONDATAB).toString() );
-    
-    file->setTag( (tagsEnum)t,var);
-    err=file->error();
-    
-    if(err==OK)
-    {
-	cache->setTag((tagsEnum)t,var,1);
-	err=fdb->setTag(t,var);
-    }
-    else if(err==NS_TAG)
-    {	
-	err=fdb->setTag(t,var);
-    }
-      
-    if(err==OK)
-    {
-      cache->setTag((tagsEnum)t,var,2);
     }
     
-
-    tagChanges change;
-    change.tag=t;
-    change.value=var;
-    change.error=err;
-    
-    changes<<change;
+    setTagPrivate(t,var);
         
     save();
 
@@ -229,7 +182,27 @@ bool audioFiles::audioFile::setTag(int t,QVariant var)
 	 return true;  
     }
 
-    return false;
+    return false;   
+}
+
+
+bool audioFiles::audioFile::setTagPrivate(int t,QVariant var)
+{            
+  
+    if(t>=FRAME_NUM || t<0)
+    {
+	   err=UNOWN;
+	   return false;
+    }    
+    
+    cache->setTag((tagsEnum)t,var,err);
+    
+    tagChanges change;
+    change.tag=t;
+    change.value=var;
+    change.error=err;
+    
+    changes<<change;
 }
 
 void audioFiles::audioFile::setTags(QList<int> tags,QList<QVariant> values)
@@ -245,18 +218,15 @@ void audioFiles::audioFile::setTags(QList<int> tags,QList<QVariant> values)
 	err=UNOWN;
 	return ;
     }
-    if(!prepareToSave() )
-    {
-	return ;
-    }
+    cache->select(true);
+    cache->loadTags();
+    cache->prepareToSave();
     
-    saveFlag=false;
     for(int i=0;i<tags.size();i++ )
     {
-	setTag(tags.at(i),values.at(i) );
+	setTagPrivate(tags.at(i),values.at(i) );
     }
     
-    saveFlag=true;
     save();
       
 }
@@ -339,63 +309,11 @@ int audioFiles::audioFile::albumId()
     return cache->tagFromDb(0,err).toInt();
 }
 
-bool audioFiles::audioFile::prepareToSave()
-{
-    if(!saveFlag)
-    {
-      err=OK;
-      return true;
-    }
-    
-    changes.clear();
-    file=audioFiles::getFileTags(path()); 
-    fdb=new fileToDb(path() );
-    
-    if(file->isValid() )
-    {
-	   err=fdb->prepare();
-    }
-    else
-    {
-	   err=INVALID_FILE;
-    }    
-    
-    if(err==OK)
-    {
-	   cache->lockForSaving();
-	   return true;
-    }
-    
-    return false;
-}
-
 void audioFiles::audioFile::save()
 {
-    if(!saveFlag)
-    {
-	return;
-    }
-    
-    file->save();
-    int e=fdb->commit();
-    
-    if(e!=OK)
-    {
-	err=e;
-    }
-        
-    delete file;    
-    file=0;
-    delete fdb;
-    fdb=0;
-    
-    cache->savingEnd(changes );
-    
+    cache->savingEnd();    
     audioFile f(*this);
-    qDebug()<<"save "<<f.tagChanged().size();
-    core::db->updateSig(f);
-    
-    
+    core::db->updateSig(f);        
 }
 
 void audioFiles::audioFile::load(const short int f)

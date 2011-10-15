@@ -43,22 +43,11 @@ private:
     QLabel formatF;
     QLabel year;
 
-    QLineEdit *path;
 
+    views::tagEditor* editors[FRAME_NUM];
 
-    QLineEdit *titleL;
-    QLineEdit *albumL;
-    QLineEdit *artistL;
-    QLineEdit *leadArtistL;
     QTextEdit *commentL;
-    QLineEdit *composerL;
-    QLineEdit *genreL;
-    QSpinBox *yearL;
-    QSpinBox *trackL;
-
     QDialogButtonBox *buttons;
-
-    views::ratingWidget *stars;
 
 public slots:
 

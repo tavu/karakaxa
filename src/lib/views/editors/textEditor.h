@@ -44,9 +44,6 @@ class textEditor :public tagEditor
 		QVariant v(edit->text() );
 		emit valueChanged(v);
 	 }
-	 
-	 void textChanged(const QString &text);
-      
     
 };
 

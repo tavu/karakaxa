@@ -27,15 +27,24 @@ class fileToDb
 	
 	int prepare();
 	
-	void setAlbum(const QString &s)
+	void setAlbumC(const QString &s)
 	{
 	    _album=s;
-	    qDebug()<<"fdb al "<<_album;
 	}
 	
-	void setArtist(const QString &s)
+	void setArtistC(const QString &s)
 	{
 	    _artist=s;
+	}
+	
+	void setLeadArtistC(const QString &s)
+	{
+	    _leadArtist=s;
+	}
+	
+	void setAlbumIdC(const int id)
+	{
+	   _albumId=id;
 	}
 	
 	int setTag(int t,QVariant var);
@@ -50,33 +59,38 @@ class fileToDb
 	void 			clearGenre();
 	void 			clearComposer();
 	
+	int 				setAlbumArt(const int albumId,QString art);
+	
+	int end();
+
+	
     private:
-	int 	setTitle (const QString path,const QString &s);
-	int 	setArtist (const QString path,const QString &s,const QString &album);
-	int 	setAlbum (const QString path,const QString &s);
-	int 	setComment (const QString path,const QString &s);
-	int 	setLeadArtist (const QString path,const QString &s,const QString &artist,const QString &album);
-	int	setComposer(const QString path,const QString &s);
-	int 	setGenre (const QString path,const QString &s);
-	int 	setYear (const QString path,const unsigned int &year);
-	int 	setTrack (const QString path,const unsigned int &i);
-	int 	setRating(const QString path,const unsigned int &rating);
-	int 	setCounter(const QString path,const unsigned int &num);
-	int 	setAlbumArt(const int albumId,QString art);
+	int 	setTitle (const QString &s);
+	int 	setArtist (const QString &s);
+	int 	setAlbum (const QString &s);
+	int 	setComment (const QString &s);
+	int 	setLeadArtist(const QString &s);
+	int	setComposer(const QString &s);
+	int 	setGenre (const QString &s);
+	int 	setYear (const unsigned int &year);
+	int 	setTrack (const unsigned int &i);
+	int 	setRating(const unsigned int &rating);
+	int 	setCounter(const unsigned int &num);		
 
     
-    
-	QString	_album;
-	QString 	_artist;
-	QString 	_path;
-	int 		_id;
-	int 		_tag;
-	QVariant 	value;
-	int 		tag;
+	QString  _path;
+	QString _album;
+	QString _artist;
+	QString _leadArtist;
+	int 	   _albumId;
+	int     tag;
+	QVariant value;
 	
-	QSqlDatabase    databs;
+    	QSqlDatabase    databs;
+	
+	static QMutex 	mutex;
       
-	 bool setAlbumArtist(const QString &path,const QString &s,const QString &album,QSqlQuery &q);
+	 bool setAlbumArtist(const QString& artist, QSqlQuery& q);
 };//class
 
 };//namespace

@@ -12,7 +12,7 @@ views::textEditor::textEditor(int tag,QWidget *parent)
   QHBoxLayout *l=new QHBoxLayout(this);  
   l->addWidget(edit);
   l->setContentsMargins(0,0,0,0);
-  setSizePolicy(QSizePolicy::Ignored,QSizePolicy::Ignored);
+//   setSizePolicy(QSizePolicy::Ignored,QSizePolicy::Ignored);
   
   connect(edit,SIGNAL(editingFinished()),this,SLOT(valueChanger()) );  
 //   connect(edit,SIGNAL(textChanged(QString)),this,SLOT(textChanged(QString)) );  
@@ -35,8 +35,4 @@ views::textEditor::textEditor(int tag,QWidget *parent)
    edit->setCompleter(comp);
 
   
-}
-
-void views::textEditor::textChanged(const QString& text)
-{
 }
