@@ -1,6 +1,7 @@
 #ifndef CONTENTTREE_H
 #define CONTENTTREE_H
 #include<QTreeView>
+#include<QTimer>
 class contentTree :public QTreeView
 {
     Q_OBJECT
@@ -15,5 +16,14 @@ class contentTree :public QTreeView
 	
     protected:
       void drawBranches ( QPainter * painter, const QRect & rect, const QModelIndex & index ) const;
+	 void dragMoveEvent ( QDragMoveEvent * event );
+	 Qt::DropActions supportedDropActions() const;
+	 void dragEnterEvent ( QDragEnterEvent * event );
+	 void dragLeaveEvent ( QDragLeaveEvent* event );
+	 QModelIndex dropIndex;
+	 QTimer *timer;
+	 
+    private slots:
+	 void dropTime();
 };
 #endif

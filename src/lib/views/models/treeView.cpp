@@ -126,7 +126,6 @@ void views::treeView::setModel ( QAbstractItemModel * model )
 
 void views::treeView::dataChanged ( const QModelIndex & topLeft, const QModelIndex & bottomRight )
 {
-//     qDebug()<<"ET";
      QTreeView::dataChanged(topLeft,bottomRight);
      return ;
      if(bottomRight.column()>ratingColumn() )
@@ -155,8 +154,6 @@ void views::treeView::contextMenuEvent(QContextMenuEvent *e)
 
 void views::treeView::setRatingColumn(const int n)
 {    
-//     header()->setResizeMode ( n, QHeaderView::Fixed );
-//     header()->resizeSection(n,delegate->itemHeigh()*5+1 );
     delegate->setRatingColumn(n);
 }
 
@@ -327,9 +324,7 @@ QList<QUrl> views::treeView::getUrls(const QModelIndexList &list)
     if(list.isEmpty() )
     {
 	   return urls;
-    }
-    
-//     qDebug()<<"SI "<<list.size();
+    }    
     
     int k=list.at(0).column();
     
