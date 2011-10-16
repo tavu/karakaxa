@@ -47,9 +47,9 @@ int audioFiles::fileCache::loadTags(bool force)
     file=audioFiles::getFileTags(_path);
     tagRecord *t=new tagRecord[FRAME_NUM];
     file->getTags(t);
-    lock.lockForWrite();
+    readMutex.lock();
     tagTable=t;
-    lock.unlock();       
+    readMutex.unlock();    
     int err=file->error();
     delete file;
     file=0;
@@ -75,9 +75,9 @@ int audioFiles::fileCache::select(bool force)
     
     int err;
     QSqlRecord rec=fileToDb::record(path(),err );
-    lock.lockForWrite();
+    readMutex.lock();
     record=rec;
-    lock.unlock();
+    readMutex.unlock();
 
     if (err==NOTINDB)
     {      
@@ -95,7 +95,7 @@ int audioFiles::fileCache::select(bool force)
 void fileCache::setRecord(QSqlRecord &r, bool force)
 {
     loadMutex.lock();
-    lock.lockForWrite();
+    readMutex.lock();
     
     if(record.isEmpty() || force )
     {
@@ -103,7 +103,7 @@ void fileCache::setRecord(QSqlRecord &r, bool force)
 	notInDb=r.isEmpty();
     }
     
-    lock.unlock();
+    readMutex.unlock();
     loadMutex.unlock();
 }
 
@@ -111,7 +111,7 @@ void fileCache::setRecord(QSqlRecord &r, bool force)
 QVariant audioFiles::fileCache::tagFromFile(tagsEnum t, int &err)
 {
     QVariant ret;
-    lock.lockForRead();
+    readMutex.lock();
     
     if(tagTable!=0)
     {
@@ -122,14 +122,14 @@ QVariant audioFiles::fileCache::tagFromFile(tagsEnum t, int &err)
     {
 	err=TAGS_NOT_LOADED;
     }
-    lock.unlock();
+    readMutex.unlock();
     return ret;
 }
 
 QVariant audioFiles::fileCache::tagFromDb(int t, int &err)
 {
     QVariant ret;
-    lock.lockForRead();
+    readMutex.lock();
     
     if(!record.isEmpty())
     {
@@ -140,7 +140,7 @@ QVariant audioFiles::fileCache::tagFromDb(int t, int &err)
     {
 	err=EMPTY_RECORD;
     }
-    lock.unlock();
+    readMutex.unlock();
     return ret;
   
 }
@@ -148,7 +148,7 @@ QVariant audioFiles::fileCache::tagFromDb(int t, int &err)
 int audioFiles::fileCache::albumId(int &err)
 {
     int ret=-1;
-    lock.lockForRead();
+    readMutex.lock();
     if(notInDb)
     {
 	 err=NOTINDB;
@@ -162,25 +162,19 @@ int audioFiles::fileCache::albumId(int &err)
     {
 	err=EMPTY_RECORD;
     }
-    lock.unlock();
+    readMutex.unlock();
     return ret;
   
 }
 
 void fileCache::setTag(tagsEnum t, QVariant var, int& err)
 {    
-    if(!file->setTag(t,var) )
-    {
-	 qDebug()<<"edf "<<err;
-    }
-    err=file->error();
-    
-    qDebug()<<"ERrR "<<err;
+    file->setTag(t,var);
+    err=file->error();    
     
     if(err==OK)
     {
-	 tagTable[t].value=var;
-      tagTable[t].status=OK;
+	 setTagFromFile(t,var);
 	 if(fdb!=0 )
 	 {
 		err=fdb->setTag(t,var);
@@ -190,7 +184,7 @@ void fileCache::setTag(tagsEnum t, QVariant var, int& err)
 		}
 		else
 		{
-		    record.setValue(t+1,var);
+		    setTagFromDb(t,var);
 		}
 	 }
     }
@@ -205,7 +199,7 @@ void fileCache::setTag(tagsEnum t, QVariant var, int& err)
 		}		
 		else
 		{
-		    record.setValue(t+1,var);
+		    setTagFromDb(t,var);
 		}
 	 }
     }
@@ -216,10 +210,10 @@ void audioFiles::fileCache::setTagFromFile(tagsEnum t, QVariant var)
 {    
     if(tagTable!=0 )
     {
-      lock.lockForWrite();
+      readMutex.lock();
       tagTable[t].value=var;
       tagTable[t].status=OK;
-      lock.unlock();
+      readMutex.unlock();
     }
 }
 
@@ -227,9 +221,9 @@ void audioFiles::fileCache::setTagFromDb(tagsEnum t, QVariant var)
 {    
     if(! record.isEmpty() )
     {
-	 lock.lockForWrite();
+ 	 readMutex.lock();
 	 record.setValue(t+1,var);
-	 lock.unlock();
+ 	 readMutex.unlock();
     }
 }
 
@@ -303,19 +297,16 @@ int audioFiles::fileCache::prepareToSave()
     int err=OK;
     file=audioFiles::getFileTags(path()); 
     if(!notInDb)
-    {
+    {	   
 	   fdb=new fileToDb(path() );
-    }
-    
-    if(file->isValid() )
-    {
+
 	   fdb->setAlbumC(record.value(ALBUM+1).toString() );
 	   fdb->setArtistC(record.value(ARTIST+1).toString());
 	   fdb->setLeadArtistC(record.value(LEAD_ARTIST+1).toString());
 	   fdb->setAlbumIdC(record.value(0).toInt());
 	   err=fdb->prepare();
     }
-    else
+    else if(! file->isValid() )
     {
 	   err=INVALID_FILE;
     }        

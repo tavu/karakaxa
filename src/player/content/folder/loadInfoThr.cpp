@@ -78,7 +78,8 @@ void loadInfoThr::cleanup()
 {
     cancel();
     wait();
+    mutex->lock();
     fileList.clear();
     iter=fileList.end();
-    qDebug()<<"cleared";
+    mutex->unlock();;
 }

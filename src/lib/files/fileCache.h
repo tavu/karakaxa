@@ -62,13 +62,11 @@ class fileCache
       QString _path;   
       
 	 fileTags *file;
-	 fileToDb *fdb;
-      
-	 QReadWriteLock lock;
-      
-//       voidplayer::fileTags();
-      
-      
+	 fileToDb *fdb;	
+
+	 QMutex loadMutex;
+	 QMutex readMutex;
+
   public:
       static fileCache* 	getFileCache(QString path);
       static void		releaseFileCache(fileCache*);
@@ -77,7 +75,7 @@ class fileCache
   private:
       static QHash<QString, fileCacheS*> fileCacheMap;
       static QMutex gMutex;
-      QMutex loadMutex;
+      
 
 //   signals:
 //       void changed(QList<tagChanges>);

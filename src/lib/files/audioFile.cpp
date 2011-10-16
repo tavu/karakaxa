@@ -117,25 +117,20 @@ QVariant audioFiles::audioFile::tag(int t, const short int f) const
     if (f & ONDATAB)
     {
 	   ret=cache->tagFromDb(t, err);
-        if (err==OK)
-        {
-	    stat=ONDATAB;
-        }
+	   stat=ONDATAB;
     }
-    else if (f & ONCACHE)
+    if ( err!=OK  && (f & ONCACHE) )
     {	      
 	stat=ONCACHE;
 	ret=cache->tagFromFile((tagsEnum) t, err);
     }
-
-    if ( (ret.isNull() ||!ret.isValid() ) && (f & SELECT) )
+    if ( err!=OK && (f & SELECT) )
     {
        err=cache->select();
 	  stat=SELECT;	
 	  ret=cache->tagFromDb((tagsEnum) t, err);
     }
-
-    if ( (ret.isNull() ||!ret.isValid() ) && (f & LOAD_FILE) )
+    if ( err!=OK && (f & LOAD_FILE) )
     {
 	   cache->loadTags();
         ret=cache->tagFromFile((tagsEnum) t, err);
@@ -326,18 +321,18 @@ void audioFiles::audioFile::load(const short int f)
   
     if(f & SELECT)
     {
-	stat=SELECT;
-	err=cache->select();
-	if(err==OK)
-	{
-	    return ;
-	}
+	 stat=SELECT;
+	 err=cache->select();
+	 if(err==OK)
+	 {
+		return ;
+	 }
     }
     
     if(f & LOAD_FILE)
     {
-	stat=LOAD_FILE;
- 	err=cache->loadTags();
+	 stat=LOAD_FILE;
+	 err=cache->loadTags();
     }
     else
     {    

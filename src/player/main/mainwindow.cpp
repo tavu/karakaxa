@@ -367,7 +367,7 @@ void mainWindow::writeSettings()
     KSharedConfigPtr config=core::config->configFile();
     KConfigGroup group( config, "MainWindow" );
     group.writeEntry("geometry", QVariant(saveGeometry() ) );
-//     group.writeEntry("fullscreen", QVariant(isFullScreen() ) );
+    group.writeEntry("volume", QVariant(engine->volume() ) );
     group.writeEntry( "state", QVariant(saveState() ) );
     group.writeEntry( "layoutLocked", QVariant(lockLayout->isChecked() ) );
 //     group.writeEntry( "infoDockHeight", QVariant(info->height()) );
@@ -382,7 +382,7 @@ void mainWindow::readSettings()
     KConfigGroup group( config, "MainWindow" );
     restoreGeometry(group.readEntry("geometry",QByteArray() ) );
     lockLayout->setChecked(group.readEntry("layoutLocked",false) );
-    
+    engine->setVolume(group.readEntry("volume",0.5 ));
     
 //     int infoHeight=group.readEntry( "infoDockHeight",0 );
     

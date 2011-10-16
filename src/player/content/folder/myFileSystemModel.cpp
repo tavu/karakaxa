@@ -13,6 +13,7 @@ myFileSystemModel::myFileSystemModel(QObject *parent)
 
 void myFileSystemModel::callRest()
 {
+    qDebug()<<"here";
     beginResetModel ();
     endResetModel();
 }
@@ -47,7 +48,7 @@ QVariant myFileSystemModel::data(const QModelIndex &index, int role) const
         int filde=index.column()-DIRCOLUMN;
 	
         var=f.tag(filde, audioFile::ONCACHE|audioFile::ONDATAB );	
-	
+	   
 	   return views::pretyTag(var,filde);
     }        
     

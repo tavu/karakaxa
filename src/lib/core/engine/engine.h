@@ -21,6 +21,16 @@ class soundEngine :public QObject
 	Phonon::MediaObject* getMediaObject();
 	inline bool isMuted();
 	
+	qreal volume()
+	{
+	   	return audioOutput->volume();    	
+	}
+	
+	void setVolume(qreal n)
+	{
+	   audioOutput->setVolume(n);
+	}
+	
     private:
 	Phonon::MediaObject* mediaObject;
 	Phonon::AudioOutput *audioOutput;
