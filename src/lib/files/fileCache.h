@@ -39,8 +39,9 @@ class fileCache
       int 		select(bool force=false);
       QVariant 	tagFromFile(tagsEnum t, int &err);
       QVariant 	tagFromDb(int t, int& err);
+      
 	  
-	 int 		albumId(int &err);
+      int 		albumId(int &err);
 	 
 	 
 	 void 		setTag(tagsEnum t,QVariant var,int &err);

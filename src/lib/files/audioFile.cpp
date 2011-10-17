@@ -247,6 +247,7 @@ QVariant  audioFiles::audioFile::albumArtist()
 QString audioFiles::audioFile::cover()
 {
     fdb=new fileToDb(path() );
+    fdb->prepare();
     QString coverPath=fdb->albumArt(albumId(),err);
     
     //if there is no album art on database we search on directory
@@ -267,7 +268,8 @@ QString audioFiles::audioFile::cover()
 	   QString album=tag(ALBUM).toString();
  	   audioFiles::bestCover(covers,album,coverPath);	
     }    
-    
+    fdb->end();
+    delete fdb;
     return coverPath;
 }
 
@@ -301,7 +303,7 @@ int audioFiles::audioFile::albumId()
     {
 	return -1;
     }
-    return cache->tagFromDb(0,err).toInt();
+    return cache->albumId(err);
 }
 
 void audioFiles::audioFile::save()

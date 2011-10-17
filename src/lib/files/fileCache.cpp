@@ -155,7 +155,7 @@ int audioFiles::fileCache::albumId(int &err)
     }    
     else if(!record.isEmpty())
     {
-	ret=record.value(1).toInt();
+	ret=record.value(0).toInt();
 	err=OK;
     }
     else

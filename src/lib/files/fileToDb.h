@@ -61,7 +61,7 @@ class fileToDb
 	
 	int 				setAlbumArt(const int albumId,QString art);
 	
-	int end();
+	int 			end();
 
 	
     private:

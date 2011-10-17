@@ -108,6 +108,7 @@ void core::contentHandler::itemChanger(const QModelIndex &index)
 	   view->expand(index);
     }
 
+    view->setCurrentIndex(index);
     activateContent(cont,true);
     cont->updateContent(model->itemFromIndex(index) );
 }
