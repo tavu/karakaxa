@@ -2,7 +2,6 @@
 #define CONTENTVIEW_H
 #include "abstractContent.h"
 #include"contentList.h"
-#include"contentPrivateCl.h"
 #include<QTreeView>
 #include<KToolBar>
 #include<QStackedWidget>
