@@ -4,9 +4,14 @@
 
 class sortProxyModel :public QSortFilterProxyModel
 {
-    sortProxyModel(QObject *parent=0);
+  public:
+    sortProxyModel(QObject *parent=0)
+    :QSortFilterProxyModel(parent){}
     
     virtual bool lessThan ( const QModelIndex & left, const QModelIndex & right ) const;
+    
+    virtual void fetchMore ( const QModelIndex & parent );
+
 };
 
 #endif

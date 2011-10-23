@@ -1,6 +1,7 @@
 #include"abstractContent.h"
 #include"contentHandler.h"
 #include<QHBoxLayout>
+#include"contentHistory.h"
 // #include"../player.h"
 
 core::abstractContent::abstractContent(QWidget *parent)
@@ -9,7 +10,7 @@ core::abstractContent::abstractContent(QWidget *parent)
         _isLoaded(false),
         _item(0)
 {
-    
+      
 }
 
 QIcon core::abstractContent::icon() const
@@ -83,15 +84,6 @@ void core::abstractContent::activated(const int )
 {
 }
 
-void core::abstractContent::hideContent()
-{
-    if(toolBar!=0 )
-    {
-	toolBarAction->setVisible(false);
-    }
-    hiden();
-}
-
 void core::abstractContent::loaded()
 {
 }
@@ -105,7 +97,7 @@ void core::abstractContent::hiden()
 bool core::abstractContent::isActive()
 {
 //   return false;
-  return core::contentHdl->isActive(this);
+  return core::contentHdl->currentContent()==this;
 }
 
 
@@ -140,6 +132,19 @@ void core::abstractContent::loadContent()
 
 void core::abstractContent::unload()
 {
-    contentHdl->removeContent(this);   
+     contentHdl->removeContent(this);   
+}
+
+void core::abstractContent::saveToHistory()
+{
+    QVariant var=state();
+    
+    if(var.isValid() )
+    {	
+	content_history h;
+	h.p=this;
+	h.value=var;
+// 	contentHdl->history.addHistory(h);
+    }
 }
 

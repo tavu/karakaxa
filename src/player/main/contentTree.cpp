@@ -15,14 +15,14 @@ contentTree::contentTree(QWidget *parent)
     setDragDropMode( QAbstractItemView::DragDrop );
     
      timer = new QTimer(this);
-	timer->setSingleShot(true);
+     timer->setSingleShot(true);
      connect(timer, SIGNAL(timeout()), this, SLOT(dropTime()) );
 }
  
 void contentTree::contextMenuEvent(QContextMenuEvent *e)
 {
     QModelIndex i=indexAt(e->pos());
-    abstractContent *c=contentHdl->content(i);           
+    abstractContent *c=contentHdl->content(i);
     if (c!=0 )
     {
         c->showMenu( e->globalPos() );
@@ -73,10 +73,11 @@ void contentTree::dragLeaveEvent ( QDragLeaveEvent* event )
 
 void contentTree::dropTime()
 {
-//     if(dropIndex.isValid() )	   
+//     if(dropIndex.isValid() )
     {
 	 expand(dropIndex);
-// 	 abstractContent* content=core::contentHdl->content(dropIndex);
-	 core::contentHdl->itemChanger(dropIndex);
+ 	 abstractContent* content=core::contentHdl->content(dropIndex);
+ 	 core::contentHdl->setCurrentContent(dropIndex);
     }
 }
+

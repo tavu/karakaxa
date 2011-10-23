@@ -9,67 +9,30 @@
 #include <QStandardItemModel>
 #include<KToolBar>
 #include<KUrl>
+#include"contentHistory.h"
+#include"contentList.h"
+#include"contentView.h"
+#include"menuList.h"
 // class abstractContent;
 // #include<QStandardItemModel>
 namespace core
 {
 
-class abstractMenu;
-  
-class contentHandler :public QObject
+// class abstractMenu;
+
+// class contentHistory;
+
+class abstractContent;
+
+/*
+ * ContentHandler provides a set of functions  that is usefull to manage the contents ,the menus and every add-on
+ * without concern the indernal structure of that operation.
+ */
+
+class contentHandler
 {
-    friend class abstractContent;
-    Q_OBJECT    
-    public:
-	contentHandler();
-	~contentHandler();
-	void loadPlugins();
-	abstractContent* content(const QModelIndex &index) const;
-	abstractContent* currentContent() const;
-	void setCurrentContent(core::abstractContent* content);
-
-	void removeContent(abstractContent *content);
-	bool isActive(QWidget *w);
-	
-	void setView(QTreeView* v)
-	{
-	    view=v;
-	    view->setModel(model);
-	    connect(view,SIGNAL(activated( const QModelIndex & ) ),this, SLOT(itemChanger (const QModelIndex &) ) );
-	}
-	
-	QFrame* contentView() const;
-
-	KToolBar* toolBar()
-	{
-	    return _toolBar;
-	}
-	
-	void addMenu(abstractMenu *m);
-	void removeMenu(abstractMenu *m);
-	
-	//returns a menu with appropriate action for tha url.
-	//the reciver must check if the menu is empty and must delete the menu later.
-	void contextMenu(QMenu* menu, QUrl u,const QList<QUrl> &urls);
-	
-    private:
-	void activateContent(abstractContent*,bool);
-		
-	
-	QStackedWidget *stack;
-	QList<abstractContent * > contentList;
-	QList<abstractMenu * > menuList;
-	
-	KToolBar *_toolBar;
-
-	
-	
-	
-	QMutex mutex;
-	QList<abstractContent*>history;
-	QStandardItemModel *model;
-	QTreeView *view;
-      
+   
+  public:	      
 		
     class genericContent :public abstractContent
     {
@@ -82,52 +45,96 @@ class contentHandler :public QObject
     };
 	
 
-  public slots:
+  public:
+    contentHandler();
+    ~contentHandler();
+    
+    QWidget* view()
+    {
+	return contView->mainView();
+    }
+    
+    void setView(QTreeView *v)
+    {
+	contView->setView(v);
+    }
+    
+    void setCurrentContent(abstractContent *c,int submenu=-1)
+    {
+	contList->setCurrentContent(c,submenu);
+    }
+         
+    void setCurrentContent(const QModelIndex &in)
+    {
+	contView->activateContFromIndex(in);
+    }
+    
+    core::abstractContent* currentContent()
+    {
+      contList->currentContent();
+    }
+    
+    void addContent(abstractContent *c,bool activate=false)
+    {
+	contList->addContent(c);
+	if(activate)
+	{
+	    contList->setCurrentContent(c);
+	}
+    }
+    
+    void removeContent(abstractContent *c)
+    {
+      contList->removeContent(c);
+    }
+    
+     
+    void removeContent(int pos)
+    {
+      contList->removeContent(pos);
+    }
+    
+    core::abstractContent* content(int i)
+    {
+	return contList->contentFromPos(i);
+    }
+    
+    core::abstractContent* content(const QModelIndex &in)
+    {
+	return contView->contentFromIndex(in);
+    }
+        
+    
+    void addWidget(QWidget *w,bool activate=true)
+    {
+	genericContent *g=new genericContent(w);
+	addContent(g,activate);
+    }
+    
+    //for menu
+	
+    void addMenu(core::abstractMenu* m)
+    {
+	menuL->addMenu(m);
+    }
+    
+	
+    void removeMenu(core::abstractMenu* m)
+    {
+	menuL->removeMenu(m);
+    }
 
-    void itemChanger(const QModelIndex &);
-    void addContent(abstractContent *,bool activate=false);
-    void addWidget(QWidget *w,bool activate=true);
+    void contextMenu(QMenu* menu, QUrl u,const QList<QUrl> &urls)
+    {
+	menuL->contextMenu(menu,u,urls);
+    }
+    
+    KToolBar* toolBar()
+    {
+	contView->toolBar();
+    }
 };
-
-
-
-//This is a menu that can be shown by right click to any item.
-//the views can ask for the contentHandler for an appropriate menu.
-class abstractMenu :public QObject
-{
-    friend class contentHandler;
-    public:
-      abstractMenu() :QObject(){}      
-      virtual ~abstractMenu(){}
-      
-      //return true if the menu can be shown for the spesific url u. 
-      //the multFiles spesifies if there are more than one selected files.
-      virtual bool canShow()=0;
-      //return an action for the menu.
-      //this object must connect the acction to the appropriate slot.
-      virtual QAction* action()=0;
-	 
-	 static KUrl url()
-	 {
-		return _url;
-	 }
-	 
-	 static QList<QUrl>urls()
-	 {
-		return _urls;
-	 }
-	 
-    private:
-	   static QUrl _url;
-	   static QList<QUrl> _urls;
-};
-
-
-
-
-
-
-    extern contentHandler *contentHdl;
-
+  
+  extern contentHandler *contentHdl;
 }
 #endif

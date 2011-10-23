@@ -128,6 +128,10 @@ QVariant smplaylistItem::data (int column,int role  ) const
     {
 	return QVariant();
     }
+    if(role ==typeRole)
+    {
+	return QVariant(type() );
+    }
     return xmlItem::data(column,role);
 }
 

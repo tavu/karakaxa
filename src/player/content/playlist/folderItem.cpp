@@ -73,6 +73,10 @@ QVariant folderItem::data(int column, int role) const
 	}
 	return sizeHint;
     }
+    if(role == typeRole)
+    {
+	return QVariant(type() );
+    }
     return core::xmlItem::data(column, role);
 }
 

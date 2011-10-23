@@ -1,6 +1,7 @@
 #include"playlistContent.h"
 #include<QHBoxLayout>
 #include"items.h"
+#include"sortProxyModel.h"
 
 #define XMLFILE QString("playlists.xml")
 
@@ -61,21 +62,21 @@ playlistContent::playlistContent(QWidget *parent)
     
     smpModel->setHeadItem(smItem);
     
-    proxyM=new QSortFilterProxyModel(this);
+    proxyM=new sortProxyModel(this);
     proxyM->setSourceModel(treeModel);
 //     proxyM->setDynamicSortFilter(true);
+    proxyM->setSortCaseSensitivity(Qt::CaseInsensitive);
+    proxyM->setSortRole(Qt::DisplayRole);    
     
     trackProxy=new QSortFilterProxyModel(this);
-    trackProxy->setDynamicSortFilter(true);
+    trackProxy->setDynamicSortFilter(false);
     trackProxy->setFilterKeyColumn(-1);
     trackProxy->setFilterCaseSensitivity(Qt::CaseInsensitive);
     trackProxy->setSourceModel(smpModel);
     
     trackV->setModel(trackProxy);
     
-    treeV->setModel(proxyM);
-    
-    proxyM->sort(0);
+    treeV->setModel(proxyM);        
     
     stack->addWidget(treeV);
     stack->addWidget(trackV);
@@ -122,6 +123,8 @@ playlistContent::playlistContent(QWidget *parent)
     connect(qApp,SIGNAL(aboutToQuit() ),this,SLOT(save() ) );
     
     stack->setCurrentWidget(treeV);
+    
+    proxyM->sort(0,Qt::AscendingOrder);
 }
 
 void playlistContent::updateQueries()
@@ -216,10 +219,10 @@ void playlistContent::addFolderSlot()
     
     i->appendRow(f);
     
-    treeV->expand( proxyM->mapFromSource(treeModel->indexFromItem(i,0) ) );
-    qDebug()<<"ED";
+//     proxyM->sort(0,Qt::AscendingOrder);
+    treeV->expand( proxyM->mapFromSource(treeModel->indexFromItem(i,0) ) );    
     treeV->edit( proxyM->mapFromSource( treeModel->indexFromItem(f,0) ) );
-
+    proxyM->sort(0,Qt::AscendingOrder);
     
 }
 
@@ -255,7 +258,7 @@ void playlistContent::createSmpSlot()
     }    
     
     item->appendRow(newItem);
-    
+    proxyM->sort(0,Qt::AscendingOrder);
     delete c;        
 }
 
@@ -286,7 +289,8 @@ void playlistContent::editSmpSlot()
         
     parent->removeRow(item->row());
     parent->appendRow(newItem);
-
+    
+    proxyM->sort(0,Qt::AscendingOrder);
     delete c;
 }
 

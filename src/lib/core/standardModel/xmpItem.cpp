@@ -148,6 +148,12 @@ QVariant core::xmlItem::data ( int column, int role ) const
     {
 	return QVariant(tagName() );
     }
+    
+    if(role ==typeRole)
+    {
+	return QVariant(XmlType);
+    }
+    
     return QVariant();
 }
 

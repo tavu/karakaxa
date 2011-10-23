@@ -22,6 +22,7 @@
 #include"content/configure/configureContent.h"
 #include"content/edit/editTrackContent.h"
 #include"content/nowPlaylist/nowPlaylistContent.h"
+#include<QVBoxLayout>
 
 #include<KHelpMenu>
 #include<KMenuBar>
@@ -134,13 +135,22 @@ inline void mainWindow::infoInit()
 
 void mainWindow::conViewInit()
 {
-    QFrame *conView=contentHdl->contentView();
-    conView->setFrameStyle(QFrame::StyledPanel);
-    conView->setFrameShadow(QFrame::Raised);
-
-    conView->setPalette(decor->palette());
+    QFrame *f =new QFrame(this);
+    QWidget *conView=contentHdl->view();
+    conView->setPalette(views::decor->palette());
+    f->setAutoFillBackground(true);
+    f->setPalette(views::decor->palette());
+    
+    QVBoxLayout *l=new QVBoxLayout(f);
+    l->addWidget(core::contentHdl->toolBar() );
+    l->addWidget(conView);
+    l->setContentsMargins(0,0,0,0);
+    
+    f->setFrameStyle(QFrame::StyledPanel);
+    f->setFrameShadow(QFrame::Raised);
+                   
     conView->setAutoFillBackground(true);
-    setCentralWidget(conView); 
+    setCentralWidget(f); 
 }
 
 void mainWindow::conTreeInit()
@@ -160,7 +170,7 @@ void mainWindow::conTreeInit()
     pal.setColor(QPalette::Base,pal.color(QPalette::Window) );
     conTree->setPalette(pal);
     conTreeDock->setPalette(pal); 
-    
+        
     core::contentHdl->setView(conTree);
         
     conTreeDock->setWidget(conTree);
@@ -174,9 +184,7 @@ void mainWindow::conTreeInit()
 void mainWindow::nplViewInit()
 {
     QFrame *w=new QFrame(this);
-//     nplViewDockT=new QWidget(this);
-    
-    nplView =new nplaylistView(w);
+    nplView =new nplaylistView();
     nowPlayListM=new nplModel(this);
     nplView->setModel(nowPlayListM);
     nplView->setDragDropMode(QAbstractItemView::DragDrop);

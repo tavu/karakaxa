@@ -6,19 +6,23 @@
 #include<KToolBar>
 #include<QStandardItem>
 #include <QLinkedList>
+
 // #include"contentHandler.h"
 // #include "contentHandler.h"
 
 namespace core
 {
 
-class contentHandler;
+class contentView;
+class contentList;
 
 class abstractContent :public QWidget
 {    
     Q_OBJECT
     
-    friend class core::contentHandler;
+//     friend class core::contentHandler;
+      friend class core::contentView;
+      friend class core::contentList;
 
     public:
 	abstractContent(QWidget *parent=0);
@@ -30,7 +34,7 @@ class abstractContent :public QWidget
 
 	//return the icon of the content
 	virtual QIcon icon() const;
-
+	
 	void showMenu(const QPoint p);
 	bool isActive();
 	
@@ -42,6 +46,14 @@ class abstractContent :public QWidget
 	{
 	    return _isLoaded;
 	}
+	
+	//return a qvariant to describe the state of the content.
+	//if the qvariant is invaled there would be no valid state.
+	virtual QVariant state() const
+	{
+	    return QVariant();
+	}
+		
     // 	  virtual int childrenNum() const;
     protected:
 
@@ -49,8 +61,7 @@ class abstractContent :public QWidget
 	void addSubmenu(const QString &s,QIcon icon=QIcon() );
 	void addSubmenu(const int pos, const QString &s,QIcon icon=QIcon() );	
 	void removeSubmenu(const int pos);
-	KToolBar *toolBar;
-	QAction *toolBarAction;
+	KToolBar *toolBar;	
 	
 	//this function is called after the content have been loaded
 	virtual void loaded();
@@ -63,20 +74,21 @@ class abstractContent :public QWidget
 	//this function is called after the content have been activated.
 	virtual void activated(const int n);
 
+	void saveToHistory();
 
     private:
 	QStandardItem *_item;
 	void updateContent(QStandardItem*);
-	void hideContent();
 	QLinkedList<QWidget *> widgets;
 	QStandardItem* item();
 	void unloadContent();
 	void loadContent();
 	bool _isLoaded;
+	QAction *toolBarAction;
 };
 
 
-// Q_DECLARE_INTERFACE(abstractContent,"abCont");
+// Q_DECLARE_INTERFACE(core::abstractContent,"abCont");
 
 };
 #endif
