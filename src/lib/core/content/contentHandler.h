@@ -71,7 +71,7 @@ class contentHandler
     
     core::abstractContent* currentContent()
     {
-      contList->currentContent();
+      return contList->currentContent();
     }
     
     void addContent(abstractContent *c,bool activate=false)
@@ -131,7 +131,7 @@ class contentHandler
     
     KToolBar* toolBar()
     {
-	contView->toolBar();
+	return contView->toolBar();
     }
 };
   
