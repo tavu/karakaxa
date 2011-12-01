@@ -36,8 +36,8 @@ bool core::database::createConnection()
     if (!db.open())
     {
 
-	status->addError(QObject::tr("Can not connect to database") );
- 	status->addErrorP("Database Error"+db.lastError().text());
+	   status->addError(QObject::tr("Can not connect to database") );
+	   status->addErrorP("Database Error"+db.lastError().text());
         return false;
     }
     
@@ -59,7 +59,6 @@ bool core::database::dBConnect(QString n,QString u,QString p)
 
 void core::database::readSettings()
 {
-
      KSharedConfigPtr config=core::config->configFile("database");
      KConfigGroup group( config, "database" );
      dbName=group.readEntry("database",QString());

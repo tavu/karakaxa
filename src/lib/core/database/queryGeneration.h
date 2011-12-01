@@ -182,6 +182,7 @@ class queryGrt :public QObject
 	void setNeedUpdate()
 	{
 	    _needUpdate=true;
+	    emit updateNeeded();
 	}
 	
     signals:

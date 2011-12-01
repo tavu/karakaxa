@@ -29,11 +29,19 @@ nplaylistView::nplaylistView(QWidget *parent)
 
      _removeAction=new QAction(KIcon("list-remove"),tr("&Remove track"),this);
     connect(_removeAction,SIGNAL(triggered( bool)),this,SLOT(remove() ) );
-//     connect(this,SIGNAL(doubleClicked(QModelIndex ) ),this, SLOT(play(const QModelIndex) ) );
     connect( engine ,SIGNAL(trackChanged ( QString) ),viewport(), SLOT(update()) );
     
     
 }
+
+void nplaylistView::mouseDoubleClickEvent(QMouseEvent* event)
+{
+//     views::treeView::mouseDoubleClickEvent(event);       
+    QModelIndex index=indexAt (event->pos() );
+    play(index);
+    event->accept();
+}
+
 
 void nplaylistView::mousePressEvent(QMouseEvent *event)
 {
@@ -63,6 +71,19 @@ Qt::DropActions nplaylistView::supportedDropActions () const
     // returns what actions are supported when dropping
     return Qt::CopyAction | Qt::MoveAction;
 }
+
+QAction* nplaylistView::goToCurrent()
+{
+//     QAction *action=new QAction();
+//     connect(action,SIGNAL(triggered(bool)),this,SLOT(goToCurrentTrack()) );
+//     return action;
+}
+void nplaylistView::goToCurrentTrack()
+{
+
+}
+
+
 
 void nplaylistView::performDrag()
 {
@@ -256,7 +277,8 @@ void nplaylistView::play(const QModelIndex &index)
 {
 //     QTreeView::mouseDoubleClickEvent(event);
 //        QModelIndex index=indexAt( viewport()->mapFromGlobal(QCursor::pos() )  );
-	
+    
+	qDebug()<<"play";
 	if(index.isValid() )
 	{
 	   engine->play(index.row() );

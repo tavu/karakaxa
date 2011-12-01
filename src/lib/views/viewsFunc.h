@@ -6,6 +6,7 @@
 namespace views
 {
     QString 	prettyLength(int l);
+    QString     prettyLength(qint64 l);
     QString 	prettySize(int n);
     QVariant	pretyTag(QVariant var,int t);
     QString	tagName(int t);

@@ -18,9 +18,7 @@ views::volumeBar::volumeBar(QWidget *parent)
     connect(engine->getAudio(),SIGNAL(volumeChanged(qreal)),this,SLOT(volumeC(qreal)));
             
     volume = new Phonon::VolumeSlider(engine->getAudio(),this );
-//     volume->setFixedWidth(150);
     volume->setMuteVisible(false);
-//     volume->setFixedWidth(150);
     
     volumeC(engine->getAudio()->volume() );
     addWidget( volume );
@@ -30,22 +28,22 @@ void views::volumeBar::volumeC(qreal v)
 {
     if(v==0)
     {
-	volumeAction->setIcon(decor->muted() );
-	volumeAction->setText(tr("Unmute") );
+        volumeAction->setIcon(decor->muted() );
+        volumeAction->setText(tr("Unmute") );
     }
     else if(v<0.33)
     {	
-	volumeAction->setIcon(decor->volumeLow() );	  
-	volumeAction->setText(tr("Mute") );
+        volumeAction->setIcon(decor->volumeLow() );
+        volumeAction->setText(tr("Mute") );
     }
     else if(v<0.67)
     {
-	volumeAction->setIcon(decor->volumeMedium() );	
-	volumeAction->setText(tr("Mute") );
+        volumeAction->setIcon(decor->volumeMedium() );
+        volumeAction->setText(tr("Mute") );
     }
     else
     {
-	volumeAction->setIcon(decor->volumeHigh() );
-	volumeAction->setText(tr("Mute") );
+        volumeAction->setIcon(decor->volumeHigh() );
+        volumeAction->setText(tr("Mute") );
     }
 }

@@ -11,3 +11,4 @@
 #include"volumeBar/volumeBar.h"
 #include"editors/tagEditor.h"
 #include"actionMenu.h"
+#include"slider.h"

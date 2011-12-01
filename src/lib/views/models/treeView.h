@@ -28,7 +28,7 @@ class treeView :public QTreeView
 	virtual void 	setRatingColumn(const int n);
 	virtual int 	ratingColumn() const;
 	virtual void 	setNotHide(int n);
-	virtual int	notHide();
+	virtual int	    notHide();
 	
 	void setEditorFactory(tagEditorFactory *f)
 	{
@@ -41,10 +41,11 @@ class treeView :public QTreeView
 	   QPoint startPos;
 	   views::treeViewDelegate *delegate;
 
+       virtual void mouseDoubleClickEvent ( QMouseEvent * event );
 	   virtual void mouseMoveEvent(QMouseEvent *event);
 	   virtual void performDrag();
 	   virtual void contextMenuEvent(QContextMenuEvent *e);
-		   void headerRepaint();
+               void headerRepaint();
 	   virtual void leaveEvent(QEvent*)  ;		
 
     protected slots:
@@ -57,7 +58,7 @@ class treeView :public QTreeView
 		   void updateStarWidget();
 	   virtual void dataChanged ( const QModelIndex & topLeft, const QModelIndex & bottomRight );
 	   virtual void closeEditor ( QWidget * editor, QAbstractItemDelegate::EndEditHint hint );
-	   virtual void play(const QModelIndex index);
+	   virtual void play(const QModelIndex &index);
 	   
 	   void editCurrent()
 	   {

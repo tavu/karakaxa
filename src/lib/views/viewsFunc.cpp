@@ -31,6 +31,11 @@ QString views::prettyLength(int l)
     return s;
 }
 
+QString views::prettyLength(qint64 l)
+{
+    return prettyLength( (int)(l/1000) );
+}
+
 QString views::prettySize(int n)
 {
     QString s;

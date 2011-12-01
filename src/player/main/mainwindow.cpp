@@ -255,7 +255,7 @@ void mainWindow::toolBarInit()
         
     
     previousAction = new QAction(  views::decor->previous() ,"play previous", this );
-   toolBar ->addAction( previousAction );
+    toolBar ->addAction( previousAction );
     connect(previousAction,SIGNAL(triggered( bool)),engine,SLOT(previous() ) );
 
     playAction = new QAction(  views::decor->play(),"play-pause", this );
@@ -267,9 +267,11 @@ void mainWindow::toolBarInit()
     connect(nextAction,SIGNAL(triggered( bool)),engine,SLOT(next() ) );
 
     
-    slider = new Phonon::SeekSlider(this);
-    slider->setMediaObject(core::engine->getMediaObject() );
-    slider->setIconVisible(false);
+//     slider = new Phonon::SeekSlider(this);
+//     slider->setMediaObject(core::engine->getMediaObject() );
+//     slider->setIconVisible(false);
+
+    views::sliderWidget *slider=new views::sliderWidget(this);
     
     toolBar->addWidget(slider);
     

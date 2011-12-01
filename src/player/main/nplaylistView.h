@@ -23,6 +23,8 @@ class nplaylistView :public views::treeView
 	   {
 	      return _removeAction;
 	   }
+
+	   QAction *goToCurrent();
 	   
     private:
 	   QPoint startPos;
@@ -35,6 +37,7 @@ class nplaylistView :public views::treeView
 	   void keyPressEvent(QKeyEvent *event);
 
     protected:
+        void mouseDoubleClickEvent(QMouseEvent* event);
 	   void dragEnterEvent ( QDragEnterEvent * event );
 	   void dragLeaveEvent ( QDragLeaveEvent * event );
 	   void drawRow ( QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index ) const;
@@ -44,6 +47,7 @@ class nplaylistView :public views::treeView
 	   bool onDrag;
 	   
     public slots:
+       void goToCurrentTrack();
 	   void play(const QModelIndex &index);
     private slots:
 	   void remove();	   

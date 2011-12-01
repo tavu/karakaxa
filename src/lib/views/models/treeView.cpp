@@ -45,9 +45,16 @@ views::treeView::treeView(QWidget *parent,QString name)
 	   connect(qApp,SIGNAL(aboutToQuit() ),this,SLOT(writeSettings() ) ); 
     }
     setEditTriggers(QAbstractItemView::SelectedClicked);
-    connect(this,SIGNAL(doubleClicked  ( const QModelIndex) ),this,SLOT(play(const QModelIndex) ) );    
+//     connect(this,SIGNAL(doubleClicked  ( const QModelIndex) ),this,SLOT(play(const QModelIndex &) ) );
 
 //     setStyleSheet("QTreeView::item { height: 40px; }");
+}
+
+void views::treeView::mouseDoubleClickEvent(QMouseEvent* event)
+{        
+    QTreeView::mouseDoubleClickEvent(event);
+    QModelIndex index=indexAt (event->pos() );
+    play(index);   
 }
 
 void views::treeView::mousePressEvent(QMouseEvent *event)
@@ -284,8 +291,9 @@ void views::treeView::leaveEvent (QEvent *)
      viewport->update();
 }
 
-void views::treeView::play(const QModelIndex index)
+void views::treeView::play(const QModelIndex &index)
 {
+    qDebug()<<"treeView play";
     core::nplList list;
     int row=index.row();
     for (int i=0;i<model()->rowCount(index.parent() );i++)
@@ -311,7 +319,7 @@ void views::treeView::play(const QModelIndex index)
     
     if(list.size() != model()->rowCount(index.parent() ) )
     {
-	core::status->addError(tr("Some media could not be inserted to playlist") );
+        core::status->addError(tr("Some media could not be inserted to playlist") );
     }
     
     core::engine->play(row );

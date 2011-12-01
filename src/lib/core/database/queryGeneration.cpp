@@ -185,7 +185,8 @@ void core::tagQueryGrt::setNeedUpdate(const audioFiles::audioFile f)
 	if(c.tag==tag_)
 	{
 	    _needUpdate = true;
-	    emit updateNeeded();
+	    emit updateNeeded();	
+	    return ;
 	}
     }
     
@@ -279,11 +280,12 @@ void core::artistQueryGrt::setNeedUpdate(const audioFiles::audioFile f)
 {
     foreach(tagChanges c,f.tagChanged() )
     {
-	if(c.tag == ARTIST || c.tag == LEAD_ARTIST )
-	{
-	    _needUpdate =true;
-	    emit updateNeeded();
-	}
+	 if(c.tag == ARTIST || c.tag == LEAD_ARTIST )
+	 {
+		_needUpdate =true;
+		emit updateNeeded();
+		return ;
+	 }
     }
     core::queryGrt::setNeedUpdate(f);
 }
@@ -393,11 +395,13 @@ void core::albumQueryGrt::setNeedUpdate(const audioFiles::audioFile f)
 {
     foreach(tagChanges c,f.tagChanged() )
     {
-	if(c.tag == ARTIST || c.tag == LEAD_ARTIST ||c.tag == ALBUM )
-	{
-	    _needUpdate =true;
-	    emit updateNeeded();
-	}
+	 if(c.tag == ARTIST || c.tag == LEAD_ARTIST ||c.tag == ALBUM )
+	 {
+		_needUpdate =true;
+		emit updateNeeded();
+		
+		return ;
+	 }
     }    
     core::queryGrt::setNeedUpdate(f);
 }

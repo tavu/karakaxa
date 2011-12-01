@@ -14,51 +14,51 @@ class soundEngine :public QObject
 {
     Q_OBJECT
     public:
-	soundEngine(QObject *parent=0);
-	Phonon::AudioOutput* getAudio();
-	~soundEngine();
-	void init();	
-	Phonon::MediaObject* getMediaObject();
-	inline bool isMuted();
-	
-	qreal volume()
-	{
-	   	return audioOutput->volume();    	
-	}
-	
-	void setVolume(qreal n)
-	{
-	   audioOutput->setVolume(n);
-	}
-	
-    private:
-	Phonon::MediaObject* mediaObject;
-	Phonon::AudioOutput *audioOutput;
+        soundEngine(QObject *parent=0);
+        Phonon::AudioOutput* getAudio();
+        ~soundEngine();
+        void init();
+        Phonon::MediaObject* getMediaObject();
+        inline bool isMuted();
 
-	int errors;
-	QMutex mutex;
-	bool flag;
+        qreal volume()
+        {
+            return audioOutput->volume();
+        }
+
+        void setVolume(qreal n)
+        {
+            audioOutput->setVolume(n);
+        }
+
+    private:
+        Phonon::MediaObject* mediaObject;
+        Phonon::AudioOutput *audioOutput;
+
+        int errors;
+        QMutex mutex;
+        bool flag;
 
     private slots:
-	void getNext();
-	void mediaStateChanged (Phonon::State, Phonon::State);
-	void newSource( const Phonon::MediaSource  );
+        void getNext();
+        void mediaStateChanged (Phonon::State, Phonon::State);
+        void newSource( const Phonon::MediaSource  );
 	
 	
     public slots:
-	bool next();
-	bool previous();
-	bool play(int n);
-	bool play();
-	void setMute(bool);
-	void muteToggle();
-	
-	void playPause();
+        bool next();
+        bool previous();
+        bool play(int n);
+        bool play();
+        void setMute(bool);
+        void muteToggle();
+
+        void playPause();
 	
 
     signals:
-	void stateChanged (Phonon::State state);
-	void trackChanged (QString );
+        void stateChanged (Phonon::State state);
+        void trackChanged (QString );
 };
 
 extern soundEngine *engine;
