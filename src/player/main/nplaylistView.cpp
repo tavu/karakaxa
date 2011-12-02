@@ -161,7 +161,7 @@ void nplaylistView::duplicate()
 	   }
     }
 
-    npList->insert(l,list.last().row() );
+    npList->insert(l,list.last().row()+1);
 }
 
 void nplaylistView::remove()
@@ -206,7 +206,7 @@ void nplaylistView::contextMenuEvent(QContextMenuEvent *e)
 		
 	   menu->addAction(_removeAction);	    
 
-	   duplicateAction=new QAction(tr("&Duplicate track"),this);	    	 
+	   duplicateAction=new QAction(views::decor->icon("duplicate4"),tr("&Duplicate track"),this);
 	   connect(duplicateAction,SIGNAL(triggered( bool)),this,SLOT(duplicate() ) );	    	 
 	   menu->addAction(duplicateAction);
 	 

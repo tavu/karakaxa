@@ -17,7 +17,7 @@ class decoration
     public:
         decoration();
 
-        KIcon icon(const QString s);
+        static KIcon icon(const QString s);
 
         inline QPalette palette()
         {

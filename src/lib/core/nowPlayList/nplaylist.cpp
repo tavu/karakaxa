@@ -172,7 +172,7 @@ void core::nplaylist::duplicate(const int pos)
     QString u=url(pos);
     if(u.isEmpty() )
     {
-	return ;
+        return ;
     }
     nplList list;
     list<<nplTrack::getNplTrack(u);

@@ -27,13 +27,13 @@ void views::actionMenu::repeatPlaylistSlot(bool repeat)
 {
     if(repeat)
     {
-        repeatPlaylistA->setToolTip(tr("stop at last track") );        
+        repeatPlaylistA->setToolTip(tr("repeat playlist") );
         repeatPlaylistA->setIcon(decor->icon("repeat-playlist") );
     }
     else
     {
-        repeatPlaylistA->setToolTip(tr("repeat playlist") );        
-        repeatPlaylistA->setIcon(decor->icon("media-playlist-repeat") );
+        repeatPlaylistA->setToolTip(tr("stop at last track") );             
+        repeatPlaylistA->setIcon(decor->icon("not-repeat-playlist") );
     }
 }
 
