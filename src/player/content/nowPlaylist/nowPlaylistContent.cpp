@@ -13,7 +13,7 @@ nowPlaylistContent::nowPlaylistContent(QWidget* parent): abstractContent(parent)
      
      for(int i=1;i<FRAME_NUM;i++)
      {
-	view->setColumnHidden(i,true);
+        view->setColumnHidden(i,true);
      }
      
      view->setItemDelegate(new nowPlaylistDelegate(this) );

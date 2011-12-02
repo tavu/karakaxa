@@ -316,7 +316,10 @@ QString core::nplaylist::next()
              
             return ret;
         }
-
+        else
+        {
+            playing.clear();
+        }
          
         return ret;
     }

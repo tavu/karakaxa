@@ -27,7 +27,7 @@ nplaylistView::nplaylistView(QWidget *parent)
     setDropIndicatorShown(true);
     setDragEnabled( true );
 
-     _removeAction=new QAction(KIcon("list-remove"),tr("&Remove track"),this);
+    _removeAction=new QAction(KIcon("list-remove"),tr("&Remove track"),this);
     connect(_removeAction,SIGNAL(triggered( bool)),this,SLOT(remove() ) );
     connect( engine ,SIGNAL(trackChanged ( QString) ),viewport(), SLOT(update()) );
     
@@ -74,7 +74,7 @@ Qt::DropActions nplaylistView::supportedDropActions () const
 
 QAction* nplaylistView::goToCurrent()
 {
-     QAction *action=new QAction(KIcon("go-bottom"),tr("go to plaing track"),this);
+     QAction *action=new QAction(views::decor->icon("show-playing-track"),tr("show playing track"),this);
      connect(action,SIGNAL(triggered(bool)),this,SLOT(goToCurrentTrack()) );
      return action;
 }

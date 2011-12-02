@@ -220,8 +220,10 @@ void mainWindow::nplViewInit()
     t->setIconSize(QSize(25,25) );    
 
 
-    t->addAction( views::menus->clearPlaylist() );
+    t->addAction( views::menus->clearPlaylist() );    
+    t->addAction( views::menus->repeatPlaylist() );
     t->addAction( views::menus->sufflePlaylist() );
+    t->addSeparator();
     t->addAction( nplView->goToCurrent() );
 
     QVBoxLayout *l=new QVBoxLayout(w);

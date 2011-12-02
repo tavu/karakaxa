@@ -37,92 +37,109 @@ class nplaylist :public QObject
     friend class nplAbstractModel;
 
     public:
-	const static int ADD;
-	const static int REMOVE;
-	const static int CLEAR;
+        const static int ADD;
+        const static int REMOVE;
+        const static int CLEAR;
 
-	nplaylist();
-	~nplaylist();
+        nplaylist();
+        ~nplaylist();
 
-	nplPointer  getTrack(int pos);
-	void        addMediaList(const QList <QUrl> &urlList,int pos);
-	void        addMediaList(const QStringList &list,int pos);
-	QString     url(int n);
-	bool        isPlaying(const int pos);
-	QStringList getList();
-	int         getLength();
-	nplPointer  getPlayingTrack();
-	
-	int         getPlayingPos()
-	{
-	   return trackList.indexOf(playing,0);
-	}
-	
-	int size();
-	inline void setModel(core::nplAbstractModel *model)
-	{
-	    this->model=model;
-	}
-	
-	
-	 bool rememberPlaylist()
-	 {
-		return rememberPl;
-	 }
-	 
-	 void setRememberPlaylist(bool b)
-	 {
-		rememberPl=b;
-		KSharedConfigPtr config=core::config->configFile();
-		KConfigGroup group( config, "nowPlaylist" );
-		group.writeEntry( "rememberPl", QVariant(rememberPl));
-		group.config()->sync(); 
-	 }
-	
-	 void loadSavedPlaylist();
+        nplPointer  getTrack(int pos);
+        void        addMediaList(const QList <QUrl> &urlList,int pos);
+        void        addMediaList(const QStringList &list,int pos);
+        QString     url(int n);
+        bool        isPlaying(const int pos);
+        QStringList getList();
+        int         getLength();
+        nplPointer  getPlayingTrack();
+
+        int         getPlayingPos()
+        {
+        return trackList.indexOf(playing,0);
+        }
+
+        int size();
+        inline void setModel(core::nplAbstractModel *model)
+        {
+            this->model=model;
+        }
+
+
+        bool rememberPlaylist()
+        {
+            return rememberPl;
+        }
+
+        void setRememberPlaylist(bool b)
+        {
+            rememberPl=b;
+            KSharedConfigPtr config=core::config->configFile();
+            KConfigGroup group( config, "nowPlaylist" );
+            group.writeEntry( "rememberPl", QVariant(rememberPl));
+            group.config()->sync();
+        }
+
+        void loadSavedPlaylist();
+
+        void setRepeat(bool repeat)
+        {
+            circle=repeat;
+            emit repeatChanged(circle);
+        }
+
+        bool repeat()
+        {
+            return circle;
+        }
+
 	
     private:
 
-	nplAbstractModel *model;
-      
-	int totalLength;
-	nplList trackList;
-	nplPointer playing;
-	QMutex mutex;
-	bool circle;
+        nplAbstractModel *model;
 
-	QString next();
-	QString playUrl(int n);
-	QString previous();
-	
-	bool rememberPl;
+        int totalLength;
+        nplList trackList;
+        nplPointer playing;
+        QMutex mutex;
+        bool circle;
+
+        QString next();
+        QString playUrl(int n);
+        QString previous();
+
+        bool rememberPl;
 	
 
     signals:
-	void insertSig(nplList,int );
-	void removeSig(const int);
-	void cancelThreads();
-	
-	void inserted(int);
-	void removed(int);
-	void cleared();
+        void insertSig(nplList,int );
+        void removeSig(const int);
+        void cancelThreads();
+
+        void inserted(int);
+        void removed(int);
+        void cleared();
+
+        void repeatChanged(bool);
 
     public slots:
+        void insert(nplList list,int pos);
+        void move(int from,int pos);
+        void remove(const int);
+        void clear();
 
-	void insert(nplList list,int pos);
-	void move(int from,int pos);
-	void remove(const int);
-	void clear();	
-	
-	void duplicate(const int pos);
-	void suffle();
+        void repeatToggle()
+        {
+            setRepeat(!circle);
+        }
+        void duplicate(const int pos);
+        void suffle();
 
     private slots:
-	void prepareToQuit();
-	
-	void insertSlot(nplList list,int pos);
-	void removeSlot(const int);
-	void informTrack();
+        void prepareToQuit();
+
+        void insertSlot(nplList list,int pos);
+        void removeSlot(const int);
+        void informTrack();
 	
 };
 

@@ -46,9 +46,23 @@ views::decoration::decoration()
     defaultS=KGlobal::dirs()->findResource("data",QString("player/icons/karakaxa.png"));
     playerIcon=KIcon(defaultS);
     
-    initPalete();
-    
+    initPalete();    
 }
+
+KIcon views::decoration::icon(const QString s)
+{
+    QString iconString("player/icons/");
+    iconString=iconString.append(s).append(".png");
+    QString iconPath=KGlobal::dirs()->findResource("data",iconString );
+
+    if(iconPath.isNull() || iconPath.isEmpty()  )
+    {
+        return KIcon(s);
+    }
+
+    return KIcon(iconPath);
+}
+
 
 KIcon views::decoration::tagIcon(int t)
 {
