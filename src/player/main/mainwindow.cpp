@@ -192,7 +192,7 @@ void mainWindow::nplViewInit()
     nplView->setHeaderHidden(true);
     for(int i=1;i<FRAME_NUM;i++)
     {
-	nplView->setColumnHidden(i,true);
+        nplView->setColumnHidden(i,true);
     }
    
     nplView->setItemDelegate(new nplDelegate(this) );    
@@ -212,20 +212,17 @@ void mainWindow::nplViewInit()
         
     nplView->header()->setStyleSheet(s);
 
-//     connect( engine ,SIGNAL(trackChanged ( QString) ),nplView->viewport(), SLOT(update() ) );
+
 
     KToolBar *t=new KToolBar(this);
 
     t->setToolButtonStyle( Qt::ToolButtonIconOnly );
     t->setIconSize(QSize(25,25) );    
 
-//     QAction *clearAction = new QAction( KIcon("edit-clear-list"),"clear", this );
-    t->addAction( views::menus->clearPlaylist() );
-//     connect(clearAction,SIGNAL(triggered( bool)),npList,SLOT(clear() ) );
 
-//     QAction *suffleAction = new QAction( KIcon("roll"),"clear", this );
+    t->addAction( views::menus->clearPlaylist() );
     t->addAction( views::menus->sufflePlaylist() );
-//     connect(suffleAction,SIGNAL(triggered( bool)),npList,SLOT(suffle() ) );
+    t->addAction( nplView->goToCurrent() );
 
     QVBoxLayout *l=new QVBoxLayout(w);
     l->addWidget(nplView);
@@ -265,7 +262,7 @@ void mainWindow::toolBarInit()
     nextAction = new QAction(  views::decor->next(),"play next", this );
     toolBar->addAction( nextAction );
     connect(nextAction,SIGNAL(triggered( bool)),engine,SLOT(next() ) );
-
+   
     
 //     slider = new Phonon::SeekSlider(this);
 //     slider->setMediaObject(core::engine->getMediaObject() );

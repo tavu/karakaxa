@@ -74,13 +74,16 @@ Qt::DropActions nplaylistView::supportedDropActions () const
 
 QAction* nplaylistView::goToCurrent()
 {
-//     QAction *action=new QAction();
-//     connect(action,SIGNAL(triggered(bool)),this,SLOT(goToCurrentTrack()) );
-//     return action;
+     QAction *action=new QAction(KIcon("go-bottom"),tr("go to plaing track"),this);
+     connect(action,SIGNAL(triggered(bool)),this,SLOT(goToCurrentTrack()) );
+     return action;
 }
+
 void nplaylistView::goToCurrentTrack()
 {
-
+    int pos=core::npList->getPlayingPos();
+    QModelIndex index=model()->index(pos,0,QModelIndex());
+    scrollTo(index,QAbstractItemView::PositionAtCenter);
 }
 
 

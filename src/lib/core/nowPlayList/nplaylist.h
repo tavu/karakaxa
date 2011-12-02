@@ -44,16 +44,16 @@ class nplaylist :public QObject
 	nplaylist();
 	~nplaylist();
 
-	nplPointer getTrack(int pos);
-	void addMediaList(const QList <QUrl> &urlList,int pos);
-	void addMediaList(const QStringList &list,int pos);
-	QString url(int n);
-	bool isPlaying(const int pos);
+	nplPointer  getTrack(int pos);
+	void        addMediaList(const QList <QUrl> &urlList,int pos);
+	void        addMediaList(const QStringList &list,int pos);
+	QString     url(int n);
+	bool        isPlaying(const int pos);
 	QStringList getList();
-	int getLength();
-	nplPointer getPlayingTrack();
+	int         getLength();
+	nplPointer  getPlayingTrack();
 	
-	int getPlayingPos()
+	int         getPlayingPos()
 	{
 	   return trackList.indexOf(playing,0);
 	}
