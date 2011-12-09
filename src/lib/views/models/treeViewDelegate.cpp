@@ -41,9 +41,9 @@ void views::treeViewDelegate::paint ( QPainter * painter, const QStyleOptionView
      
 	
 	painter->setOpacity(0.8);    
-     pen.setWidth(2);
-     pen.setColor(option.palette.window().color() );
-     painter->setPen(pen);
+    pen.setWidth(2);
+    pen.setColor(option.palette.window().color() );
+    painter->setPen(pen);
 		
 	painter->drawLine(option.rect.topRight(),option.rect.bottomRight());
 	
@@ -52,7 +52,7 @@ void views::treeViewDelegate::paint ( QPainter * painter, const QStyleOptionView
     
 	painter->save();
     
-     painter->setFont(font);
+    painter->setFont(font);
 
     QApplication::style()->drawPrimitive( QStyle::PE_PanelItemViewItem, &option, painter );
 
@@ -83,15 +83,18 @@ void views::treeViewDelegate::paint ( QPainter * painter, const QStyleOptionView
     }
     QVariant var=index.data(Qt::DisplayRole);
     if(!var.isNull() )
-    {
-	   
-	 QString text = option.fontMetrics.elidedText(var.toString(),Qt::ElideRight,r.width() );
-	 
-	 if(_paintValidRole && index.data(VALID_ROLE).toInt()!=0 )
-	 {
-		painter->setOpacity(0.5);
-	 }
-	 painter->drawText( r,Qt::AlignLeft|Qt::AlignVCenter, text);
+    {	   
+        QString text = option.fontMetrics.elidedText(var.toString(),Qt::ElideRight,r.width() );
+
+        if( index.flags() & Qt::ItemIsEnabled  )
+        {
+            painter->setOpacity(1);
+        }
+        else
+        {
+            painter->setOpacity(0.5);
+        }
+        painter->drawText( r,Qt::AlignLeft|Qt::AlignVCenter, text);
     }
     painter->restore();
 }

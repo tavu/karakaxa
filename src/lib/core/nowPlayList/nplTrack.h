@@ -16,6 +16,7 @@ namespace core
     
 class nplTrack;    
 typedef QSharedPointer<core::nplTrack> nplPointer;
+typedef QList<nplPointer> nplList;
 class nplTrack :public QObject
 {
     Q_OBJECT    
@@ -54,8 +55,7 @@ class nplTrack :public QObject
   protected slots:
   
       void emitChanged()	
-      {
-	   qDebug()<<"hET";
+      {	   
 	   emit changed();
       }
 };

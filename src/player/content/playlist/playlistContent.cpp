@@ -2,7 +2,7 @@
 #include<QHBoxLayout>
 #include"items.h"
 #include"sortProxyModel.h"
-
+#include<QFile>
 #define XMLFILE QString("playlists.xml")
 
 using namespace core;

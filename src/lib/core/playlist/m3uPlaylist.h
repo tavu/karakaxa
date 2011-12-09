@@ -5,43 +5,46 @@
 #include <kurl.h>
 #include<QString>
 #include<iostream>
-#include"abstractPlaylist.h"
+#include"filePlaylist.h"
 // #include<playerNamespace.h>
 #include"../../files/audioFile.h"
 using namespace audioFiles;
 namespace core
 {
-class m3uPlaylist :public abstractPlaylist
+class m3uPlaylist :public filePlaylist
 {
-    
+    Q_OBJECT
     public:
-	m3uPlaylist(const QString s);
-	
-	void insert(int row,QString u);
-	void remove(int row);
-	void move( int from, int to );
+        m3uPlaylist(const QString s,QObject *parent=0);
 
-	QString item(int pos) const;	
-	QStringList urls() const;
-	
-	int size() const;
+    public slots:
+        void insertUrl(int pos,QString u);
+        void insert(int pos,nplPointer p);
+        void remove(int pos);
+        void move( int from, int to );
 
-	QString path() const
-	{
-	    return _path;
-	}
-	
-	bool load();
-	bool save();
-	
-	int error() const;
-	
-    private:		
-	QString _path;
-	QFile file;
-	int	err;
-	
-	QStringList list;
+        bool load();
+        bool save();
+        
+    public:
+        QStringList urls() const;
+
+
+        QString path() const
+        {
+            return _path;
+        }
+
+
+
+        int error() const;
+
+    private:
+        QString _path;
+        QFile file;
+        int	err;
+
+        QStringList list;
 
 };
 };

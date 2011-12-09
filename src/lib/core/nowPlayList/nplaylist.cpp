@@ -76,11 +76,11 @@ void core::nplaylist::insert(nplList list,int pos)
 {  
     if(QThread::currentThread()==core::mainThr() )
     {
-	insertSlot(list,pos);
+        insertSlot(list,pos);
     }
     else
     {
-	emit (insertSig(list,pos) );
+        emit (insertSig(list,pos) );
     }
 }
 
@@ -98,7 +98,6 @@ void core::nplaylist::insertSlot(nplList list, int pos)
     
     int newPos=pos;
     
-    qDebug()<<"IN "<<pos<<" "<<pos+list.size();
     model->beginInsertRows(QModelIndex(), pos,pos+list.size()-1 );
     for(int i=0;i<list.size();i++)
     {

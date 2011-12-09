@@ -13,7 +13,6 @@ myFileSystemModel::myFileSystemModel(QObject *parent)
 
 void myFileSystemModel::callRest()
 {
-    qDebug()<<"here";
     beginResetModel ();
     endResetModel();
 }

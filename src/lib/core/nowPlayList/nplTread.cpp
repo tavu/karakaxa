@@ -1,5 +1,5 @@
 #include"nplTread.h"
-// #include<KMimeType>
+
 #include<QDirIterator>
 #include<QDebug>
 #include"nplFile.h"
@@ -7,7 +7,7 @@
 #include <QHBoxLayout>
 #include <QProgressBar>
 #include"nplStream.h"
-#include"playlist/abstractPlaylist.h"
+#include"playlist/filePlaylist.h"
 #include<QtAlgorithms>
 
 nplTread::nplTread()
@@ -99,7 +99,7 @@ void nplTread::addMedia(const QString &url)
 
 void nplTread::addPlaylist(const QString& url)
 {
-    abstractPlaylist *pl=getPlaylist(url);
+    filePlaylist *pl=getPlaylist(url);
     if(pl==0)
     {
 	   status->addError(tr("Can't load playlist") );
@@ -109,7 +109,7 @@ void nplTread::addPlaylist(const QString& url)
     pl->load();	
     for (int i=0;i<pl->size() && !canceled;i++)    
     {            
-	   addSingleFile(pl->item(i));
+	   addSingleFile(pl->item(i) );
     }
     delete pl;
 }
@@ -117,25 +117,29 @@ void nplTread::addPlaylist(const QString& url)
 void nplTread::addSingleFile(const QString& url)
 {
     nplPointer tr=core::nplTrack::getNplTrack(url);
+    addSingleFile(tr);
+}
+
+
+void nplTread::addSingleFile(nplPointer tr)
+{
     if(!tr.isNull() )
     {
-	   list<<tr;
+       list<<tr;
 
-	   if(tr->type()==NPLAUDIOFILE)		
-	   {				 
-		  audioFile file(url);		 
-		  file.load();	
-	   }
-
+       if(tr->type()==NPLAUDIOFILE)
+       {
+          audioFile file(tr->path());
+          file.load();
+       }
     }
-       	      
-    if(list.size()>=size )	
+
+    if(list.size()>=size )
     {
-	npList->insert(list,pos);
- 	pos+=list.size();
-	list.clear();
-    }    
-    
+        npList->insert(list,pos);
+        pos+=list.size();
+        list.clear();
+    }  
 }
 
 

@@ -23,75 +23,75 @@
 
 class playlistContent :public core::abstractContent
 {
-      Q_OBJECT
-      public:
-	  playlistContent(QWidget *parent=0);
-	  ~playlistContent();
-	  QString name() const;
-	  void activated(const int n);
-	 	  
-	  QIcon icon() const
-	  {
-		return views::decor->playListIcon();
-	  }
-	  
-	  
-      private:	
-	  QAction 		*backAction;
-	  QAction 		*forwardAction;	  
-	  QStackedWidget 	*stack;
-	  
-	  QTreeView		*treeV;
-	  views::treeView	*trackV;
-	  playlistModel  	*plModel;
-	  standardModel		*smpModel;
-	  
-	  standardModel		*treeModel;
-	  playlistFolder	*plHead;
-	  folderItem		*smHead;
+    Q_OBJECT
+    public:
+        playlistContent(QWidget *parent=0);
+        ~playlistContent();
+        QString name() const;
+        void activated(const int n);
 
-	  QSortFilterProxyModel	*proxyM;
- 	  QSortFilterProxyModel	*trackProxy;
+        QIcon icon() const
+        {
+            return views::decor->playListIcon();
+        }
 	  
-	  QLabel 		iconL;
-	  QLabel		textL;
-	  QString		textS;
 	  
-	  //actions
-	  QAction 		*removeAction;
-	  QAction		*addFolderAction;
-	  QAction		*createSmpAction;
-	  QAction		*editSmpAction;
-	  QAction 		*renameAction;
-	  
-	  QAction		*searchAction;
+    private:
+        QAction 		*backAction;
+        QAction 		*forwardAction;
+        QStackedWidget 	*stack;
 
-	  KLineEdit 		*searchLine;	  
+        QTreeView		*treeV;
+        views::treeView	*trackV;
+        playlistModel  	*plModel;
+        standardModel	*smpModel;
+
+        standardModel	*treeModel;
+        playlistFolder	*plHead;
+        folderItem		*smHead;
+
+        QSortFilterProxyModel	*proxyM;
+        QSortFilterProxyModel	*trackProxy;
+
+        QLabel 		iconL;
+        QLabel		textL;
+        QString		textS;
+
+        //actions
+        QAction 		*removeAction;
+        QAction		*addFolderAction;
+        QAction		*createSmpAction;
+        QAction		*editSmpAction;
+        QAction 		*renameAction;
+
+        QAction		*searchAction;
+
+        KLineEdit 		*searchLine;
+
+        QDomDocument 		doc;
+
+        bool			needUpdate;
+
+        void 			toolBarInit();
+
+        core::filesQueryGrt	*quer;
+        views::trackModelItem	*smItem;
 	  
-	  QDomDocument 		doc;
-	  
-	  bool			needUpdate;
-	  
-	  void 			toolBarInit();	 
-	  
-	  core::filesQueryGrt	*quer;
-	  views::trackModelItem	*smItem;
-	  
-      public slots:
-	  void back();
-	  void forward();
-	  void search();
-	  void activationSlot(QModelIndex in);
-	  
-	  void addFolderSlot();
-	  void createSmpSlot();
-	  void editSmpSlot();
-	  void removeSlot();
-	  void save();
-	  void contextMenuSlot(QModelIndex index);
-	  void contextMenuForTracks(QModelIndex index, QModelIndexList list);
-	  void updateQueries();
-	  standardItem* head(standardItem* item);
+    public slots:
+        void back();
+        void forward();
+        void search();
+        void activationSlot(QModelIndex in);
+
+        void addFolderSlot();
+        void createSmpSlot();
+        void editSmpSlot();
+        void removeSlot();
+        void save();
+        void contextMenuSlot(QModelIndex index);
+        void contextMenuForTracks(QModelIndex index, QModelIndexList list);
+        void updateQueries();
+        standardItem* head(standardItem* item);
 };
 
 #endif

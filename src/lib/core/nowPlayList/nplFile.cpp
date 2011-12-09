@@ -21,11 +21,10 @@ core::nplFile::nplFile(QString s)
     }
     else
     {
-      //if the file is valid we read the info we are soure that we will use.
-//         file->load();
-// 	   qDebug()<<"conn "<<file->path();
 	   connect(db,SIGNAL(updated(audioFiles::audioFile)),this,SLOT(emitCh(audioFiles::audioFile) ) ) ;
     }
+
+    _loadFlag=audioFile::ONDATAB|audioFile::ONCACHE|audioFile::TITLEFP;
 
 }
 
@@ -77,7 +76,7 @@ QString core::nplFile::path()
 QString core::nplFile::title()
 {
     if(file==0)	return QString();
-    return file->tag(TITLE).toString();
+    return file->tag(TITLE,_loadFlag).toString();
 }
 
 int core::nplFile::type()
@@ -93,8 +92,8 @@ QString core::nplFile::cover()
 
 QVariant core::nplFile::tag(int t)
 {
-    if(file==0)	return QVariant();
-    return file->tag(t);
+    if(file==0)	return QVariant();    
+    return file->tag(t,_loadFlag);
 }
 
 audioFile* core::nplFile::getAudioFile()

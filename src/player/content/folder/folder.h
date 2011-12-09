@@ -18,6 +18,8 @@
 #include"folderProxyModel.h"
 #include"myFileSystemModel.h"
 #include<KLineEdit>
+
+#include"../playlist/playlistModel.h"
 // #include <kfileplacesmodel.cpp>
 
 class folderContextMenu;
@@ -25,56 +27,60 @@ class folderContextMenu;
 class folderContent :public core::abstractContent
 {
     Q_OBJECT
-public:
-    folderContent(QWidget *parent=0);
-    const QList<QString> getChildren();
-    
-    QString name() const;
-    
-    QIcon icon() const	
-    {
-	   return KIcon("folder-sound");
-    }
+    public:
+        folderContent(QWidget *parent=0);
+        const QList<QString> getChildren();
+
+        QString name() const;
+
+        QIcon icon() const
+        {
+        return KIcon("folder-sound");
+        }
 
 
-private:
-    void loaded();
-    void unloaded();
-    
-    folderContextMenu *m;
-    myFileSystemModel *model;
-    KDirModel *dirModel;
-    folderProxyModel  *proxyM;
+    private:
+        void loaded();
+        void unloaded();
 
-    KFilePlacesModel *navigatorModel;
-    views::treeView *view;
-//     treeViewHeader *viewHeader;
-    KUrlNavigator *navigator;
+        folderContextMenu *m;
+        myFileSystemModel *model;
+        KDirModel *dirModel;
+        folderProxyModel  *proxyM;
+
+        KFilePlacesModel *navigatorModel;
+        views::treeView *view;
+    //     treeViewHeader *viewHeader;
+        KUrlNavigator *navigator;
 
 
-//     KToolBar *toolBar;
-    //actions
-    QAction *upAction;
-    QAction *backAction;
-    QAction *forwardAction;
+    //     KToolBar *toolBar;
+        //actions
+        QAction *upAction;
+        QAction *backAction;
+        QAction *forwardAction;
 
-    KLineEdit *searchLine;
+        KLineEdit *searchLine;
+        playlistModel *playlistM;
 
-public slots:
+        QByteArray folderModelState;
+        QByteArray playlistMState;
+        
+    public slots:
 
-    void writeSettings();
-    void readSettings();
-    void cd(KUrl);
-    void up();
-    void back();
-    void forward();
-    void setDir(const QModelIndex index);
-    
-  private slots:
-    void cleanup();
-    void showUrl(KUrl);
-    void showContexMenuSlot(QModelIndex index, QModelIndexList list);
-    void edit();
+        void writeSettings();
+        void readSettings();
+        void cd(KUrl);
+        void up();
+        void back();
+        void forward();
+        void setDir(const QModelIndex index);
+
+    private slots:
+        void cleanup();
+        void showUrl(KUrl);
+        void showContexMenuSlot(QModelIndex index, QModelIndexList list);
+        void edit();
     
 
     

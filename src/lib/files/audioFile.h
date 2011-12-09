@@ -51,9 +51,9 @@ class audioFile :public QObject
 	QVariant 			tag(int t,const short int f=DEFAULTF) const;
 	
 	QVariant			albumArtist();
-	QString			cover();
+	QString			    cover();
 
-	bool 			setTag(int t,QVariant var);
+	bool 			    setTag(int t,QVariant var);
 	void				setTags(QList<int> tags,QList<QVariant> values);
 	int 				albumId();
 

@@ -11,15 +11,15 @@ bool folderProxyModel::filterAcceptsRow ( int row, const QModelIndex &parent ) c
     
     if(core::isAudio(path) )
     {
-	return QSortFilterProxyModel::filterAcceptsRow(row,parent);
+        return QSortFilterProxyModel::filterAcceptsRow(row,parent);
     }
     if(core::isPlaylist(path) )
     {
-	return QSortFilterProxyModel::filterAcceptsRow(row,parent);
+        return QSortFilterProxyModel::filterAcceptsRow(row,parent);
     }
     if( core::isDirectory(path) )
     {
-	return QSortFilterProxyModel::filterAcceptsRow(row,parent);
+        return QSortFilterProxyModel::filterAcceptsRow(row,parent);
     }
     return false;
 }

@@ -4,8 +4,6 @@
 #include<QThread>
 #include<QUrl>
 #include"nplaylist.h"
-// #include<player.h>
-// #include<playerNamespace.h>
 #include<QProgressBar>
 //this class have the porpose of finding the file info and appending the now playlist
 using namespace core;
@@ -24,6 +22,7 @@ class nplTread :public  QThread//, public QObject
 	void addDirectory(const QString &url);
 	void addPlaylist(const QString &url);
 	void addSingleFile(const QString &url);
+    void addSingleFile(nplPointer tr);
 	void cleanUp();
 	static bool trackLessThan(nplPointer a,nplPointer b);
 	

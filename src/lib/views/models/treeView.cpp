@@ -117,7 +117,8 @@ void views::treeView::performDrag()
 void views::treeView::setModel ( QAbstractItemModel * model )
 {
     QAbstractItemModel *m=QTreeView::model();
-    QTreeView::setModel(model); 
+    
+    QTreeView::setModel(model);
     if(m!=0)
     {
 	   disconnect(m, 0, this, 0);
@@ -125,10 +126,11 @@ void views::treeView::setModel ( QAbstractItemModel * model )
     
     if(delegate->ratingColumn()>-1)
     {
-	connect(model,SIGNAL(rowsInserted ( const QModelIndex, int, int )),this ,SLOT(updateStarWidget(QModelIndex, int, int) ) );
- 	connect(model,SIGNAL(modelReset () ),this ,SLOT(updateStarWidget() ) );
+        connect(model,SIGNAL(rowsInserted ( const QModelIndex, int, int )),this ,SLOT(updateStarWidget(QModelIndex, int, int) ) );
+        connect(model,SIGNAL(modelReset () ),this ,SLOT(updateStarWidget() ) );
 //  	connect(model,SIGNAL(dataChanged ( const QModelIndex &, const QModelIndex& ) ),this,SLOT(dataChanged ( const QModelIndex &, const QModelIndex& ) ) );
     }
+    
 }
 
 void views::treeView::dataChanged ( const QModelIndex & topLeft, const QModelIndex & bottomRight )

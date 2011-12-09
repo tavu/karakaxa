@@ -14,28 +14,38 @@ class nplFile :public nplTrack
     Q_OBJECT
     public:
 
-	nplFile(QString s);
+        nplFile(QString s);
 
-	~nplFile();
+        ~nplFile();
 
-	QString		title() ;
-	QString 	path() ;
-	int	 	type() ;
-	int	 	length() ;
-	QString 	cover();
-	
-	nplTrack*	clone();
-	QVariant	artist();
-	QVariant	tag(int);
-	
-	audioFile*	getAudioFile();
-	void 		play();
+        QString		title() ;
+        QString 	path() ;
+        int	 	    type() ;
+        int	 	    length() ;
+        QString 	cover();
 
+        nplTrack*	clone();
+        QVariant	artist();
+        QVariant	tag(int);
+
+        audioFile*	getAudioFile();
+        void 		play();
+
+        void setLoadFlag(int f)
+        {
+            _loadFlag=f;
+        }
+
+        int loadFlag() const
+        {
+            return _loadFlag;
+        }
+        
     private:
-	audioFile *file;
-	
+        audioFile   *file;
+        short int   _loadFlag;
     private slots:
-	void emitCh(audioFiles::audioFile f);
+        void emitCh(audioFiles::audioFile f);
     
 
 };

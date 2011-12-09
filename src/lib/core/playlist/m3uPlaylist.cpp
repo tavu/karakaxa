@@ -3,8 +3,8 @@
 #include"../core.h"
 #include<QTextStream>
 using namespace audioFiles;
-core::m3uPlaylist::m3uPlaylist(const QString s)
-        :file(s)
+core::m3uPlaylist::m3uPlaylist(const QString s,QObject *parent)
+        :filePlaylist(parent),file(s)
 {
     _path=s;
 }
@@ -25,8 +25,9 @@ bool core::m3uPlaylist::load()
 
         if (! line.startsWith('#') )
         {
-            toFullPath(line);
             list.append(line);
+            nplPointer p=nplTrack::getNplTrack(toFullPath(line) );    
+            trackList.append(p);
         }
     }
     file.close();
@@ -37,7 +38,13 @@ bool core::m3uPlaylist::load()
 
 QStringList core::m3uPlaylist::urls() const
 {
-    return list;
+    QStringList l;
+    for(int i=0;i<list.size();i++)
+    {
+        QString s=toFullPath( list[i]);
+        l.append(s);
+    }
+    return l;
 }
 
 int core::m3uPlaylist::error() const
@@ -49,64 +56,55 @@ bool core::m3uPlaylist::save()
 {
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text) )
     {
-	err=FILENOTFOUND;
+        err=FILENOTFOUND;
         return false;
     }
+    
     QTextStream t( &file );
     QString f=core::folder(_path);
-
+            
     foreach(QString s,list)
     {
-        if (s.startsWith(f) )
+        if (saveToRelativePath() && s.startsWith(f) )
         {
             s.replace(0,f.size(),QString() );
         }
         t<<s<<endl;
     }
+
+    
     file.close();
     
     return true;
 }
 
-int core::m3uPlaylist::size() const
+
+void core::m3uPlaylist::insertUrl(int pos,QString u)
 {
-    return list.size();
+    nplPointer p=nplTrack::getNplTrack(u);
+    insert(pos,p);
 }
 
-QString core::m3uPlaylist::item(int pos) const
+void core::m3uPlaylist::insert(int pos, core::nplPointer p)
 {
-    if (pos>=list.size() )
-    {
-      return QString();	  
-    }
-    else
-    {
-      return list.at(pos);	
-    }
-}	
-
-
-void core::m3uPlaylist::insert(int pos,QString u)
-{
-    if (pos>=list.size() )
-    {
-	list.prepend(u);	
-    }
-    else
-    {	
-      list.insert(pos,u);
-    }
+    if (pos>list.size() ||pos<0)
+        pos=trackList.size();
+    
+    list.insert(pos,p->path());
+    filePlaylist::insert(pos,p);
 }
+
 
 void core::m3uPlaylist::move( int from, int to )
 {
     if (from>=list.size() ||  to>=list.size())
     {
-	return ;	
+        return ;	
     }
     else
     {	
       list.move(from,to);
+      filePlaylist::move(from,to);
     }	
 }
 
@@ -118,4 +116,5 @@ void core::m3uPlaylist::remove(int pos)
   }
 
   list.removeAt(pos);
+  filePlaylist::remove(pos);
 }

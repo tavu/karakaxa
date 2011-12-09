@@ -15,7 +15,7 @@
 using namespace core;
 // #define DIRECTORYM "inode/directory"
 folderContent::folderContent(QWidget *parent)
-        :abstractContent(parent)
+        :abstractContent(parent),playlistM(0)
 {
     navigatorModel = new KFilePlacesModel(this);
     navigator = new KUrlNavigator(navigatorModel,KUrl( QDir::home().path() ),this);
@@ -118,13 +118,13 @@ void folderContent::setDir(const QModelIndex index)
     
     if(m & Qt::ShiftModifier || m & Qt::ControlModifier )
     {
-	return;
+        return;
     }
     
     QModelIndex i=proxyM->mapToSource(index);
 
     KFileItem item = model->itemForIndex(i);
-    if (item.isDir())
+    if (item.isDir() || core::isPlaylist(item.url().toLocalFile() ))
     {
         navigator->setUrl( item.url() );
     }
@@ -132,7 +132,39 @@ void folderContent::setDir(const QModelIndex index)
 
 void folderContent::showUrl(KUrl url)
 {
-    model->dirLister()->openUrl(url);
+    if(core::isPlaylist(url.toLocalFile()) )
+    {
+        return ;
+        //due to a bug the view does not make the hidden columns visible again if we just change the sourceModel on the proxyM
+        //we set the model on the view to 0 and then set the proxyM again
+        
+        playlistM=new playlistModel(this);
+        folderModelState=view->header()->saveState();
+        playlistM->setPlPath(url.toLocalFile());        
+        proxyM->setSourceModel(playlistM);
+        view->setRatingColumn(RATING);
+        view->setNotHide(TITLE);
+        view->setModel(0);
+        view->setModel(proxyM);
+        view->header()->restoreState(playlistMState);
+    }
+    else
+    {
+        if(proxyM->sourceModel()!=model )
+        {
+            view->setNotHide(0);
+            view->setRatingColumn(DIRCOLUMN+RATING);
+            playlistMState=view->header()->saveState();
+            proxyM->setSourceModel(model);
+            view->header()->restoreState(folderModelState);
+        }
+        if(playlistM!=0)
+        {
+            delete playlistM;
+            playlistM=0;
+        }
+        model->dirLister()->openUrl(url);
+    }
     searchLine->clear();
 }
 

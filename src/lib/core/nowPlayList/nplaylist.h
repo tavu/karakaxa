@@ -28,7 +28,7 @@ NEVER delete it outside.
 namespace core
 {
 class nplAbstractModel;
-typedef QList<nplPointer> nplList;
+
 class nplaylist :public QObject
 {
     Q_OBJECT

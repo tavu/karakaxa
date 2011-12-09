@@ -9,9 +9,21 @@ playlistModel::playlistModel(QObject *parent)
     connect(thr,SIGNAL(finished()),this,SLOT(updateData() ) );
 }
 
+playlistModel::~playlistModel()
+{
+    thr->cancel();
+    thr->wait();
+    if(pl!=0)
+        delete pl;
+}
+
+
 int playlistModel::rowCount ( const QModelIndex & parent ) const
 {
-    return thr->files.size();
+    if(pl==0)
+        return 0;
+    
+    return pl->size();
 }
 
 int playlistModel::columnCount ( const QModelIndex & parent ) const
@@ -20,50 +32,37 @@ int playlistModel::columnCount ( const QModelIndex & parent ) const
 }
 
 QVariant playlistModel::data(const QModelIndex & index, int role ) const
-{   
-    static int flag=audioFile::ONDATAB|audioFile::ONCACHE|audioFile::TITLEFP;
-    
-    if(!index.isValid() )
+{       
+    if(!index.isValid() || pl==0)
     {
-	 return QVariant();
-    }        
+        return QVariant();
+    }
+
+    nplPointer p=pl->item(index.row());
+    if(p.isNull() )
+    {
+        return QVariant();
+    }
     
     if( role == Qt::DisplayRole)
     {
-	 QVariant var;
-	 nplPointer f=thr->files[index.row()];
-	 if(f->type()==NPLAUDIOFILE)
-	 {
-		audioFile file(f->path() );
-		var=file.tag( index.column(),flag );
-	 }
-	 else
-	 {
-		  var=f->tag( index.column() );
-	 }
-	 
-	 return views::pretyTag(var,(tagsEnum)index.column() );
-	
+        QVariant var=p->tag(index.column());
+        return views::pretyTag(var,(tagsEnum)index.column() );
     }    
     else if(role==URL_ROLE)
     {
-	 KUrl u(thr->files.at(index.row() )->path() );
-	 return QVariant(u);
+        KUrl u(p->path() );
+        return QVariant(u);
     }
-    else if(role==VALID_ROLE)
-    {
-	   nplPointer f=thr->files[index.row()];
-	   if(!f->isValid() )
-	   {
-		  return QVariant(1);
-	   }
-    }    
     return QVariant();    
 }
 
 bool playlistModel::setData(const QModelIndex& index, const QVariant& value, int role)
 {
-    nplPointer f=thr->files[index.row()];
+    if(pl=0)
+        return false;
+    
+    nplPointer f=pl->item(index.row() );
     if(f->type()==NPLAUDIOFILE)	
     {			
 	   audioFile file(f->path() );		
@@ -83,15 +82,15 @@ QVariant playlistModel::headerData ( int section, Qt::Orientation orientation, i
 {
     if(orientation==Qt::Vertical)
     {
-	return QVariant();
+        return QVariant();
     }
     if(role==Qt::DisplayRole)
     {
-	return views::tagName(section);
+        return views::tagName(section);
     }
     if(role==Qt::DecorationRole)
     {
-	return views::decor->tagIcon(section);
+        return views::decor->tagIcon(section);
     }
     
     return QVariant();
@@ -102,9 +101,9 @@ void playlistModel::setPlPath(const QString &s)
 {    
     if(pl!=0)
     {
-	   thr->terminate();
-	   beginResetModel();
-	   thr->files.clear();	
+	   thr->cancel();
+       thr->wait();
+	   beginResetModel();	   
 	   delete pl;
      }
      else
@@ -115,60 +114,55 @@ void playlistModel::setPlPath(const QString &s)
     pl=core::getPlaylist(s);
   
     pl->load();
-    
-    for(int i=0;i<pl->size();i++)
-    {
-	 	 
-	   nplPointer t=core::nplTrack::getNplTrack(pl->item(i) );
-	   if(!t.isNull() )
-	   {
-		thr->files<<t;
-	   }
-/*	if(core::exists(pl->item(i)) )
-	{
-// 	    audioFile f=audioFile(pl->item(i);
-	    thr->files<<audioFile(pl->item(i) ); 
-	}*/	
-    }
+    thr->pl=pl;
     endResetModel();        
     
-    if(pl->size()>thr->files.size() )
-    {
-	status->addError(QObject::tr("Some media coud not be shown"));
-    }
-    else if(thr->files.isEmpty() )
-    {
-	status->addError(QObject::tr("Empty playlist"));
-    }
-    
+    thr->canceled=false;
     thr->start();
 }
 
 void playlistModel::playlistThr::run()
 {
-     for(int i=0;i<files.size();i++)
-     {	     
-	   if(files[i]->type()==NPLAUDIOFILE)	
-	   {			
-		  audioFile file(files[i]->path() );		
-		  file.load();
-	   }
-     }    
+     for(int i=0;i<pl->size() && !canceled; i++)
+     {
+         nplPointer p=pl->item(i);
+         if(p.isNull() )
+         {
+             status->addError(QObject::tr("Some media coud not be shown"));
+         }
+         else if( p->type()==NPLAUDIOFILE)
+         {
+            nplFile *f=static_cast< nplFile*>(p.data());
+            f->getAudioFile()->load();
+         }
+     }
 }
 
 Qt::ItemFlags playlistModel::flags(const QModelIndex &index) const
 {
+    static Qt::ItemFlags ret=Qt::ItemIsDragEnabled|Qt::ItemIsEnabled|Qt::ItemIsSelectable|Qt::ItemIsEditable;
+    if(pl==0)
+    {
+        return ret & ~Qt::ItemIsEnabled;
+    }
+    nplPointer p=pl->item(index.row() );
+
+    if(p.isNull() || !p->isValid() )
+    {
+        return ret & ~Qt::ItemIsEnabled;
+    }
 
     if (index.column()==BITRATE||index.column()==LENGTH||index.column()==COUNTER)
     {
-        return Qt::ItemIsDragEnabled|Qt::ItemIsEnabled|Qt::ItemIsSelectable;
+        return ret & ~Qt::ItemIsEditable;
     }
 
-    return Qt::ItemIsDragEnabled|Qt::ItemIsEnabled|Qt::ItemIsSelectable|Qt::ItemIsEditable;
+    return ret;
 }
 
 void playlistModel::updateData()
 {
+    qDebug()<<"UPP";
     QModelIndex topLeft ,bottomRight;
     topLeft=index(0,0);
     bottomRight=index(rowCount()-1,columnCount()-1 );

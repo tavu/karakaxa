@@ -12,8 +12,6 @@
 #include"nowPlayList/nplClass.h"
 #include"nowPlayList/nplTrack.h"
 
-#include"playlist/playlistClass.h"
-
 #include"status/playerStatus.h"
 
 #include<QDebug>
@@ -21,3 +19,4 @@
 
 #include"standardModel/xmlItem.h"
 #include"standardModel/standardModel.h"
+#include"playlist/filePlaylist.h"
