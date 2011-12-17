@@ -21,7 +21,7 @@ core::libraryImporter::libraryImporter()
     database=db->getDatabase();
 //     isConnected=database.open();
 
-    if (!database.open() )
+    if (!database.isOpen() )
     {
         qDebug()<<"Database Error: "<<database.lastError().text();
 	   return;

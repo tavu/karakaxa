@@ -44,7 +44,7 @@ private:
     QLabel year;
 
 
-    views::tagEditor* editors[FRAME_NUM];
+    QWidget* editors[FRAME_NUM];
 
     QTextEdit *commentL;
     QDialogButtonBox *buttons;

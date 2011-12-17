@@ -5,26 +5,25 @@
 #define CHAR_LIMIT 3
 
 views::textEditor::textEditor(int tag,QWidget *parent)
-  :tagEditor(tag,parent),
+  :QWidget(parent),
   comp(0)
 {
   edit=new QLineEdit(this);
   QHBoxLayout *l=new QHBoxLayout(this);  
   l->addWidget(edit);
   l->setContentsMargins(0,0,0,0);
-//   setSizePolicy(QSizePolicy::Ignored,QSizePolicy::Ignored);
   
-  connect(edit,SIGNAL(editingFinished()),this,SLOT(valueChanger()) );  
-//   connect(edit,SIGNAL(textChanged(QString)),this,SLOT(textChanged(QString)) );  
+  //connect(edit,SIGNAL(editingFinished()),this,SLOT(valueChanger()) );  
   
    if(tag==audioFiles::TITLE)
    {
-	 return ;
+        return ;
    }
    
    q=new core::tagQueryGrt(this);
    q->setTag(tag);
    q->select();
+   
    comp=new QCompleter(this);	
    comp->setCaseSensitivity(Qt::CaseInsensitive);	   
    comp->setCompletionColumn(0);
@@ -32,7 +31,5 @@ views::textEditor::textEditor(int tag,QWidget *parent)
    completerM.setStringList(q->result() );   
 	   
    comp->setModel(&completerM);
-   edit->setCompleter(comp);
-
-  
+   edit->setCompleter(comp);  
 }

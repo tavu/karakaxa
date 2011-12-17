@@ -114,7 +114,7 @@ int audioFiles::fileToDb::commit()
 int audioFiles::fileToDb::prepare()
 {
     databs=core::db->getDatabase();
-    if (!databs.open() )
+    if (!databs.isOpen())
     {
         return DBERR;
     }    
@@ -502,10 +502,10 @@ QSqlRecord audioFiles::fileToDb::record(const QString path,int &err)
 {    
     QSqlDatabase databs=db->getDatabase();
 
-    if (!databs.open() )
+    if (!databs.isOpen() )
     {
          err=DBERR;
-	    core::db->closeDatabase(databs);
+         core::db->closeDatabase(databs);
          return QSqlRecord();
     }
     

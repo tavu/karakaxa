@@ -15,32 +15,31 @@ namespace views
 
 class editMultFiles :public QObject
 {
-Q_OBJECT
-public:
-    editMultFiles() :QObject()
-    {
-	num=0;
-    }
+    Q_OBJECT
+    public:
+        editMultFiles() :QObject()
+        {
+            num=0;
+        }
 
-    static editMultFiles* self()
-    {
-	if(p==0)
-	{
-	    p=new  editMultFiles();
-	}
-	return p;
-    }
-         
-    static bool isEditing()
-    {
-	if(num>0)
-	{
-	    return true;
-	}
-	
-	return false;
-    }
-    
+        static editMultFiles* self()
+        {
+            if(p==0)
+            {
+                p=new  editMultFiles();
+            }
+            return p;
+        }
+
+        static bool isEditing()
+        {
+            if(num>0)
+            {
+                return true;
+            }
+            return false;
+        }
+        
     class editFiles :public  QThread 
     {
 	public:
@@ -48,32 +47,32 @@ public:
 
 	      QList<audioFiles::audioFile> files()
 	      {
-		  return fileList;
+            return fileList;
 	      }
 
 	      void setFiles(const QList<audioFiles::audioFile> &list)
 	      {
-		  fileList=list;
+            fileList=list;
 	      }
 
 	      int tag()
 	      {
-		  return tag_;
+            return tag_;
 	      }
 
 	      void setTag(int t)
 	      {
-		  tag_=t;
+            tag_=t;
 	      }
 
 	      QVariant value()
 	      {
-		  return value_;
+            return value_;
 	      }
 
 	      void setValue(const QVariant &var)
 	      {
-		  value_=var;
+            value_=var;
 	      }
 
 	      void start();
@@ -86,27 +85,27 @@ public:
 	      QList<int> errors;	 	  
     }; 
 
-private:
-    static int num;
-    static editMultFiles *p;    
-    
-    void multFilesEmiter()	
-    {
-      qDebug()<<"FF";
-	emit finished();
-    }
-    
-    void prepare(editFiles *p)
-    {
-	num++;
-	connect(p,SIGNAL(finished()),this,SLOT(finishedSlot()));
-    }
+    private:
+        static int num;
+        static editMultFiles *p;
+
+        void multFilesEmiter()
+        {
+            qDebug()<<"FF";
+            emit finished();
+        }
+
+        void prepare(editFiles *p)
+        {
+            num++;
+            connect(p,SIGNAL(finished()),this,SLOT(finishedSlot()));
+        }
     	
-private slots:
-  void finishedSlot();
+    private slots:
+    void finishedSlot();
     
-signals:
-    void finished();
+    signals:
+        void finished();
 
     
     

@@ -28,8 +28,7 @@ playlistContent::playlistContent(QWidget *parent)
     trackV->setRatingColumn(RATING);
     trackV->setEditTriggers(QAbstractItemView::SelectedClicked);
     trackV->setNotHide(TITLE);
-    trackV->setFrameShape(QFrame::StyledPanel);
-    trackV->setEditorFactory(new views::trackEditor(this) );
+    trackV->setFrameShape(QFrame::StyledPanel);    
     
     treeModel=new standardModel(this);    
              

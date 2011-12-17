@@ -36,15 +36,15 @@ bool folderProxyModel::lessThan ( const QModelIndex & left, const QModelIndex & 
     
     if(isFolderL && isFolderR) //both are directories
     {
-	return QSortFilterProxyModel::lessThan(left,right);
+        return QSortFilterProxyModel::lessThan(left,right);
     }
     if( isFolderL && ~isFolderR ) //only the left are directory
     {
-	return true;
+        return true;
     }
     if( ~isFolderL && isFolderR ) //only the righy are directory
     {
-	return false;    
+        return false;    
     }
     
     return QSortFilterProxyModel::lessThan(left,right);    

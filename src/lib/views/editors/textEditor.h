@@ -10,40 +10,33 @@
 namespace views
 {
 
-class textEditor :public tagEditor
+class textEditor :public QWidget
 {
    Q_OBJECT
+   Q_PROPERTY(QString value READ value WRITE setValue USER true)
     
     public:
-	textEditor(int tag,QWidget *parent=0);
+        textEditor(int tag,QWidget *parent=0);
 
-	void setValue(const QVariant &v)
-	{
-	    edit->setText(v.toString() );
-	}
-	
-	QVariant value()
-	{
-	    return QVariant( edit->text() );
-	}
-	
+        void setValue(const QString s)
+        {
+            edit->setText(s);
+        }
+
+        QString value()
+        {
+            return  edit->text();
+        }
+        
     private:
       
-	 QLineEdit *edit;
-	 core::tagQueryGrt  *q;
-	 core::queryGrt::tagQuery tagQ;
-	  
-	 QCompleter *comp;
-	 	 
-	 QStringListModel completerM;
-	 
-    private slots:
-	
-	 void valueChanger()
-	 {
-		QVariant v(edit->text() );
-		emit valueChanged(v);
-	 }
+        QLineEdit *edit;
+        core::tagQueryGrt  *q;
+        core::queryGrt::tagQuery tagQ;
+
+        QCompleter *comp;
+
+        QStringListModel completerM;
     
 };
 

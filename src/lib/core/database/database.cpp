@@ -24,8 +24,8 @@ bool core::database::createConnection()
 {
     
     if(dbName.isEmpty())
-    {	
-	return false;
+    {
+        return false;
     }
     
     db.setHostName("localhost");
@@ -99,44 +99,42 @@ QSqlDatabase core::database::getDatabase()
     mutex.lock();
     if(QThread::currentThread()==core::mainThr() )
     {
-	if(!db.isOpen() )
-	{
-	    status->addErrorP("database is closed: "+db.lastError().text() );
-	    createConnection();
-	}
-
-	mutex.unlock();	
-	return db;
+        if(!db.isOpen() )
+        {
+            status->addErrorP("database is closed: "+db.lastError().text() );
+            createConnection();
+        }
+        mutex.unlock();
+        return db;
     }
     else
     {	
- 	QString name=apprName(QThread::currentThread() );
+        QString name=apprName(QThread::currentThread() );
+		
+        dBEntry* dbE=dBMap[name];
+        QSqlDatabase newDb;
+        if(dbE==0)
+        {
+            dbE=new dBEntry;
+            dbE->name=name;
+            dbE->thr=QThread::currentThread();
+            dbE->used=1;
+            dBMap[name]=dbE;
+            newDb=QSqlDatabase::cloneDatabase(db,name);
+        }
+        else
+        {
+            dbE->used++;
+            newDb=QSqlDatabase::database(name,false);
+        }
 	
-	
-	dBEntry* dbE=dBMap[name];
-	QSqlDatabase newDb;
-	if(dbE==0)
-	{
-	    dbE=new dBEntry;
-	    dbE->name=name;
-	    dbE->thr=QThread::currentThread();
-	    dbE->used=1;
-	    dBMap[name]=dbE;
-	    newDb=QSqlDatabase::cloneDatabase(db,name);
+        if(!newDb.isOpen() )
+        {
+            if(!newDb.open() )
+            {
+                status->addErrorP("database error: "+db.lastError().text() );
+            }
 	}
-	else
-	{
-	    dbE->used++;
-	    newDb=QSqlDatabase::database(name,false);
-	}
-	
-	if(!newDb.isOpen() )
-	{
-	    if(!newDb.open() )
-	    {
-		status->addErrorP("database error: "+db.lastError().text() );
-	    }
-	}	
 	mutex.unlock();	
 	return newDb;
 	

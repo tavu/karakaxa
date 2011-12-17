@@ -30,6 +30,18 @@ audioFiles::audioFile::audioFile()
 {    
 }
 
+audioFiles::audioFile::audioFile(QUrl u)
+        :QObject(),
+        fileSize(0),
+        saveFlag(true)
+{
+    cache=audioFiles::fileCache::getFileCache(u.toLocalFile());
+
+//     connect(cache,SIGNAL(changed(QList<tagChanges>) ),this,SLOT(emitChanged(QList<tagChanges>) ) );
+}
+
+
+
 audioFiles::audioFile::audioFile(const QString url)
         :QObject(),
         fileSize(0),

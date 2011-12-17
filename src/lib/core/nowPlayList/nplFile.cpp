@@ -11,7 +11,7 @@ core::nplFile::nplFile(QString s)
         
     if (file==0 )
     {
-	   qDebug()<<"null file";
+        qDebug()<<"null file";
         ok=false;
     }
     else if(!core::exists(s) )

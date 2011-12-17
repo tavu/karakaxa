@@ -20,25 +20,21 @@ class treeView :public QTreeView
     Q_OBJECT
     public:
 
-	treeView(QWidget *parent=0,QString name=QString());
+        treeView(QWidget *parent=0,QString name=QString());
 
-	virtual void	setModel ( QAbstractItemModel * model );
+        virtual void	setModel ( QAbstractItemModel * model );
 
-	virtual void	mousePressEvent(QMouseEvent *event);
-	virtual void 	setRatingColumn(const int n);
-	virtual int 	ratingColumn() const;
-	virtual void 	setNotHide(int n);
-	virtual int	    notHide();
-	
-	void setEditorFactory(tagEditorFactory *f)
-	{
-	    delegate->setEditorFactory(f);
-	}
-	
-	static QList<QUrl> getUrls(const QModelIndexList &list);
+        virtual void	mousePressEvent(QMouseEvent *event);
+        virtual void 	setRatingColumn(const int n);
+        virtual int 	ratingColumn() const;
+        virtual void 	setNotHide(int n);
+        virtual int	    notHide();
+
+        static QList<QUrl> getUrls(const QModelIndexList &list);
 
     protected:
 	   QPoint startPos;
+       int _ratingColumn;
 	   views::treeViewDelegate *delegate;
 
        virtual void mouseDoubleClickEvent ( QMouseEvent * event );
@@ -49,24 +45,27 @@ class treeView :public QTreeView
 	   virtual void leaveEvent(QEvent*)  ;		
 
     protected slots:
-	   virtual void commitData ( QWidget * editor ) ;
+        virtual void commitData ( QWidget * editor ) ;
+        virtual void rowsInserted ( const QModelIndex & parent, int start, int end );
+
 	
     public slots:
+       virtual void reset();
 	   virtual void writeSettings();
 	   virtual void readSettings();
-	   virtual void updateStarWidget(QModelIndex parent, int start, int end);
-		   void updateStarWidget();
 	   virtual void dataChanged ( const QModelIndex & topLeft, const QModelIndex & bottomRight );
 	   virtual void closeEditor ( QWidget * editor, QAbstractItemDelegate::EndEditHint hint );
 	   virtual void play(const QModelIndex &index);
-	   
-	   void editCurrent()
+       virtual void updateStarWidget(QModelIndex parent, int start, int end);
+       virtual void updateStarWidget();
+
+       void editCurrent()
 	   {
 		  edit(currentIndex() );
 	   }
 	
     signals:
-	void showContextMenu(QModelIndex,QModelIndexList);
+        void showContextMenu(QModelIndex,QModelIndexList);
 	
 };//class
 

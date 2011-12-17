@@ -11,6 +11,7 @@
 #include"treeViewDelegate.h"
 #include"urlRole.h"
 #include <decoration.h>
+#include<QMetaProperty>
 // class editTrack;
 
 #include<QModelIndexList>
@@ -18,9 +19,8 @@ Q_DECLARE_METATYPE(QModelIndexList)
 
 
 views::treeView::treeView(QWidget *parent,QString name)
-        :QTreeView(parent)
+        :QTreeView(parent),_ratingColumn(-1)
 {
-//     setFrameShape(QFrame::NoFrame);
     setHeader(new treeViewHeader(this));
     setUniformRowHeights(true);
     setAlternatingRowColors(true);
@@ -42,13 +42,20 @@ views::treeView::treeView(QWidget *parent,QString name)
     {
         setObjectName(name);
         readSettings();
-	   connect(qApp,SIGNAL(aboutToQuit() ),this,SLOT(writeSettings() ) ); 
+	   connect(qApp,SIGNAL(commitDataRequest(QSessionManager &) ),this,SLOT(writeSettings() ) );
     }
     setEditTriggers(QAbstractItemView::SelectedClicked);
-//     connect(this,SIGNAL(doubleClicked  ( const QModelIndex) ),this,SLOT(play(const QModelIndex &) ) );
-
-//     setStyleSheet("QTreeView::item { height: 40px; }");
 }
+
+void views::treeView::rowsInserted(const QModelIndex& parent, int start, int end)
+{
+    QTreeView::rowsInserted(parent, start, end);
+
+    if(ratingColumn()>-1)
+        updateStarWidget(parent,start,end);
+    
+}
+
 
 void views::treeView::mouseDoubleClickEvent(QMouseEvent* event)
 {        
@@ -82,16 +89,24 @@ void views::treeView::mouseMoveEvent(QMouseEvent *event)
         }
         else
         {
-		  headerRepaint();
+            headerRepaint();
             QTreeView::mouseMoveEvent(event);
         }
     }
     else
     {
-	   headerRepaint();
+        headerRepaint();
         QTreeView::mouseMoveEvent(event);
     }
 }
+
+void views::treeView::reset()
+{
+    QTreeView::reset();
+    if(ratingColumn()>-1 )
+        updateStarWidget();
+}
+
 
 void views::treeView::performDrag()
 {
@@ -116,43 +131,19 @@ void views::treeView::performDrag()
 
 void views::treeView::setModel ( QAbstractItemModel * model )
 {
-    QAbstractItemModel *m=QTreeView::model();
-    
     QTreeView::setModel(model);
-    if(m!=0)
-    {
-	   disconnect(m, 0, this, 0);
-    }
-    
-    if(delegate->ratingColumn()>-1)
-    {
-        connect(model,SIGNAL(rowsInserted ( const QModelIndex, int, int )),this ,SLOT(updateStarWidget(QModelIndex, int, int) ) );
-        connect(model,SIGNAL(modelReset () ),this ,SLOT(updateStarWidget() ) );
-//  	connect(model,SIGNAL(dataChanged ( const QModelIndex &, const QModelIndex& ) ),this,SLOT(dataChanged ( const QModelIndex &, const QModelIndex& ) ) );
-    }
-    
 }
+
+
 
 void views::treeView::dataChanged ( const QModelIndex & topLeft, const QModelIndex & bottomRight )
 {
      QTreeView::dataChanged(topLeft,bottomRight);
-     return ;
-     if(bottomRight.column()>ratingColumn() )
+     if(ratingColumn()>-1)
      {
-	   for(int i=topLeft.row();i<=bottomRight.row();i++)
-	   {
-		  
-		  QModelIndex item=model()->index(i,ratingColumn(),topLeft.parent() );
-		  bool b;
-		  item.data().toInt(&b);
-	   
-		  if(b)
-		  {
-		    openPersistentEditor(item);
-		  }
-	   }
+         updateStarWidget(topLeft.parent(),topLeft.row(),bottomRight.row());
+        
      }
-  
 }
 
 void views::treeView::contextMenuEvent(QContextMenuEvent *e)
@@ -163,12 +154,12 @@ void views::treeView::contextMenuEvent(QContextMenuEvent *e)
 
 void views::treeView::setRatingColumn(const int n)
 {    
-    delegate->setRatingColumn(n);
+    _ratingColumn=n;
 }
 
 int views::treeView::ratingColumn() const
 {
-    return delegate->ratingColumn();
+    return _ratingColumn;
 }
 
 void views::treeView::writeSettings()
@@ -182,9 +173,7 @@ void views::treeView::writeSettings()
     KSharedConfigPtr config=core::config->configFile();
     KConfigGroup group( config, objectName() );
     group.writeEntry( "state", QVariant(header()->saveState() ));
-    group.config()->sync(); 
-    
-    
+    group.config()->sync();    
 }
 
 void views::treeView::readSettings()
@@ -233,42 +222,30 @@ void views::treeView::updateStarWidget(QModelIndex parent, int start, int end)
 
 void views::treeView::updateStarWidget()
 {
+    if(model()==0)
+    {
+        return ;
+    }
     updateStarWidget(QModelIndex(),0,model()->rowCount() );
 }
 
 
 void views::treeView::commitData ( QWidget * editor ) 
 {    
-
     qDebug()<<"commit";
     QModelIndexList list=selectedIndexes();
-    QModelIndexList l;
-    
-    if (!list.isEmpty() )
-    { 	
- 	   int column=currentIndex().column();
- 	   foreach(QModelIndex i,list)
- 	   {
- 		  if (i.column()==column )	
- 		  {
- 		    l<<i;
- 		  }
- 	   }
-    }
-        
-    QVariant var=QVariant::fromValue(l);
-    itemDelegate()->setProperty("modelList",var );  
 
-    
+    QVariant var=QVariant::fromValue<QModelIndexList>(list);
+    itemDelegate()->setProperty("modelList",var );
     QTreeView::commitData(editor);
+    return ;
 }
 
 
 void views::treeView::closeEditor ( QWidget * editor, QAbstractItemDelegate::EndEditHint hint )
 {
     qDebug()<<"closing editor";
-    QTreeView::closeEditor(editor,hint);                
-//     viewport()->update();
+    QTreeView::closeEditor(editor,hint);
 }
 
 void views::treeView::headerRepaint()
@@ -279,10 +256,10 @@ void views::treeView::headerRepaint()
     
     if(mouseColumn!=header()->property("highlight") )
     {      	
-	mouseColumn=index.column();
-	header()->setProperty("highlight",QVariant(mouseColumn) );
-	QWidget * viewport = header()->viewport();
-	viewport->update();
+        mouseColumn=index.column();
+        header()->setProperty("highlight",QVariant(mouseColumn) );
+        QWidget * viewport = header()->viewport();
+        viewport->update();
     }   
 }
 
@@ -295,7 +272,6 @@ void views::treeView::leaveEvent (QEvent *)
 
 void views::treeView::play(const QModelIndex &index)
 {
-    qDebug()<<"treeView play";
     core::nplList list;
     int row=index.row();
     for (int i=0;i<model()->rowCount(index.parent() );i++)

@@ -18,20 +18,20 @@ class libraryImporter :public QObject
         ~libraryImporter();
         albumEntry import(const QString &url);
 	
-	albumEntry importAudio(const QString &url)
-	{
-	    return import(url);
-	}
+        albumEntry importAudio(const QString &url)
+        {
+            return import(url);
+        }
 	
-	bool importPl(const QString &path );
-	
-      
-	void saveAlbumArt(const QString& albumArt, const albumEntry& al);     
-	QString error();
-	
-        
-	static int n;
-	void save();
+        bool importPl(const QString &path );
+
+
+        void saveAlbumArt(const QString& albumArt, const albumEntry& al);
+        QString error();
+
+
+        static int n;
+        void save();
     private:
 
         QString albumArt;
@@ -41,8 +41,8 @@ class libraryImporter :public QObject
 
 //         QMap<int, QString> albumList;
         void createTmpTable();
-	QVariant getId(QVariant var,QString table);
-	QVariant getAlbumId(QVariant album,QVariant artist);
+        QVariant getId(QVariant var,QString table);
+        QVariant getAlbumId(QVariant album,QVariant artist);
 
     signals:
         void error(QString);

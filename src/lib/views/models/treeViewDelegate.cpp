@@ -14,39 +14,32 @@
 #include <kiconeffect.h>
 #include <QVariant>
 #include<QStyle>
-#include"../editors/ratingEditor.h"
+#include"../editors/editMultFiles.h"
 #include<QDebug>
 #include<QStylePainter>
+#include<QMetaProperty>
 
 #include<QModelIndexList>
 Q_DECLARE_METATYPE(QModelIndexList)
 
-views::treeViewDelegate::treeViewDelegate(QObject *parent)    
+views::treeViewDelegate::treeViewDelegate(QAbstractItemView *parent)
     :QStyledItemDelegate(parent),    
-    rating(-1),
     ITEM_HEIGH(18),
-    FONT_SIZE(11),
-    editorFactory(0),
-    _paintValidRole(true)
+    FONT_SIZE(11)
 {
-  font.setPointSize(FONT_SIZE);            
-  pen.setWidth(2);
+    font.setPointSize(FONT_SIZE);            
 }
 
 void views::treeViewDelegate::paint ( QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index ) const
 {
-
     painter->save();
     painter->setRenderHint(QPainter::Antialiasing, true);
      
-	
 	painter->setOpacity(0.8);    
     pen.setWidth(2);
     pen.setColor(option.palette.window().color() );
-    painter->setPen(pen);
-		
-	painter->drawLine(option.rect.topRight(),option.rect.bottomRight());
-	
+    painter->setPen(pen);		
+	painter->drawLine(option.rect.topRight(),option.rect.bottomRight());	
    
 	painter->restore();
     
@@ -61,18 +54,18 @@ void views::treeViewDelegate::paint ( QPainter * painter, const QStyleOptionView
         painter->setPen(option.palette.highlightedText().color());
     }
 
-
-    if (index.column()==rating)
+    QAbstractItemView *view=static_cast<QAbstractItemView*>(parent() );
+    if( view->indexWidget(index) !=0 )
     {
-	   painter->restore();
-        return;
+        painter->restore();
+        return ;
     }
 
+    
     QRect r=option.rect;
     r.setWidth(r.width()-4);
     r.setX(r.x()+2);
 
-//     painter->restore();
     QPixmap pic=decor->decorationPixmap(option,index);
 
     if (!pic.isNull() )
@@ -81,6 +74,7 @@ void views::treeViewDelegate::paint ( QPainter * painter, const QStyleOptionView
         r.setWidth(r.width()-pic.width());
         r.setX(r.x()+pic.width());
     }
+    
     QVariant var=index.data(Qt::DisplayRole);
     if(!var.isNull() )
     {	   
@@ -101,47 +95,36 @@ void views::treeViewDelegate::paint ( QPainter * painter, const QStyleOptionView
 
 
 QWidget* views::treeViewDelegate::createEditor(QWidget *parent,const QStyleOptionViewItem &option,const QModelIndex &index) const
-{
-    if(editorFactory!=0)
+{    
+    bool b;
+    int tag=index.data(TAG_ROLE).toInt(&b);
+
+    if(!b)
     {
-	   QWidget *w=editorFactory->createEditor(index,parent);
-	   if(index.column()==rating)
-	   {
-// 		  w->setPixmapSize(sizeHint(option,index).height());
-		  connect(w,SIGNAL(valueChanged(QVariant) ),this, SLOT(commitEditor()));
-	   }
-	   return w;
+        return QStyledItemDelegate::createEditor(parent,option,index);
     }
-    else if(index.column()==rating)
+
+    QWidget *w = views::tagEditor::getEditor(tag,parent);
+    if(w!=0)
     {
-	   ratingWidget *w=new  ratingWidget(parent);
-	   w->setPixmapSize(sizeHint(option,index).height());
-	   connect(w,SIGNAL(valueChanged(QVariant) ),this, SLOT(commitEditor()));
-	   return w;	
+        w->setProperty("tag",tag);
     }
-    return QStyledItemDelegate::createEditor(parent,option,index);    
+//         connect(w,SIGNAL(valueChanged(QVariant) ),this, SLOT(commitEditor()));
+
+    return w;    
 }
 
 void views::treeViewDelegate::setEditorData(QWidget *editor,const QModelIndex &index) const
 {
-
-      tagEditor *e= qobject_cast<tagEditor*>(editor);  	
-      if(e!=0)
-      {
-	  e->setValue(index.data() );
-      }
-      else 
-      {	  
-	  QStyledItemDelegate::setEditorData(editor,index);
-      }
+     QStyledItemDelegate::setEditorData(editor,index);
 }
 
 QSize views::treeViewDelegate::sizeHint ( const QStyleOptionViewItem & option, const QModelIndex & index ) const
 {       
-//     QSize ret=QStyledItemDelegate::sizeHint ( option,index );
     QSize ret=index.data(Qt::SizeHintRole).toSize();
+
     if(ret.isEmpty() )	 
-	 return QSize(option.rect.width(),ITEM_HEIGH);
+        return QSize(option.rect.width(),ITEM_HEIGH);
     
     return ret;
 }
@@ -156,42 +139,56 @@ void views::treeViewDelegate::setItemHeigh(int k)
     ITEM_HEIGH=k;
 }
 
-
 void views::treeViewDelegate::setModelData(QWidget *editor,QAbstractItemModel *model,const QModelIndex &index) const
 {    
-    if(editorFactory!=0 )
-    { 	
-	  tagEditor *e= static_cast<tagEditor*>(editor);     
-	  qDebug()<<"seting data";		    	
-	  QVariant  v=property("modelList");	  	  
-	
-	   QModelIndexList list=qvariant_cast<QModelIndexList>(v);      
-	   
-// 	   qDebug()<<list.at(0).data(URL_ROLE).toUrl();
-	   editorFactory->setModelData(e,model,index,list);
-    }
-    else if(index.column()==ratingColumn() )
+    QModelIndexList list=qvariant_cast<QModelIndexList>(property("modelList") );
+    
+    if(list.isEmpty() )
     {
-	tagEditor *e= static_cast<tagEditor*>(editor);     
-	qDebug()<<"seting data";
-	model->setData(index,e->value(),Qt::EditRole);
+        QStyledItemDelegate::setModelData(editor,model,index); 
+        return ;
     }
-    else
+
+    bool b;
+    int tag=index.data(TAG_ROLE).toInt(&b);
+
+    if(!b)
     {
-	QStyledItemDelegate::setModelData(editor,model,index);
-// 	model->setData(index, QVariant(e->value() ) );
-    }   
+        QStyledItemDelegate::setModelData(editor,model,index); 
+        return ;
+    }
+
+    QList<audioFiles::audioFile> l;
+    int column=index.column();
+    foreach(QModelIndex i,list)
+    {
+        if (i.column()==column )
+        {
+            l<<audioFiles::audioFile(i.data(URL_ROLE).toUrl() );
+        }
+    }
+
+    //we dont need a new thread to edit just one item
+    if(l.size()==1)
+    {
+        QStyledItemDelegate::setModelData(editor,model,index);
+        return ;
+    }
+
+    editMultFiles::editFiles *thr=new editMultFiles::editFiles(parent());
+    thr->setFiles(l);
+    thr->setTag(tag );
+
+    QByteArray n = editor->metaObject()->userProperty().name();
+
+    //QAbstractItemView *v
+    thr->setValue( editor->property(n) );
+    QAbstractItemView *view=static_cast<QAbstractItemView*>(parent() );
+    connect(thr,SIGNAL(finished()),view,SLOT(reset()));
+    thr->start();
 }
 
-void views::treeViewDelegate::setRatingColumn(const int n)
-{
-    rating=n;
-}
 
-int views::treeViewDelegate::ratingColumn() const
-{
-    return rating;
-}
 
 void views::treeViewDelegate::commitEditor()
 {
@@ -203,18 +200,6 @@ void views::treeViewDelegate::commitEditor()
  	   emit closeEditor(editor);
     }
     */
-}
-
-void views::treeViewDelegate::setEditorFactory(views::tagEditorFactory* f)
-{
-    if(editorFactory!=0)
-    {
-	   delete editorFactory;
-    }
-    
-    editorFactory=f;
-    editorFactory->setParent(this);
-    setRatingColumn(f->columnFromTag(audioFiles::RATING) );
 }
 
 

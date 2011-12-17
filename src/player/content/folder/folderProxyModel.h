@@ -6,15 +6,15 @@
 class folderProxyModel :public QSortFilterProxyModel
 {
     public:
-	folderProxyModel(QObject *parent=0)
-	:QSortFilterProxyModel(parent)
-	{}
+        folderProxyModel(QObject *parent=0)
+        :QSortFilterProxyModel(parent)
+        {}
 
-    void setSourceModel(QAbstractItemModel *m)
-    {
-        QSortFilterProxyModel::setSourceModel(m);
-        reset();
-    }
+        void setSourceModel(QAbstractItemModel *m)
+        {
+            QSortFilterProxyModel::setSourceModel(m);
+            reset();
+        }
 
     protected:
         bool filterAcceptsRow ( int source_row, const QModelIndex & source_parent ) const;

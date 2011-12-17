@@ -19,62 +19,62 @@ class scanThread :public  QThread//, public QObject
 {
     Q_OBJECT
     public:
-	scanThread(QObject *parent);
+        scanThread(QObject *parent);
 
-	int importedItemNum();
-	inline bool isStoped()
-	{
-	    return stopped;
-	}
-	inline int importedNum()
-	{
-	    return filesImported;
-	}
-		
-	void scan()
-	{
-	    start();
-	}
-	
-	QWidget *widget();
+        int importedItemNum();
+        inline bool isStoped()
+        {
+            return stopped;
+        }
+        inline int importedNum()
+        {
+            return filesImported;
+        }
 
-	void setDirs(const QStringList &l);
+        void scan()
+        {
+            start();
+        }
+
+        QWidget *widget();
+
+        void setDirs(const QStringList &l);
 	
     protected:
-	void run();
+        void run();
 
-	QLinkedList<KUrl> dirs;
-	
-	QHash<int,int> allAlbums;
-	QLinkedList<QString> errors;
-	int _step;	
+        QLinkedList<KUrl> dirs;
+
+        QHash<int,int> allAlbums;
+        QLinkedList<QString> errors;
+        int _step;
 	
     private:
-	libraryImporter importer;
-	bool scanFolder(KUrl url);
+        libraryImporter importer;
+        bool scanFolder(KUrl url);
 
-	void findItemN(KUrl);
+        void findItemN(KUrl);
 
-	void initWidget();
-	
-	int itemNumber;
-	int num;
-	int filesImported;
-	bool stopped;
-	
-	QWidget *w;
-	QLabel *label;
-	QProgressBar *progressBar;
-	
+        void initWidget();
+
+        int itemNumber;
+        int num;
+        int filesImported;
+        bool stopped;
+
+        QWidget *w;
+        QLabel *label;
+        QProgressBar *progressBar;
+
     signals:
-	void done(int);
-	void itemsNum(const int);
-	void imported(const int);
-	void canceled(int);
-	void error(QString);
-    // 	  void item(const int);
+        void done(int);
+        void itemsNum(const int);
+        void imported(const int);
+        void canceled(int);
+        void error(QString);
+        // 	  void item(const int);
     public slots:
-	void stop();
+        void stop();
 };
 
 };

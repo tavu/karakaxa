@@ -35,14 +35,15 @@ class folderContent :public core::abstractContent
 
         QIcon icon() const
         {
-        return KIcon("folder-sound");
+            return KIcon("folder-sound");
         }
 
 
     private:
         void loaded();
-        void unloaded();
-
+        void unloaded();        
+        void readSettings();
+        void saveStates();
         folderContextMenu *m;
         myFileSystemModel *model;
         KDirModel *dirModel;
@@ -68,8 +69,7 @@ class folderContent :public core::abstractContent
         
     public slots:
 
-        void writeSettings();
-        void readSettings();
+
         void cd(KUrl);
         void up();
         void back();
@@ -78,6 +78,7 @@ class folderContent :public core::abstractContent
 
     private slots:
         void cleanup();
+        void writeSettings();
         void showUrl(KUrl);
         void showContexMenuSlot(QModelIndex index, QModelIndexList list);
         void edit();

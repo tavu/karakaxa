@@ -11,7 +11,7 @@
 #include"audioFiles.h"
 #include"fileCache.h"
 #include"fileToDb.h"
-
+#include<QUrl>
 namespace audioFiles
 {
 
@@ -31,6 +31,8 @@ class audioFile :public QObject
 	static const short int DEFAULTF;
 
 	audioFile();
+    audioFile(QUrl u);
+    
 	audioFile(const QString);
 	audioFile(const audioFiles::audioFile &f);
 	audioFile(QSqlRecord r,bool force=false);
@@ -89,8 +91,9 @@ class audioFile :public QObject
 	{
 	    if(cache==0)
 	    {
-		return false;
+            return false;
 	    }
+
 	    return true;
 	}
 	

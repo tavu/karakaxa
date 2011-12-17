@@ -21,7 +21,7 @@ void views::editMultFiles::finishedSlot()
 // 	qDebug()<<"EDITTT";
 // 	multFilesEmiter();
 // 	p=0;
-	emit finished();
+        emit finished();
     }
 }
 

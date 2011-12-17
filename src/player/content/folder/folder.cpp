@@ -1,5 +1,5 @@
 #include"folder.h"
-#include"folderEditorFactory.h"
+
 
 #include<QTableView>
 #include<KIcon>
@@ -25,20 +25,12 @@ folderContent::folderContent(QWidget *parent)
 //     model->dirLister()->setMimeFilter(core::config->files()<<DIRECTORYM);
 
     proxyM=new folderProxyModel(this);
-    proxyM->setSourceModel(model);
+//     proxyM->setSourceModel(model);
     proxyM->setFilterCaseSensitivity(Qt::CaseInsensitive);
     
-    view=new views::treeView(this,"Folder view");    
-    folderEditorFactory *fact=new folderEditorFactory(this);
-    fact->setModel(proxyM);
-    fact->setView(view);
-    view->setEditorFactory(fact);
-//     view->setRatingColumn(DIRCOLUMN+RATING);
+    view=new views::treeView(this);
     view->setModel(proxyM);
-//     view->setFrameShape(QFrame::StyledPanel);
-
-//     disconnect(0,0,view,SLOT(updateStarWidget(QModelIndex,int,int)));
-    
+//     view->setRatingColumn(DIRCOLUMN+RATING);    
     
 
     toolBar=new KToolBar(this);
@@ -113,7 +105,11 @@ void folderContent::cleanup()
 
 void folderContent::setDir(const QModelIndex index)
 {
-  
+    if(proxyM->sourceModel()!=model)
+    {
+        return ;
+    }
+    
     Qt::KeyboardModifiers m=QApplication::keyboardModifiers();
     
     if(m & Qt::ShiftModifier || m & Qt::ControlModifier )
@@ -132,14 +128,16 @@ void folderContent::setDir(const QModelIndex index)
 
 void folderContent::showUrl(KUrl url)
 {
+    if(proxyM->sourceModel()!=0)
+    {
+        saveStates();
+    }
     if(core::isPlaylist(url.toLocalFile()) )
     {
-        return ;
         //due to a bug the view does not make the hidden columns visible again if we just change the sourceModel on the proxyM
         //we set the model on the view to 0 and then set the proxyM again
         
-        playlistM=new playlistModel(this);
-        folderModelState=view->header()->saveState();
+        playlistM=new playlistModel(this);        
         playlistM->setPlPath(url.toLocalFile());        
         proxyM->setSourceModel(playlistM);
         view->setRatingColumn(RATING);
@@ -154,15 +152,16 @@ void folderContent::showUrl(KUrl url)
         {
             view->setNotHide(0);
             view->setRatingColumn(DIRCOLUMN+RATING);
-            playlistMState=view->header()->saveState();
             proxyM->setSourceModel(model);
             view->header()->restoreState(folderModelState);
+
+            if(playlistM!=0)
+            {
+                delete playlistM;
+                playlistM=0;
+            }
         }
-        if(playlistM!=0)
-        {
-            delete playlistM;
-            playlistM=0;
-        }
+        
         model->dirLister()->openUrl(url);
     }
     searchLine->clear();
@@ -186,30 +185,6 @@ void folderContent::back()
 void folderContent::forward()
 {
     navigator->goForward();
-}
-
-void folderContent::writeSettings()
-{
-
-    KSharedConfigPtr config=core::config->configFile();
-    KConfigGroup group( config, "folderContent" );  
-    group.writeEntry("dir", QVariant( navigator->url() ) );
-    group.config()->sync();    
-}
-
-void folderContent::readSettings()
-{
-
-    KSharedConfigPtr config=core::config->configFile();
-    KConfigGroup group( config, "folderContent" );
-    KUrl url=group.readEntry("dir",KUrl() );
-      
-    if(!url.isEmpty() )
-    {
-	navigator->setUrl(url );
-    }
-    showUrl(navigator->url());
-
 }
 
 void folderContent::loaded()
@@ -267,4 +242,45 @@ void folderContent::unloaded()
 {
   core::contentHdl->removeMenu(m);
   delete m;  
+}
+
+void folderContent::writeSettings()
+{
+    qDebug()<<"write";
+
+    saveStates();
+
+    KSharedConfigPtr config=core::config->configFile();
+    KConfigGroup group( config, "folderContent" );
+    group.writeEntry("dir", QVariant( navigator->url() ) );
+    group.writeEntry( "playlistMState", QVariant(playlistMState));
+    group.writeEntry( "folderModelState", QVariant(folderModelState));
+    group.config()->sync();
+}
+
+void folderContent::readSettings()
+{    
+    KSharedConfigPtr config=core::config->configFile();
+    KConfigGroup group( config, "folderContent");
+    KUrl url=group.readEntry("dir",KUrl() );
+    playlistMState=group.readEntry( "playlistMState", QByteArray() ) ;
+    folderModelState=group.readEntry( "folderModelState", QByteArray() );
+
+    if(!url.isEmpty() )
+    {
+        navigator->setUrl(url );
+    }
+    showUrl(navigator->url());        
+}
+
+void folderContent::saveStates()
+{
+    if(proxyM->sourceModel()==model )
+    {
+        folderModelState=view->header()->saveState();
+    }
+    else if(proxyM->sourceModel()==playlistM)
+    {
+        playlistMState=view->header()->saveState();
+    }
 }

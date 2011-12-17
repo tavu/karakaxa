@@ -36,7 +36,7 @@ QVariant myFileSystemModel::data(const QModelIndex &index, int role) const
         return KDirModel::data(index,role);
     }
 
-    if (role==Qt::DisplayRole)
+    if (role==Qt::DisplayRole || role==Qt::EditRole )
     {
 	   QVariant var;
         KFileItem item=itemForIndex(index);
@@ -49,8 +49,13 @@ QVariant myFileSystemModel::data(const QModelIndex &index, int role) const
         var=f.tag(filde, audioFile::ONCACHE|audioFile::ONDATAB );	
 	   
 	   return views::pretyTag(var,filde);
-    }        
-    
+    }
+    if(role == TAG_ROLE )
+    {
+        
+        return QVariant(index.column()-DIRCOLUMN );
+    }
+
     return QVariant();
 
 }

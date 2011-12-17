@@ -7,7 +7,7 @@
 #include"../../files/audioFiles.h"
 #include "pathEditor.h"
 
-views::tagEditor* views::tagEditor::getEditor(int tag,QWidget *parent)
+QWidget* views::tagEditor::getEditor(int tag,QWidget *parent)
 {       
     using namespace audioFiles;
     switch (tag)
@@ -62,7 +62,7 @@ views::tagEditor* views::tagEditor::getEditor(int tag,QWidget *parent)
 	   }
     }  
 }
-
+/*
 bool views::tagEditorFactory::setModelData(tagEditor* editor, QAbstractItemModel* model, const QModelIndex& index, const QModelIndexList& list)
 {
     if(editor->tag()==audioFiles::RATING)
@@ -98,3 +98,4 @@ bool views::tagEditorFactory::setModelData(tagEditor* editor, QAbstractItemModel
     
     return true;
 }
+*/

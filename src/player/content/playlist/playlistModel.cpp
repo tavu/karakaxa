@@ -44,17 +44,21 @@ QVariant playlistModel::data(const QModelIndex & index, int role ) const
         return QVariant();
     }
     
-    if( role == Qt::DisplayRole)
+    if( role == Qt::DisplayRole || role == Qt::EditRole)
     {
         QVariant var=p->tag(index.column());
         return views::pretyTag(var,(tagsEnum)index.column() );
-    }    
+    }
     else if(role==URL_ROLE)
     {
         KUrl u(p->path() );
         return QVariant(u);
     }
-    return QVariant();    
+    else if(role == TAG_ROLE)
+    {
+        return QVariant(index.column() );
+    }
+    return QVariant();
 }
 
 bool playlistModel::setData(const QModelIndex& index, const QVariant& value, int role)

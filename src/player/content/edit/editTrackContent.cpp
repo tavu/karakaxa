@@ -3,8 +3,8 @@
 #include<QPushButton>
 #include<QPainter>
 #include<QFormLayout>
-#include<cstdlib>
-
+//#include<cstdlib>
+#include<QMetaProperty>
 using namespace core;
 using namespace views;
 #define SIZE 150 ,170
@@ -70,11 +70,12 @@ void editTrackContent::tagInit()
 	   editors[i]=views::tagEditor::getEditor(i,this);
 	   if(editors[i]==0)
 	   {
-		continue;
+            continue;
 	   }
 
 	   QVariant v=file->tag(i,audioFile::ONCACHE & ~audioFile::TITLEFP);
-	   editors[i]->setValue(v);
+       QByteArray n = editors[i]->metaObject()->userProperty().name();
+	   editors[i]->setProperty(n, v);
     }
   
     commentL=new QTextEdit(this);
@@ -130,18 +131,19 @@ void editTrackContent::save()
 	 QList<int> tags;
 	 QList<QVariant> values;
       
-      for(int i=0;i<FRAME_NUM;i++)
+     for(int i=0;i<FRAME_NUM;i++)
 	 {
 		if(editors[i]==0)
 		{
 		  continue;
 		}
-		
-		if(editors[i]->value() != file->tag(i,audioFile::ONCACHE | ~audioFile::TITLEFP ) )
+		QByteArray n = editors[i]->metaObject()->userProperty().name();
+        QVariant v=editors[i]->property(n);
+		if(v != file->tag(i,audioFile::ONCACHE | ~audioFile::TITLEFP ) )
 		{	
 		    qDebug()<<"editing "<<views::tagName(i);
 		    tags<<i;
-		    values<<editors[i]->value();
+		    values<<v;
 		}
 	 }
 	 

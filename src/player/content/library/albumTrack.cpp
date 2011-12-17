@@ -57,7 +57,6 @@ void albumTrack::trackVInit()
     trackV->setEditTriggers(QAbstractItemView::SelectedClicked);
 
     trackV->setNotHide(TITLE);
-    trackV->setEditorFactory(new views::trackEditor(this) );
     
     queryGen=new core::filesQueryGrt(this);
 //     quer=new queryGrt::tagQuery();
