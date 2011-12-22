@@ -7,10 +7,13 @@
 #include <QHBoxLayout>
 #include<QPushButton>
 #include<KIcon>
+#include"libraryImpScan.h"
+#include"libraryImpUpdate.h"
 
-core::scanThread::scanThread(QObject *parent)
-        :QThread(parent),
-        _step(20)
+core::scanThread::scanThread(database::dbState t,QObject *parent)
+        :databaseScanner(t,parent),
+        _step(20),
+        importer(0)
 {
     itemNumber=0;
     filesImported=0;
@@ -26,6 +29,67 @@ core::scanThread::scanThread(QObject *parent)
     //      connect(this,SIGNAL(finished() ),this ,SLOT(deleteLater () ),Qt::QueuedConnection );
 }
 
+core::scanThread::~scanThread()
+{
+    if(importer!=0)
+    {
+        delete importer;
+    }
+
+    delete w;
+}
+
+void core::scanThread::findAllItemN()
+{
+    foreach(KUrl u,dirs)
+    {
+        findItemN(u);
+    }
+
+    emit itemsNum(itemNumber);
+}
+
+void core::scanThread::init()
+{
+    label->setText(tr("Starting") );
+    if(type()== database::RESCAN)
+    {
+        importer = new libraryImpScan();
+    }
+    else
+    {
+        importer = new libraryImpUpdate();
+    }
+}
+
+
+void core::scanThread::scanAllFolders()
+{
+    label->setText(tr("Scanning") );
+
+    QLinkedList<KUrl>::iterator it=dirs.begin();
+
+    while(it!=dirs.end() && !stopped )
+    {
+       scanFolder(*it);
+       it++;
+       dirs.removeFirst();
+    }
+
+}
+
+void core::scanThread::save()
+{
+    label->setText(tr("Saving") );
+    progressBar->setMaximum(progressBar->value() );
+    importer->save();
+    label->setText(tr("done") );
+    delete importer;
+    importer=0;
+}
+
+
+
 void core::scanThread::findItemN(KUrl dir)
 {
 
@@ -38,34 +102,32 @@ void core::scanThread::findItemN(KUrl dir)
 }
 
 bool core::scanThread::scanFolder(KUrl url)
-{ 
-//     QLinkedList<QString> dirs;
-    
+{     
+    QDir dir(url.toLocalFile() );
+    QLinkedList<core::albumEntry> albums;
+    QLinkedList<QString>images;
+	   
+    QFileInfoList infoList=dir.entryInfoList(QDir::AllEntries|QDir::NoDotAndDotDot|QDir::NoSymLinks);
+	   
+    for (int i=0;i<infoList.size();i++)
     {
-	   QDir dir(url.toLocalFile() );    
-	   QLinkedList<core::albumEntry> albums;    
-	   QLinkedList<QString>images;
-	   
-	   QFileInfoList infoList=dir.entryInfoList(QDir::AllEntries|QDir::NoDotAndDotDot|QDir::NoSymLinks);    
-	   
-	   for (int i=0;i<infoList.size();i++)     
-	   {
 		if(stopped)
 		{
-			 importer.save();
-			 quit();
-			 return true;
-		}	  
+			 //importer->save();
+             //delete importer;
+             //importer = 0;
+             return true;
+		}
 		if(core::isPlaylist(infoList.at(i).absoluteFilePath() ) )
 		{
-		    if(! importer.importPl(infoList.at(i).absoluteFilePath() ) )
+		    if(! importer->importPl(infoList.at(i).absoluteFilePath() ) )
 		    {
 			   errors<<infoList.at(i).absoluteFilePath();
 		    }
 		}	  
 		else if(core::isAudio(infoList.at(i).absoluteFilePath() ) )
 		{	      	      
-		    albumEntry al=importer.import(infoList.at(i).absoluteFilePath());
+		    albumEntry al=importer->import(infoList.at(i).absoluteFilePath());
 		    
 		    if(al.name.isEmpty() )//an error ocured
 		    {
@@ -91,53 +153,28 @@ bool core::scanThread::scanFolder(KUrl url)
 		{
 		    dirs<<KUrl(infoList.at(i).absoluteFilePath() );
 		}
-	   }
-	   
-	   foreach(albumEntry al,albums)
-	   {
-		  QString cover;
- 		  int mark=audioFiles::bestCover(images,al.name,cover);
-		  int k=allAlbums[al.id];
-		  if(mark>k)
-		  {
-			 importer.saveAlbumArt(cover,al);
-			 allAlbums.insert(al.id,mark);
-		  }
-	   }
     }
-    
-/*    foreach(QString dir,dirs)
+	   
+    foreach(albumEntry al,albums)
     {
-	   scanFolder( KUrl(dir) ) ;    
-    }   */ 
+        QString cover;
+        int mark=audioFiles::bestCover(images,al.name,cover);
+        int k=allAlbums[al.id];
+        if(mark>k)
+        {
+            importer->saveAlbumArt(cover,al);
+			allAlbums.insert(al.id,mark);
+        }
+    }
     return true;
 }
 
 void core::scanThread::run()
-{
-    label->setText(tr("Starting") );
-    foreach(KUrl u,dirs)
-    {
-        findItemN(u);
-    }
-    
-    emit itemsNum(itemNumber);
-    
-    label->setText(tr("Scanning") );
-    
-    QLinkedList<KUrl>::iterator it=dirs.begin();
-
-    while(it!=dirs.end() )
-    {	           
-        scanFolder(*it);
-	   it++;
-	   dirs.removeFirst();
-    }
-    
-    label->setText(tr("Saving") );
-    progressBar->setMaximum(progressBar->value() );
-    importer.save();
-    label->setText(tr("done") );
+{    
+    init();
+    findAllItemN();       
+    scanAllFolders();
+    save();
 }
 
 void core::scanThread::stop()
@@ -167,13 +204,11 @@ void core::scanThread::initWidget()
 {
     w=new QWidget();
     progressBar=new QProgressBar(w);
-//     progressBar->setFixedWidth(100);
     label=new QLabel(w);
     
     QPushButton *cancelB=new QPushButton(w);
     cancelB->setIcon(KIcon("dialog-cancel") );
     cancelB->setFlat(true);
-//     cancelB->setAutoFillBackground(true);
     connect(cancelB,SIGNAL(clicked (bool)),this,SLOT(stop()),Qt::QueuedConnection);
         
     QHBoxLayout *l=new QHBoxLayout(w);
@@ -182,10 +217,4 @@ void core::scanThread::initWidget()
     l->addWidget(label);
     l->addWidget(progressBar);
     l->addWidget(cancelB);
-//     return w;
-}
-
-QWidget* core::scanThread::widget()
-{
-    return w;
 }

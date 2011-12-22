@@ -46,9 +46,11 @@ class configureContent :public core::abstractContent
 
 
     private slots:
-	void addLibraryFolder();
-	void removeLibraryFolder();
-	void DbButtonClicked(QAbstractButton*);
-	void rememberPlSlot(int);
+        void addLibraryFolder();
+        void removeLibraryFolder();
+        void DbButtonClicked(QAbstractButton*);
+        void rememberPlSlot(int);
+        void scanLibrary();
+        void scanButtonActive();
 };
 #endif

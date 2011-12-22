@@ -197,166 +197,166 @@ class filesQueryGrt :public queryGrt
 {
     Q_OBJECT	
     public:
-	filesQueryGrt(QObject *parent=0);
-	filesQueryGrt(abstractQuery* qe,QObject *parent=0);	
-	
-		
-	QString queryString() const
- 	{
- 	    if( q==0 || !q->isValid())
- 	    {
- 		return QString();
- 	    }
- 	    
- 	    return q->text().prepend("select distinct * from trackView where ");
- 	}
-				
-	QVector<audioFiles::audioFile> result()
-	{
-	    return thr.files;
-	}
-	
-	//use this function after selectionMade signal
-	audioFiles::audioFile at(int n)
-	{
-	    if(n<0||n>=thr.files.size() )
-	    {
- 		return audioFiles::audioFile();
-	    }
-	    
-	    return thr.files[n];
-	}
-	
-	bool select();
-		
-	int size()
-	{
-	    return thr.files.size();
-	}
-	
-	int step()
-	{
-	    return thr.step;
-	}
-	
-	void setStep(int n)
-	{
-	    thr.step=n;
-	}
-		
+        filesQueryGrt(QObject *parent=0);
+        filesQueryGrt(abstractQuery* qe,QObject *parent=0);
+
+
+        QString queryString() const
+        {
+            if( q==0 || !q->isValid())
+            {
+            return QString();
+            }
+
+            return q->text().prepend("select distinct * from trackView where ");
+        }
+
+        QVector<audioFiles::audioFile> result()
+        {
+            return thr.files;
+        }
+
+        //use this function after selectionMade signal
+        audioFiles::audioFile at(int n)
+        {
+            if(n<0||n>=thr.files.size() )
+            {
+            return audioFiles::audioFile();
+            }
+
+            return thr.files[n];
+        }
+
+        bool select();
+
+        int size()
+        {
+            return thr.files.size();
+        }
+
+        int step()
+        {
+            return thr.step;
+        }
+
+        void setStep(int n)
+        {
+            thr.step=n;
+        }
+
 	
     private:
-	queryThr thr;
+        queryThr thr;
 	
     private slots:
-	void selectionFinished();
+        void selectionFinished();
 	
     signals:
-	void selectionCalled();
-	void selectionMade();			
+        void selectionCalled();
+        void selectionMade();			
 };
 
 class tagQueryGrt :public queryGrt
 {
     Q_OBJECT
     public:
-	tagQueryGrt(QObject *parent=0) :queryGrt(parent),tag_(0)
-	{
-	}
+        tagQueryGrt(QObject *parent=0) :queryGrt(parent),tag_(0)
+        {
+        }
+
+        QString queryString() const;
+        void setTag(int t)
+        {
+            tag_=t;
+            _needUpdate=true;
+        }
+
+        int tag()
+        {
+            return tag_;
+        }
 	
-	QString queryString() const;
-	void setTag(int t)
-	{
-	    tag_=t;
-	    _needUpdate=true;
-	}
-	
-	int tag()
-	{
-	    return tag_;
-	}
-	
-	bool select();
-	QStringList result()
-	{
-	    return list;
-	}
+        bool select();
+        QStringList result()
+        {
+            return list;
+        }
 	
     private slots:
-	void setNeedUpdate(const audioFiles::audioFile f);
+        void setNeedUpdate(const audioFiles::audioFile f);
 	
     private:
-	int tag_;
-	QStringList list;
+        int tag_;
+        QStringList list;
 };
 
 class artistQueryGrt :public queryGrt
 {
     Q_OBJECT
     public:
-	artistQueryGrt(QObject *parent=0) :queryGrt(parent)
-	{
-	}
-	
-	QString queryString() const;
+        artistQueryGrt(QObject *parent=0) :queryGrt(parent)
+        {
+        }
 
-	bool select();
-	QStringList result()
-	{
-	    return list;
-	}
+        QString queryString() const;
+
+        bool select();
+        QStringList result()
+        {
+            return list;
+        }
 	
     private slots:
-	void setNeedUpdate(const audioFiles::audioFile f);
+        void setNeedUpdate(const audioFiles::audioFile f);
 	
     private:
-	QStringList list;
+        QStringList list;
 };
 
 class albumQueryGrt :public queryGrt
 {
     Q_OBJECT
     public:
-	albumQueryGrt(QObject *parent=0) :queryGrt(parent)
-	{
-	}
-	
-	QString queryString() const;
+        albumQueryGrt(QObject *parent=0) :queryGrt(parent)
+        {
+        }
 
-	bool select();
-	QList<albumEntry> result()
-	{
-	    return list;
-	}
-	
-	void setArtist(const QString &a)
-	{
-	    artist_=a;
-	    _needUpdate=true;	    
-	}
-	
-	QString artist()
-	{
-	    return artist_;
-	}
-	
-	QStringList albums()
-	{
-	    QStringList l;
-	    l.reserve(list.size() );
-	    foreach(albumEntry a,list)
-	    {
-		l.append(a.name);
-	    }
-	    return l;
-	}
-	
+        QString queryString() const;
+
+        bool select();
+        QList<albumEntry> result()
+        {
+            return list;
+        }
+
+        void setArtist(const QString &a)
+        {
+            artist_=a;
+            _needUpdate=true;
+        }
+
+        QString artist()
+        {
+            return artist_;
+        }
+
+        QStringList albums()
+        {
+            QStringList l;
+            l.reserve(list.size() );
+            foreach(albumEntry a,list)
+            {
+                l.append(a.name);
+            }
+            return l;
+        }
+        
     private slots:
-	void setNeedUpdate(const audioFiles::audioFile f);
+        void setNeedUpdate(const audioFiles::audioFile f);
 
     private:
-	QList<albumEntry> list;
-	QString artist_;
+        QList<albumEntry> list;
+        QString artist_;
 };
 
 

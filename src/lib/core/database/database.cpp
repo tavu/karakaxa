@@ -10,14 +10,14 @@
 #include<QThread>
 #include"../func.h"
 #include"../status/playerStatus.h"
-#include"scanTread.h"
+#include"databaseScanner.h"
 
 core::database::database()
-        :QObject()
+        :QObject(),
+        _state(NORMAL)
 {
     db=QSqlDatabase::addDatabase("QMYSQL");
-    readSettings();
-    _isScanning=false;
+    readSettings();    
 }
 
 bool core::database::createConnection()
@@ -214,11 +214,6 @@ QString core::database::apprName(QThread *thr)
     return QString::number((long int) thr);
 }
 
-// QSqlQuery core::database::getLibraryFolders()
-// {
-//      return QSqlQuery("select path from library_folders",db);
-// }
-
 QStringList core::database::getLibraryFolders()
 {
     QSqlQuery q("select path from library_folders",db);
@@ -239,11 +234,6 @@ const QString core::database::error()
     return db.lastError().text();
 }
 
-// bool core::database::isConnected=false;
-
-// QSqlDatabase core::database::db=QSqlDatabase::addDatabase("QMYSQL");
-
-
 void core::database::toSqlSafe(QString &s)
 {
     s.replace('\\',"\\\\");
@@ -256,12 +246,6 @@ const QString core::database::trackTable()
 {
     return QString("trackView");
 }
-
-
-// QSqlDatabase core::database::clone(const QString &s)
-// {
-//     return db.cloneDatabase ( db, s );
-// }
 
 core::database::~database()
 {
@@ -292,26 +276,24 @@ QSqlQuery core::database::playlists()
   return q;
 }
 
-void core::database::scan()
+void core::database::scan(core::databaseScanner* sc)
 {
     mutex.lock();
-    if(_isScanning )
+    if(_state != NORMAL )
     {
 	   mutex.unlock();
 	   return ;
     }
     else
     {
-	   _isScanning=true;
-	   mutex.unlock();
-	   scanThread *sc=new scanThread(this);
-	   QStringList libraryF=core::db->getLibraryFolders();
-	   sc->setDirs(libraryF);
-	   connect(sc,SIGNAL(finished()),this,SLOT(scanFinished()),Qt::QueuedConnection);	   
-	   emit scanStart(sc);
-	   connect(sc,SIGNAL(finished()),sc,SLOT(deleteLater()));
-	   sc->scan();
-	   
+       dbState oldState;
+	   _state=sc->type();
+       _scanner=dbScanner(sc);
+	   mutex.unlock();	   
+       
+	   connect(sc,SIGNAL(finished()),this,SLOT(scanFinished()),Qt::QueuedConnection);	   	   
+       emit stateCanged(oldState,_state);	   
+	   sc->startScan();
     }
     
 }
@@ -319,8 +301,11 @@ void core::database::scan()
 void core::database::scanFinished()
 {
     mutex.lock();
-    _isScanning=false;
+    dbState oldState=_state;
+    _state=NORMAL;
+    _scanner.clear();
     mutex.unlock();
+    emit stateCanged(oldState,_state);
 }
 
 

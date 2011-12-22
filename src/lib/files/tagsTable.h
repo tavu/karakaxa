@@ -14,18 +14,18 @@ namespace audioFiles
 
 enum tagsEnum
 {
-    TRACK=0		,
+    TRACK=0		    ,
     TITLE			,
     ALBUM			,
-    ARTIST		,
-    LEAD_ARTIST	,
-    COMMENT		,
+    ARTIST		    ,
+    LEAD_ARTIST	    ,
+    COMMENT		    ,
     GENRE			,
     COMPOSER		,
-    LENGTH		,
-    RATING		,
+    LENGTH		    ,
+    RATING		    ,
     YEAR			,
-    BITRATE		,
+    BITRATE		    ,
     PATH			,
     COUNTER
 };

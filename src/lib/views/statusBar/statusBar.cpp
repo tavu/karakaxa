@@ -9,7 +9,7 @@ using namespace core;
 views::statusBar::statusBar(QWidget *parent)
         :QStatusBar(parent),
         timeOut(7000),
-        scanW(0)
+        timer(0)
 {
     label=new QLabel(this);
 //     label->setText(prettyLength(0));
@@ -27,7 +27,7 @@ views::statusBar::statusBar(QWidget *parent)
     connect(npList,SIGNAL(removed(int) ),this,SLOT(setTrackTime() ), Qt::QueuedConnection );
     connect(npList,SIGNAL(cleared() ),this,SLOT(setTrackTime() ), Qt::QueuedConnection );
     
-    connect(db,SIGNAL(scanStart(core::scanThread*)),this,SLOT(addScan(core::scanThread*)),Qt::QueuedConnection );
+    connect(db,SIGNAL(stateCanged(dbState,dbState)),this,SLOT(addScanner()));
 }
 
 void views::statusBar::showMessage(const QString &s,int time)
@@ -71,27 +71,40 @@ views::statusBar::~statusBar()
 
 }
 
-void views::statusBar::addScan(core::scanThread* sc)
-{   
-    if(scanW!=0)
-    {
-	 removeWidget(scanW);
-	 delete scanW;
+void views::statusBar::addScanner()
+{
+    if(db->state()==database::NORMAL && !scanner.isNull())
+    {        
+        timer=new QTimer(this);
+        timer->setInterval(5000);
+        timer->start();
+        connect(timer,SIGNAL(timeout()),this,SLOT(scanDone()));
     }
-    scanW=sc->widget();
-    scanW->setFixedWidth(230);
-    insertPermanentWidget(0,scanW);
-    
-    QTimer *t=new QTimer(scanW);
-    t->setInterval(5000);
-    connect(t,SIGNAL(timeout()),this,SLOT(scanDone()));
-    connect(sc,SIGNAL(finished()),t,SLOT(start()) );
-//     connect(sc,SIGNAL(finished()),this,SLOT(scanDone()));
+    else
+    {
+        if(timer!=0)
+        {
+            timer->stop();
+            delete timer;
+            timer=0;
+        }
+        
+        if(!scanner.isNull() )
+        {
+            removeWidget(scanner->widget() );
+        }
+
+        scanner=core::db->scanner();
+        if(scanner->widget() !=0)
+        {
+            scanner->widget()->setFixedWidth(230);
+            insertPermanentWidget(0,scanner->widget());
+        }
+    }    
 }
 
 void views::statusBar::scanDone()
 {
-    removeWidget(scanW);
-    delete scanW;
-    scanW=0;
+    removeWidget(scanner->widget());
+    scanner.clear();
 }

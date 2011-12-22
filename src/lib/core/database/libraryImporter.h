@@ -8,41 +8,39 @@
 #include<QMap>
 #include<QSqlDatabase>
 
+
 namespace core
 {
 class libraryImporter :public QObject
 {
     Q_OBJECT
     public:
-        libraryImporter();
+        libraryImporter(QObject *parent=0);
         ~libraryImporter();
-        albumEntry import(const QString &url);
-	
-        albumEntry importAudio(const QString &url)
-        {
-            return import(url);
-        }
-	
-        bool importPl(const QString &path );
 
+        albumEntry import(const QString &url);	
 
-        void saveAlbumArt(const QString& albumArt, const albumEntry& al);
-        QString error();
+        bool    importPl(const QString &path );
+        void    saveAlbumArt(const QString& albumArt, const albumEntry& al);
+        virtual void    save()=0;
+        QString error();       
 
-
-        static int n;
-        void save();
-    private:
-
-        QString albumArt;
+    protected:
+        QString albumTable;
+        QString trackTable;
+        QString artistTable;
+        QString genreTable;
+        QString composerTable;
+        QString playlistTable;
         QSqlDatabase database;
-        QString name;
-        bool isConnected;
 
-//         QMap<int, QString> albumList;
-        void createTmpTable();
-        QVariant getId(QVariant var,QString table);
-        QVariant getAlbumId(QVariant album,QVariant artist);
+        QVariant    getId(QVariant var,QString table);
+        QVariant    getAlbumId(QVariant album,QVariant artist);
+
+        virtual albumEntry importToDb(QVariant[],QVariant *);
+        
+    private:        
+//        QString     albumArt;               
 
     signals:
         void error(QString);

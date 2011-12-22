@@ -62,10 +62,9 @@ void artistModel::updateQueries()
     
     if(artistQ->needUpdate() )
     {
-	qDebug()<<"ARTIST UP";
-	artistQ->select();
-	qDebug()<<artistQ->queryString();
-	setStringList(artistQ->result());
+        qDebug()<<"ARTIST UP";
+        artistQ->select();        
+        setStringList(artistQ->result());
     }        
 /*    if(q!=0 && q->isValid() )
     {

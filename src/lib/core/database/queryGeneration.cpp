@@ -24,17 +24,17 @@ void core::queryGrt::setNeedUpdate(const audioFiles::audioFile f)
 {
     if(_needUpdate)
     {
-	return ;
+        return ;
     }
     
     if(q!=0)
     {
-	_needUpdate = q->match(f);
-	
-	if(_needUpdate)
-	{	  
-	    emit updateNeeded();
-	}
+        _needUpdate = q->match(f);
+
+        if(_needUpdate)
+        {
+            emit updateNeeded();
+        }
     }
 }
 
@@ -138,7 +138,7 @@ bool core::filesQueryGrt::select()
     thr.files.clear();
     if(q==0||!q->isValid() ||thr.isRunning() )
     {
-	return false;
+        return false;
     }
 
    thr.start();
@@ -166,14 +166,14 @@ QString core::tagQueryGrt::queryString() const
 
     if(q!=0)
     {
-	if(q->isValid() )
-	{
-	    ret=ret.append(" WHERE ").append(q->text() );
-	}
-	else
-	{
-	    return QString();
-	}
+        if(q->isValid() )
+        {
+            ret=ret.append(" WHERE ").append(q->text() );
+        }
+        else
+        {
+            return QString();
+        }
     }
     return ret;
 }
@@ -182,12 +182,12 @@ void core::tagQueryGrt::setNeedUpdate(const audioFiles::audioFile f)
 {
     foreach(tagChanges c,f.tagChanged() )
     {
-	if(c.tag==tag_)
-	{
-	    _needUpdate = true;
-	    emit updateNeeded();	
-	    return ;
-	}
+        if(c.tag==tag_)
+        {
+            _needUpdate = true;
+            emit updateNeeded();
+            return ;
+        }
     }
     
     core::queryGrt::setNeedUpdate(f);
@@ -201,31 +201,31 @@ bool core::tagQueryGrt::select()
     
     if(s.isEmpty() )
     {
-	return false;
+        return false;
     }
     
     QSqlDatabase dBase=db->getDatabase();
     
     {
-	QSqlQuery quer(dBase );
-	
-	if(!quer.exec(s) )
-	{
-	    status->addErrorP(quer.lastError().text() );
-	    status->addError("executing query error");
-	    db->closeDatabase(dBase);
-	    return false;
-	}
-	
-	if(quer.size()>0 )
-	{
-	    list.reserve(quer.size() );
-	}
-	    
-	while ( quer.next() ) 	
-	{
-	    list.append(quer.record().value(0).toString() );
-	}
+        QSqlQuery quer(dBase );
+
+        if(!quer.exec(s) )
+        {
+            status->addErrorP(quer.lastError().text() );
+            status->addError("executing query error");
+            db->closeDatabase(dBase);
+            return false;
+        }
+
+        if(quer.size()>0 )
+        {
+            list.reserve(quer.size() );
+        }
+
+        while ( quer.next() )
+        {
+            list.append(quer.record().value(0).toString() );
+        }
     }
     
     db->closeDatabase(dBase);
@@ -244,31 +244,32 @@ bool core::artistQueryGrt::select()
     
     if(s.isEmpty() )
     {
-	return false;
+        return false;
     }
     
     QSqlDatabase dBase=db->getDatabase();
-    
+
+    dBase.open();
     {
-	QSqlQuery quer(dBase );
-	
-	if(!quer.exec(s) )
-	{
-	    status->addErrorP(quer.lastError().text() );
-	    status->addError("executing query error");
-	    db->closeDatabase(dBase);
-	    return false;
-	}
-	
-	if(quer.size()>0 )
-	{
-	    list.reserve(quer.size() );
-	}
-	    
-	while ( quer.next() ) 	
-	{
-	    list.append(quer.record().value(0).toString() );
-	}
+        QSqlQuery quer(dBase );
+
+        if(!quer.exec(s) )
+        {
+            status->addErrorP(quer.lastError().text() );
+            status->addError("executing query error");
+            db->closeDatabase(dBase);
+            return false;
+        }
+
+        if(quer.size()>0 )
+        {
+            list.reserve(quer.size() );
+        }
+
+        while ( quer.next() )
+        {
+            list.append(quer.record().value(0).toString() );
+        }
     }
     
     db->closeDatabase(dBase);
@@ -280,12 +281,12 @@ void core::artistQueryGrt::setNeedUpdate(const audioFiles::audioFile f)
 {
     foreach(tagChanges c,f.tagChanged() )
     {
-	 if(c.tag == ARTIST || c.tag == LEAD_ARTIST )
-	 {
-		_needUpdate =true;
-		emit updateNeeded();
-		return ;
-	 }
+        if(c.tag == ARTIST || c.tag == LEAD_ARTIST )
+        {
+            _needUpdate =true;
+            emit updateNeeded();
+            return ;
+        }
     }
     core::queryGrt::setNeedUpdate(f);
 }
@@ -295,17 +296,16 @@ QString core::artistQueryGrt::queryString() const
 {
     QString ret("select distinct artist_album.artist from artist_album ");
 
-
     if(q!=0)
     {
-	if(q->isValid() )
-	{
-	    ret=ret.append(" inner join trackView on artist_album.id=trackView.album_id AND ( " + q->text() +")" );
-	}
-	else
-	{
-	    return QString();
-	}
+        if(q->isValid() )
+        {
+            ret=ret.append(" inner join trackView on artist_album.id=trackView.album_id AND ( " + q->text() +")" );
+        }
+        else
+        {
+            return QString();
+        }
     }
     ret=ret.append("order by artist_album.artist asc");
     return ret;
@@ -320,7 +320,7 @@ bool core::albumQueryGrt::select()
     
     if(s.isEmpty() )
     {
-	return false;
+        return false;
     }
     
     QSqlDatabase dBase=db->getDatabase();

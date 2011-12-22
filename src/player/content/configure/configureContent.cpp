@@ -7,12 +7,13 @@
 #include<QProgressBar>
 #include<QLineEdit>
 #include<KIcon>
+#include <database/scanTread.h>
 using namespace core;
 configureContent::configureContent(QWidget *parent)
         :abstractContent(parent),
         dbNameS(QObject::tr("database Name:")),
-	   dbUserS(QObject::tr("User:")),
-	   dbPassS(QObject::tr("password:"))
+        dbUserS(QObject::tr("User:")),
+        dbPassS(QObject::tr("password:"))
 {
     QLabel *l=new QLabel(this);
 
@@ -36,7 +37,21 @@ configureContent::configureContent(QWidget *parent)
     setLayout(layout);
     
     connect(rememberPl,SIGNAL(stateChanged(int) ),this,SLOT(rememberPlSlot(int) ) );
+    connect(db,SIGNAL(stateCanged(dbState,dbState)),this,SLOT(scanButtonActive()) );
 }
+
+void configureContent::scanButtonActive()
+{
+    if(db->state()==database::NORMAL)
+    {
+        scanB->setDisabled(false);
+    }
+    else
+    {
+        scanB->setDisabled(true);
+    }
+}
+
 
 QString configureContent::name() const
 {
@@ -106,7 +121,7 @@ void configureContent::libconfInit()
     groupB->setLayout(gl);
     
     
-    connect(scanB,SIGNAL(clicked() ),core::db,SLOT(scan()));
+    connect(scanB,SIGNAL(clicked() ),this,SLOT(scanLibrary()));
     connect(addFolder,SIGNAL(clicked() ),this,SLOT(addLibraryFolder() ) );
     connect(removeFolder,SIGNAL(clicked() ),this,SLOT(removeLibraryFolder() ) );
     connect(DbButtons, SIGNAL(clicked(QAbstractButton* ) ), this, SLOT(DbButtonClicked(QAbstractButton*) ));
@@ -117,7 +132,7 @@ void configureContent::DbButtonClicked(QAbstractButton *button)
     if (DbButtons->buttonRole(button)==QDialogButtonBox::ApplyRole)
     {
         db->dBConnect(dbNameL->text(),dbUserL->text(),dbPassL->text());
-	   db->setUpDb();
+        db->setUpDb();
     }
 
     dbNameL->setText(db->dataBName());
@@ -135,7 +150,7 @@ void configureContent::addLibraryFolder()
     QStringList l=dialog->selectedFiles ();
     if(l.isEmpty())
     {
-	return;
+        return;
     }
     db->addLibraryFolder(l.at(0) );
     model->setStringList(db->getLibraryFolders());
@@ -145,4 +160,11 @@ void configureContent::removeLibraryFolder()
 {    
     db->removeLibraryFolder(listV->currentIndex().data().toString() );    
     model->setStringList(db->getLibraryFolders());
+}
+
+void configureContent::scanLibrary()
+{
+    core::scanThread *sc=new scanThread(core::database::RESCAN);
+    sc->setDirs(db->getLibraryFolders());
+    sc->scan();
 }

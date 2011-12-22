@@ -12,60 +12,71 @@
 #include "database.h"
 #include"album.h"
 #include <QLabel>
-
+#include"databaseScanner.h"
 namespace core
 {
-class scanThread :public  QThread//, public QObject
+class scanThread :public  databaseScanner//, public QObject
 {
     Q_OBJECT
     public:
-        scanThread(QObject *parent);
-
+        scanThread(database::dbState b,QObject *parent=0);
+        ~scanThread();
         int importedItemNum();
-        inline bool isStoped()
+
+        bool isStoped()
         {
             return stopped;
         }
-        inline int importedNum()
+        
+        int importedNum()
         {
             return filesImported;
         }
 
-        void scan()
+        int step()
         {
-            start();
+            return _step;
         }
 
-        QWidget *widget();
+        void setStep(int st)
+        {
+            _step=st;
+        }
+
+        QWidget *widget()
+        {
+            return w;
+        }
 
         void setDirs(const QStringList &l);
-	
+        
     protected:
-        void run();
+        virtual void     run();
+        virtual void     init();
+        inline  void     initWidget();
+        inline  void     scanAllFolders();
+        virtual void     save();
+        bool             scanFolder(KUrl url);
+        inline  void     findAllItemN();
+        void             findItemN(KUrl);
 
+        
+        QWidget *w;
+        QLabel *label;
         QLinkedList<KUrl> dirs;
-
         QHash<int,int> allAlbums;
-        QLinkedList<QString> errors;
-        int _step;
-	
-    private:
-        libraryImporter importer;
-        bool scanFolder(KUrl url);
-
-        void findItemN(KUrl);
-
-        void initWidget();
-
+        QLinkedList<QString> errors;        
+        bool stopped;
+        libraryImporter *importer;
+        
+    private:        
         int itemNumber;
         int num;
         int filesImported;
-        bool stopped;
-
-        QWidget *w;
-        QLabel *label;
+                
         QProgressBar *progressBar;
-
+        int _step;
+        
     signals:
         void done(int);
         void itemsNum(const int);
