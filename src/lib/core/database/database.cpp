@@ -1,7 +1,6 @@
 #include"database.h"
 #include<QApplication>
 #include "../status/playerStatus.h"
-// #include<player.h>
 #include<kconfiggroup.h>
 #include"../config/config.h"
 #include<ksharedconfig.h>
@@ -11,6 +10,7 @@
 #include"../func.h"
 #include"../status/playerStatus.h"
 #include"databaseScanner.h"
+ #include <QProcess>
 
 core::database::database()
         :QObject(),
@@ -38,7 +38,7 @@ bool core::database::createConnection()
 
 	   status->addError(QObject::tr("Can not connect to database") );
 	   status->addErrorP("Database Error"+db.lastError().text());
-        return false;
+       return false;
     }
     
     status->addInfo(QObject::tr("Connected to database") );
@@ -70,15 +70,17 @@ void core::database::setUpDb()
 {
     QSqlQuery q(db);
     QString s=KGlobal::dirs()->findResource("data",QString("player/sql/create.txt") );   
-    q.prepare("LOAD DATA INFILE "+s );    
-    
-    if(!q.exec() )
+
+    QString command("mysql "+dbName+" -u "+dbUser+" -p"+dbPass+" < "+s);
+    int stat=system(command.toStdString().c_str() );
+    status->addInfoP("setting up the database");
+    status->addInfoP("exec: "+command);
+    status->addInfoP("exit status "+QString::number(stat) );
+
+    if(stat!=0)
     {
-	status->addError(QObject::tr("Could not set up database") );
-	status->addErrorP(q.lastError().text() );
+        status->addError(QObject::tr("Could not set up database") );
     }
-    
-   
 }
 
 
