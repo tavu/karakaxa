@@ -1,7 +1,7 @@
 #ifndef LIBRARYIMPORTERUPDATE_H
 #define LIBRARYIMPORTERUPDATE_H
 #include "libraryImporter.h"
-
+#include"../files/audioFile.h"
 namespace core
 {
 class libraryImpUpdate :public libraryImporter
@@ -20,10 +20,22 @@ class libraryImpUpdate :public libraryImporter
         
         albumEntry importToDb(QVariant var[],QVariant *v)
         {
-            //TODO add some mutex work
+            //TODO do some mutex work
             return  libraryImporter::importToDb(var,v);
         }
 
+        virtual albumEntry import(const QString &url)
+        {
+            audioFiles::audioFile f(url);
+
+            if(f.inDataBase() )
+            {
+                return albumEntry();
+            }
+
+            return libraryImporter::import(url) ;
+        }
+        
         //nothing to save
         void save()
         {}

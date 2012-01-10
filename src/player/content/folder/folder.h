@@ -20,6 +20,7 @@
 #include<KLineEdit>
 
 #include"../playlist/playlistModel.h"
+#include "folderView.h"
 // #include <kfileplacesmodel.cpp>
 
 class folderContextMenu;
@@ -50,7 +51,7 @@ class folderContent :public core::abstractContent
         folderProxyModel  *proxyM;
 
         KFilePlacesModel *navigatorModel;
-        views::treeView *view;
+        folderView *view;
     //     treeViewHeader *viewHeader;
         KUrlNavigator *navigator;
 
@@ -68,8 +69,6 @@ class folderContent :public core::abstractContent
         QByteArray playlistMState;
         
     public slots:
-
-
         void cd(KUrl);
         void up();
         void back();
@@ -92,48 +91,48 @@ class folderContextMenu :public core::abstractMenu
     Q_OBJECT
     public:
 	
-	folderContextMenu(folderContent *c)
-	  :abstractMenu(), f(c) , _show(true)
-	{	    
-	     act=new QAction(KIcon("folder"),tr("go to folder"),this);
-	     connect(act,SIGNAL(triggered() ),this,SLOT(cd() ) );
-	}
-	~folderContextMenu()
-	{
-	    delete act;
-	}
-	
-	virtual bool canShow()
-	{
-	    if(url().isLocalFile() && _show  )
-	    {
-		  return true;
-	    }
-	    
-	    return false;
-	}
-	
-	QAction* action()
-	{
-	    return act;
-	}
-	
-	void setShow(bool b)
-	{
-	    _show=b;
-	}
+        folderContextMenu(folderContent *c)
+        :abstractMenu(), f(c) , _show(true)
+        {
+            act=new QAction(KIcon("folder"),tr("go to folder"),this);
+            connect(act,SIGNAL(triggered() ),this,SLOT(cd() ) );
+        }
+        ~folderContextMenu()
+        {
+            delete act;
+        }
+
+        virtual bool canShow()
+        {
+            if(url().isLocalFile() && _show  )
+            {
+            return true;
+            }
+
+            return false;
+        }
+
+        QAction* action()
+        {
+            return act;
+        }
+
+        void setShow(bool b)
+        {
+            _show=b;
+        }
     
     private:      
-      folderContent *f;
-      QAction *act;
-      bool _show ;
+        folderContent *f;
+        QAction *act;
+        bool _show ;
 
     private slots:
-	void cd()	
-	{
-	    f->cd(core::folder(url().toLocalFile()) );
-	    core::contentHdl->setCurrentContent(f);
-	}
+        void cd()
+        {
+            f->cd(core::folder(url().toLocalFile()) );
+            core::contentHdl->setCurrentContent(f);
+        }
 	
 };
 

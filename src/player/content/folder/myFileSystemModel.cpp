@@ -1,20 +1,72 @@
 #include"myFileSystemModel.h"
 #include<views.h>
+#include <kio/jobclasses.h>
+#include <kio/copyjob.h>
+
 #define DIRCOLUMN 7
 using namespace core;
 myFileSystemModel::myFileSystemModel(QObject *parent)
         :KDirModel(parent)
 {
+    setDropsAllowed(DropOnDirectory );
     dirL=KDirModel::dirLister();
     connect(dirL,SIGNAL(newItems(const KFileItemList &) ),this,SLOT(insert(const KFileItemList &) ) );
     connect(dirL,SIGNAL(clear() ),&thr,SLOT(cleanup() ) );
-    connect(&thr,SIGNAL(finished () ),this,SLOT( callRest() ) );
+    connect(&thr,SIGNAL(finished () ),this,SLOT( callReset() ) );
 }
 
-void myFileSystemModel::callRest()
+void myFileSystemModel::callReset()
 {
     beginResetModel ();
     endResetModel();
+}
+
+void myFileSystemModel::updateLibrary()
+{
+
+}
+
+
+bool myFileSystemModel::dropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column, const QModelIndex& parent)
+{
+    KUrl dest;
+
+    if(parent.isValid() )
+    {
+        dest=itemForIndex(parent).url();
+    }
+    else
+    {
+        dest=dirLister()->url();
+    }
+ 
+    if(!data->hasUrls() )
+    {
+        return false;
+    }
+
+    //QList<QUrl> urls=data->urls();
+    KUrl::List urls;
+    
+    foreach(QUrl u,data->urls())
+    {
+        urls.append(KUrl(u) );
+    }
+
+    if(action==Qt::CopyAction)
+    {
+        KIO::copy(urls,dest );
+    }
+    else if(action==Qt::MoveAction)
+    {
+        KIO::move(urls,dest );
+    }
+    else
+    {
+        return false;
+    }
+
+    return true;
 }
 
 
@@ -38,7 +90,7 @@ QVariant myFileSystemModel::data(const QModelIndex &index, int role) const
 
     if (role==Qt::DisplayRole || role==Qt::EditRole )
     {
-	   QVariant var;
+        QVariant var;
         KFileItem item=itemForIndex(index);
         if (item.isDir() )	return QVariant();
 	
@@ -113,6 +165,17 @@ int myFileSystemModel::infoC()
 Qt::ItemFlags myFileSystemModel::flags ( const QModelIndex & index ) const
 {
     static Qt::ItemFlags f= Qt::ItemIsEnabled | Qt::ItemIsSelectable |Qt::ItemIsDragEnabled|Qt::ItemIsEditable;
+
+    if(!index.isValid() || itemForIndex(index).isDir() )
+    {
+        return f|Qt::ItemIsDropEnabled;
+    }
+
+    if (index.column()!=0)
+    {
+        return f;
+    }
+    
     return f;
 }
 

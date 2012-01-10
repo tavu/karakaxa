@@ -84,6 +84,9 @@ void configureContent::libconfInit()
     scanB=new QPushButton(tr("Scan"),this);
     scanB->setMaximumWidth(100);
 
+    updateB=new QPushButton(tr("Update"),this);
+    scanB->setMaximumWidth(100);
+    
     dbNameL = new QLineEdit(db->dataBName(),this);    
     dbUserL = new QLineEdit(db->dataBUser(),this);
     dbPassL = new QLineEdit(db->dataBPass(),this);
@@ -109,7 +112,8 @@ void configureContent::libconfInit()
      gl->addWidget(removeFolder,3,3);
     
      gl->setRowMinimumHeight(4,45);
-     gl->addWidget(scanB,5,0);          
+     gl->addWidget(scanB,5,0);
+     gl->addWidget(updateB,5,1);
      
      gl->setColumnStretch(0,0);     
      gl->setColumnStretch(1,1);     
@@ -122,6 +126,7 @@ void configureContent::libconfInit()
     
     
     connect(scanB,SIGNAL(clicked() ),this,SLOT(scanLibrary()));
+    connect(updateB,SIGNAL(clicked() ),this,SLOT(updateLibrary()));
     connect(addFolder,SIGNAL(clicked() ),this,SLOT(addLibraryFolder() ) );
     connect(removeFolder,SIGNAL(clicked() ),this,SLOT(removeLibraryFolder() ) );
     connect(DbButtons, SIGNAL(clicked(QAbstractButton* ) ), this, SLOT(DbButtonClicked(QAbstractButton*) ));
@@ -165,6 +170,13 @@ void configureContent::removeLibraryFolder()
 void configureContent::scanLibrary()
 {
     core::scanThread *sc=new scanThread(core::database::RESCAN);
+    sc->setDirs(db->getLibraryFolders());
+    sc->scan();
+}
+
+void configureContent::updateLibrary()
+{
+    core::scanThread *sc=new scanThread(core::database::UPDATE);
     sc->setDirs(db->getLibraryFolders());
     sc->scan();
 }

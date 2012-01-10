@@ -8,7 +8,6 @@
 #include"myFileSystemModel.h"
 
 #include<KFileItemDelegate>
-// #include"folderProxyModel.h"
 #include<QDebug>
 #include<KConfigGroup>
 
@@ -21,17 +20,12 @@ folderContent::folderContent(QWidget *parent)
     navigator = new KUrlNavigator(navigatorModel,KUrl( QDir::home().path() ),this);
 
     model = new myFileSystemModel(this);
-
-//     model->dirLister()->setMimeFilter(core::config->files()<<DIRECTORYM);
-
     proxyM=new folderProxyModel(this);
-//     proxyM->setSourceModel(model);
     proxyM->setFilterCaseSensitivity(Qt::CaseInsensitive);
     
-    view=new views::treeView(this);
+    view=new folderView(this);
     view->setModel(proxyM);
-//     view->setRatingColumn(DIRCOLUMN+RATING);    
-    
+    view->setDragDropMode(QAbstractItemView::DragDrop);   
 
     toolBar=new KToolBar(this);
     toolBar->setToolButtonStyle( Qt::ToolButtonIconOnly );
@@ -60,9 +54,7 @@ folderContent::folderContent(QWidget *parent)
     searchLine->setVisible(true);
     toolBar->addWidget(searchLine);
         
-    connect(searchLine,SIGNAL(textChanged ( const QString & )  ),proxyM,SLOT(setFilterFixedString(QString) ) );
-//     connect(searchLine,SIGNAL(clearButtonClicked() ),this,SLOT(search() ) );
-    
+    connect(searchLine,SIGNAL(textChanged ( const QString & )  ),proxyM,SLOT(setFilterFixedString(QString) ) );    
     
     QVBoxLayout *layout = new QVBoxLayout();
     
@@ -84,7 +76,6 @@ folderContent::folderContent(QWidget *parent)
     connect(qApp,SIGNAL(aboutToQuit() ),this,SLOT(writeSettings() ) );
     
     connect(view,SIGNAL(showContextMenu(QModelIndex,QModelIndexList) ),this,SLOT(showContexMenuSlot(QModelIndex, QModelIndexList) ) );
-
 }
 
 const QList<QString> folderContent::getChildren()

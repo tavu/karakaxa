@@ -26,10 +26,11 @@ class configureContent :public core::abstractContent
 	QFileDialog 		*fDialog;
 	QListView   		*listV;
 	QStringListModel	*model;
-	QStringList		sList;
-	QGroupBox 		*groupB;
+	QStringList		    sList;
+	QGroupBox 		    *groupB;
 
-	QPushButton 		*scanB;	
+	QPushButton 		*scanB;
+    QPushButton         *updateB;
 	QCheckBox			*rememberPl;
 
 	QDialogButtonBox 	*DbButtons;
@@ -51,6 +52,7 @@ class configureContent :public core::abstractContent
         void DbButtonClicked(QAbstractButton*);
         void rememberPlSlot(int);
         void scanLibrary();
+        void updateLibrary();
         void scanButtonActive();
 };
 #endif

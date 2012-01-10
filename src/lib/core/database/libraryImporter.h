@@ -18,7 +18,7 @@ class libraryImporter :public QObject
         libraryImporter(QObject *parent=0);
         ~libraryImporter();
 
-        albumEntry import(const QString &url);	
+        virtual albumEntry import(const QString &url);
 
         bool    importPl(const QString &path );
         void    saveAlbumArt(const QString& albumArt, const albumEntry& al);
@@ -39,8 +39,6 @@ class libraryImporter :public QObject
 
         virtual albumEntry importToDb(QVariant[],QVariant *);
         
-    private:        
-//        QString     albumArt;               
 
     signals:
         void error(QString);

@@ -92,12 +92,18 @@ void core::scanThread::save()
 
 void core::scanThread::findItemN(KUrl dir)
 {
-
-    QDirIterator it(dir.toLocalFile(),QDir::Files|QDir::NoDotAndDotDot,QDirIterator::Subdirectories);
-    while (it.hasNext() && !stopped )
+    if(isAudio(dir.toLocalFile()) )
     {
         itemNumber++;
-        it.next();
+    }
+    else
+    {
+        QDirIterator it(dir.toLocalFile(),QDir::Files|QDir::NoDotAndDotDot,QDirIterator::Subdirectories);
+        while (it.hasNext() && !stopped )
+        {
+            itemNumber++;
+            it.next();
+        }
     }
 }
 
