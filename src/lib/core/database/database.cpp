@@ -258,10 +258,33 @@ core::database::~database()
 
 void core::database::addLibraryFolder(QString s)
 {
-    QSqlQuery q(db);
+    QSqlQuery q(getDatabase() );
+    QStringList l=getLibraryFolders();
+
+    KUrl newU(s);
+    
+    foreach(QString s,l)
+    {
+        KUrl u(s);        
+        if(u.isParentOf(newU) )
+        {
+            //we do not need to add the newU as library folder
+            closeDatabase();
+            status->addInfo(tr("Some library folders have been merged") );
+            return ;
+        }
+        if(newU.isParentOf(u) )
+        {
+            //we do not need the u any more
+            removeLibraryFolder(s);
+            status->addInfo(tr("Some library folders have been merged") );
+        }
+    }
+
     q.prepare("insert into library_folders(path) values(?)");
     q.addBindValue(s);
     q.exec();
+    closeDatabase();
 }
 
 void core::database::removeLibraryFolder(QString s)
