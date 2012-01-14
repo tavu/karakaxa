@@ -14,36 +14,38 @@ class configureContent :public core::abstractContent
 {
     Q_OBJECT
     public:
-	configureContent(QWidget *parent=0);
-	QString name() const;
-		
-	QIcon icon() const
-	{
-	   return KIcon("configure-other");
-	}
+        configureContent(QWidget *parent=0);
+        QString name() const;
+
+        QIcon icon() const
+        {
+            return KIcon("configure-other");
+        }
 	
     private:
-	QFileDialog 		*fDialog;
-	QListView   		*listV;
-	QStringListModel	*model;
-	QStringList		    sList;
-	QGroupBox 		    *groupB;
+        QFileDialog 		*fDialog;
+        QListView   		*listV;
+        QStringListModel	*model;
+        QStringList		    sList;
+        QGroupBox 		    *groupB;
 
-	QPushButton 		*scanB;
-    QPushButton         *updateB;
-	QCheckBox			*rememberPl;
+        QPushButton 		*scanB;
+        QPushButton         *updateB;
+        QCheckBox			*rememberPl;
+        QPushButton         *addFolder;
+        QPushButton         *removeFolder;
 
-	QDialogButtonBox 	*DbButtons;
-	QLineEdit			*dbNameL;
-	QLineEdit			*dbUserL;
-	QLineEdit			*dbPassL;
-	
-	QLabel 			dbNameS;
-	QLabel 			dbUserS;
-	QLabel			dbPassS;
-	
+        QDialogButtonBox 	*DbButtons;
+        QLineEdit			*dbNameL;
+        QLineEdit			*dbUserL;
+        QLineEdit			*dbPassL;
 
-	void libconfInit();
+        QLabel 			dbNameS;
+        QLabel 			dbUserS;
+        QLabel			dbPassS;
+
+
+        inline void libconfInit();
 
 
     private slots:

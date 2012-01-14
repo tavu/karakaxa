@@ -11,7 +11,7 @@
 using namespace core;
 configureContent::configureContent(QWidget *parent)
         :abstractContent(parent),
-        dbNameS(QObject::tr("database Name:")),
+        dbNameS(QObject::tr("Database Name:")),
         dbUserS(QObject::tr("User:")),
         dbPassS(QObject::tr("password:"))
 {
@@ -45,10 +45,16 @@ void configureContent::scanButtonActive()
     if(db->state()==database::NORMAL)
     {
         scanB->setDisabled(false);
+        updateB->setDisabled(false);
+        addFolder->setDisabled(false);
+        removeFolder->setDisabled(false);
     }
     else
     {
         scanB->setDisabled(true);
+        updateB->setDisabled(true);
+        addFolder->setDisabled(true);
+        removeFolder->setDisabled(true);
     }
 }
 
@@ -74,18 +80,20 @@ void configureContent::rememberPlSlot(int state)
 void configureContent::libconfInit()
 {
     groupB=new QGroupBox(this);
-    groupB->setTitle("Library");
+    groupB->setTitle(tr("Library") );
     listV=new QListView(this);
     model=new QStringListModel(db->getLibraryFolders(),this);
     listV->setModel(model);
 
-    QPushButton *addFolder=new QPushButton(KIcon("list-add"),tr("Add Folder"),this);
-    QPushButton *removeFolder=new QPushButton(KIcon("list-remove"),tr("Remove Folder"),this);
-    scanB=new QPushButton(tr("Scan"),this);
-    scanB->setMaximumWidth(100);
-
+    addFolder=new QPushButton(KIcon("list-add"),tr("Add Folder"),this);
+    removeFolder=new QPushButton(KIcon("list-remove"),tr("Remove Folder"),this);
+    scanB=new QPushButton(tr("Scan"),this);    
+    scanB->setFixedWidth(100);
     updateB=new QPushButton(tr("Update"),this);
-    scanB->setMaximumWidth(100);
+    updateB->setFixedWidth(100);
+    QWidget *spacer=new QWidget(this);
+    spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
     
     dbNameL = new QLineEdit(db->dataBName(),this);    
     dbUserL = new QLineEdit(db->dataBUser(),this);
@@ -112,17 +120,23 @@ void configureContent::libconfInit()
      gl->addWidget(removeFolder,3,3);
     
      gl->setRowMinimumHeight(4,45);
-     gl->addWidget(scanB,5,0);
-     gl->addWidget(updateB,5,1);
+
+     QHBoxLayout *l=new QHBoxLayout();
+     l->setContentsMargins(0,0,0,0);
+     l->addWidget(scanB);
+     l->addWidget(updateB);
+     
+     gl->addLayout(l,5,0,1,3,Qt::AlignLeft);
      
      gl->setColumnStretch(0,0);     
      gl->setColumnStretch(1,1);     
      gl->setColumnStretch(2,2);     
-     gl->setColumnStretch(3,2);
-     gl->setRowMinimumHeight(6,15);
-    
+     gl->setColumnStretch(3,2);    
     
     groupB->setLayout(gl);
+    gl->setRowMinimumHeight(6,45);
+
+    gl->setContentsMargins(5,0,0,0);
     
     
     connect(scanB,SIGNAL(clicked() ),this,SLOT(scanLibrary()));

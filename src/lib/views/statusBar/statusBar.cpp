@@ -107,4 +107,6 @@ void views::statusBar::scanDone()
 {
     removeWidget(scanner->widget());
     scanner.clear();
+    delete timer;
+    timer=0;
 }
