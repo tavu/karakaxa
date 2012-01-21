@@ -23,7 +23,7 @@ folderContent::folderContent(QWidget *parent)
     proxyM=new folderProxyModel(this);
     proxyM->setFilterCaseSensitivity(Qt::CaseInsensitive);
     
-    view=new folderView(this);
+    view=new views::treeView(this);
     view->setModel(proxyM);
     view->setDragDropMode(QAbstractItemView::DragDrop);   
 

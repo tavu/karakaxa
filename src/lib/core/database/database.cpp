@@ -303,34 +303,44 @@ QSqlQuery core::database::playlists()
 
 void core::database::scan(core::databaseScanner* sc)
 {
-    mutex.lock();
-    if(_state != NORMAL )
+    mutex.lock();    
+    scanners.append(dbScanner(sc) );
+    connect(sc,SIGNAL(finished()),this,SLOT(scanFinished()),Qt::QueuedConnection);
+
+    if(_state==NORMAL)
     {
-	   mutex.unlock();
-	   return ;
+        nextState();        
     }
     else
     {
-       dbState oldState;
-	   _state=sc->type();
-       _scanner=dbScanner(sc);
-	   mutex.unlock();	   
-       
-	   connect(sc,SIGNAL(finished()),this,SLOT(scanFinished()),Qt::QueuedConnection);	   	   
-       emit stateCanged(oldState,_state);	   
-	   sc->startScan();
+        mutex.unlock();
     }
-    
+
 }
 
 void core::database::scanFinished()
 {
     mutex.lock();
+    scanners.removeFirst();
+    nextState();
+}
+
+void core::database::nextState()
+{
     dbState oldState=_state;
-    _state=NORMAL;
-    _scanner.clear();
-    mutex.unlock();
-    emit stateCanged(oldState,_state);
+    if(scanners.isEmpty() )
+    {
+        _state=NORMAL;
+        mutex.unlock();
+        emit stateCanged(oldState,_state);
+    }
+    else
+    {
+        _state=scanners.first()->type();
+        mutex.unlock();
+        emit stateCanged(oldState,_state);
+        scanners.first()->startScan();
+    }
 }
 
 

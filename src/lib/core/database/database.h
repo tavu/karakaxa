@@ -95,7 +95,12 @@ class database :public QObject
         //if its on the update or rescan state return the scanThread
         dbScanner scanner()
         {
-            return _scanner;
+            if(scanners.isEmpty() )
+            {
+                return dbScanner();
+            }
+
+            return scanners.first();
         }
 
     private:
@@ -116,7 +121,9 @@ class database :public QObject
         bool    _isScanning;
         dbState    _state;
 
-        dbScanner _scanner;
+        QLinkedList<dbScanner>  scanners;
+
+        void nextState();
 
         QString apprName(QThread *thr);
         QMutex mutex;

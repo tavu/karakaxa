@@ -20,7 +20,7 @@
 #include<KLineEdit>
 
 #include"../playlist/playlistModel.h"
-#include "folderView.h"
+//#include "folderView.h"
 // #include <kfileplacesmodel.cpp>
 
 class folderContextMenu;
@@ -51,7 +51,7 @@ class folderContent :public core::abstractContent
         folderProxyModel  *proxyM;
 
         KFilePlacesModel *navigatorModel;
-        folderView *view;
+        views::treeView *view;
     //     treeViewHeader *viewHeader;
         KUrlNavigator *navigator;
 
