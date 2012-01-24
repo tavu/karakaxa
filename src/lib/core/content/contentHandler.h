@@ -51,17 +51,17 @@ class contentHandler
     
     QWidget* view()
     {
-	return contView->mainView();
+        return contView->mainView();
     }
     
     void setView(QTreeView *v)
     {
-	contView->setView(v);
+        contView->setView(v);
     }
     
     void setCurrentContent(abstractContent *c,int submenu=-1)
     {
-	contList->setCurrentContent(c,submenu);
+        contList->setCurrentContent(c,submenu);
     }
          
     void setCurrentContent(const QModelIndex &in)
@@ -76,11 +76,11 @@ class contentHandler
     
     void addContent(abstractContent *c,bool activate=false)
     {
-	contList->addContent(c);
-	if(activate)
-	{
-	    contList->setCurrentContent(c);
-	}
+        contList->addContent(c);
+        if(activate)
+        {
+            contList->setCurrentContent(c);
+        }
     }
     
     void removeContent(abstractContent *c)
@@ -96,37 +96,37 @@ class contentHandler
     
     core::abstractContent* content(int i)
     {
-	return contList->contentFromPos(i);
+        return contList->contentFromPos(i);
     }
     
     core::abstractContent* content(const QModelIndex &in)
     {
-	return contView->contentFromIndex(in);
+        return contView->contentFromIndex(in);
     }
         
     
     void addWidget(QWidget *w,bool activate=true)
     {
-	genericContent *g=new genericContent(w);
-	addContent(g,activate);
+        genericContent *g=new genericContent(w);
+        addContent(g,activate);
     }
     
     //for menu
 	
     void addMenu(core::abstractMenu* m)
     {
-	menuL->addMenu(m);
+        menuL->addMenu(m);
     }
     
 	
     void removeMenu(core::abstractMenu* m)
     {
-	menuL->removeMenu(m);
+        menuL->removeMenu(m);
     }
 
     void contextMenu(QMenu* menu, QUrl u,const QList<QUrl> &urls)
     {
-	menuL->contextMenu(menu,u,urls);
+        menuL->contextMenu(menu,u,urls);
     }
     
     KToolBar* toolBar()

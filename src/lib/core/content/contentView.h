@@ -15,9 +15,9 @@ class contentView :public QObject
       explicit contentView(QObject* parent = 0);
       void setView(QTreeView *v)
       {
-	  view=v;
-	  view->setModel(model);
-	  connect(view,SIGNAL(activated( const QModelIndex & ) ),this, SLOT(activateContFromIndex (const QModelIndex &) ) );
+        view=v;
+        view->setModel(model);
+        connect(view,SIGNAL(activated( const QModelIndex & ) ),this, SLOT(activateContFromIndex (const QModelIndex &) ) );
       }
       
       core::abstractContent* contentFromIndex(const QModelIndex &in) const;
@@ -31,11 +31,11 @@ class contentView :public QObject
       }
       
     private:
-	QTreeView *view;
-	QStandardItemModel *model;
-	QStackedWidget *stack;
-	KToolBar *_toolBar;
-	
+        QTreeView *view;
+        QStandardItemModel *model;
+        QStackedWidget *stack;
+        KToolBar *_toolBar;
+        
 	
     private slots:
 	void contentActivated(core::abstractContent *content);

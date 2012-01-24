@@ -5,7 +5,7 @@
 
 #define DIRCOLUMN 7
 using namespace core;
-myFileSystemModel::myFileSystemModel(QObject *parent)
+myFileSystemModel::myFileSystemModel(QWidget *parent)
         :KDirModel(parent)
 {
     setDropsAllowed(DropOnDirectory );
@@ -30,6 +30,18 @@ void myFileSystemModel::updateLibrary()
 bool myFileSystemModel::dropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column, const QModelIndex& parent)
 {
     KUrl dest;
+    QMenu menu(static_cast<QWidget*>(QObject::parent() ) );
+    QAction *copyA=new QAction(KIcon("edit-copy"),tr("Copy here"),&menu);
+    QAction *moveA=new QAction(KIcon("go-jump"),tr("move here"),&menu);
+
+    menu.addAction(copyA);
+    menu.addAction(moveA);
+    QAction *a=menu.exec(QCursor::pos());
+
+    if(a==0)
+    {
+        return false;
+    }
 
     if(parent.isValid() )
     {
@@ -45,7 +57,6 @@ bool myFileSystemModel::dropMimeData(const QMimeData* data, Qt::DropAction actio
         return false;
     }
 
-    //QList<QUrl> urls=data->urls();
     KUrl::List urls;
     
     foreach(QUrl u,data->urls())
@@ -53,17 +64,13 @@ bool myFileSystemModel::dropMimeData(const QMimeData* data, Qt::DropAction actio
         urls.append(KUrl(u) );
     }
 
-    if(action==Qt::CopyAction)
+    if(a==copyA)
     {
         KIO::copy(urls,dest );
     }
-    else if(action==Qt::MoveAction)
-    {
-        KIO::move(urls,dest );
-    }
     else
     {
-        return false;
+        KIO::move(urls,dest );
     }
 
     return true;
