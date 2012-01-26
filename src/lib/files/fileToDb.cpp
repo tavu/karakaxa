@@ -474,7 +474,7 @@ int audioFiles::fileToDb::setRating (const unsigned int &rating)
     q.prepare( "update tracks SET rating=? where path=?");
     q.addBindValue(QVariant(rating) );
     q.addBindValue(_path);
-
+    
     if (!q.exec() )
     {
         qDebug()<<"probably file not exist in library";

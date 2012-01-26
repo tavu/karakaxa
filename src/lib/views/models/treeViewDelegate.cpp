@@ -15,6 +15,7 @@
 #include <QVariant>
 #include<QStyle>
 #include"../editors/editMultFiles.h"
+#include"../editors/textEditor.h"
 #include<QDebug>
 #include<QStylePainter>
 #include<QMetaProperty>
@@ -104,12 +105,13 @@ QWidget* views::treeViewDelegate::createEditor(QWidget *parent,const QStyleOptio
         return QStyledItemDelegate::createEditor(parent,option,index);
     }
 
-    QWidget *w = views::tagEditor::getEditor(tag,parent);
+    QWidget *w = views::getEditor(tag,parent);
     if(w!=0)
     {
         w->setProperty("tag",tag);
     }
-//         connect(w,SIGNAL(valueChanged(QVariant) ),this, SLOT(commitEditor()));
+    //TODO take the signal name by the QMetaObject
+    connect(w,SIGNAL(ratingChanged(int) ),this, SLOT(commitEditor()));
 
     return w;    
 }
@@ -194,12 +196,6 @@ void views::treeViewDelegate::commitEditor()
 {
      QWidget *editor = qobject_cast<QWidget *>(sender());
      emit commitData(editor);
-/*	
-    if(editor->tag()!=audioFiles::RATING &&ratingColumn() >= 0)
-    {
- 	   emit closeEditor(editor);
-    }
-    */
 }
 
 

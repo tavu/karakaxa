@@ -67,7 +67,7 @@ void editTrackContent::tagInit()
 		  continue;
 	   }
 	   
-	   editors[i]=views::tagEditor::getEditor(i,this);
+	   editors[i]=views::getEditor(i,this);
 	   if(editors[i]==0)
 	   {
             continue;

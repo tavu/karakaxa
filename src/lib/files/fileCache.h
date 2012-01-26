@@ -45,7 +45,7 @@ class fileCache
 	 
 	 
 	 void 		setTag(tagsEnum t,QVariant var,int &err);
-      void 		setTagFromFile(tagsEnum t,QVariant var);
+     void 		setTagFromFile(tagsEnum t,QVariant var);
 	 void 		setTagFromDb(tagsEnum t,QVariant var);
 	 	 
 	 

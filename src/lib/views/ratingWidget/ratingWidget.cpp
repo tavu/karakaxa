@@ -10,7 +10,7 @@
 */
 
 views::ratingWidget::ratingWidget(QWidget *parent)
-    :tagEditor(audioFiles::RATING,parent),
+    :QWidget(parent),
     _rating(0),
     hoverRating(-1),
     pixSize(20)
@@ -63,7 +63,7 @@ void views::ratingWidget::mousePressEvent( QMouseEvent *e )
             hoverRating = _rating = ratingFromPos;
             update();
             emit ratingChanged( _rating );
-		  emit valueChanged(QVariant(_rating ) );
+            //emit valueChanged(QVariant(_rating ) );
         }
     }
 }

@@ -133,12 +133,12 @@ QVariant audioFiles::fileCache::tagFromDb(int t, int &err)
     
     if(!record.isEmpty())
     {
-	ret=record.value(t+1);
-	err=OK;
+        ret=record.value(t+1);
+        err=OK;
     }
     else
     {
-	err=EMPTY_RECORD;
+        err=EMPTY_RECORD;
     }
     readMutex.unlock();
     return ret;

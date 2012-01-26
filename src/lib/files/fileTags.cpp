@@ -278,49 +278,49 @@ QVariant audioFiles::fileTags::tag(tagsEnum t) const
 {
     switch (t)
     {
-    case TITLE:
-    {
-        return title();
-    }
-    case ALBUM:
-    {
-        return album();
-    }
-    case ARTIST:
-    {
-        return artist();
-    }
-    case GENRE:
-    {
-        return genre();
-    }
-    case COMMENT:
-    {
-        return comment();
-    }
-    case TRACK:
-    {
-        return track();
+        case TITLE:
+        {
+            return title();
+        }
+        case ALBUM:
+        {
+            return album();
+        }
+        case ARTIST:
+        {
+            return artist();
+        }
+        case GENRE:
+        {
+            return genre();
+        }
+        case COMMENT:
+        {
+            return comment();
+        }
+        case TRACK:
+        {
+            return track();
 
-    }
-    case YEAR:
-    {
-        return year();
-    }
-    case LENGTH:
-    {
-        return length();
-    }
-    case BITRATE:
-    {
-        return bitrate();
-    }
-    
-    default:
-    {
-        err=NS_TAG;
-        return QVariant();
-    }
+        }
+        case YEAR:
+        {
+            return year();
+        }
+        case LENGTH:
+        {
+            return length();
+        }
+        case BITRATE:
+        {
+            return bitrate();
+        }
+
+        default:
+        {
+            err=NS_TAG;
+            return QVariant();
+        }
     }
 }
 
@@ -328,41 +328,40 @@ bool audioFiles::fileTags::setTag(tagsEnum t,const QVariant &var)
 {
     switch (t)
     {
+        case TITLE:
+        {
+            return setTitle(var.toString());
+        }
+        case ALBUM:
+        {
+            return setAlbum(var.toString());
+        }
+        case ARTIST:
+        {
+            return setArtist(var.toString());
+        }
+        case GENRE:
+        {
+            return setGenre(var.toString());
+        }
+        case COMMENT:
+        {
+            return setComment(var.toString());
+        }
+        case TRACK:
+        {
+            return setTrack(var.toInt());
 
-	case TITLE:
-	{
-	    return setTitle(var.toString());
-	}
-	case ALBUM:
-	{
-	    return setAlbum(var.toString());
-	}
-	case ARTIST:
-	{
-	    return setArtist(var.toString());
-	}
-	case GENRE:
-	{
-	    return setGenre(var.toString());
-	}
-	case COMMENT:
-	{
-	    return setComment(var.toString());
-	}
-	case TRACK:
-	{
-	    return setTrack(var.toInt());
-
-	}
-	case YEAR:
-	{
-	    return setYear(var.toInt());
-	}
-	default:
-	{
-	    err=NS_TAG;
-	    return false;
-	}
+        }
+        case YEAR:
+        {
+            return setYear(var.toInt());
+        }
+        default:
+        {
+            err=NS_TAG;
+            return false;
+        }
     }
 }
 

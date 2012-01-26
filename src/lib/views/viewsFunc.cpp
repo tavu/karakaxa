@@ -3,6 +3,7 @@
 #include<QDebug>
 #include"actionMenu.h"
 
+
 QString views::prettyLength(int l)
 {
     QString s;
@@ -158,3 +159,5 @@ void views::cleanUp()
     delete decor;
     delete menus;
 }
+
+

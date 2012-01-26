@@ -103,6 +103,7 @@ void views::treeView::mouseMoveEvent(QMouseEvent *event)
 void views::treeView::reset()
 {
     QTreeView::reset();
+    qDebug()<<"RESEET";
     if(ratingColumn()>-1 )
         updateStarWidget();
 }

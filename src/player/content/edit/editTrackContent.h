@@ -64,8 +64,8 @@ class editTrackMenu :public core::abstractMenu
     public:
       editTrackMenu()
       {
-	  act=new QAction(KIcon("document-edit"),tr("Edit track information"),this );
-	  connect(act,SIGNAL(triggered(bool)),this,SLOT(activated()) );
+        act=new QAction(KIcon("document-edit"),tr("Edit track information"),this );
+        connect(act,SIGNAL(triggered(bool)),this,SLOT(activated()) );
       }
       
       bool canShow()

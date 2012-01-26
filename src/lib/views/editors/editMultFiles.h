@@ -110,6 +110,6 @@ class editMultFiles :public QObject
     
     
 };
-
+    
 }
 #endif

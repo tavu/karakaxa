@@ -4,6 +4,7 @@
 #include <QSpacerItem>
 #include"artistDelegate.h"
 #include<views.h>
+#include<editors/editMultFiles.h>
 
 using namespace core;
 

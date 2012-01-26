@@ -8,6 +8,7 @@
 #include<core.h>
 #include<views.h>
 #include<KConfigGroup>
+#include<editors/editMultFiles.h>
 using namespace core;
 
 albumTrack::albumTrack(QWidget *parent)

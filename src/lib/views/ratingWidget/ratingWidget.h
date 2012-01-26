@@ -4,50 +4,51 @@
 // #include"../../files/tagsTable.h"
 #include"kratingpainter.h"
 #include<QWidget>
-#include"../editors/tagEditor.h"
+//#include"../editors/tagEditor.h"
 namespace views
 {
-class ratingWidget :public tagEditor
+class ratingWidget :public QWidget
 {
     Q_OBJECT
+    Q_PROPERTY(int rating READ rating WRITE setRating USER true NOTIFY ratingChanged)
     public:
-      ratingWidget(QWidget *parent=0);
-      inline void setRating(int s)
-      {
-		_rating=s;
-		hoverRating=s;
-		update();
-      }
-      
-	 void setValue(const QVariant& v)
-	 {
-		setRating(v.toInt() );
-	 }
-	 
-	 QVariant value()
-	 {
-		return QVariant(rating() );
-	 }
-      
-      inline int rating()
-      {
-	  return _rating;
-      }
-      
-      QSize sizeHint() const;
-      void setAlignment( Qt::Alignment align );
-      void setPixmapSize( int size );
-      
-      inline int spacing() const
-      {
-	  return ratingPainter.spacing();
-      }
-      
-      inline void setSpacing( int s )
-      {
-	  ratingPainter.setSpacing( s );
-	  update();
-      }
+        ratingWidget(QWidget *parent=0);
+        void setRating(int s)
+        {
+            _rating=s;
+            hoverRating=s;
+            update();
+        }
+
+//         void setValue(const QVariant& v)
+//         {
+//             setRating(v.toInt() );            
+//         }
+//         
+//         QVariant value()
+//         {
+//             return QVariant(rating() );
+//         }
+
+        int rating()
+        {
+            return _rating;
+        }
+
+        QSize sizeHint() const;
+        void setAlignment( Qt::Alignment align );
+        void setPixmapSize( int size );
+
+        int spacing() const
+        {
+            return ratingPainter.spacing();
+        }
+
+        void setSpacing( int s )
+        {
+            ratingPainter.setSpacing( s );
+            update();
+        }
       
       
   protected:

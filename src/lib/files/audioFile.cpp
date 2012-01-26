@@ -109,19 +109,19 @@ QVariant audioFiles::audioFile::tag(int t, const short int f) const
     
     if(cache==0)
     {
-	err=INVALID_FILE;
-	return ret;
+        err=INVALID_FILE;
+        return ret;
     }
 
     if(t>=FRAME_NUM)
     {
-	err=UNOWN;
-	stat=-1;
-	return ret;
+        err=UNOWN;
+        stat=-1;
+        return ret;
     }    
     if (t==PATH)
     {
-	   stat=-1;
+        stat=-1;
         return path();
     }
     
@@ -133,23 +133,23 @@ QVariant audioFiles::audioFile::tag(int t, const short int f) const
     }
     if ( err!=OK  && (f & ONCACHE) )
     {	      
-	stat=ONCACHE;
-	ret=cache->tagFromFile((tagsEnum) t, err);
+        stat=ONCACHE;
+        ret=cache->tagFromFile((tagsEnum) t, err);
     }
     if ( err!=OK && (f & SELECT) )
     {
-       err=cache->select();
-	  stat=SELECT;	
-	  ret=cache->tagFromDb((tagsEnum) t, err);
+        err=cache->select();
+        stat=SELECT;	
+        ret=cache->tagFromDb((tagsEnum) t, err);
     }
     if ( err!=OK && (f & LOAD_FILE) )
     {
-	   cache->loadTags();
+        cache->loadTags();
         ret=cache->tagFromFile((tagsEnum) t, err);
         stat=ONCACHE;
     }
     
-    	if (t==TITLE && ret.toString().isEmpty() && (f & TITLEFP) )
+    if (t==TITLE && ret.toString().isEmpty() && (f & TITLEFP) )
 	{
 	    stat= TITLEFP;
  	    ret=core::titleFromPath(path());        	  
@@ -186,7 +186,7 @@ bool audioFiles::audioFile::setTag(int t, QVariant var)
 
     if(err==OK||err==NOTINDB)
     {
-	 return true;  
+        return true;  
     }
 
     return false;   

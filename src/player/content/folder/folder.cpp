@@ -225,7 +225,6 @@ void folderContent::showContexMenuSlot(QModelIndex index, QModelIndexList list)
 
 void folderContent::edit()
 {
-//     QModelIndex in=view->currentIndex();
     view->edit( view->currentIndex() );
 }
 

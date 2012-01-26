@@ -9,6 +9,6 @@
 #include"models/urlRole.h"
 #include"models/trackModel.h"
 #include"volumeBar/volumeBar.h"
-#include"editors/tagEditor.h"
+#include"editors/textEditor.h"
 #include"actionMenu.h"
 #include"slider.h"

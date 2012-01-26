@@ -9,7 +9,6 @@
 #include<QMenu>
 #include"treeViewDelegate.h"
 #include"treeViewHeader.h"
-#include"../editors/tagEditor.h"
 // #include"editTrack.h"
 
 namespace views
