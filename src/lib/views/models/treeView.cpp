@@ -15,6 +15,7 @@
 // class editTrack;
 
 #include<QModelIndexList>
+#include <QPainter>
 Q_DECLARE_METATYPE(QModelIndexList)
 
 
@@ -103,14 +104,13 @@ void views::treeView::mouseMoveEvent(QMouseEvent *event)
 void views::treeView::reset()
 {
     QTreeView::reset();
-    qDebug()<<"RESEET";
     if(ratingColumn()>-1 )
         updateStarWidget();
 }
 
 
 void views::treeView::performDrag()
-{
+{    
     QModelIndexList list=selectedIndexes();
         
     QList<QUrl> urls=getUrls(list);
@@ -330,4 +330,46 @@ QList<QUrl> views::treeView::getUrls(const QModelIndexList &list)
   
     return urls;
 }
-	
+
+void views::treeView::paintEvent(QPaintEvent * event)
+{
+    QPainter painter(viewport());    
+    drawTree(&painter, event->region());
+
+    if(state() ==QAbstractItemView::DraggingState )
+    {
+        DropIndicatorPosition pos=dropIndicatorPosition ();
+        QPen pen(palette().highlight().color() );
+        pen.setWidth(3);    
+        painter.setPen(pen);
+
+        if(pos==AboveItem)
+        {
+            QModelIndex in=indexAt( viewport()->mapFromGlobal(QCursor::pos() )  );
+            QRect rect=visualRect(in);
+            painter.drawLine(rect.topLeft(),rect.topRight());
+        }
+        else if(pos==BelowItem)
+        {
+            QModelIndex in=indexAt( viewport()->mapFromGlobal(QCursor::pos() )  );
+            QRect rect=visualRect(in);
+            painter.drawLine(rect.bottomLeft(),rect.bottomRight());
+        }
+        else if(pos==OnViewport)
+        {
+            if(model()==0)
+                return ;
+            
+            QModelIndex in=model()->index(notHide(),model()->rowCount()-1,QModelIndex()  );
+            while(indexBelow(in).isValid() )
+            {
+                in=indexBelow(in);
+            }
+            QRect rect=visualRect(in);
+            painter.drawLine(rect.bottomLeft(),rect.bottomRight());
+
+        }
+
+    }
+}
+

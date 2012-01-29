@@ -25,20 +25,20 @@ void nplDelegate::paint ( QPainter * painter, const QStyleOptionViewItem & optio
     
     painter->setRenderHint(QPainter::Antialiasing, true);
  
-//     QApplication::style()->drawPrimitive( QStyle::PE_PanelItemViewItem, &option, painter );
     if(npList->getPlayingPos()==index.row() )
     {
-	   painter->save();
+// 	   painter->save();
 	   QPointF a(option.rect.topLeft() );
 	   QPointF b(option.rect.bottomLeft() );
 	   a.setY(a.y()+option.rect.height()/3);
 	   b.setY(b.y()-option.rect.height()/3);
-		    
+
+       
 	   QLinearGradient grad( a,b );            
 	   if (option.state & QStyle::State_Selected)
 	   {
- 		  grad.setColorAt( 0.0, views::decor->palette().highlight().color().lighter(150) );        
- 		  grad.setColorAt( 0.8, views::decor->palette().highlight().color().lighter(140) );
+ 		  grad.setColorAt( 0.0, views::decor->palette().highlight().color().lighter(110) );
+ 		  grad.setColorAt( 0.8, views::decor->palette().highlight().color().lighter(100) );
 	   }
 	   else if(option.state & QStyle::State_MouseOver)
 	   {
@@ -47,22 +47,20 @@ void nplDelegate::paint ( QPainter * painter, const QStyleOptionViewItem & optio
 	   }
 	   else
 	   {
- 		  grad.setColorAt( 0.0, views::decor->palette().highlight().color().lighter() );        
- 		  grad.setColorAt( 0.7, views::decor->palette().highlight().color().lighter(130) );
+  		  grad.setColorAt( 0.0, views::decor->palette().highlight().color().lighter() );
+  		  grad.setColorAt( 0.7, views::decor->palette().highlight().color().lighter(130) );
 	   }
   // 	 grad.setSpread(QLinearGradient::ReflectSpread);
-	   painter->setOpacity(1);
+	   //painter->setOpacity(1);
  	   painter->fillRect(option.rect,grad );
 
 	   QPen pen(Qt::white);
 	   pen.setWidth(3);
 	   painter->setPen(pen);
- 	   painter->setOpacity(1);
+ 	   //painter->setOpacity(1);
    	   painter->drawRoundedRect (option.rect, 3,3);
-	   
-	   
-	   
-	   painter->restore();
+       
+// 	   painter->restore();
     }
     else
     {
@@ -74,155 +72,8 @@ void nplDelegate::paint ( QPainter * painter, const QStyleOptionViewItem & optio
     }
     
     drawContent(painter,option,index);
-    
-    drawDropIndicator(painter,option,index);
-    
+
     return ;
-/*    
-    QString text = index.data(Qt::DisplayRole).toString();
-         
-    if(option.state & QStyle::State_MouseOver)
-    {
-	   int dropIn=property("dropIn").toInt();
-	   if(dropIn!=-1 )
-	   {
-		  painter->save();
-		  QPen pen(views::decor->palette().highlight().color() );	
-		  pen.setWidth(2);	
-		  painter->setPen(pen);	
-		  
-		  if(dropIn == 1 )
-		  {
-			 painter->drawLine(rect.topLeft(),rect.topRight());
-		  }
-		  else if(dropIn == 2 )
-		  {
-			 painter->drawLine(rect.bottomLeft(),rect.bottomRight());
-		  }
-		  painter->restore();
-	   }
-    }
-    else if(index.row()==index.model()->rowCount()-1 )//if its the last index
-    {
-	   if(property("dropIn").toInt()==3 )
-	   {
-		  painter->save();
-		  QPen pen(views::decor->palette().highlight().color() );
-		  pen.setWidth(2);	
-		  painter->setPen(pen);
-		  painter->drawLine(rect.bottomLeft(),rect.bottomRight());
-		  painter->restore();
-	   }
-	   
-    }
-    
-
-    int align;
-    
-    if(index.column()==0)
-    {
-	   align=Qt::AlignCenter;
-	   painter->save();
-	   QPen pen(option.palette.linkVisited().color() );	
-	   pen.setWidth(1);	  
-	   painter->setOpacity(0.2);
-	   painter->setPen(pen);
-	   painter->drawLine(rect.topRight(),rect.bottomRight() );
-	   painter->restore();
-    }
-    else
-    {
-      	rect.setX(rect.x()+2);
-		align=Qt::AlignVCenter|Qt::AlignLeft;
-    }
-        
-    if (npList->isPlaying(index.row() ) )
-    {        
-	   if (option.state & QStyle::State_Selected)    
-	   {
-		  painter->setPen(option.palette.link().color());
-		  painter->setBrush(option.palette.link().color());
-	   }
-	   else    
-	   {
-		  painter->setPen(option.palette.linkVisited().color());
-		  painter->setBrush(option.palette.linkVisited().color());
-	   }
-	   		  
-	   font.setBold(true);
-
-	   if( index.column()==0 )
-	   {
-		  align=Qt::AlignVCenter|Qt::AlignLeft;
-		  QPolygonF pol;
-		  pol<<QPoint(10,7.5)<<QPoint(5,12)<<QPoint(5,3);
-
-		  pol.translate(option.rect.x(),option.rect.y()+2 );
-		  painter->drawPolygon(pol,Qt::WindingFill);
-		  rect.setX(rect.x()+12);
-	   }
-    }
-    else if (option.state & QStyle::State_Selected)
-    {
-        painter->setPen(option.palette.highlightedText().color());
-    }    
-    
-    painter->setFont(font);
-    if(index.column()==0 && text==QString("0") )
-    {	
-	  painter->restore();
-	  return ;
-    }
-    
-    
-    nplPointer t=npList->getTrack(index.row() );
-    
-    if(!t->isValid() )
-    {
-	 painter->setOpacity(0.5);
-    }
-    
-//     QApplication::style()->drawItemText(painter,rect,align,QApplication::palette (),true,text);
-
-    drawDisplay(painter,option,rect,text,align);
-       
-    painter->restore();
-    
-    int dropIn=property("dropIn").toInt();    
-    
-    */
-}
-
-void  nplDelegate::drawDropIndicator(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index ) const
-{
-    painter->save();
-    int dropIn=property("dropIn").toInt();         
-    if(option.state & QStyle::State_MouseOver )
-    {
-	   if(dropIn!=-1 )	
-	   {
-		  QPen pen(views::decor->palette().highlight().color() );	
-		  pen.setWidth(3);			
-		  painter->setPen(pen);	
-			 
-		  if(dropIn == 1 )
-		  {
-			 painter->drawLine(option.rect.topLeft(),option.rect.topRight());
-		  }
-		  else if(dropIn == 2 )		
-		  {
-			 painter->drawLine(option.rect.bottomLeft(),option.rect.bottomRight());
-		  }
-	   }
-    }
-    else if(dropIn==3 && index.row()==index.model()->rowCount()-1 )
-    {
-	   QPen pen(views::decor->palette().highlight().color() );	
-	   pen.setWidth(3);		
-	   painter->setPen(pen);
-	   painter->drawLine(option.rect.bottomLeft(),option.rect.bottomRight());		   
-    }    
-    painter->restore();
 }
 
 void nplDelegate::drawContent(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
@@ -250,9 +101,9 @@ void nplDelegate::drawContent(QPainter* painter, const QStyleOptionViewItem& opt
     {
 	   QString s=QString::number(track);
 	   s.append(" -  ");
-	   QRect r=option.fontMetrics.boundingRect(s);
- 	   painter->drawText( up,Qt::AlignLeft|Qt::AlignVCenter,s,&r);
- 	   up.setX(up.x()+option.fontMetrics.boundingRect(s).width() );
+	   QRect r=drawDisplay(painter,option,up,s);   
+ 	   //painter->drawText( up,Qt::AlignLeft|Qt::AlignVCenter,s,&r);
+ 	   up.setX(up.x()+r.width() );
     }
 
     QFont f=option.font;
@@ -284,11 +135,21 @@ QSize nplDelegate::sizeHint ( const QStyleOptionViewItem & option, const QModelI
     return QSize(10000,45);
 }
 
-void nplDelegate::drawDisplay(QPainter* painter, const QStyleOptionViewItem& option,QRect& rect, QString& text) const 
+QRect nplDelegate::drawDisplay(QPainter* painter, const QStyleOptionViewItem& option,QRect& rect, QString& text) const
 {
-    QString elideText=option.fontMetrics.elidedText(text,Qt::ElideRight,rect.width() );    
+    if (option.state & QStyle::State_Selected)
+    {
+        painter->setPen(Qt::white);
+    }
+    else
+    {
+        painter->setPen(Qt::black);
+    }
+    QString elideText=option.fontMetrics.elidedText(text,Qt::ElideRight,rect.width() );
     
     QRect r=option.fontMetrics.boundingRect(elideText);
-    painter->drawText( rect,Qt::AlignLeft|Qt::AlignVCenter |Qt::ElideRight, elideText,&r);  
+    painter->drawText( rect,Qt::AlignLeft|Qt::AlignVCenter |Qt::ElideRight, elideText,&r);
+
+    return r;    
 }
 

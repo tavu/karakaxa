@@ -19,7 +19,6 @@ class textEditor :public QLineEdit
         
     private:
       
-        //QLineEdit *edit;
         core::tagQueryGrt  *q;
         core::queryGrt::tagQuery tagQ;
 

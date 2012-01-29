@@ -14,8 +14,7 @@
 #include<nplaylistDelegate.h>
 
 nplaylistView::nplaylistView(QWidget *parent)
-        :views::treeView(parent),
-        onDrag(false)
+        :views::treeView(parent)
 {
     setRootIsDecorated(false);
     setAlternatingRowColors(true);
@@ -40,30 +39,6 @@ void nplaylistView::mouseDoubleClickEvent(QMouseEvent* event)
     QModelIndex index=indexAt (event->pos() );
     play(index);
     event->accept();
-}
-
-
-void nplaylistView::mousePressEvent(QMouseEvent *event)
-{
-    if (event->button() == Qt::LeftButton)
-        startPos = event->pos();
-    views::treeView::mousePressEvent(event);
-}
-
-void nplaylistView::mouseMoveEvent(QMouseEvent *event)
-{
-    if (event->buttons() & Qt::LeftButton)
-    {
-        int distance = (event->pos() - startPos).manhattanLength();
-        if (distance >= QApplication::startDragDistance())
-        {
-            performDrag();
-        }
-        else
-            views::treeView::mouseMoveEvent(event);
-    }
-    else
-        views::treeView::mouseMoveEvent(event);
 }
 
 Qt::DropActions nplaylistView::supportedDropActions () const
@@ -184,17 +159,6 @@ void nplaylistView::remove()
     }
 }
 
-
-void nplaylistView::keyPressEvent(QKeyEvent *event)
-{
-    QTreeView::keyPressEvent(event);
-    return ;
-    if (event->key()==Qt::Key_A)
-    {
-        selectAll();
-    }
-}
-
 void nplaylistView::contextMenuEvent(QContextMenuEvent *e)
 {
     if (indexAt(e->pos()).isValid() )
@@ -224,64 +188,9 @@ void nplaylistView::contextMenuEvent(QContextMenuEvent *e)
     }
 }
 
-void nplaylistView::dragEnterEvent ( QDragEnterEvent * event )
-{
-    onDrag=true;
-    QTreeView::dragEnterEvent(event);
-}
-
-void nplaylistView::dragLeaveEvent ( QDragLeaveEvent* event )
-{
-	   onDrag=false;
-        QTreeView::dragLeaveEvent ( event );
-}
-
-void nplaylistView::dropEvent ( QDropEvent* event )
-{
-	 onDrag=false;
-	 QTreeView::dropEvent(event);	 
-}
-
-void nplaylistView::drawRow ( QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index ) const
-{
-
-    if(onDrag)
-    {
-	   if(dropIndicatorPosition()==AboveItem )
-	   {
-		itemDelegate()->setProperty("dropIn",1);
-	   }
-	   else if(dropIndicatorPosition()==BelowItem )
-	   {
-		  itemDelegate()->setProperty("dropIn",2);
-	   }
-	   else
-	   {
-		  itemDelegate()->setProperty("dropIn",3);
-	   }	   
-    }
-    else
-    {
-	    itemDelegate()->setProperty("dropIn",-1);
-    }
-    QTreeView::drawRow(painter,option,index);
-}
-    
-void nplaylistView::paintEvent(QPaintEvent * event)
-{
-//      QTreeView::paintEvent(event);
-    QPainter painter(viewport());  
-    drawTree(&painter, event->region());
-   
-}
-
 
 void nplaylistView::play(const QModelIndex &index)
 {
-//     QTreeView::mouseDoubleClickEvent(event);
-//        QModelIndex index=indexAt( viewport()->mapFromGlobal(QCursor::pos() )  );
-    
-	qDebug()<<"play";
 	if(index.isValid() )
 	{
 	   engine->play(index.row() );
