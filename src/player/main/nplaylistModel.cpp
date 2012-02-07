@@ -74,7 +74,8 @@ bool nplModel::dropMimeData ( const QMimeData *data, Qt::DropAction action, int 
     if (row<0)
         row=npList->size();
 
-    if (reorderL.size()==0 )
+
+    if (views::reorderL.size()==0 )
     {
         npList->addMediaList( data->urls(),row );
     }
@@ -97,11 +98,11 @@ void nplModel::clearReorder()
 
 void nplModel::reorder(int r)
 {
-    set<int>::const_iterator it=reorderL.begin();
+    set<int>::const_iterator it=views::reorderL.begin();
 
     int n=0;
     int k=0;
-    for(;it!=reorderL.end();it++)
+    for(;it!=views::reorderL.end();it++)
     {
 	   if(*it<r )
 	   {
@@ -143,11 +144,11 @@ bool nplModel::setData(const QModelIndex& index, const QVariant& value, int role
     audioFile f(s);
     if(f.isValid() )
     {
-	f.setTag(index.column(),value);
-	if(f.error()==OK)
-	{
-	    return true;
-	}
+        f.setTag(index.column(),value);
+        if(f.error()==OK)
+        {
+            return true;
+        }
     }
     return false;
 }

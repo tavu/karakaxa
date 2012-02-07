@@ -24,11 +24,13 @@ playlistContent::playlistContent(QWidget *parent)
     treeV->setRootIsDecorated(true);
     treeV->setAnimated(true);
     
+    
     trackV=new views::treeView(this,"playlistView");
     trackV->setRatingColumn(RATING);
     trackV->setEditTriggers(QAbstractItemView::SelectedClicked);
     trackV->setNotHide(TITLE);
-    trackV->setFrameShape(QFrame::StyledPanel);    
+    trackV->setFrameShape(QFrame::StyledPanel);
+    trackV->setAcceptDrops(true);
     
     treeModel=new standardModel(this);    
              
@@ -233,7 +235,7 @@ void playlistContent::createSmpSlot()
     
     if(head(item)!=smHead)
     {
-	return;
+        return;
     }
     
     smartPlaylistCreator *c=new smartPlaylistCreator(doc,this);    
@@ -248,12 +250,12 @@ void playlistContent::createSmpSlot()
     
     if(newItem==0)
     {
-	return;
+        return;
     }
     
     if(item->type()!=FOLDER_ITEM)
     {
-	item=item->parent();	
+        item=item->parent();	
     }    
     
     item->appendRow(newItem);
@@ -282,7 +284,7 @@ void playlistContent::editSmpSlot()
 
     if(newItem==0)
     {
-	return;
+        return;
     }
     standardItem *parent=item->parent();    
         
@@ -304,25 +306,25 @@ void playlistContent::activationSlot(QModelIndex in)
     
     if(item==0)
     {
-	return;
+        return;
     }
     
     if(item->type()==SMARTPL_ITEM)
     {
-	smplaylistItem  *i= static_cast<smplaylistItem*>(item);
-	trackProxy->setSourceModel(smpModel);
-	queryGrt::abstractQuery *q=i->query();
-	quer->setQuery(q->clone() );
-	quer->select();
-	textS=item->data(0,Qt::DisplayRole).toString();
-	forward();
+        smplaylistItem  *i= static_cast<smplaylistItem*>(item);
+        trackProxy->setSourceModel(smpModel);
+        queryGrt::abstractQuery *q=i->query();
+        quer->setQuery(q->clone() );
+        quer->select();
+        textS=item->data(0,Qt::DisplayRole).toString();
+        forward();
     }
     else if(item->type()==PLAYLIST_ITEM)
     {
-	trackProxy->setSourceModel(plModel);
-	plModel->setPlPath(item->data(0,ITEM_ROLE).toString() );
-	textS=item->data(0,Qt::DisplayRole).toString();
-	forward();
+        trackProxy->setSourceModel(plModel);
+        plModel->setPlPath(item->data(0,ITEM_ROLE).toString() );
+        textS=item->data(0,Qt::DisplayRole).toString();
+        forward();
     }
     else if(item->type()==FOLDER_ITEM || item->type()==PLAYLIST_FOLDER )
     {

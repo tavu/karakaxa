@@ -6,10 +6,11 @@
 #include<QMouseEvent>
 #include<QApplication>
 #include<KUrl>
+#include <QLinkedList>
 #include<QMenu>
 #include"treeViewDelegate.h"
 #include"treeViewHeader.h"
-// #include"editTrack.h"
+#include <set>
 
 namespace views
 {
@@ -28,6 +29,7 @@ class treeView :public QTreeView
         virtual int 	ratingColumn() const;
         virtual void 	setNotHide(int n);
         virtual int	    notHide();
+        virtual Qt::DropActions supportedDropActions () const;
 
         static QList<QUrl> getUrls(const QModelIndexList &list);
 
@@ -42,6 +44,8 @@ class treeView :public QTreeView
 	   virtual void contextMenuEvent(QContextMenuEvent *e);
                void headerRepaint();
 	   virtual void leaveEvent(QEvent*)  ;
+       virtual void dropEvent ( QDropEvent * event );
+
        void paintEvent(QPaintEvent * event);
 
     protected slots:
@@ -69,5 +73,8 @@ class treeView :public QTreeView
 	
 };//class
 
+    extern std::set<int> reorderL;
+
+    
 };//namespace
 #endif

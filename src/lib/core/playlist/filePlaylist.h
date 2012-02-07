@@ -2,6 +2,9 @@
 #define ABSTRACTPLAYLIST_H
 #include<QString>
 #include"playlist.h"
+#include<QUrl>
+#include<QFile>
+#include "../func.h"
 /*
     this is an abstract interface for playlists
 */
@@ -18,22 +21,36 @@ class filePlaylist :public playlist
         static const int UNOWN_ERR=3;
 
 
-        filePlaylist(QObject *parent=0) :playlist(parent),_saveToRelative(false)
-        {            
-        }
+        filePlaylist(const QString s,QObject *parent=0)
+        :playlist(parent),_saveToRelative(false),_path(s),file(s,this)
+        {}
 
     public slots:
+        
         virtual void insertUrl(int pos,QString u)=0;
         virtual bool load()=0;
         virtual bool save()=0;
+        virtual bool rename(QString &name)
+        {
+            file.rename(name);
+            err=file.error();
+            if(err!=QFile::NoError )
+            {
+                return false;
+            }
+            _path=folder(_path)+name;
+            file.setFileName(_path);
+            return true;
+        }
+
     public:
         virtual QStringList urls() const=0;
 
 
-        virtual QString path() const=0;
-
-
-        virtual int  error() const=0;
+        QString path() const
+        {
+            return _path;
+        }
 
         bool saveToRelativePath()
         {
@@ -45,30 +62,32 @@ class filePlaylist :public playlist
             _saveToRelative=b;
         }
 
+        int error() const
+        {
+            return err;
+        }
+
 
     protected:
         bool _saveToRelative;
-        
+
+        QFile   file;
+        QString _path;
+        int     err;
     
-  protected:
+    protected:
         QString toFullPath(const QString &s) const;
+        
 };
 
 
 
 core::filePlaylist* getPlaylist(const QString &url);
+// core::filePlaylist* getPlaylist(const QUrl &url)
+// {
+//     return getPlaylist(url.toLocalFile() );
+// }
 
-
-
-
-
-
-
-
-
-
-
-    
 };
 
 

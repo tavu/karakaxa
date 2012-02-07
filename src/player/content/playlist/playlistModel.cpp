@@ -32,11 +32,11 @@ int playlistModel::columnCount ( const QModelIndex & parent ) const
 }
 
 QVariant playlistModel::data(const QModelIndex & index, int role ) const
-{       
+{    
     if(!index.isValid() || pl==0)
     {
         return QVariant();
-    }
+    }     
 
     nplPointer p=pl->item(index.row());
     if(p.isNull() )
@@ -46,7 +46,7 @@ QVariant playlistModel::data(const QModelIndex & index, int role ) const
     
     if( role == Qt::DisplayRole || role == Qt::EditRole)
     {
-        QVariant var=p->tag(index.column());
+        QVariant var=p->tag(index.column());        
         return views::pretyTag(var,(tagsEnum)index.column() );
     }
     else if(role==URL_ROLE)
@@ -109,11 +109,11 @@ void playlistModel::setPlPath(const QString &s)
        thr->wait();
 	   beginResetModel();	   
 	   delete pl;
-     }
-     else
-     {
+    }
+    else
+    {
 	   beginResetModel();
-     }
+    }
         
     pl=core::getPlaylist(s);
   
@@ -142,9 +142,15 @@ void playlistModel::playlistThr::run()
      }
 }
 
+Qt::DropActions playlistModel::supportedDropActions()
+{
+    return Qt::CopyAction | Qt::MoveAction ;
+}
+
+
 Qt::ItemFlags playlistModel::flags(const QModelIndex &index) const
 {
-    static Qt::ItemFlags ret=Qt::ItemIsDragEnabled|Qt::ItemIsEnabled|Qt::ItemIsSelectable|Qt::ItemIsEditable;
+    static const Qt::ItemFlags ret=Qt::ItemIsDragEnabled|Qt::ItemIsEnabled|Qt::ItemIsSelectable|Qt::ItemIsEditable;
     if(pl==0)
     {
         return ret & ~Qt::ItemIsEnabled;
@@ -156,9 +162,14 @@ Qt::ItemFlags playlistModel::flags(const QModelIndex &index) const
         return ret & ~Qt::ItemIsEnabled;
     }
 
-    if (index.column()==BITRATE||index.column()==LENGTH||index.column()==COUNTER)
+    if (index.column()==BITRATE||index.column()==LENGTH||index.column()==COUNTER ||p->type()==NPLSTREAM )
     {
-        return ret & ~Qt::ItemIsEditable;
+         return ret & ~Qt::ItemIsEditable;
+    }
+
+    if(!index.isValid() )
+    {
+        return Qt::ItemIsDropEnabled;
     }
 
     return ret;
@@ -166,10 +177,16 @@ Qt::ItemFlags playlistModel::flags(const QModelIndex &index) const
 
 void playlistModel::updateData()
 {
-    qDebug()<<"UPP";
     QModelIndex topLeft ,bottomRight;
     topLeft=index(0,0);
     bottomRight=index(rowCount()-1,columnCount()-1 );
     
     emit dataChanged(topLeft,bottomRight);
 }
+
+bool playlistModel::dropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column, const QModelIndex& parent)
+{
+    qDebug()<<"drop";
+    return false;
+}
+

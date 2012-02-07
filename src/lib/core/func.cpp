@@ -26,8 +26,9 @@ QString core::folder(QString path)
 {
     if(path.isEmpty() )
     {
-	return QString();
+        return QString();
     }
+    qDebug()<<"path "<<path.left(path.lastIndexOf('/') );
     return path.left(path.lastIndexOf('/') );
 }
 
@@ -49,7 +50,6 @@ bool core::isAudio(const QString &url)
 {     
     if(isPlaylist(url) )
     {
-/*	   qDebug()<<"PLL";*/
 	   return false;
     }
     
@@ -70,7 +70,7 @@ bool core::isImage(const QString &url)
     s=s.toUpper();    
     if(config->imagefiles().contains(s) )
     {
-	return true;
+        return true;
     }
     
     return false;
@@ -82,7 +82,7 @@ bool core::isDirectory(const QString &url)
 
     if (type->name() == "inode/directory")
     {
-	return true;
+        return true;
     }
     return false;
 }
@@ -97,6 +97,9 @@ bool core::isPlaylist(const QString &url)
     }
     return false;
 }
+
+
+
 
 
 

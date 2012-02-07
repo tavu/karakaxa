@@ -18,10 +18,10 @@ class nplTread :public  QThread//, public QObject
 	void setUrls(QList <QUrl> l);
 	void setPos(int num);
 	
-	void addMedia(const QString &url);
-	void addDirectory(const QString &url);
-	void addPlaylist(const QString &url);
-	void addSingleFile(const QString &url);
+	void addMedia(const QUrl &url);
+	void addDirectory(const QUrl &url);
+	void addPlaylist(const QUrl &url);
+	void addSingleFile(const QUrl &url);
     void addSingleFile(nplPointer tr);
 	void cleanUp();
 	static bool trackLessThan(nplPointer a,nplPointer b);

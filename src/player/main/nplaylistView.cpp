@@ -63,42 +63,6 @@ void nplaylistView::goToCurrentTrack()
 
 
 
-void nplaylistView::performDrag()
-{
-
-    QModelIndexList list=selectedIndexes();
-
-    if (list.isEmpty() )	return;
-
-    nplModel *m=static_cast<nplModel *>(model());
-
-    QList<QUrl> urls;
-    set<int> rowL;
-
-    for (int i=0;i<list.size();i++)
-    {
-        int r=list.at(i).row();
-        rowL.insert(r);
-
-        urls.append(KUrl(npList->getTrack(r)->path())) ;
-    }
-
-    m->setReorder(rowL);
-
-    QMimeData *mimeData = new QMimeData;
-    mimeData->setUrls(urls);
-
-
-    QDrag *drag = new QDrag(this);
-    drag->setMimeData(mimeData);
-    drag->setPixmap(views::decor->tagIcon(-1).pixmap(48,48) );
-
-    drag->exec(Qt::MoveAction);
-    selectionModel()->clear();
-    
-    m->clearReorder();
-}
-
 int nplaylistView::sizeHintForColumn(int column) const
 {
     Q_UNUSED(column);

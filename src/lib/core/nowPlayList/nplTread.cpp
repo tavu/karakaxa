@@ -30,36 +30,33 @@ void nplTread::cancel()
 
 nplTread::~nplTread()
 {
-//     statusBar.removeWidget(w);
     qDebug()<<"quit";
-//     delete w;
 }
 
 void nplTread::run()
 {
     foreach(QUrl url, urlList)
     {
-	if(!canceled)
-	{
-	    addMedia(url.toLocalFile() );
-	}
-	else
-	{
-	    return ;
-	}
-	
+        if(!canceled)
+        {
+            addMedia(url );
+        }
+        else
+        {
+            return ;
+        }
     }
 
     foreach(QString url, sList)
     {
-	if(!canceled)
-	{
-	    addMedia(url);
-	}	
-	else
-	{
-	    return ;
-	}
+        if(!canceled)
+        {
+            addMedia(KUrl(url) );
+        }
+        else
+        {
+            return ;
+        }
     }
     
     cleanUp();
@@ -74,32 +71,32 @@ void nplTread::cleanUp()
 }
 
 
-void nplTread::addMedia(const QString &url)
+void nplTread::addMedia(const QUrl &url)
 {
-    if (core::isDirectory(url) )	
+    if (core::isDirectory(url.toLocalFile()) )
     {
-	 if(list.size()>0)
-	 {
-		npList->insert(list,pos);
-		pos+=list.size();
-		list.clear();
-	 }
-      addDirectory(url);
+        if(list.size()>0)
+        {
+            npList->insert(list,pos);
+            pos+=list.size();
+            list.clear();
+        }
+        addDirectory(url);
     }
-    else if(core::isPlaylist(url) )
+    else if(core::isPlaylist(url.toLocalFile()) )
     {
       addPlaylist(url);
     }
-    else if(core::isAudio(url) )
+    else if(core::isAudio(url.toLocalFile()) || core::isStream(url) )
     {
-      addSingleFile(url);
+        addSingleFile(url);
     }
 }
 
 
-void nplTread::addPlaylist(const QString& url)
+void nplTread::addPlaylist(const QUrl& url)
 {
-    filePlaylist *pl=getPlaylist(url);
+    filePlaylist *pl=getPlaylist(url.toLocalFile());
     if(pl==0)
     {
 	   status->addError(tr("Can't load playlist") );
@@ -114,7 +111,7 @@ void nplTread::addPlaylist(const QString& url)
     delete pl;
 }
 
-void nplTread::addSingleFile(const QString& url)
+void nplTread::addSingleFile(const QUrl& url)
 {
     nplPointer tr=core::nplTrack::getNplTrack(url);
     addSingleFile(tr);
@@ -159,17 +156,15 @@ void nplTread::setPos(int num)
     pos=num;
 }
 
-void nplTread::addDirectory(const QString &url)
+void nplTread::addDirectory(const QUrl &url)
 {
 //     QDirIterator it(url,QDir::Files|QDir::NoDotAndDotDot,QDirIterator::Subdirectories);
 //     QFileInfo info;
-    QLinkedList<QString> dirs;
-    
+    QLinkedList<QString> dirs;    
     {
 	   nplList files;
-	   
-	   
-	   QDir dir(url);
+	   	   
+	   QDir dir(url.toLocalFile());
 	   QFileInfoList infoList=dir.entryInfoList(QDir::AllEntries|QDir::NoDotAndDotDot|QDir::NoSymLinks);    
 	   
 	   for (int i=0;i<infoList.size() && !canceled ;i++)
@@ -188,9 +183,7 @@ void nplTread::addDirectory(const QString &url)
 		  {
 			 dirs<<infoList.at(i).absoluteFilePath();
 		  }
-	   }
-	   
-	   qDebug()<<"ER "<<files.size();
+	   }	   
 	   
 	   qSort(files.begin(),files.end(),trackLessThan);
 	   npList->insert(files,pos);

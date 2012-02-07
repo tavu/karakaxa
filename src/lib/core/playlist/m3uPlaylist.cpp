@@ -4,20 +4,18 @@
 #include<QTextStream>
 using namespace audioFiles;
 core::m3uPlaylist::m3uPlaylist(const QString s,QObject *parent)
-        :filePlaylist(parent),file(s)
+        :filePlaylist(s,parent)
 {
-    _path=s;
 }
 
 bool core::m3uPlaylist::load()
 {
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text) )
     {
-        qDebug()<<"file does not exist";
+        status->addErrorP("can not open file "+path() );
         err=FILENOTFOUND;
         return false;
     }
-
     QTextStream in(&file);
     while (!in.atEnd() )
     {
@@ -25,8 +23,7 @@ bool core::m3uPlaylist::load()
 
         if (! line.startsWith('#') )
         {
-            list.append(line);
-            nplPointer p=nplTrack::getNplTrack(toFullPath(line) );    
+            nplPointer p=nplTrack::getNplTrack(toFullPath(line) );
             trackList.append(p);
         }
     }
@@ -39,45 +36,41 @@ bool core::m3uPlaylist::load()
 QStringList core::m3uPlaylist::urls() const
 {
     QStringList l;
-    for(int i=0;i<list.size();i++)
+    for(int i=0;i<trackList.size();i++)
     {
-        QString s=toFullPath( list[i]);
+        QString s=toFullPath( trackList[i]->path() );
         l.append(s);
     }
     return l;
 }
 
-int core::m3uPlaylist::error() const
-{
-    return err;
-}
 
 bool core::m3uPlaylist::save()
 {
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text) )
     {
         err=FILENOTFOUND;
+        status->addErrorP("file does not exist");
         return false;
     }
     
     QTextStream t( &file );
     QString f=core::folder(_path);
             
-    foreach(QString s,list)
+    foreach(nplPointer p,trackList)
     {
+        QString s=p->path();
         if (saveToRelativePath() && s.startsWith(f) )
         {
             s.replace(0,f.size(),QString() );
         }
         t<<s<<endl;
     }
-
     
     file.close();
     
     return true;
 }
-
 
 void core::m3uPlaylist::insertUrl(int pos,QString u)
 {
@@ -85,36 +78,3 @@ void core::m3uPlaylist::insertUrl(int pos,QString u)
     insert(pos,p);
 }
 
-void core::m3uPlaylist::insert(int pos, core::nplPointer p)
-{
-    if (pos>list.size() ||pos<0)
-        pos=trackList.size();
-    
-    list.insert(pos,p->path());
-    filePlaylist::insert(pos,p);
-}
-
-
-void core::m3uPlaylist::move( int from, int to )
-{
-    if (from>=list.size() ||  to>=list.size())
-    {
-        return ;	
-    }
-    else
-    {	
-      list.move(from,to);
-      filePlaylist::move(from,to);
-    }	
-}
-
-void core::m3uPlaylist::remove(int pos)
-{
-  if (pos>=list.size() )
-  {
-    return ;	
-  }
-
-  list.removeAt(pos);
-  filePlaylist::remove(pos);
-}

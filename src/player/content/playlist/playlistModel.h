@@ -18,10 +18,11 @@ class playlistModel :public  QAbstractListModel
         void setPlPath(const QString &s);
         virtual QVariant headerData ( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const;
         void contextMenuEvent(QContextMenuEvent *e);
-
-    // 	virtual KUrl url(int row) const;
+    
         virtual Qt::ItemFlags flags ( const QModelIndex & index ) const;
         bool setData( const QModelIndex & index, const QVariant & value, int role);
+        bool dropMimeData ( const QMimeData * data,Qt::DropAction action,int row, int column, const QModelIndex &parent);
+        Qt::DropActions supportedDropActions ();
 
     public slots:
         void updateData();

@@ -24,30 +24,32 @@ QVariant core::nplTrack::artist()
 
 core::nplPointer core::nplTrack::getNplTrack(const QString url)
 {
-    nplTrack *ret=0;
-    
-    if (core::isStream(url) )
-    {
-        ret=new nplStream(url);        
-    }
-    if(isAudio(url) )
-    {
-	ret=new nplFile(url);
-    }
-    
-    return nplPointer(ret);    
+    return getNplTrack(KUrl(url) );
 }
 
 core::nplPointer core::nplTrack::getNplTrack(const QUrl url)
 {
-    return getNplTrack(url.toLocalFile());
+    nplTrack *ret=0;
+
+    if (core::isStream(url.toString()) )
+    {
+        ret=new nplStream(url.toString());
+    }
+    if(isAudio(url.toString()) )
+    {
+        ret=new nplFile(url.toLocalFile() );
+    }
+
+    return nplPointer(ret);    
 }
+      
+
 
 QVariant core::nplTrack::tag(int t)
 {
     if(t==TITLE)
     {
-	return QVariant(title() );
+        return QVariant(title() );
     }
     
     return QVariant();

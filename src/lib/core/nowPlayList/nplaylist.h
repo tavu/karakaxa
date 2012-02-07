@@ -55,7 +55,7 @@ class nplaylist :public QObject
 
         int         getPlayingPos()
         {
-        return trackList.indexOf(playing,0);
+            return trackList.indexOf(playing,0);
         }
 
         int size();

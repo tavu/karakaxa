@@ -19,33 +19,12 @@ class m3uPlaylist :public filePlaylist
 
     public slots:
         void insertUrl(int pos,QString u);
-        void insert(int pos,nplPointer p);
-        void remove(int pos);
-        void move( int from, int to );
 
         bool load();
         bool save();
         
     public:
         QStringList urls() const;
-
-
-        QString path() const
-        {
-            return _path;
-        }
-
-
-
-        int error() const;
-
-    private:
-        QString _path;
-        QFile file;
-        int	err;
-
-        QStringList list;
-
 };
 };
 #endif

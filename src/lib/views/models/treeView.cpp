@@ -33,7 +33,7 @@ views::treeView::treeView(QWidget *parent,QString name)
     setSelectionBehavior(QAbstractItemView::SelectRows);
 
     setDragEnabled(true);
-    setDragDropMode( QAbstractItemView::DragOnly );
+    setDragDropMode( QAbstractItemView::DragDrop );
     setRootIsDecorated(false);
     setSortingEnabled (true);
     
@@ -117,7 +117,7 @@ void views::treeView::performDrag()
     
     if(urls.isEmpty() )
     {
-	return ;
+        return ;
     }
     
     QMimeData *mimeData = new QMimeData;
@@ -128,6 +128,8 @@ void views::treeView::performDrag()
     drag->setPixmap(QPixmap(decor->tagIcon(-1).pixmap(48,48)) );
 
     drag->exec(Qt::CopyAction);
+
+    reorderL.clear();
 }
 
 void views::treeView::setModel ( QAbstractItemModel * model )
@@ -233,7 +235,6 @@ void views::treeView::updateStarWidget()
 
 void views::treeView::commitData ( QWidget * editor ) 
 {    
-    qDebug()<<"commit";
     QModelIndexList list=selectedIndexes();
 
     QVariant var=QVariant::fromValue<QModelIndexList>(list);
@@ -245,7 +246,6 @@ void views::treeView::commitData ( QWidget * editor )
 
 void views::treeView::closeEditor ( QWidget * editor, QAbstractItemDelegate::EndEditHint hint )
 {
-    qDebug()<<"closing editor";
     QTreeView::closeEditor(editor,hint);
 }
 
@@ -318,7 +318,8 @@ QList<QUrl> views::treeView::getUrls(const QModelIndexList &list)
     foreach(QModelIndex index,list)
     {
 	   if(index.column()==k)
-	   {
+	   {        
+          reorderL.insert(index.row() );
 		  QUrl u=index.data(URL_ROLE).toUrl();
 		  
 		  if(u.isValid() )
@@ -373,3 +374,16 @@ void views::treeView::paintEvent(QPaintEvent * event)
     }
 }
 
+Qt::DropActions views::treeView::supportedDropActions () const
+{
+    // returns what actions are supported when dropping
+    return Qt::CopyAction | Qt::MoveAction;
+}
+
+void views::treeView::dropEvent(QDropEvent* event)
+{
+    QAbstractItemView::dropEvent(event);
+//     reorderL.clear();
+}
+
+std::set<int> views::reorderL;

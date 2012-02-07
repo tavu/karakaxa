@@ -11,11 +11,20 @@ core::nplStream::nplStream(QString s)
         :nplTrack(),
         url(s)
 {
+    if(s.endsWith("/") )
+    {
+        s.remove(s.size()-1,s.size()-1);
+    }
+
+    url=KUrl(s);
+    
     if (! core::isStream(url) )
     {
         ok=false;
         return ;
     }
+
+    
     mediaObject = 0;
     titleS=QObject::tr("Stream: ")+url.host();
     albumS=url.url();
@@ -55,7 +64,7 @@ void core::nplStream::getMetaData()
     QStringList l=mediaObject->metaData("TITLE");
     if (!l.isEmpty() )
     {
-	titleS=l.at(0);
+        titleS=l.at(0);
         qDebug()<<"MO "<<titleS;
     }
     l=engine->getMediaObject()->metaData("ALBUM");

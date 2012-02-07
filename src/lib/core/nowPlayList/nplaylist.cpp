@@ -237,8 +237,6 @@ void core::nplaylist::move(int from,int pos)
 {         
     if(from==pos)
 	 return ;
-  
-    qDebug()<<"POS "<<from<<" "<<pos;
     
     if(from<pos)
     {

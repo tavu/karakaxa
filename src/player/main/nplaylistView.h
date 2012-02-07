@@ -13,7 +13,7 @@ class nplaylistView :public views::treeView
     public:
 
 	   nplaylistView(QWidget *parent=0);
-	   void performDrag();
+// 	   void performDrag();
 	   Qt::DropActions supportedDropActions () const;
 	   int sizeHintForColumn(int column) const;
 	   

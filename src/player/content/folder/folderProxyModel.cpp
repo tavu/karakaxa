@@ -7,7 +7,7 @@ bool folderProxyModel::filterAcceptsRow ( int row, const QModelIndex &parent ) c
 {
     QModelIndex index=sourceModel()->index(row, 0, parent);
     QUrl u=index.data(URL_ROLE).toUrl();
-    QString path=u.toLocalFile();
+    QString path=u.toString();
     
     if(core::isAudio(path) )
     {
@@ -18,6 +18,10 @@ bool folderProxyModel::filterAcceptsRow ( int row, const QModelIndex &parent ) c
         return QSortFilterProxyModel::filterAcceptsRow(row,parent);
     }
     if( core::isDirectory(path) )
+    {
+        return QSortFilterProxyModel::filterAcceptsRow(row,parent);
+    }
+    if(core::isStream(path) )
     {
         return QSortFilterProxyModel::filterAcceptsRow(row,parent);
     }
