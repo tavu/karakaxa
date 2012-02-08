@@ -40,8 +40,8 @@ class playingInfo :public QFrame
 	core::nplPointer track;
 
     public slots:
-	void update();
-	void getInfo();
-	void setRating(int);
+        void update();
+        void getInfo();
+        void setRating(int);
 };
 #endif

@@ -13,42 +13,30 @@ scrolText::scrolText(QString s,QWidget *parent)
     
     if(_text.isEmpty())
     {
-	_text=tr("Unknown");
+        _text=tr("Unknown");
     }
-    QFontMetrics f(font);
-    sHint=f.size(Qt::TextSingleLine,_text);
-    sHint.setWidth(sHint.width()+SPACE );
-    
+    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 }
 scrolText::scrolText(QWidget *parent)
         :QWidget(parent)
 {
-    _text=tr("Unknown");
-    QFontMetrics f(font);
-    sHint=f.size(Qt::TextSingleLine,_text);
-    sHint.setWidth(sHint.width()+SPACE );
-//     single=f.size(Qt::TextSingleLine,"A");
-//     sHint=single;
+    _text=tr("Unknown");    
 }
 
 void scrolText::setText(QString s)
 {
     s=s.simplified();
     _text=s;
-    QFontMetrics f(font);    
     if(_text.isEmpty())
     {
-	_text=tr("Unknown");
-	empyText=true;
+        _text=tr("Unknown");
+        empyText=true;
     }
     else
     {
-	empyText=false;
+        empyText=false;
     }
-    sHint=f.size(Qt::TextSingleLine,_text);
-    sHint.setWidth(sHint.width()+SPACE );
-    updateGeometry();
-    repaint();
+    update();
 }
 
 inline QString scrolText::text()
@@ -59,28 +47,27 @@ inline QString scrolText::text()
 void scrolText::paintEvent(QPaintEvent *event)
 {
     QPainter painter(this);
-    painter.setFont (font);
+    painter.setFont (font());
     
     if(empyText)
     {
- 	painter.setOpacity(0.5);
+        painter.setOpacity(0.5);
     }
 
     QRect r=rect();
     r.setWidth(r.width()-3);
-    QFontMetrics fontMetrics(font);
-    QString elideText=fontMetrics.elidedText(_text,Qt::ElideRight,rect().width() );
+    QString elideText=fontMetrics().elidedText(_text,Qt::ElideRight,rect().width() );
     painter.drawText(r,Qt::AlignLeft|Qt::AlignVCenter|Qt::TextSingleLine|Qt::TextIncludeTrailingSpaces,elideText);
-
 }
 
 QSize scrolText::sizeHint() const
 {
-//     return QSize(100,10);
-    return sHint;
+    return QSize(100,10);
 }
 
 void scrolText::setBold(bool b)
 {
-    font.setBold(b);
+    QFont f=font();
+    f.setBold(b);
+    setFont(f);
 }

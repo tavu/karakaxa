@@ -16,9 +16,7 @@ public:
     void setBold(bool);
 private:
     QString _text;
-    QFont font;
     void paintEvent(QPaintEvent *event);
-    QSize sHint;
     QSize single;
     bool empyText;
     
