@@ -42,10 +42,7 @@ mainWindow::mainWindow()
 
     setIconSize(ICONZISE);
     setWindowIcon(decor->logo() );
-    
-       
-
-//     setMenuBar(0);
+           
     infoInit();
     conTreeInit();
     conViewInit();    
@@ -56,39 +53,14 @@ mainWindow::mainWindow()
     
     
     setStatusBar(new views::statusBar(this) );    
-     
-//     lockDock();
 
     connect( core::engine ,SIGNAL(stateChanged ( Phonon::State) ),this, SLOT( stateChanged ( Phonon::State) ) );
     
-//     connect(qApp,SIGNAL(aboutToQuit()) ,this,SLOT(QuitSlot() ) );
-             
-    readSettings();
     defaultContent();
+    readSettings();
+
     
     npList->loadSavedPlaylist();
-    
-    //      core::contentHdl->init(conTree,conView);
-//      core::contentHdl.loadDefault();
-
-
-    //signals
-
-
-    
-//
-//      connect(playButton, SIGNAL(clicked()), soundEngine, SLOT(playPause() ) );
-//
-//      connect(forwardButton, SIGNAL(clicked()), soundEngine, SLOT(next() ) );
-//
-//      connect(rewindButton, SIGNAL(clicked()), soundEngine, SLOT(prev() ) );
-
-//      connect(nowPl,SIGNAL(changeSong(QString)),soundEngine,SLOT(play(QString) ) );
-
-
-
-
-//      writeSettings();
 }
 
 mainWindow::~mainWindow()
@@ -121,7 +93,6 @@ inline void mainWindow::infoInit()
 {
     info=new playingInfo(this);
     info->setFixedHeight(100);
-//     info->setMinimumWidth(150);
     
     infoDock=new QDockWidget(this);
     infoDock->setWidget(info);
@@ -376,14 +347,12 @@ void mainWindow::closeEvent(QCloseEvent *event)
 
 void mainWindow::writeSettings()
 {
-    qDebug()<<"Save";
     KSharedConfigPtr config=core::config->configFile();
     KConfigGroup group( config, "MainWindow" );
     group.writeEntry("geometry", QVariant(saveGeometry() ) );
     group.writeEntry("volume", QVariant(engine->volume() ) );
     group.writeEntry( "state", QVariant(saveState() ) );
     group.writeEntry( "layoutLocked", QVariant(lockLayout->isChecked() ) );
-//     group.writeEntry( "infoDockHeight", QVariant(info->height()) );
     group.config()->sync();
 
   
@@ -395,11 +364,9 @@ void mainWindow::readSettings()
     KConfigGroup group( config, "MainWindow" );
     restoreGeometry(group.readEntry("geometry",QByteArray() ) );
     lockLayout->setChecked(group.readEntry("layoutLocked",false) );
-    engine->setVolume(group.readEntry("volume",0.5 ));
-    
-//     int infoHeight=group.readEntry( "infoDockHeight",0 );
-    
+    engine->setVolume(group.readEntry("volume",0.5 ));        
     restoreState(group.readEntry("state",QByteArray()) );
+
     if(lockLayout->isChecked() )
     {
 	   lockDock();
@@ -408,11 +375,9 @@ void mainWindow::readSettings()
 
 void mainWindow::createTrayIcon()
 {
-     trayIcon=new QSystemTrayIcon(decor->logo(),this);
-     QMenu *trayIconMenu = new QMenu(this);
-//      QAction *quitAction = new QAction(KIcon("application-exit"), tr("&Quit"), this);
-//      connect(quitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
-    
+    trayIcon=new QSystemTrayIcon(decor->logo(),this);
+    QMenu *trayIconMenu = new QMenu(this);
+
     trayIconMenu->addAction(volumeB->action());
     trayIconMenu->addSeparator();
     trayIconMenu->addAction(previousAction);    
@@ -420,17 +385,13 @@ void mainWindow::createTrayIcon()
     trayIconMenu->addAction(nextAction);    
     trayIconMenu->addSeparator();    
     trayIconMenu->addAction(quitAction);
-    
+         
+    trayIcon = new QSystemTrayIcon(this);
+    trayIcon->setContextMenu(trayIconMenu);
+    trayIcon->setIcon(decor->logo());
      
-     trayIcon = new QSystemTrayIcon(this);
-     trayIcon->setContextMenu(trayIconMenu);
-     trayIcon->setIcon(decor->logo());
-     
-     connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),this, SLOT(iconActivated(QSystemTrayIcon::ActivationReason) ) );     
-     trayIcon->show();
-     
-     
-     
+    connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),this, SLOT(iconActivated(QSystemTrayIcon::ActivationReason) ) );
+    trayIcon->show();
 }
 
 void mainWindow::iconActivated(QSystemTrayIcon::ActivationReason reason)
@@ -477,10 +438,7 @@ void mainWindow::createMenus()
     KHelpMenu *helpMenu=new KHelpMenu(this,KCmdLineArgs::aboutData(),false);
     KMenu *s_helpMenu=helpMenu->menu();
     helpMenu->action( KHelpMenu::menuHelpContents )->setVisible( false );    
-//     helpMenu->action( KHelpMenu::menuWhatsThis )->setVisible( false );
-//     helpMenu->action( KHelpMenu::menuAboutApp )->setVisible( false );       
     menuBar()->addMenu(s_helpMenu);
-
 }
 
 // void mainWindow::keyPressEvent(QKeyEvent* event)

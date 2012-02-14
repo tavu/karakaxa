@@ -84,7 +84,6 @@ class mainWindow :public KMainWindow
 
 
         void writeSettings();
-    // 	bool _fullScreen;
         void lockDock();
         void unlockDock();
 
