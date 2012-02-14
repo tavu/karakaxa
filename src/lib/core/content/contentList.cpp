@@ -35,17 +35,16 @@ void core::contentList::addContent(core::abstractContent* c)
     uniqueContent *uc=dynamic_cast<uniqueContent*>(c);
     if(uc!=0)
     {
-	if(uniqueContentMap[uc->uniqueName()] !=0)
-	{
-	    return ;
-	}
-	uniqueContentMap.insert(uc->uniqueName(),c);
+        if(uniqueContentMap[uc->uniqueName()] !=0)
+        {
+            return ;
+        }
+        uniqueContentMap.insert(uc->uniqueName(),c);
     }
     
     contents.append(c);
     
-    emit contentAdded(c) ;
-    
+    emit contentAdded(c) ;    
     c->loaded();
 }
 
@@ -59,7 +58,7 @@ void core::contentList::removeContent(int pos)
 {
     if(pos<0||pos>=contents.size() )
     {
-	return ;
+        return ;
     }        
     
     abstractContent *p=contents[pos];
@@ -70,24 +69,37 @@ void core::contentList::removeContent(int pos)
     uniqueContent *uc=dynamic_cast<uniqueContent*>(p);
     if(uc!=0)
     {
-	uniqueContentMap.remove(uc->uniqueName() );
+        uniqueContentMap.remove(uc->uniqueName() );
     }
     
     history.removeAll(p);
     
     if(previous==p)
     {
-	previous=0;
+        previous=0;
     }
     if(currentContent()==p)
     {
-	back();
+        back();
     }
     
     emit contentRemoved(p);
     
     p->deleteLater();;  
 }
+
+void core::contentList::clear()
+{
+    foreach(abstractContent *p,contents)
+    {        
+        p->unloaded();
+        delete p;
+    }
+    contents.clear();
+    uniqueContentMap.clear();
+}
+
+
 
 bool core::contentList::back()
 {
@@ -109,5 +121,5 @@ bool core::contentList::forward()
 
 namespace core
 {
-    contentList *contList;
+     contentList *contList;
 }

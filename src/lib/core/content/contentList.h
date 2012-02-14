@@ -30,6 +30,7 @@ class contentList :public QObject
 	}
 	
 	void addContent(core::abstractContent *c);
+    
 	abstractContent* contentFromPos(int i)
 	{
 	    if(i<0||i>=contents.size() )
@@ -41,6 +42,7 @@ class contentList :public QObject
 	}
 	
 	void removeContent(core::abstractContent *p);
+    void clear();
 	
 	void removeContent(int pos);
 	
@@ -49,19 +51,19 @@ class contentList :public QObject
 	bool forward();
 	
     private:
-	QList<core::abstractContent*> contents;
-	core::abstractContent *current;
-	core::abstractContent *previous;
-	QMap<QString ,core::abstractContent *> uniqueContentMap;
-	contentHistory history;
+        QList<core::abstractContent*> contents;
+        core::abstractContent *current;
+        core::abstractContent *previous;
+        QMap<QString ,core::abstractContent *> uniqueContentMap;
+        contentHistory history;
 	
 	void setCurrentContentP(core::abstractContent *p,int n);
 	
     signals:
-	void contentAdded(core::abstractContent *c);
-	void contentChanged(core::abstractContent *c);
-	void contentRemoved(core::abstractContent *c);
-	
+        void contentAdded(core::abstractContent *c);
+        void contentChanged(core::abstractContent *c);
+        void contentRemoved(core::abstractContent *c);
+
 };
 
 extern contentList *contList;

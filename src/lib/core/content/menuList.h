@@ -7,21 +7,21 @@ namespace core
   
 class abstractMenu;
 
-class menuList
+class menuList :public QObject
 {
     public:
-	menuList(){}
-	void addMenu(core::abstractMenu* m);
-	void removeMenu(core::abstractMenu* m);
+        menuList(QObject *parent=0):QObject(parent){}
+        void addMenu(core::abstractMenu* m);
+        void removeMenu(core::abstractMenu* m);
 	
 
 	//returns a menu with appropriate action for tha url.
 	//the reciver must check if the menu is empty and must delete the menu later.
 
-	void contextMenu(QMenu* menu, QUrl u,const QList<QUrl> &urls);
+        void contextMenu(QMenu* menu, QUrl u,const QList<QUrl> &urls);
 	
     private:
-	QList<abstractMenu*>menus;
+        QList<abstractMenu*>menus;
 };
 
 

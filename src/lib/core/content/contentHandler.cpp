@@ -10,16 +10,20 @@
 #define MAX_HS 20
 #define SIZE QSize(20,20)
 
-core::contentHandler::contentHandler()
+core::contentHandler::contentHandler(QObject *parent) :QObject(parent)
 {
-    core::contList=new contentList;
-    core::contView=new contentView;
-    core::menuL=new menuList;
+    contList=new contentList(this);
+    contView=new contentView(this);
+    menuL=new menuList(this);
+    connect(qApp,SIGNAL(aboutToQuit()),this,SLOT(clear() ));
 }
 
 core::contentHandler::~contentHandler()
 {
-    delete contList;
+//     contList->clear();
+//     delete contView;
+//     delete contList;    
+//     delete menuL;
 }
 
 /*

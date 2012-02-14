@@ -18,6 +18,10 @@
 #include <QPainter>
 Q_DECLARE_METATYPE(QModelIndexList)
 
+views::treeView::~treeView()
+{
+    writeSettings();
+}
 
 views::treeView::treeView(QWidget *parent,QString name)
         :QTreeView(parent),_ratingColumn(-1)
@@ -43,7 +47,7 @@ views::treeView::treeView(QWidget *parent,QString name)
     {
         setObjectName(name);
         readSettings();
-	   connect(qApp,SIGNAL(commitDataRequest(QSessionManager &) ),this,SLOT(writeSettings() ) );
+        connect(qApp,SIGNAL(commitDataRequest(QSessionManager &) ),this,SLOT(writeSettings() ) );
     }
     setEditTriggers(QAbstractItemView::SelectedClicked);
 }
@@ -167,7 +171,6 @@ int views::treeView::ratingColumn() const
 
 void views::treeView::writeSettings()
 {
-
     if (objectName().isEmpty() )
     {
         return ;

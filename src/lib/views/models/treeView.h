@@ -21,7 +21,7 @@ class treeView :public QTreeView
     public:
 
         treeView(QWidget *parent=0,QString name=QString());
-
+        ~treeView();
         virtual void	setModel ( QAbstractItemModel * model );
 
         virtual void	mousePressEvent(QMouseEvent *event);

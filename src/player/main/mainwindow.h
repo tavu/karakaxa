@@ -38,84 +38,82 @@ class mainWindow :public KMainWindow
 	
     private:
 	
-	QSystemTrayIcon	*trayIcon;
-	QToolBar 	*toolBar;
-	nplaylistView 	*nplView;
-	contentTree 	*conTree;
-	QStackedWidget 	*conView;
-	playingInfo	*info;
+        QSystemTrayIcon	*trayIcon;
+        QToolBar 	*toolBar;
+        nplaylistView 	*nplView;
+        contentTree 	*conTree;
+        QStackedWidget 	*conView;
+        playingInfo	*info;
 
-	QDockWidget 	*conTreeDock;
-	QDockWidget 	*conViewDock;
-	QDockWidget 	*nplViewDock;
-	QDockWidget      *infoDock;
+        QDockWidget 	*conTreeDock;
+        QDockWidget 	*conViewDock;
+        QDockWidget 	*nplViewDock;
+        QDockWidget      *infoDock;
 
-	nplModel *nowPlayListM;
-	
-	//for the toolBar
-	QAction *playAction;
-	QAction *nextAction;
-	QAction *previousAction;	
-	views::volumeBar *volumeB;
-	Phonon::SeekSlider *slider;
-	
-	QLabel *timeLabel;
-	QLabel *progressLabel;    
+        nplModel *nowPlayListM;
 
-	//for the menu bar
-	QMenu *playerMenu;
-	QMenu *settingsMenu;
-	QMenu *helpMenu;
-	QMenu *viewMenu;
-	
-	QAction *lockLayout;
-	QAction *quitAction;
-	
+        //for the toolBar
+        QAction *playAction;
+        QAction *nextAction;
+        QAction *previousAction;
+        views::volumeBar *volumeB;
+        Phonon::SeekSlider *slider;
 
-	//fuctions
-	inline void toolBarInit();
-	inline void nplViewInit();
-	inline void conTreeInit();
-	inline void conViewInit();
-	inline void defaultContent();
-	inline void infoInit();
-	inline void createTrayIcon();
-	inline void createMenus();
-	
+        QLabel *timeLabel;
+        QLabel *progressLabel;
 
-	void writeSettings();
-// 	bool _fullScreen;
-	void lockDock();
-	void unlockDock();
-	
-	void readSettings();
+        //for the menu bar
+        QMenu *playerMenu;
+        QMenu *settingsMenu;
+        QMenu *helpMenu;
+        QMenu *viewMenu;
 
-	void closeEvent(QCloseEvent *event);
-// 	void keyPressEvent ( QKeyEvent * event );
-	
-	
+        QAction *lockLayout;
+        QAction *quitAction;
+
+
+        //fuctions
+        inline void toolBarInit();
+        inline void nplViewInit();
+        inline void conTreeInit();
+        inline void conViewInit();
+        inline void defaultContent();
+        inline void infoInit();
+        inline void createTrayIcon();
+        inline void createMenus();
+
+
+        void writeSettings();
+    // 	bool _fullScreen;
+        void lockDock();
+        void unlockDock();
+
+        void readSettings();
+
+        void closeEvent(QCloseEvent *event);
+    // 	void keyPressEvent ( QKeyEvent * event );
+
+        
     public slots:
-	void stateChanged(Phonon::State state);
-	void iconActivated(QSystemTrayIcon::ActivationReason reason);
-	void QuitSlot()
-	{
-	    hide();
-	    writeSettings();
-	}
-	
-	void changeLockLayout(bool b)
-	{
-	   if(b)
-	   {
-		    lockDock();
-	   }
-	   else
-	   {
-		  unlockDock();
-	   }
-	}
+        void stateChanged(Phonon::State state);
+        void iconActivated(QSystemTrayIcon::ActivationReason reason);
+        void QuitSlot()
+        {
+            hide();
+            writeSettings();
+        }
 
-
+        void changeLockLayout(bool b)
+        {
+            if(b)
+            {
+                    lockDock();
+            }
+            else
+            {
+                unlockDock();
+            }
+        }
 };
 
 

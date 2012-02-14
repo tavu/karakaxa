@@ -13,6 +13,7 @@ class contentView :public QObject
     Q_OBJECT
     public:
       explicit contentView(QObject* parent = 0);
+      ~contentView();
       void setView(QTreeView *v)
       {
         view=v;
@@ -38,12 +39,12 @@ class contentView :public QObject
         
 	
     private slots:
-	void contentActivated(core::abstractContent *content);
-	void contentAdded(core::abstractContent *content);
-	void contentRemoved(core::abstractContent *content);
-	
+        void contentActivated(core::abstractContent *content);
+        void contentAdded(core::abstractContent *content);
+        void contentRemoved(core::abstractContent *content);
+        
     public slots:
-	void activateContFromIndex(const QModelIndex &in);
+        void activateContFromIndex(const QModelIndex &in);
 };
 
 extern contentView *contView;  

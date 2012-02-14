@@ -21,29 +21,29 @@ class content_history
 class contentHistory
 {
     public:
-	contentHistory();
-	void addHistory(content_history &h);
-	void addHistory(core::abstractContent *c);
-	void setMaxSize(int n)
-	{
-	    _maxSize=n;
-	}
-	
-	void removeAll(abstractContent *c);
-	
-	int maxSize()
-	{
-	    return _maxSize;
-	}
-	
-	content_history back();
-	
-	content_history forword();
+        contentHistory();
+        void addHistory(content_history &h);
+        void addHistory(core::abstractContent *c);
+        void setMaxSize(int n)
+        {
+            _maxSize=n;
+        }
+
+        void removeAll(abstractContent *c);
+
+        int maxSize()
+        {
+            return _maxSize;
+        }
+
+        content_history back();
+
+        content_history forword();
 	
     private:
-	QLinkedList<content_history> history;
-	int _maxSize;
-	QLinkedList<content_history>::iterator curentPos;
+        QLinkedList<content_history> history;
+        int _maxSize;
+        QLinkedList<content_history>::iterator curentPos;
 };
 };
 #endif

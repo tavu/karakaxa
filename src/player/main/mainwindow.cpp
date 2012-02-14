@@ -32,7 +32,7 @@
 using namespace views;
 using namespace core;
 
-
+#include<iostream>
 
 mainWindow::mainWindow()
         :KMainWindow()
@@ -61,7 +61,7 @@ mainWindow::mainWindow()
 
     connect( core::engine ,SIGNAL(stateChanged ( Phonon::State) ),this, SLOT( stateChanged ( Phonon::State) ) );
     
-    connect(qApp,SIGNAL(aboutToQuit()) ,this,SLOT(QuitSlot() ) );
+//     connect(qApp,SIGNAL(aboutToQuit()) ,this,SLOT(QuitSlot() ) );
              
     readSettings();
     defaultContent();
@@ -90,9 +90,13 @@ mainWindow::mainWindow()
 
 //      writeSettings();
 }
+
 mainWindow::~mainWindow()
 {
-//      writeSettings();
+    
+      writeSettings();
+      views::cleanUp();
+      core::cleanUp();
 //     delete viewport;
 
 }
@@ -372,7 +376,7 @@ void mainWindow::closeEvent(QCloseEvent *event)
 
 void mainWindow::writeSettings()
 {
-    hide();
+    qDebug()<<"Save";
     KSharedConfigPtr config=core::config->configFile();
     KConfigGroup group( config, "MainWindow" );
     group.writeEntry("geometry", QVariant(saveGeometry() ) );
@@ -433,11 +437,11 @@ void mainWindow::iconActivated(QSystemTrayIcon::ActivationReason reason)
 {
     if(reason==QSystemTrayIcon::Trigger||reason==QSystemTrayIcon::DoubleClick)
     {
-	 setVisible(!isVisible());
-	 if(isVisible() )
-	 {	
-		activateWindow();
-	 }
+        setVisible(!isVisible());
+        if(isVisible() )
+        {
+            activateWindow();
+        }
     }  
 }
 

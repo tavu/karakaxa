@@ -5,6 +5,7 @@
 // #include"coreNamespace.h"
 #include<kmimetype.h>
 #include"core.h"
+#include <kapplication.h>
 
 QString core::titleFromPath(const QString &path)
 {
@@ -134,7 +135,7 @@ void core::init()
       db->createConnection();
       engine =new soundEngine();
       npList=new nplaylist();
-      contentHdl=new contentHandler();
+      contentHdl=new contentHandler(qApp );
       
       
       
@@ -144,12 +145,13 @@ void core::init()
 }
 
 void core::cleanUp()
-{   
+{
+//     contentHdl->clear();
     delete status;
     delete npList;
     delete engine;
     delete db;
-    delete config;    
+    delete config;
     delete contentHdl;
     
 }

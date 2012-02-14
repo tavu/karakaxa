@@ -16,6 +16,13 @@ core::contentView::contentView(QObject* parent): QObject(parent)
     connect(core::contList,SIGNAL(contentRemoved(core::abstractContent*)),this,SLOT(contentRemoved(core::abstractContent*)) );
 }
 
+core::contentView::~contentView()
+{
+//     delete stack;
+//     delete _toolBar;
+}
+
+
 QFrame* core::contentView::mainView() const
 {
 //     QFrame *f=new QFrame();
@@ -31,7 +38,7 @@ void core::contentView::activateContFromIndex(const QModelIndex& in)
 {
     if(!in.isValid() )
     {
-	 return;
+        return;
     }
     
     view->setCurrentIndex(in);
