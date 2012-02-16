@@ -31,6 +31,7 @@ playlistContent::playlistContent(QWidget *parent)
     trackV->setNotHide(TITLE);
     trackV->setFrameShape(QFrame::StyledPanel);
     trackV->setAcceptDrops(true);
+    trackV->setDragDropMode(QAbstractItemView::DragDrop);
     
     treeModel=new standardModel(this);    
              
@@ -58,7 +59,7 @@ playlistContent::playlistContent(QWidget *parent)
     treeModel->appendRow(plHead);    
     
     
-    plModel=new playlistModel(this);
+    plModel=new views::filePlaylistModel(this);
     smpModel=new standardModel(this);
     
     smpModel->setHeadItem(smItem);

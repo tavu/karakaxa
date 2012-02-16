@@ -16,6 +16,7 @@ bool core::m3uPlaylist::load()
         err=FILENOTFOUND;
         return false;
     }
+    nplList l;
     QTextStream in(&file);
     while (!in.atEnd() )
     {
@@ -24,11 +25,14 @@ bool core::m3uPlaylist::load()
         if (! line.startsWith('#') )
         {
             nplPointer p=nplTrack::getNplTrack(toFullPath(line) );
-            trackList.append(p);
+            l.append(p);
         }
     }
-    file.close();
     
+    file.close();
+    qDebug()<<"L "<<l.size();
+    insert(0,l);
+        
     return true;
 }
 

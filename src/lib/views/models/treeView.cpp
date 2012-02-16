@@ -280,20 +280,20 @@ void views::treeView::play(const QModelIndex &index)
     int row=index.row();
     for (int i=0;i<model()->rowCount(index.parent() );i++)
     {
-	 QModelIndex in=model()->index(i,0,index.parent() );
-	 if(in.isValid() )
-	 {
-	    QUrl u=in.data(URL_ROLE).toUrl();
-	    core::nplPointer t=core::nplTrack::getNplTrack(u);
-	    if(!t.isNull() && t->isValid() )
-	    {
-		  list<<t;
-	    }
-	    else if(in.row()<index.row() )
-	    {
-		  row--;
-	    }
-	 }
+        QModelIndex in=model()->index(i,0,index.parent() );
+        if(in.isValid() )
+        {
+            QUrl u=in.data(URL_ROLE).toUrl();
+            core::nplPointer t=core::nplTrack::getNplTrack(u);
+            if(!t.isNull() && t->isValid() )
+            {
+                list<<t;
+            }
+            else if(in.row()<index.row() )
+            {
+                row--;
+            }
+        }
     }
     
     core::npList->clear();
@@ -340,38 +340,68 @@ void views::treeView::paintEvent(QPaintEvent * event)
     QPainter painter(viewport());    
     drawTree(&painter, event->region());
 
-    if(state() ==QAbstractItemView::DraggingState )
+    if(state() ==QAbstractItemView::DraggingState && showDropIndicator() )
     {
         DropIndicatorPosition pos=dropIndicatorPosition ();
-        QPen pen(palette().highlight().color() );
-        pen.setWidth(3);    
-        painter.setPen(pen);
 
         if(pos==AboveItem)
         {
             QModelIndex in=indexAt( viewport()->mapFromGlobal(QCursor::pos() )  );
             QRect rect=visualRect(in);
+            rect.setX(viewport()->rect().x() );
+            rect.setWidth(viewport()->rect().width());
+
+            QPen pen(palette().highlight().color() );
+            pen.setWidth(3);
+            painter.setPen(pen);
+
             painter.drawLine(rect.topLeft(),rect.topRight());
         }
         else if(pos==BelowItem)
         {
             QModelIndex in=indexAt( viewport()->mapFromGlobal(QCursor::pos() )  );
             QRect rect=visualRect(in);
+            rect.setX(viewport()->rect().x() );
+            rect.setWidth(viewport()->rect().width());
+
+            QPen pen(palette().highlight().color() );
+            pen.setWidth(3);
+            painter.setPen(pen);
+
             painter.drawLine(rect.bottomLeft(),rect.bottomRight());
-        }
+        }        
         else if(pos==OnViewport)
         {
             if(model()==0)
                 return ;
             
-            QModelIndex in=model()->index(notHide(),model()->rowCount()-1,QModelIndex()  );
+            QModelIndex in=model()->index(model()->rowCount()-1,notHide(),QModelIndex()  );
             while(indexBelow(in).isValid() )
             {
                 in=indexBelow(in);
-            }
+            }            
             QRect rect=visualRect(in);
-            painter.drawLine(rect.bottomLeft(),rect.bottomRight());
+            rect.setX(viewport()->rect().x() );
+            rect.setWidth(viewport()->rect().width());
 
+            QPen pen(palette().highlight().color() );
+            pen.setWidth(3);
+            painter.setPen(pen);
+
+
+            painter.drawLine(rect.bottomLeft(),rect.bottomRight());
+        }
+        else if(pos==OnItem)
+        {
+            QModelIndex in=indexAt( viewport()->mapFromGlobal(QCursor::pos() )  );
+            QRect rect=visualRect(in);
+
+            QPen pen(palette().highlight().color() );
+            pen.setWidth(2);
+            painter.setPen(pen);
+
+            
+            painter.drawRect(rect);
         }
 
     }
@@ -385,8 +415,11 @@ Qt::DropActions views::treeView::supportedDropActions () const
 
 void views::treeView::dropEvent(QDropEvent* event)
 {
+    if(event->source()!=this)
+    {
+        reorderL.clear();
+    }
     QAbstractItemView::dropEvent(event);
-//     reorderL.clear();
 }
 
 std::set<int> views::reorderL;

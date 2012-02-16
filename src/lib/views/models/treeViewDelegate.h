@@ -30,11 +30,11 @@ class treeViewDelegate :public QStyledItemDelegate
         void updateEditorGeometry(QWidget *editor,const QStyleOptionViewItem &option, const QModelIndex &/* index */) const;
 	
         int ITEM_HEIGH;
-        int FONT_SIZE;
+//         int FONT_SIZE;
         QSize _sizeHint;
-        QFont font;
-        mutable QPen pen;
-        bool _paintValidRole;
+//         QFont font;
+//         mutable QPen pen;
+//         bool _paintValidRole;
 	
     private slots:
         void commitEditor();

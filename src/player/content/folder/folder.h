@@ -18,8 +18,7 @@
 #include"folderProxyModel.h"
 #include"myFileSystemModel.h"
 #include<KLineEdit>
-
-#include"../playlist/playlistModel.h"
+#include<models/filePlaylistModel.h>
 //#include "folderView.h"
 // #include <kfileplacesmodel.cpp>
 
@@ -30,6 +29,10 @@ class folderContent :public core::abstractContent
     Q_OBJECT
     public:
         folderContent(QWidget *parent=0);
+        ~folderContent()
+        {
+            writeSettings();
+        }
         const QList<QString> getChildren();
 
         QString name() const;
@@ -41,32 +44,30 @@ class folderContent :public core::abstractContent
 
 
     private:
-        void loaded();
-        void unloaded();        
-        void readSettings();
-        void saveStates();
-        folderContextMenu *m;
-        myFileSystemModel *model;
-        KDirModel *dirModel;
-        folderProxyModel  *proxyM;
+        void                loaded();
+        void                unloaded();        
+        void                readSettings();
+        void                saveStates();
+        
+        folderContextMenu   *m;
+        myFileSystemModel   *model;
+        KDirModel           *dirModel;
+        folderProxyModel    *proxyM;
 
-        KFilePlacesModel *navigatorModel;
-        views::treeView *view;
-    //     treeViewHeader *viewHeader;
-        KUrlNavigator *navigator;
+        KFilePlacesModel    *navigatorModel;
+        views::treeView     *view;    
+        KUrlNavigator       *navigator;
 
-
-    //     KToolBar *toolBar;
         //actions
-        QAction *upAction;
-        QAction *backAction;
-        QAction *forwardAction;
+        QAction             *upAction;
+        QAction             *backAction;
+        QAction             *forwardAction;
 
-        KLineEdit *searchLine;
-        playlistModel *playlistM;
+        KLineEdit           *searchLine;
+        views::filePlaylistModel      *playlistM;
 
-        QByteArray folderModelState;
-        QByteArray playlistMState;
+        QByteArray          folderModelState;
+        QByteArray          playlistMState;
         
     public slots:
         void cd(KUrl);
@@ -81,9 +82,6 @@ class folderContent :public core::abstractContent
         void showUrl(KUrl);
         void showContexMenuSlot(QModelIndex index, QModelIndexList list);
         void edit();
-    
-
-    
 };
 
 class folderContextMenu :public core::abstractMenu

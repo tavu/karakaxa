@@ -24,11 +24,11 @@
 Q_DECLARE_METATYPE(QModelIndexList)
 
 views::treeViewDelegate::treeViewDelegate(QAbstractItemView *parent)
-    :QStyledItemDelegate(parent),    
-    ITEM_HEIGH(18),
-    FONT_SIZE(11)
+    :QStyledItemDelegate(parent) ,
+    ITEM_HEIGH(18)
+//     FONT_SIZE(11)
 {
-    font.setPointSize(FONT_SIZE);            
+//     font.setPointSize(FONT_SIZE);            
 }
 
 void views::treeViewDelegate::paint ( QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index ) const
@@ -36,7 +36,8 @@ void views::treeViewDelegate::paint ( QPainter * painter, const QStyleOptionView
     painter->save();
     painter->setRenderHint(QPainter::Antialiasing, true);
      
-	painter->setOpacity(0.8);    
+	painter->setOpacity(0.8);
+    QPen pen;
     pen.setWidth(2);
     pen.setColor(option.palette.window().color() );
     painter->setPen(pen);		
@@ -46,7 +47,7 @@ void views::treeViewDelegate::paint ( QPainter * painter, const QStyleOptionView
     
 	painter->save();
     
-    painter->setFont(font);
+//     painter->setFont(font);
 
     QApplication::style()->drawPrimitive( QStyle::PE_PanelItemViewItem, &option, painter );
 

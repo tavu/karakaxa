@@ -28,6 +28,7 @@ class filePlaylist :public playlist
     public slots:
         
         virtual void insertUrl(int pos,QString u)=0;
+//         virtual void insertUrls(int pos,QStringList l)=0;
         virtual bool load()=0;
         virtual bool save()=0;
         virtual bool rename(QString &name)

@@ -8,6 +8,7 @@
 #include"models/treeViewHeader.h"
 #include"models/urlRole.h"
 #include"models/trackModel.h"
+#include"models/filePlaylistModel.h"
 #include"volumeBar/volumeBar.h"
 #include"editors/textEditor.h"
 #include"actionMenu.h"

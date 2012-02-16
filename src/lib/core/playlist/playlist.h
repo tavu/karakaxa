@@ -64,10 +64,10 @@ class playlist :public QObject
         void tracksInserted(int,int);
         //the first argument is tha possition and the second the number of entries.
         void aboutToRemoveTracks(int,int);        
-        void trackRemoved(int,int);
+        void tracksRemoved(int,int);
          //the first argument is tha possition the second the number of entries and the thierd the destination.
         void aboutToMoveTrack(int,int,int);
-        void trackMoved(int ,int,int);
+        void tracksMoved(int ,int,int);
 
         void aboutToClear();
         void cleared();

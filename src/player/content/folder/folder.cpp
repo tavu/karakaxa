@@ -128,7 +128,7 @@ void folderContent::showUrl(KUrl url)
         //due to a bug the view does not make the hidden columns visible again if we just change the sourceModel on the proxyM
         //we set the model on the view to 0 and then set the proxyM again
         
-        playlistM=new playlistModel(this);        
+        playlistM=new views::filePlaylistModel(this);
         playlistM->setPlPath(url.toLocalFile());        
         proxyM->setSourceModel(playlistM);
         view->setRatingColumn(RATING);

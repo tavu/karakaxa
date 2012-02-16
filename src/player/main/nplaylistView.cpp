@@ -139,6 +139,7 @@ void nplaylistView::contextMenuEvent(QContextMenuEvent *e)
 	   menu->addAction(duplicateAction);
 	 
 	   QMenu *m=new QMenu(tr("More"),menu );
+
 	   m->setPalette(menu->palette());
 	   menu->addMenu(m);
 	   

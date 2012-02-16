@@ -85,9 +85,10 @@ void core::playlist::clearEvent(core::playlist::clearEv* event)
 }
 
 void core::playlist::insertEvent(core::playlist::insertEv* event)
-{
+{   
     int pos=event->pos();
     nplList l=event->list();
+    qDebug()<<"pos "<<pos<<" SIZE "<<l.size();
 
     if(pos<0 || pos>trackList.size() )
     {
@@ -101,6 +102,7 @@ void core::playlist::insertEvent(core::playlist::insertEv* event)
     }
     
     emit aboutToInsertTracks(pos,l.size() );
+    trackList.reserve(l.size());
     for(int i=0;i<l.size();i++)
     {
        trackList.insert (pos+i,l[i] );
@@ -136,7 +138,7 @@ void core::playlist::moveEvent(core::playlist::moveEv* event)
     {
        trackList.move(pos,dest);       
     }
-    emit trackMoved(pos,num,dest);
+    emit tracksMoved(pos,num,dest);
     event->accept();
 }
 
@@ -161,7 +163,7 @@ void core::playlist::removeEvent(core::playlist::removeEv* event)
     {
         trackList.removeAt(pos);
     }
-    emit trackRemoved(pos,num);
+    emit tracksRemoved(pos,num);
 
     event->accept();
 

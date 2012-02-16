@@ -2,13 +2,13 @@
 #define PLAYLIST_CONTENT_H
 
 #include<core.h>
-#include<views.h>
+#include<models/filePlaylistModel.h>
+#include<viewsFunc.h>
 
 #include<KIcon>
 #include<QStackedWidget>
 #include<QAction>
 
-#include"playlistModel.h"
 #include"smartPlaylistCreator/smartPlaylistCreator.h"
 
 // #include"myStandardModel.h"
@@ -19,6 +19,7 @@
 #include<KLineEdit>
 #include<core.h>
 #include<QSortFilterProxyModel>
+#include<views.h>
 
 
 class playlistContent :public core::abstractContent
@@ -37,44 +38,43 @@ class playlistContent :public core::abstractContent
 	  
 	  
     private:
-        QAction 		*backAction;
-        QAction 		*forwardAction;
-        QStackedWidget 	*stack;
+        QAction 		        *backAction;
+        QAction 		        *forwardAction;
+        QStackedWidget       	*stack;
 
-        QTreeView		*treeV;
-        views::treeView	*trackV;
-        playlistModel  	*plModel;
-        standardModel	*smpModel;
+        QTreeView		        *treeV;
+        views::treeView	        *trackV;
+        views::filePlaylistModel  	*plModel;
+        standardModel	        *smpModel;
 
-        standardModel	*treeModel;
-        playlistFolder	*plHead;
-        folderItem		*smHead;
+        standardModel	        *treeModel;
+        playlistFolder	        *plHead;
+        folderItem		        *smHead;
 
         QSortFilterProxyModel	*proxyM;
         QSortFilterProxyModel	*trackProxy;
 
-        QLabel 		iconL;
-        QLabel		textL;
-        QString		textS;
+        QLabel 		            iconL;
+        QLabel		            textL;
+        QString		            textS;
 
         //actions
-        QAction 		*removeAction;
-        QAction		*addFolderAction;
-        QAction		*createSmpAction;
-        QAction		*editSmpAction;
-        QAction 		*renameAction;
+        QAction 		        *removeAction;
+        QAction		            *addFolderAction;
+        QAction		            *createSmpAction;
+        QAction		            *editSmpAction;
+        QAction 		        *renameAction;
+    
+        QAction		            *searchAction;
 
-        QAction		*searchAction;
+        KLineEdit 		        *searchLine;
 
-        KLineEdit 		*searchLine;
+        QDomDocument 		    doc;
 
-        QDomDocument 		doc;
+        bool			        needUpdate;
+        void 			        toolBarInit();
 
-        bool			needUpdate;
-
-        void 			toolBarInit();
-
-        core::filesQueryGrt	*quer;
+        core::filesQueryGrt	    *quer;
         views::trackModelItem	*smItem;
 	  
     public slots:
