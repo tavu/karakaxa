@@ -66,10 +66,9 @@ void nplTread::cleanUp()
 {
     if(!list.isEmpty() )
     {
-      npList->insert(list,pos);
+      npList->insert(pos,list);
     }
 }
-
 
 void nplTread::addMedia(const QUrl &url)
 {
@@ -77,7 +76,7 @@ void nplTread::addMedia(const QUrl &url)
     {
         if(list.size()>0)
         {
-            npList->insert(list,pos);
+            npList->insert(pos,list);
             pos+=list.size();
             list.clear();
         }
@@ -103,11 +102,11 @@ void nplTread::addPlaylist(const QUrl& url)
 	   return;
     }
     
-    pl->load();	
+    pl->load();
     for (int i=0;i<pl->size() && !canceled;i++)    
     {            
 	   addSingleFile(pl->item(i) );
-    }
+    }    
     delete pl;
 }
 
@@ -133,7 +132,7 @@ void nplTread::addSingleFile(nplPointer tr)
 
     if(list.size()>=size )
     {
-        npList->insert(list,pos);
+        npList->insert(pos,list);
         pos+=list.size();
         list.clear();
     }  
@@ -158,8 +157,6 @@ void nplTread::setPos(int num)
 
 void nplTread::addDirectory(const QUrl &url)
 {
-//     QDirIterator it(url,QDir::Files|QDir::NoDotAndDotDot,QDirIterator::Subdirectories);
-//     QFileInfo info;
     QLinkedList<QString> dirs;    
     {
 	   nplList files;
@@ -170,26 +167,26 @@ void nplTread::addDirectory(const QUrl &url)
 	   for (int i=0;i<infoList.size() && !canceled ;i++)
 	   {
 		  if(core::isAudio(infoList.at(i).absoluteFilePath() ) )
-		  {		  
+		  {
 			 nplPointer tr=core::nplTrack::getNplTrack(infoList.at(i).absoluteFilePath() );
 			 if(!tr.isNull() )
 			 {
 				files<<tr;
-				audioFile file(url);
+				audioFile file(infoList.at(i).absoluteFilePath());
 				file.load();
-			 }		
+			 }
 		  }
 		  else if(core::isDirectory(infoList.at(i).absoluteFilePath()) )	 
 		  {
 			 dirs<<infoList.at(i).absoluteFilePath();
 		  }
-	   }	   
+       }
 	   
 	   qSort(files.begin(),files.end(),trackLessThan);
-	   npList->insert(files,pos);
+	   npList->insert(pos,files);
 	   pos+=files.size();    
     }
-	
+
 	foreach(QString s,dirs)
 	{
 		addDirectory(s);

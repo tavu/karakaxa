@@ -77,11 +77,11 @@ void songView::play(const QModelIndex index)
     core::nplList list;
     for (int i=0;i<model()->rowCount();i++)
     {
-	  QModelIndex index=model()->index(i,0);
+        QModelIndex index=model()->index(i,0);
          list<<core::nplTrack::getNplTrack(model()->data(index,URL_ROLE).toUrl() );
     }
     core::npList->clear();
-    core::npList->insert(list,0);
+    core::npList->insert(0,list);
     
     core::engine->play(index.row() );
 }

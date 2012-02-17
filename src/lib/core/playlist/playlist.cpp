@@ -88,7 +88,6 @@ void core::playlist::insertEvent(core::playlist::insertEv* event)
 {   
     int pos=event->pos();
     nplList l=event->list();
-    qDebug()<<"pos "<<pos<<" SIZE "<<l.size();
 
     if(pos<0 || pos>trackList.size() )
     {

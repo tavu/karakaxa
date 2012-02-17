@@ -9,28 +9,39 @@
 // #include"../../random.cpp"
 #include<QApplication>
 #include"../status/playerStatus.h"
+#include"../config/config.h"
 
 
-using namespace core;
+// using namespace core;
 core::nplaylist::nplaylist()
-        :QObject(),
+        :playlist(),
         totalLength(0)
 {
     circle=true;
     qRegisterMetaType<nplList>("nplList");
     
-    		
     KSharedConfigPtr config=core::config->configFile();	
     KConfigGroup group( config, "nowPlaylist" );	
     rememberPl=group.readEntry( "rememberPl", false);
-    
-    
-    
-    connect(this,SIGNAL(insertSig(nplList,int)),this,SLOT(insertSlot(nplList,int)),Qt::QueuedConnection);
-    connect(this,SIGNAL(removeSig(int)),this,SLOT(removeSlot(int)),Qt::QueuedConnection);    
+
     connect(engine,SIGNAL(trackChanged(QString) ),this,SLOT(informTrack() ),Qt::QueuedConnection );
-    connect(qApp,SIGNAL(aboutToQuit()),this,SLOT(prepareToQuit()) );
+//     connect(qApp,SIGNAL(aboutToQuit()),this,SLOT(prepareToQuit()) );
 }
+
+core::nplaylist::~nplaylist()
+{
+    prepareToQuit();
+}
+
+void nplaylist::setRememberPlaylist(bool b)
+{
+    rememberPl=b;
+    KSharedConfigPtr config=core::config->configFile();
+    KConfigGroup group( config, "nowPlaylist" );
+    group.writeEntry( "rememberPl", QVariant(rememberPl));
+    group.config()->sync();
+}
+
 
 void core::nplaylist::prepareToQuit()
 {
@@ -62,108 +73,9 @@ void core::nplaylist::loadSavedPlaylist()
     }
 }
 
-
-core::nplaylist::~nplaylist()
-{
-}
-
-nplPointer core::nplaylist::getPlayingTrack()
+nplPointer core::nplaylist::getPlayingTrack() const
 {
     return playing;
-}
-
-void core::nplaylist::insert(nplList list,int pos)
-{  
-    if(QThread::currentThread()==core::mainThr() )
-    {
-        insertSlot(list,pos);
-    }
-    else
-    {
-        emit (insertSig(list,pos) );
-    }
-}
-
-
-void core::nplaylist::insertSlot(nplList list, int pos)
-{
-
-    if (pos>trackList.size()|| pos<0 )	pos=trackList.size();
-
-    if (list.isEmpty())
-    {
-         
-        return ;
-    }
-    
-    int newPos=pos;
-    
-    model->beginInsertRows(QModelIndex(), pos,pos+list.size()-1 );
-    for(int i=0;i<list.size();i++)
-    {
-	   
-	   trackList.insert (newPos,list[i] );		
-	   totalLength+=list[i]->tag(LENGTH).toInt();
-	   newPos++;
-	   /*
-	   if(!list[i].isNull() && list[i]->isValid() )
-	   {
-		  newPos++;
-		  trackList.insert (newPos,list[i] );
-		  totalLength+=list[i]->tag(LENGTH).toInt();
-	   }
-	   */
-    }
-    
-    model->endInsertRows();
-
-//     if(newPos-pos<list.size() )
-//     {
-// 	   core::status->addError(tr("Some media coulbn't be inserted") );
-//     }
-	
-    emit( inserted(newPos-pos ) );
-    return ;
-}
-
-nplPointer core::nplaylist::getTrack(int pos)
-{
-    nplPointer ret;
-     
-    if( pos >= trackList.size() )
-    {
-         
-        return  ret;
-    }
-    ret= trackList.at(pos);
-     
-    return    ret;
-}
-
-void core::nplaylist::remove(const int n)
-{
-    emit(removeSig(n) );
-}
-
-
-void core::nplaylist::removeSlot(const int pos)
-{
-     
-    if (pos>=trackList.size() )
-    {         
-        return;
-    }
-
-    model->beginRemoveRows(QModelIndex(), pos,pos);
-    nplPointer t=trackList.takeAt(pos);
-    if (t==playing)	playing.clear();
-    model-> endRemoveRows();
-    
-    emit removed(1);
-    
-    t.clear();     
-
-    return;
 }
 
 void core::nplaylist::duplicate(const int pos)
@@ -175,37 +87,7 @@ void core::nplaylist::duplicate(const int pos)
     }
     nplList list;
     list<<nplTrack::getNplTrack(u);
-    insert(list,pos );
-}
-
-void core::nplaylist::clear()
-{
-     
-//     QList<nplPointer>::iterator it;
-// 
-//     int size=trackList.size()-1;
-//     emit(aboutToClear(size) );
-// 
-//     //mutex prevend from accesing the deleted data
-//     for (it= trackList.begin(); it != trackList.end(); ++it)
-//     {
-//         delete *it;
-//     }    
-    emit(cancelThreads() );
-    model->beginResetModel ();
-    trackList.clear();
-    totalLength=0;
-    model-> endResetModel();
-    emit (cleared() );
-     
-}
-
-int core::nplaylist::size()
-{
-
-    int ret=trackList.size();
-     
-    return ret;
+    insert(pos,list);
 }
 
 void core::nplaylist::addMediaList(const QList <QUrl> &urlList,int pos)
@@ -217,7 +99,6 @@ void core::nplaylist::addMediaList(const QList <QUrl> &urlList,int pos)
     thr->setPos(pos);
 
     thr->start();
-
 }
 
 void core::nplaylist::addMediaList(const QStringList &list,int pos)
@@ -229,30 +110,9 @@ void core::nplaylist::addMediaList(const QStringList &list,int pos)
     thr->setPos(pos);
 
     thr->start();
-
 }
 
-
-void core::nplaylist::move(int from,int pos)
-{         
-    if(from==pos)
-	 return ;
-    
-    if(from<pos)
-    {
-	   model->beginMoveRows(QModelIndex(), from, from, QModelIndex(),pos+1);
-    }
-    else 
-    {
-	 model->beginMoveRows(QModelIndex(), from, from, QModelIndex(),pos);
-    }
-            
-    trackList.move(from,pos);   
-    
-    model->endMoveRows();
-}
-
-QString core::nplaylist::url(int n)
+QString core::nplaylist::url(int n) const
 {
      
     if (n>=trackList.size() )
@@ -328,9 +188,7 @@ QString core::nplaylist::next()
 }
 
 QString core::nplaylist::previous()
-{
-     
-
+{     
     int k=trackList.indexOf(playing,0);
     QString ret;
     
@@ -348,10 +206,8 @@ QString core::nplaylist::previous()
 }
 
 
-bool core::nplaylist::isPlaying(const int pos)
-{
-     
-
+bool core::nplaylist::isPlaying(const int pos) const
+{     
     if (pos>=trackList.size() )
     {
          
@@ -372,7 +228,7 @@ bool core::nplaylist::isPlaying(const int pos)
     }
 }
 
-QStringList core::nplaylist::getList()
+QStringList core::nplaylist::getList() const
 {
     QStringList list;
 
@@ -383,16 +239,16 @@ QStringList core::nplaylist::getList()
     return list;
 }
 
-int core::nplaylist::getLength()
+int core::nplaylist::getLength() const
 {
     return totalLength;
 }
 
 void core::nplaylist::suffle()
 {
-    model->beginResetModel();
+    
     core::randomShuffle(trackList.begin(),trackList.size() );
-    model-> endResetModel();     
+    
 }
 
 void core::nplaylist::informTrack()

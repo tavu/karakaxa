@@ -11,39 +11,39 @@ class nplTread :public  QThread//, public QObject
 {
     Q_OBJECT
     public:
-	nplTread();
-	~nplTread();
+        nplTread();
+        ~nplTread();
 
-	void setStringL(QStringList l);
-	void setUrls(QList <QUrl> l);
-	void setPos(int num);
-	
-	void addMedia(const QUrl &url);
-	void addDirectory(const QUrl &url);
-	void addPlaylist(const QUrl &url);
-	void addSingleFile(const QUrl &url);
-    void addSingleFile(nplPointer tr);
-	void cleanUp();
-	static bool trackLessThan(nplPointer a,nplPointer b);
+        void setStringL(QStringList l);
+        void setUrls(QList <QUrl> l);
+        void setPos(int num);
+
+        void addMedia(const QUrl &url);
+        void addDirectory(const QUrl &url);
+        void addPlaylist(const QUrl &url);
+        void addSingleFile(const QUrl &url);
+        void addSingleFile(nplPointer tr);
+        void cleanUp();
+        static bool trackLessThan(nplPointer a, nplPointer b);
 	
     protected:
-	void run();
+        void run();
 
     private:
-	QList <QUrl> urlList;
-	QStringList  sList;
-	int pos;	
+        QList <QUrl> urlList;
+        QStringList  sList;
+        int pos;
 
 
 	
-	QWidget *w;
-	bool canceled;
-	int size;
-	
-	nplList list;
+        QWidget *w;
+        bool canceled;
+        int size;
+
+        nplList list;
 	
     public slots:
-	void cancel();
+        void cancel();
 // 	void insert(int, nplTrack*);
 // 	void added(int);
 

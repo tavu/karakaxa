@@ -22,15 +22,12 @@ nplaylistView::nplaylistView(QWidget *parent)
     setDragDropOverwriteMode(false);
     setSelectionMode(QAbstractItemView::ExtendedSelection);
     setUniformRowHeights(true);
-//     setHeaderHidden(true);
     setDropIndicatorShown(true);
     setDragEnabled( true );
 
     _removeAction=new QAction(KIcon("list-remove"),tr("&Remove track"),this);
     connect(_removeAction,SIGNAL(triggered( bool)),this,SLOT(remove() ) );
     connect( engine ,SIGNAL(trackChanged ( QString) ),viewport(), SLOT(update()) );
-    
-    
 }
 
 void nplaylistView::mouseDoubleClickEvent(QMouseEvent* event)
@@ -100,14 +97,14 @@ void nplaylistView::duplicate()
 	   }
     }
 
-    npList->insert(l,list.last().row()+1);
+    npList->insert(list.last().row()+1,l);
 }
 
 void nplaylistView::remove()
 {
     QList<nplTrack*> l;
     QModelIndexList list=selectedIndexes();
-    set<int> rowL;
+    std::set<int> rowL;
 
     for(int i=0;i<list.size();i++)
     {
@@ -115,7 +112,7 @@ void nplaylistView::remove()
     }
     int n=0;
     
-    set<int>::iterator it;
+    std::set<int>::iterator it;
     for(it=rowL.begin();it!=rowL.end();it++)
     {
         npList->remove(*it-n);
@@ -141,15 +138,20 @@ void nplaylistView::contextMenuEvent(QContextMenuEvent *e)
 	   QMenu *m=new QMenu(tr("More"),menu );
 
 	   m->setPalette(menu->palette());
-	   menu->addMenu(m);
+	  
 	   
 	   QModelIndexList list=selectedIndexes();
 	   QList<QUrl>urls=views::treeView::getUrls(list);
 	   
 	   core::contentHdl->contextMenu(m,currentIndex().data(URL_ROLE).toUrl(),urls);
-		  
+
+       if(!m->isEmpty() )
+       {
+            menu->addMenu(m);
+       }
 	   menu->exec( e->globalPos() );
-	   delete menu;
+       delete m;
+       delete menu;
     }
 }
 

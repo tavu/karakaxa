@@ -30,8 +30,9 @@ bool core::m3uPlaylist::load()
     }
     
     file.close();
-    qDebug()<<"L "<<l.size();
-    insert(0,l);
+    insertEv *e=new insertEv(0,l);
+    insertEvent(e);
+    delete e;
         
     return true;
 }

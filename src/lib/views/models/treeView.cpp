@@ -297,7 +297,7 @@ void views::treeView::play(const QModelIndex &index)
     }
     
     core::npList->clear();
-    core::npList->insert(list,0);
+    core::npList->insert(0,list);
     
     if(list.size() != model()->rowCount(index.parent() ) )
     {

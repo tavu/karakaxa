@@ -14,6 +14,7 @@
 #include"nplAbstractModel.h"
 #include"../engine/engine.h"
 #include"../config/config.h"
+#include"../playlist/playlist.h"
 /*
 This class creates a list tha saves the track that is about to be played.
 Every track is represented by a nplTrack poinder.
@@ -29,7 +30,7 @@ namespace core
 {
 class nplAbstractModel;
 
-class nplaylist :public QObject
+class nplaylist :public playlist
 {
     Q_OBJECT
 
@@ -44,40 +45,36 @@ class nplaylist :public QObject
         nplaylist();
         ~nplaylist();
 
-        nplPointer  getTrack(int pos);
+        nplPointer  getTrack(int pos) const
+        {
+            return item(pos);
+        }
+
         void        addMediaList(const QList <QUrl> &urlList,int pos);
         void        addMediaList(const QStringList &list,int pos);
-        QString     url(int n);
-        bool        isPlaying(const int pos);
-        QStringList getList();
-        int         getLength();
-        nplPointer  getPlayingTrack();
+        QString     url(int n) const;
+        bool        isPlaying(const int pos) const;
+        QStringList getList() const;
+        int         getLength() const;
+        nplPointer  getPlayingTrack() const;
 
-        int         getPlayingPos()
+        int         getPlayingPos() const
         {
             return trackList.indexOf(playing,0);
         }
-
-        int size();
+        
         inline void setModel(core::nplAbstractModel *model)
         {
-            this->model=model;
         }
 
 
-        bool rememberPlaylist()
+        bool rememberPlaylist() const
         {
             return rememberPl;
         }
 
-        void setRememberPlaylist(bool b)
-        {
-            rememberPl=b;
-            KSharedConfigPtr config=core::config->configFile();
-            KConfigGroup group( config, "nowPlaylist" );
-            group.writeEntry( "rememberPl", QVariant(rememberPl));
-            group.config()->sync();
-        }
+        void setRememberPlaylist(bool b);
+
 
         void loadSavedPlaylist();
 
@@ -95,50 +92,34 @@ class nplaylist :public QObject
 	
     private:
 
-        nplAbstractModel *model;
-
         int totalLength;
-        nplList trackList;
         nplPointer playing;
-        QMutex mutex;
-        bool circle;
+        nplPointer prevTrack;
 
+        bool circle;
+        bool rememberPl;
+        
         QString next();
         QString playUrl(int n);
         QString previous();
 
-        bool rememberPl;
-	
 
     signals:
-        void insertSig(nplList,int );
-        void removeSig(const int);
         void cancelThreads();
-
-        void inserted(int);
-        void removed(int);
-        void cleared();
-
         void repeatChanged(bool);
 
     public slots:
-        void insert(nplList list,int pos);
-        void move(int from,int pos);
-        void remove(const int);
-        void clear();
 
         void repeatToggle()
         {
             setRepeat(!circle);
         }
+
         void duplicate(const int pos);
         void suffle();
 
     private slots:
         void prepareToQuit();
-
-        void insertSlot(nplList list,int pos);
-        void removeSlot(const int);
         void informTrack();
 	
 };
