@@ -85,19 +85,23 @@ void views::treeView::mouseMoveEvent(QMouseEvent *event)
         int distance = (event->pos() - startPos).manhattanLength();
         if (distance >= QApplication::startDragDistance())
         {
+//	    QTreeView::mouseMoveEvent(event);
+	    event->accept();
             performDrag();
+//	    event->accept();
         }
         else
         {
             headerRepaint();
-            QTreeView::mouseMoveEvent(event);
+  //          QTreeView::mouseMoveEvent(event);
         }
     }
     else
     {
         headerRepaint();
-        QTreeView::mouseMoveEvent(event);
+    //    QTreeView::mouseMoveEvent(event);
     }
+    event->accept();
 }
 
 void views::treeView::reset()
