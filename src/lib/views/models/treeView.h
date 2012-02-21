@@ -51,7 +51,7 @@ class treeView :public QTreeView
     protected slots:
         virtual void commitData ( QWidget * editor ) ;
         virtual void rowsInserted ( const QModelIndex & parent, int start, int end );
-
+        
 	
     public slots:
        virtual void reset();

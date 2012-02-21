@@ -13,7 +13,7 @@ void standardModel::setHeadItem(standardItem* h)
 {
     if(head!=0)
     {
-  	delete head;
+        delete head;
     }
       
     h->setParent(this);
@@ -156,11 +156,11 @@ bool standardModel::hasChildren(const QModelIndex& parent) const
     standardItem *item=head;
     if(parent.isValid() )
     {
-	item=itemFromIndex(parent);
-	if(item==0)
-	{
-	    return false;
-	}    
+        item=itemFromIndex(parent);
+        if(item==0)
+        {
+            return false;
+        }
     }
     
     return item->hasChildren();
@@ -171,13 +171,13 @@ QModelIndex standardModel::parent(const QModelIndex& index) const
     standardItem *item=itemFromIndex(index);    
     if(item==0)
     {
-	return QModelIndex();
+        return QModelIndex();
     }
     
     item=item->parent();
     if(item==head || item==0)
     {
-	return QModelIndex();
+        return QModelIndex();
     }
     return indexFromItem(item,0);
     

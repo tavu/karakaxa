@@ -42,7 +42,7 @@ configureContent::configureContent(QWidget *parent)
 
 void configureContent::scanButtonActive()
 {
-    if(db->state()==database::NORMAL)
+    if(db->state()==NORMAL)
     {
         scanB->setDisabled(false);
         updateB->setDisabled(false);
@@ -183,14 +183,14 @@ void configureContent::removeLibraryFolder()
 
 void configureContent::scanLibrary()
 {
-    core::scanThread *sc=new scanThread(core::database::RESCAN);
+    core::scanThread *sc=new scanThread(core::RESCAN);
     sc->setDirs(db->getLibraryFolders());
     sc->scan();
 }
 
 void configureContent::updateLibrary()
 {
-    core::scanThread *sc=new scanThread(core::database::UPDATE);
+    core::scanThread *sc=new scanThread(core::UPDATE);
     sc->setDirs(db->getLibraryFolders());
     sc->scan();
 }

@@ -16,7 +16,6 @@ class filePlaylistModel :public playlistModel
         {
             core::filePlaylist *pl=core::getPlaylist(s);
             setPlaylist(pl);
-            pl->load();
         }
         bool dropMimeData ( const QMimeData * data,Qt::DropAction action,int row, int column, const QModelIndex &parent)
         {

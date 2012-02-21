@@ -10,7 +10,7 @@
 #include"libraryImpScan.h"
 #include"libraryImpUpdate.h"
 
-core::scanThread::scanThread(database::dbState t,QObject *parent)
+core::scanThread::scanThread(dbState t,QObject *parent)
         :databaseScanner(t,parent),
         _step(20),
         importer(0)
@@ -52,7 +52,7 @@ void core::scanThread::findAllItemN()
 void core::scanThread::init()
 {
     label->setText(tr("Starting") );
-    if(type()== database::RESCAN)
+    if(type()== RESCAN)
     {
         importer = new libraryImpScan();
     }

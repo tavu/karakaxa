@@ -24,7 +24,7 @@ class statusBar :public QStatusBar
         int timeOut;
         QLabel *label;
         QTimer *timer;
-        core::database::dbScanner scanner;
+        core::dbScanner scanner;
         
         
     public slots:

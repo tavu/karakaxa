@@ -41,12 +41,12 @@ bool views::trackItem::setData(const QVariant& value, int column, int role)
 {
     if(role==Qt::DisplayRole ||role==Qt::EditRole )
     {
-	file.setTag(column,value);
-	if(file.error()==OK)
-	{
-// 	    dataChanged(column,column);
-	    return true;
-	}
+        file.setTag(column,value);
+        if(file.error()==OK)
+        {
+    // 	    dataChanged(column,column);
+            return true;
+        }
     }
     
     return false;
@@ -63,15 +63,21 @@ QVariant views::trackModelItem::headerData(int section, Qt::Orientation orientat
 {
     if(role==Qt::DisplayRole)
     {
-	if (section==TRACK)
-	{
-	    return QVariant(QString("#") );
-	}
-	return QVariant(tagName( (tagsEnum)section) );
+        if (section==TRACK)
+        {
+            return QVariant(QString("#") );
+        }
+        return QVariant(tagName( (tagsEnum)section) );
     }
+
+    if(role==Qt::EditRole)
+    {
+        return QVariant(tagName( (tagsEnum)section) );
+    }
+
     if(role==Qt::DecorationRole)
     {
-	return QVariant(decor->tagIcon( section) );
+        return QVariant(decor->tagIcon( section) );
     }
 
     return standardItem::headerData(section,orientation,role);

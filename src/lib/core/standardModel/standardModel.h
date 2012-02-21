@@ -184,12 +184,14 @@ class standardModel :public QAbstractItemModel
 	  public:
 	    int columnCount() const
 	    {
-		return 1;
+            return 1;
 	    }
       
 	    QVariant data (int column, int role = Qt::UserRole + 1 ) const 
 	    {
-		return QVariant();
+            Q_UNUSED(column)
+            Q_UNUSED(role)
+            return QVariant();
 	    }    
 	};	
       

@@ -245,10 +245,8 @@ int core::nplaylist::getLength() const
 }
 
 void core::nplaylist::suffle()
-{
-    
-    core::randomShuffle(trackList.begin(),trackList.size() );
-    
+{    
+   shuffle();   
 }
 
 void core::nplaylist::informTrack()

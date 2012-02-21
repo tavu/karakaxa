@@ -1,9 +1,6 @@
 #ifndef NPLMODEL_H
 #define NPLMODEL_H
 
-#include<QAbstractItemModel>
-#include<nowPlayList/nplAbstractModel.h>
-#include<QAbstractItemView>
 #include<models/playlistModel.h>
 #include <set>
 
@@ -18,12 +15,16 @@ class nplModel :public views::playlistModel
 {
     Q_OBJECT
     public:
-        nplModel( QObject * parent = 0);        
-        bool dropMimeData (const QMimeData * data, Qt::DropAction action, int row, int column, const QModelIndex &parent);
+        nplModel( QObject * parent = 0);
+        ~nplModel()
+        {
+            pl=0;
+        }
+//         bool dropMimeData (const QMimeData * data, Qt::DropAction action, int row, int column, const QModelIndex &parent);
 
 
 //         void clearReorder();
 //         void setReorder(set<int> &l);
-        void reorder(int);
+//         void reorder(int r,const std::set<int> &rows);
 };
 #endif

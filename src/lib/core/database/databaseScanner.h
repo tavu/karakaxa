@@ -1,5 +1,9 @@
-#include "database.h"
+#ifndef DATABASESCANNER_H
+#define DATABASESCANNER_H
+
+#include "dbTypes.h"
 #include<QThread>
+#include<QSharedPointer>
 namespace core
 {
 
@@ -7,20 +11,17 @@ class databaseScanner :public QThread
 {
     public:
         friend class database;
-        databaseScanner(database::dbState t,QObject *parent=0) :QThread(parent)
+        databaseScanner(dbState t,QObject *parent=0) :QThread(parent)
         {
             _type=t;
         }
 
-        database::dbState type()
+        dbState type()
         {
             return _type;
         }
 
-        void scan()
-        {
-            db->scan(this);
-        }
+        void scan();
         //void stop()=0;
 
         virtual QWidget *widget()
@@ -37,8 +38,10 @@ class databaseScanner :public QThread
 
         
     private:
-        database::dbState _type;
+        dbState _type;
 };
+typedef QSharedPointer<core::databaseScanner> dbScanner;
 
 }
 
+#endif

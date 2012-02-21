@@ -61,7 +61,6 @@ void views::treeView::rowsInserted(const QModelIndex& parent, int start, int end
     
 }
 
-
 void views::treeView::mouseDoubleClickEvent(QMouseEvent* event)
 {        
     QTreeView::mouseDoubleClickEvent(event);
@@ -87,10 +86,6 @@ void views::treeView::mouseMoveEvent(QMouseEvent *event)
         if (distance >= QApplication::startDragDistance())
         {
             performDrag();
-            //after the drag we get no mouse released event due to a bug
-            //we  create that event manualy
-            QMouseEvent *e=new QMouseEvent(QEvent::MouseButtonRelease,QPoint(-1,-1),Qt::NoButton,Qt::LeftButton,Qt::NoModifier);
-            mouseReleaseEvent (e);
         }
         else
         {
@@ -132,6 +127,21 @@ void views::treeView::performDrag()
     drag->setPixmap(QPixmap(decor->tagIcon(-1).pixmap(48,48)) );
 
     drag->exec(Qt::CopyAction);
+
+    if(reorderL.size() == 0)
+    {
+        return ;
+    }
+
+    QItemSelection sel;    
+    std::set<int>::const_iterator it=reorderL.begin();
+    for(;it!=reorderL.end();it++)
+    {
+        QItemSelection s;
+        s.select(model ()->index (*it, 0),model ()->index (*it, model()->columnCount()-1));
+        sel.merge(s,QItemSelectionModel::SelectCurrent);
+    }
+//     selectionModel()->select (sel,QItemSelectionModel::Select );
 
     reorderL.clear();
 }
@@ -186,7 +196,6 @@ void views::treeView::readSettings()
 {
     KSharedConfigPtr config=core::config->configFile();
     KConfigGroup group( config, objectName() );    
-//     byteArr=group.readEntry( "state", QByteArray() );
     header()->restoreState(group.readEntry( "state", QByteArray() ) );
 }
 

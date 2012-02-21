@@ -24,6 +24,7 @@ nplaylistView::nplaylistView(QWidget *parent)
     setUniformRowHeights(true);
     setDropIndicatorShown(true);
     setDragEnabled( true );
+    setEditTriggers(QAbstractItemView::NoEditTriggers);
 
     _removeAction=new QAction(KIcon("list-remove"),tr("&Remove track"),this);
     connect(_removeAction,SIGNAL(triggered( bool)),this,SLOT(remove() ) );
@@ -88,16 +89,21 @@ void nplaylistView::duplicate()
     QModelIndexList list=selectedIndexes();
     qSort(list.begin(), list.end());
 
+    QItemSelection sel; 
     foreach(QModelIndex index,list)
     {
-	   if(index.column()==0 )
-	   {
-		  nplPointer p=npList->getTrack(index.row());
-		  l<<nplPointer(p->clone() );
-	   }
+        if(index.column()==0 )
+        {
+            nplPointer p=npList->getTrack(index.row());
+            l<<nplPointer(p->clone() );
+        }
     }
 
-    npList->insert(list.last().row()+1,l);
+    int row=currentIndex().row()+1;
+    npList->insert(row,l);
+    QItemSelection s;
+    s.select(model()->index(row,0),model()->index(row+l.size()-1,0) );
+    selectionModel()->select (s,QItemSelectionModel::SelectCurrent | QItemSelectionModel::Rows );
 }
 
 void nplaylistView::remove()

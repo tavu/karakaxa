@@ -19,7 +19,7 @@ class scanThread :public  databaseScanner//, public QObject
 {
     Q_OBJECT
     public:
-        scanThread(database::dbState b,QObject *parent=0);
+        scanThread(dbState b,QObject *parent=0);
         ~scanThread();
         int importedItemNum();
 

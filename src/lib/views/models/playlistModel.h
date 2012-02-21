@@ -2,6 +2,7 @@
 #define PLAYLISTMODEL_H
 
 #include<QAbstractListModel>
+#include<set>
 #include"../../core/playlist/playlist.h"
 
 namespace views
@@ -24,12 +25,9 @@ class playlistModel :public  QAbstractListModel
         bool dropMimeData ( const QMimeData * data,Qt::DropAction action,int row, int column, const QModelIndex &parent);
         Qt::DropActions supportedDropActions () const;
 
-        QStringList mimeTypes () const
-        {
-            QStringList l;
-            l<<"text/uri-list";
-            return l;
-        }
+        QStringList mimeTypes () const;
+//         QModelIndex index ( int row, int column, const QModelIndex & parent = QModelIndex() ) const;
+        QModelIndex parent ( const QModelIndex & index ) const;
 
     public slots:
         void updateData();
@@ -37,6 +35,7 @@ class playlistModel :public  QAbstractListModel
     protected:
         core::playlist *pl;
         void connectPl();
+        virtual void reorder(int r,const std::set<int> &rows);
 
     protected slots:
         void beginInsertTracks(int first,int size)
@@ -71,6 +70,19 @@ class playlistModel :public  QAbstractListModel
         {
             endResetModel();
         }
+
+        bool acceptDrops () const
+        {
+            return _acceptDrops;
+        }
+        void setAcceptDrops ( bool on )
+        {
+            _acceptDrops=on;
+        }
+
+    private:
+        bool _acceptDrops;
+
 };
 
 }//namespace

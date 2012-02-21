@@ -18,6 +18,7 @@ nplModel::nplModel( QObject * parent)
     setPlaylist(npList);
 }
 
+/*
 bool nplModel::dropMimeData ( const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent)
 {
     Q_UNUSED(parent);
@@ -36,6 +37,7 @@ bool nplModel::dropMimeData ( const QMimeData *data, Qt::DropAction action, int 
     }
     return true;
 }
+
 
 void nplModel::reorder(int r)
 {
@@ -58,3 +60,4 @@ void nplModel::reorder(int r)
     }
 }
 
+*/

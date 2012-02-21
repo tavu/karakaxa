@@ -11,7 +11,6 @@
 #include"nplTrack.h"
 
 #include<QSharedPointer>
-#include"nplAbstractModel.h"
 #include"../engine/engine.h"
 #include"../config/config.h"
 #include"../playlist/playlist.h"
@@ -28,14 +27,12 @@ NEVER delete it outside.
 
 namespace core
 {
-class nplAbstractModel;
 
 class nplaylist :public playlist
 {
     Q_OBJECT
 
     friend class soundEngine;
-    friend class nplAbstractModel;
 
     public:
         const static int ADD;
@@ -61,10 +58,6 @@ class nplaylist :public playlist
         int         getPlayingPos() const
         {
             return trackList.indexOf(playing,0);
-        }
-        
-        inline void setModel(core::nplAbstractModel *model)
-        {
         }
 
 

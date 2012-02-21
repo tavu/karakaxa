@@ -3,29 +3,68 @@
 #include<core.h>
 views::playlistModel::playlistModel(QObject *parent)
     :QAbstractListModel(parent),
-    pl(0)
+    pl(0),
+    _acceptDrops(true)
 {
 }
+/*
+QModelIndex views::playlistModel::index(int row, int column, const QModelIndex& parent) const
+{
+    if(row<0 || row>=rowCount() ||column<0|| column>=columnCount() || parent.isValid() )
+    {
+        return QModelIndex();
+    }
+    createIndex(row,column);
+}
+*/
 
 views::playlistModel::~playlistModel()
 {
     if(pl!=0)
+    {
         delete pl;
+    }
 }
 
 
 int views::playlistModel::rowCount ( const QModelIndex & parent ) const
 {
-    if(pl==0)
+    if(parent.isValid() )
+    {
         return 0;
+    }
+
+    if(pl==0)
+    {
+        return 0;
+    }
 
     return pl->size();
 }
 
 int views::playlistModel::columnCount ( const QModelIndex & parent ) const
 {
+    Q_UNUSED(parent)
     return FRAME_NUM;
 }
+
+QModelIndex views::playlistModel::parent(const QModelIndex& index) const
+{
+    Q_UNUSED(index)
+    return QModelIndex();
+}
+
+
+QStringList views::playlistModel::mimeTypes() const
+{
+    QStringList l;
+    if(_acceptDrops)
+    {        
+        l<<"text/uri-list";
+    }
+    return l;
+}
+
 
 QVariant views::playlistModel::data(const QModelIndex & index, int role ) const
 {
@@ -60,8 +99,10 @@ QVariant views::playlistModel::data(const QModelIndex & index, int role ) const
 bool views::playlistModel::setData(const QModelIndex& index, const QVariant& value, int role)
 {
     if(pl=0)
+    {
         return false;
-
+    }
+    
     core::nplPointer f=pl->item(index.row() );
     if(f->type()==NPLAUDIOFILE)
     {
@@ -107,8 +148,7 @@ void views::playlistModel::setPlaylist(core::playlist *playlist)
 
     pl=playlist;
     if(pl!=0)
-    {
-        pl->setParent(this);        
+    { 
         connectPl();
     }
     endResetModel();
@@ -154,7 +194,7 @@ void views::playlistModel::updateData()
     topLeft=index(0,0);
     bottomRight=index(rowCount()-1,columnCount()-1 );
 
-    emit dataChanged(topLeft,bottomRight);
+//     emit dataChanged(topLeft,bottomRight);
 }
 void views::playlistModel::connectPl()
 {
@@ -180,7 +220,13 @@ bool views::playlistModel::dropMimeData(const QMimeData* data, Qt::DropAction ac
     {
         return false;
     }
-
+    
+    if (views::reorderL.size()!=0 )
+    {
+        reorder(row,views::reorderL);
+        return true;
+    }
+    
     core::nplList l;
     foreach(QUrl u,data->urls())
     {
@@ -190,4 +236,40 @@ bool views::playlistModel::dropMimeData(const QMimeData* data, Qt::DropAction ac
     pl->insert(row,l);
     return true;
 }
+
+void views::playlistModel::reorder(int r, const std::set< int >& rows)
+{
+    disconnect(pl,SIGNAL(aboutToMoveTrack(int,int,int)),this,SLOT(beginMoveTracks(int,int,int)));
+    disconnect(pl,SIGNAL(tracksMoved(int,int,int)),this,SLOT(endMoveTracks()));
+
+    if(r<0||r>=rowCount() )
+    {
+        r=rowCount();
+    }
+    std::set<int>::const_iterator it=rows.begin();
+
+    emit layoutAboutToBeChanged ();
+    int n=0;
+    int k=0;
+    for(;it!=rows.end();it++)
+    {
+       if(*it<r )
+       {
+          pl->move(*it-n,r-1);
+          n++;
+       }
+       else
+       {
+          pl->move(*it,r+k);
+          k++;
+       }
+    }
+
+    emit layoutChanged ();
+    
+    connect(pl,SIGNAL(aboutToMoveTrack(int,int,int)),this,SLOT(beginMoveTracks(int,int,int)));
+    connect(pl,SIGNAL(tracksMoved(int,int,int)),this,SLOT(endMoveTracks()));    
+}
+
+
 

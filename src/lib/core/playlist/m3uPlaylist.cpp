@@ -10,6 +10,7 @@ core::m3uPlaylist::m3uPlaylist(const QString s,QObject *parent)
 
 bool core::m3uPlaylist::load()
 {
+    qDebug()<<"load";
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text) )
     {
         status->addErrorP("can not open file "+path() );
@@ -33,6 +34,7 @@ bool core::m3uPlaylist::load()
     insertEv *e=new insertEv(0,l);
     insertEvent(e);
     delete e;
+//     insert(0,l);
         
     return true;
 }

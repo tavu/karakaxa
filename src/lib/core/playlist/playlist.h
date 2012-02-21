@@ -37,6 +37,7 @@ class playlist :public QObject
         void move(int pos,int dest);
         void move(int pos,int num,int dest);
         void clear();
+        void shuffle();
 
     protected:
 
@@ -45,6 +46,7 @@ class playlist :public QObject
         class removeEv;
         class moveEv;
         class clearEv;
+        class shuffleEv;
         
 
         /*EVENTS*/
@@ -52,7 +54,7 @@ class playlist :public QObject
         virtual void removeEvent(removeEv *event);
         virtual void moveEvent(moveEv *event);
         virtual void clearEvent(clearEv *event);
-
+        virtual void shuffleEvent(shuffleEv *event);
         virtual void customEvent (QEvent * event);
 
 
@@ -71,6 +73,9 @@ class playlist :public QObject
 
         void aboutToClear();
         void cleared();
+
+        void aboutToShuffle();
+        void shuffled();
         
 
     protected:
@@ -80,7 +85,8 @@ class playlist :public QObject
             INSERT_EVENT=QEvent::User+1,
             REMOVE_EVENT,
             MOVE_EVENT,
-            CLEAR_EVENT
+            CLEAR_EVENT,
+            SHUFFLE_EVENT
         };
         
         class insertEv :public QEvent
@@ -158,6 +164,13 @@ class playlist :public QObject
         {
             public:
                 clearEv() :QEvent( (QEvent::Type)CLEAR_EVENT )
+                {}
+        };
+
+        class shuffleEv :public QEvent
+        {
+            public:
+                shuffleEv() :QEvent( (QEvent::Type)SHUFFLE_EVENT )
                 {}
         };
 };

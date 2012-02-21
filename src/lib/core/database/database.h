@@ -8,9 +8,10 @@
 #include<QMessageBox>
 #include<QObject>
 #include"album.h"
+#include"dbTypes.h"
 
 #include"../files/audioFile.h"
-
+#include"databaseScanner.h"
 namespace core
 {
 class databaseScanner;
@@ -18,17 +19,10 @@ class databaseScanner;
 class database :public QObject
 {    
     Q_OBJECT
-    public:
-        typedef QSharedPointer<core::databaseScanner> dbScanner;
+    public:        
         friend class audioFiles::audioFile;
     
     
-        enum dbState
-        {
-            NORMAL=0 ,
-            UPDATE   ,
-            RESCAN
-        };
       
         database();
         ~database();

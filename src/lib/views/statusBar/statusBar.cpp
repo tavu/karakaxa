@@ -21,11 +21,11 @@ views::statusBar::statusBar(QWidget *parent)
     addPermanentWidget(f);
     addPermanentWidget(label);
 
-    connect(status,SIGNAL(errorMessage(const QString &) ),this,SLOT(showMessage(const QString &) ), Qt::QueuedConnection );
-    connect(status,SIGNAL(infoMessage(const QString &) ),this,SLOT(showMessage(const QString &) ), Qt::QueuedConnection );
-    connect(npList,SIGNAL(inserted(int) ),this,SLOT(setTrackTime() ), Qt::QueuedConnection );
-    connect(npList,SIGNAL(removed(int) ),this,SLOT(setTrackTime() ), Qt::QueuedConnection );
-    connect(npList,SIGNAL(cleared() ),this,SLOT(setTrackTime() ), Qt::QueuedConnection );
+    connect(status,SIGNAL(errorMessage(const QString &) ),this,SLOT(showMessage(const QString &) ) );
+    connect(status,SIGNAL(infoMessage(const QString &) ),this,SLOT(showMessage(const QString &) ) );
+    connect(npList,SIGNAL(tracksInserted(int,int)),this,SLOT(setTrackTime() ));
+    connect(npList,SIGNAL(tracksRemoved(int,int)),this,SLOT(setTrackTime() ) );
+    connect(npList,SIGNAL(cleared() ),this,SLOT(setTrackTime() ) );
     
     connect(db,SIGNAL(stateCanged(dbState,dbState)),this,SLOT(addScanner()));
 }
@@ -73,7 +73,7 @@ views::statusBar::~statusBar()
 
 void views::statusBar::addScanner()
 {
-    if(db->state()==database::NORMAL && !scanner.isNull())
+    if(db->state()==NORMAL && !scanner.isNull())
     {        
         timer=new QTimer(this);
         timer->setInterval(5000);

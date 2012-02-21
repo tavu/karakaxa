@@ -44,7 +44,7 @@ void core::playlist::remove(int pos,int num)
 }
 
 void core::playlist::move(int pos,int dest)
-{    
+{
     move(pos,1,dest);
 }
 
@@ -74,6 +74,27 @@ void core::playlist::clear()
         QCoreApplication::postEvent(this,e);
     }
 
+}
+
+void core::playlist::shuffle()
+{
+    QEvent *e=new shuffleEv();
+    if(QThread::currentThread()==core::mainThr() )
+    {
+        QCoreApplication::sendEvent(this,e);
+    }
+    else
+    {
+        QCoreApplication::postEvent(this,e);
+    }
+
+}
+
+void core::playlist::shuffleEvent(shuffleEv* event)
+{
+    emit aboutToShuffle();
+    randomShuffle(trackList.begin(),trackList.size() );
+    emit shuffled();
 }
 
 void core::playlist::clearEvent(core::playlist::clearEv* event)
@@ -107,7 +128,7 @@ void core::playlist::insertEvent(core::playlist::insertEv* event)
        trackList.insert (pos+i,l[i] );
     } 
     emit tracksInserted(pos,l.size() );
-
+    
     event->accept();
 }
 
@@ -116,20 +137,33 @@ void core::playlist::moveEvent(core::playlist::moveEv* event)
     int pos =event->pos();    
     int num=event->num();
     int dest=event->dest();
-    if(pos<0 || pos>trackList.size() || num<1 )
+    if(num<1 )
     {
         event->ignore();
         return ;
     }
+    
+    if(pos<0 || pos>trackList.size())
+    {
+        event->ignore();
+        return ;
+    }
+    
 
-    if(pos+num>trackList.size() )
+    if(pos+num-1>trackList.size() )
     {
         num=trackList.size()-pos;
     }
 
-    if(dest<0|| dest>=trackList.size() )
+    if(dest<0 || dest>=trackList.size() )
     {
         dest=trackList.size()-1;
+    }
+
+    if(pos==dest)
+    {
+        event->ignore();
+        return ;
     }
 
     emit aboutToMoveTrack(pos,num,dest);
@@ -170,7 +204,7 @@ void core::playlist::removeEvent(core::playlist::removeEv* event)
 
 void core::playlist::customEvent(QEvent* event)
 {
-    switch(event->type() )
+    switch((int)event->type() )
     {
         case INSERT_EVENT:
         {
@@ -191,6 +225,10 @@ void core::playlist::customEvent(QEvent* event)
         {
             clearEvent(static_cast<clearEv*>(event) );
             break  ;
+        }
+        case SHUFFLE_EVENT:
+        {
+            shuffleEvent(static_cast<shuffleEv*>(event) );
         }
         default :
         {

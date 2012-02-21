@@ -167,7 +167,7 @@ void mainWindow::nplViewInit()
     nplView->setHeaderHidden(true);
     for(int i=1;i<FRAME_NUM;i++)
     {
-        nplView->setColumnHidden(i,true);
+         nplView->setColumnHidden(i,true);
     }
    
     nplView->setItemDelegate(new nplDelegate(this) );    
