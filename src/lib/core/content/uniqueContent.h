@@ -11,8 +11,8 @@ namespace core
   class uniqueContent :public abstractContent    
   {
       public:
-	  uniqueContent(QWidget *parent=0):abstractContent(parent){};
-	  virtual QString uniqueName() const=0;
+        uniqueContent(QWidget *parent=0):abstractContent(parent){};
+        virtual QString uniqueName() const=0;
   };
 };
 #endif

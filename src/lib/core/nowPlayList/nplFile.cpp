@@ -44,7 +44,7 @@ core::nplTrack* core::nplFile::clone()
 void core::nplFile::play()
 {
     int c=file->tag(COUNTER).toInt();
-//     file->setTag(COUNTER,QVariant(c+1) );
+    file->setTag(COUNTER,QVariant(c+1) );
 }
 
 QVariant core::nplFile::artist()
