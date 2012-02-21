@@ -18,14 +18,16 @@ nplModel::nplModel( QObject * parent)
     setPlaylist(npList);
 }
 
-/*
+
 bool nplModel::dropMimeData ( const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent)
 {
     Q_UNUSED(parent);
     Q_UNUSED(column);
-    if (row<0)
-        row=npList->size();
 
+    if(!data->hasUrls() )
+    {
+        return false;
+    }
 
     if (views::reorderL.size()==0 )
     {
@@ -33,12 +35,13 @@ bool nplModel::dropMimeData ( const QMimeData *data, Qt::DropAction action, int 
     }
     else
     {
-         reorder(row);
+         reorder(row,views::reorderL);
     }
+    
     return true;
 }
 
-
+/*
 void nplModel::reorder(int r)
 {
     std::set<int>::const_iterator it=views::reorderL.begin();

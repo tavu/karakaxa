@@ -84,7 +84,7 @@ void nplTread::addMedia(const QUrl &url)
     }
     else if(core::isPlaylist(url.toLocalFile()) )
     {
-      addPlaylist(url);
+        addPlaylist(url);
     }
     else if(core::isAudio(url.toLocalFile()) || core::isStream(url) )
     {

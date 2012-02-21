@@ -94,6 +94,12 @@ void nplDelegate::drawContent(QPainter* painter, const QStyleOptionViewItem& opt
     
     
     nplPointer p=npList->getTrack(index.row() );
+    if(p.isNull() )
+    {
+        core::status->addErrorP("nplDelegate:nplPointer is null");
+        painter->restore();
+        return ;
+    }
     
     int track=p->tag(TRACK).toInt();
     

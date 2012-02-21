@@ -13,7 +13,7 @@ class nplDelegate :public QStyledItemDelegate
         QSize	sizeHint ( const QStyleOptionViewItem & option, const QModelIndex & index ) const;
         QRect drawDisplay(QPainter* painter, const QStyleOptionViewItem& option, QRect& rect, QString& text) const;
 
-    private:
+    protected:
         void drawContent(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index ) const;
 };
 
