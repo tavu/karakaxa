@@ -24,9 +24,30 @@ core::nplaylist::nplaylist()
     KConfigGroup group( config, "nowPlaylist" );	
     rememberPl=group.readEntry( "rememberPl", false);
 
-    connect(engine,SIGNAL(trackChanged(QString) ),this,SLOT(informTrack() ),Qt::QueuedConnection );
-//     connect(qApp,SIGNAL(aboutToQuit()),this,SLOT(prepareToQuit()) );
+    connect(engine,SIGNAL(trackChanged(QString) ),this,SLOT(informTrack() )  );
+    connect(this,SIGNAL(tracksInserted(int,int)),this,SLOT(updateLengthInsert(int,int)) );
+    connect(this,SIGNAL(aboutToRemoveTracks(int,int)),this,SLOT(updateLengthRemove(int,int)) );
+
 }
+
+
+void core::nplaylist::updateLengthInsert(int row, int num)
+{
+    for(int i=0;i<num;i++)
+    {
+        totalLength+=trackList[row+i]->tag(LENGTH).toInt();
+    }
+}
+
+void core::nplaylist::updateLengthRemove(int row, int num)
+{
+    for(int i=0;i<num;i++)
+    {
+        totalLength-=trackList[row+i]->tag(LENGTH).toInt();
+    }
+}
+
+
 
 core::nplaylist::~nplaylist()
 {
@@ -136,7 +157,6 @@ QString core::nplaylist::playUrl(int n)
         return ret;
     }
     
-//     playing.clear();
     playing=trackList.at(n);
     ret=playing->path();
      
@@ -253,7 +273,7 @@ void core::nplaylist::informTrack()
 {
    if(!playing.isNull() )
    {
-//       playing->play();
+       playing->play();
    }
 }
 

@@ -129,8 +129,9 @@ void folderContent::showUrl(KUrl url)
         //we set the model on the view to 0 and then set the proxyM again
         
         playlistM=new views::filePlaylistModel(this);
-        playlistM->setPlPath(url.toLocalFile());        
+        playlistM->setPlPath(url.toLocalFile());
         proxyM->setSourceModel(playlistM);
+        view->setSortingEnabled(false);
         view->setRatingColumn(RATING);
         view->setNotHide(TITLE);
         view->setModel(0);
@@ -145,6 +146,7 @@ void folderContent::showUrl(KUrl url)
             view->setRatingColumn(DIRCOLUMN+RATING);
             proxyM->setSourceModel(model);
             view->header()->restoreState(folderModelState);
+            view->setSortingEnabled(true);
 
             if(playlistM!=0)
             {
@@ -188,36 +190,57 @@ void folderContent::showContexMenuSlot(QModelIndex index, QModelIndexList list)
 {
     if(!index.isValid() )
     {
-	 return ;
+        return ;
     }
   
     QUrl u=index.data(URL_ROLE).toUrl();    
     QMenu *menu=new QMenu(this);
 
-    QAction *act=new QAction(KIcon("document-edit"),tr("edit"),this );		
-    connect(act,SIGNAL(triggered(bool)),this,SLOT(edit()) );	
-    menu->addAction(act);
+    QAction *editA=new QAction(KIcon("document-edit"),tr("edit"),this );
+    QAction *removeA=0;
     
     QString s=index.data(URL_ROLE).toUrl().toLocalFile();
     int tag=model->tag(index);
+
     if(!isAudio(s) || tag==audioFiles::COUNTER||tag==audioFiles::BITRATE ||tag==LENGTH ||tag<0)
     {
-	   act->setEnabled(false);
+	   editA->setEnabled(false);
     }
     else
     {
-	   act->setEnabled(true);
+	   editA->setEnabled(true);
     }
     
-   
+    if(proxyM->sourceModel()==playlistM)
+    {
+        removeA=new QAction(KIcon("list-remove"),"remove",this);
+        menu->addAction(removeA);
+    }
+
+    menu->addAction(editA);
     m->setShow(false);
     QList<QUrl>urls=view->getUrls(list);
     core::contentHdl->contextMenu(menu,KUrl(u),urls );
-    
-    if(!menu->isEmpty() )
+
+    QAction *a=menu->exec( QCursor::pos() );
+    if( a==editA )
     {
-	 menu->exec( QCursor::pos() );
+         view->edit( view->currentIndex() );
     }
+    else if(a==removeA && a!=0)
+    {
+        foreach(QModelIndex in,list)
+        {
+            QModelIndex index=proxyM->mapToSource(in);
+            if(index.column()==view->notHide())
+            {
+                playlistM->playlist()->remove(index.row() );
+            }
+        }
+        
+        playlistM->save();
+    }
+
     m->setShow(true);
     
     menu->deleteLater();

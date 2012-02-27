@@ -17,19 +17,25 @@ class filePlaylistModel :public playlistModel
             core::filePlaylist *pl=core::getPlaylist(s);
             setPlaylist(pl);
         }
+
+        void save()
+        {
+            static_cast<core::filePlaylist*>(pl)->save();
+        }
+
         bool dropMimeData ( const QMimeData * data,Qt::DropAction action,int row, int column, const QModelIndex &parent)
         {
             bool b=playlistModel::dropMimeData(data,action,row,column,parent);
             if(b)
             {
-                qDebug()<<"save";
-                static_cast<core::filePlaylist*>(pl)->save();
+                save();
             }
             return b;
         }
         
     protected slots:
         void updateData(int,int);
+        void callUpdate();
 
     protected:
         class playlistThr :public QThread

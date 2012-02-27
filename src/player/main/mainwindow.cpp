@@ -323,6 +323,7 @@ void mainWindow::defaultContent()
       playlistContent *pl=new playlistContent();
       configureContent *c=new configureContent();
       nowPlaylistContent *n=new nowPlaylistContent();
+      
       n->setModel(nowPlayListM);
       
       contentHdl->addContent(l);

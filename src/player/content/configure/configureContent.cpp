@@ -8,6 +8,7 @@
 #include<QLineEdit>
 #include<KIcon>
 #include <database/scanTread.h>
+
 using namespace core;
 configureContent::configureContent(QWidget *parent)
         :abstractContent(parent),
@@ -42,7 +43,7 @@ configureContent::configureContent(QWidget *parent)
 
 void configureContent::scanButtonActive()
 {
-    if(db->state()==NORMAL)
+    if(db->state()==core::NORMAL)
     {
         scanB->setDisabled(false);
         updateB->setDisabled(false);

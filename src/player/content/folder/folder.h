@@ -104,7 +104,7 @@ class folderContextMenu :public core::abstractMenu
         {
             if(url().isLocalFile() && _show  )
             {
-            return true;
+                return true;
             }
 
             return false;

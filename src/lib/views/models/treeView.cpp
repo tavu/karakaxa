@@ -13,7 +13,7 @@
 #include <decoration.h>
 #include<QMetaProperty>
 // class editTrack;
-
+ #include <QToolTip>
 #include<QModelIndexList>
 #include <QPainter>
 Q_DECLARE_METATYPE(QModelIndexList)
@@ -61,6 +61,20 @@ void views::treeView::rowsInserted(const QModelIndex& parent, int start, int end
     
 }
 
+bool views::treeView::viewportEvent(QEvent* event)
+{
+    /*
+    if(event->type()==QEvent::ToolTip)
+    {
+         QToolTip::showText(QCursor::pos(),"<b> test</b>");
+         event->accept();
+         return true;
+    }
+    */
+    return QTreeView::viewportEvent(event);
+}
+
+
 void views::treeView::mouseDoubleClickEvent(QMouseEvent* event)
 {        
     QTreeView::mouseDoubleClickEvent(event);
@@ -93,13 +107,11 @@ void views::treeView::mouseMoveEvent(QMouseEvent *event)
         else
         {
             headerRepaint();
-  //          QTreeView::mouseMoveEvent(event);
         }
     }
     else
     {
         headerRepaint();
-    //    QTreeView::mouseMoveEvent(event);
     }
     event->accept();
 }

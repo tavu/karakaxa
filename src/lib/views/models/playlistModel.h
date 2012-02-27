@@ -18,6 +18,11 @@ class playlistModel :public  QAbstractListModel
         int rowCount ( const QModelIndex & parent = QModelIndex() ) const;
         int columnCount ( const QModelIndex & parent = QModelIndex() ) const;
         virtual void setPlaylist(core::playlist *playlist);
+
+        core::playlist* playlist()
+        {
+            return pl;
+        }
         virtual QVariant headerData ( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const;
 
         virtual Qt::ItemFlags flags ( const QModelIndex & index ) const;
@@ -29,8 +34,6 @@ class playlistModel :public  QAbstractListModel
 //         QModelIndex index ( int row, int column, const QModelIndex & parent = QModelIndex() ) const;
         QModelIndex parent ( const QModelIndex & index ) const;
 
-    public slots:
-        void updateData();
 
     protected:
         core::playlist *pl;

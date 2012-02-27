@@ -4,6 +4,8 @@ INCLUDEPATH +=/usr/include/taglib
 QT += phonon
 QT += sql
 QT += xml
+QT +=network
+QT +=webkit
 
 LIBS += -lkdecore -lkdeui -lkfile -lkio -ltag -ltag-extras
 

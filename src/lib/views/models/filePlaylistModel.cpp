@@ -6,7 +6,7 @@ views::filePlaylistModel::filePlaylistModel(QObject *parent)
     :playlistModel(parent)
 {
    thr=new playlistThr(this);
-   connect(thr,SIGNAL(finished()),this,SLOT(updateData() ) );
+   connect(thr,SIGNAL(finished()),this,SLOT(callUpdate() ) );
 }
 
 
@@ -35,6 +35,15 @@ void views::filePlaylistModel::updateData(int row, int num)
     thr->num=num;
     thr->canceled=false;
     thr->start();
+}
+
+void views::filePlaylistModel::callUpdate()
+{
+    QModelIndex topLeft ,bottomRight;
+    topLeft=index(0,0);
+    bottomRight=index(rowCount()-1,columnCount()-1 );
+
+    emit dataChanged(topLeft,bottomRight);
 }
 
 void views::filePlaylistModel::playlistThr::run()

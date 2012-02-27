@@ -98,7 +98,7 @@ QVariant views::playlistModel::data(const QModelIndex & index, int role ) const
 
 bool views::playlistModel::setData(const QModelIndex& index, const QVariant& value, int role)
 {
-    if(pl=0)
+    if(pl==0)
     {
         return false;
     }
@@ -177,7 +177,8 @@ Qt::ItemFlags views::playlistModel::flags(const QModelIndex &index) const
 
     if(p.isNull() || !p->isValid() )
     {
-        return ret & ~Qt::ItemIsEnabled;
+//         Qt::ItemFlags f=
+        return  (Qt::ItemFlags)~Qt::ItemIsEnabled|Qt::ItemIsSelectable;
     }
 
     if (index.column()==BITRATE||index.column()==LENGTH||index.column()==COUNTER ||p->type()==NPLSTREAM )
@@ -188,14 +189,7 @@ Qt::ItemFlags views::playlistModel::flags(const QModelIndex &index) const
     return ret;
 }
 
-void views::playlistModel::updateData()
-{
-    QModelIndex topLeft ,bottomRight;
-    topLeft=index(0,0);
-    bottomRight=index(rowCount()-1,columnCount()-1 );
 
-//     emit dataChanged(topLeft,bottomRight);
-}
 void views::playlistModel::connectPl()
 {
     connect(pl,SIGNAL(aboutToInsertTracks(int,int)),this,SLOT(beginInsertTracks(int,int)));

@@ -47,6 +47,7 @@ class treeView :public QTreeView
        virtual void dropEvent ( QDropEvent * event );
 
        void paintEvent(QPaintEvent * event);
+       bool viewportEvent ( QEvent * event );
 
     protected slots:
         virtual void commitData ( QWidget * editor ) ;

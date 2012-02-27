@@ -114,6 +114,8 @@ class nplaylist :public playlist
     private slots:
         void prepareToQuit();
         void informTrack();
+        void updateLengthInsert(int,int);
+        void updateLengthRemove(int,int);
 	
 };
 

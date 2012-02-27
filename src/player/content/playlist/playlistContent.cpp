@@ -202,8 +202,9 @@ void playlistContent::forward()
     stack->setCurrentIndex(1);
     if(trackProxy->sourceModel()==smpModel && quer->needUpdate() )
     {
-	quer->select();
+        quer->select();
     }
+    
     textL.setText(textS);
     searchAction->setVisible(true);
 }
@@ -244,7 +245,7 @@ void playlistContent::createSmpSlot()
 
     if(c->result()!= QDialog::Accepted)
     {
-	return ;
+        return ;
     }
 
     smplaylistItem *newItem=c->item();
@@ -270,7 +271,7 @@ void playlistContent::editSmpSlot()
     standardItem *item=treeModel->itemFromIndex(index);
     if(item==0 || item->type() != SMARTPL_ITEM)
     {
-	return ;
+        return ;
     }    
     
     smartPlaylistCreator *c=new smartPlaylistCreator(static_cast<smplaylistItem*>(item),this);
@@ -278,7 +279,7 @@ void playlistContent::editSmpSlot()
     c->exec();
     if(c->result()!= QDialog::Accepted)
     {
-	return ;
+        return ;
     }
     
     smplaylistItem *newItem=c->item();
@@ -318,25 +319,27 @@ void playlistContent::activationSlot(QModelIndex in)
         quer->setQuery(q->clone() );
         quer->select();
         textS=item->data(0,Qt::DisplayRole).toString();
+        treeV->setSortingEnabled(true);
         forward();
     }
     else if(item->type()==PLAYLIST_ITEM)
     {
         trackProxy->setSourceModel(plModel);
+        treeV->setSortingEnabled(false);
         plModel->setPlPath(item->data(0,ITEM_ROLE).toString() );
         textS=item->data(0,Qt::DisplayRole).toString();
         forward();
     }
     else if(item->type()==FOLDER_ITEM || item->type()==PLAYLIST_FOLDER )
     {
-	if(treeV->isExpanded(in) )
-	{
-	    treeV->collapse(in);
-	}
-	else
-	{
-	    treeV->expand(in);
-	}
+        if(treeV->isExpanded(in) )
+        {
+            treeV->collapse(in);
+        }
+        else
+        {
+            treeV->expand(in);
+        }
     }
         
 }
@@ -357,31 +360,33 @@ void playlistContent::contextMenuSlot(QModelIndex in)
     //if we are on smart Playlist tree add the create smart playlist action
     if(head(item)==smHead)
     {
-	menu->addAction(addFolderAction);	
-	menu->addSeparator();
-	
-	if(item->type()==SMARTPL_ITEM)
-	{
-	    menu->addAction(editSmpAction);
-	}
-	menu->addAction(createSmpAction);
-	if(index.parent().isValid() )//if it's not a top level item
-	{	
-	    menu->addAction(removeAction);
-	}
+        menu->addAction(addFolderAction);
+        menu->addSeparator();
+
+        if(item->type()==SMARTPL_ITEM)
+        {
+            menu->addAction(editSmpAction);
+        }
+
+        menu->addAction(createSmpAction);
+
+        if(index.parent().isValid() )//if it's not a top level item
+        {
+            menu->addAction(removeAction);
+        }
     }
     
     if(head(item)==plHead)
     {
-	if(index.parent().isValid() )//if it's not a top level item
-	{	
-	    menu->addAction(removeAction);
-	}	
-    }     
+        if(index.parent().isValid() )//if it's not a top level item
+        {
+            menu->addAction(removeAction);
+        }
+    }
 	
     if( !menu->isEmpty() )
     {
-	menu->popup( QCursor::pos() );
+        menu->popup( QCursor::pos() );
     }
 }
 
@@ -409,7 +414,7 @@ standardItem* playlistContent::head( standardItem *item)
     standardItem *parent=item;
     while(parent->parent()!=0)
     {
-	parent=parent->parent();
+        parent=parent->parent();
     }
     return parent;
 }
@@ -424,7 +429,7 @@ void playlistContent::contextMenuForTracks(QModelIndex index, QModelIndexList li
 {
     if(!index.isValid() )
     {
-	return ;
+        return ;
     }
     
     QUrl u=index.data(URL_ROLE).toUrl();    
@@ -439,7 +444,7 @@ void playlistContent::contextMenuForTracks(QModelIndex index, QModelIndexList li
     core::contentHdl->contextMenu(menu,KUrl(u),urls );
     if(!menu->isEmpty() )
     {
-	menu->exec( QCursor::pos() );
+        menu->exec( QCursor::pos() );
     }
     menu->deleteLater();    
 }
