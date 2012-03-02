@@ -2,6 +2,7 @@
 #define PLAYLISTMODEL_H
 
 #include<QAbstractListModel>
+#include<QAbstractItemModel>
 #include<set>
 #include"../../core/playlist/playlist.h"
 
@@ -57,10 +58,8 @@ class playlistModel :public  QAbstractListModel
         {
             endRemoveRows();
         }
-        void beginMoveTracks(int first,int size,int dest)
-        {
-            beginMoveRows(QModelIndex(),first,first+size-1,QModelIndex(),dest);
-        }
+        void beginMoveTracks(int first,int size,int dest);
+        
         void endMoveTracks()
         {
             endMoveRows();

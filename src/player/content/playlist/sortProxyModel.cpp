@@ -12,19 +12,19 @@ bool sortProxyModel::lessThan(const QModelIndex& left, const QModelIndex& right)
     
     if(leftT<rightT )
     {
-	return true;
+        return true;
     }
     if(leftT>rightT )
     {
-	return false;
+        return false;
     }
     if(QString::compare(leftS,rightS,Qt::CaseInsensitive ) <0 )
     {
- 	return true;
+        return true;
     }
     else
     {
-	return false;
+        return false;
     }
 //     return QSortFilterProxyModel::lessThan(left, right);
 }

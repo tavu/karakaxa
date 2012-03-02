@@ -82,7 +82,7 @@ void views::treeViewDelegate::paint ( QPainter * painter, const QStyleOptionView
     {	   
         QString text = option.fontMetrics.elidedText(var.toString(),Qt::ElideRight,r.width() );
 
-        if( index.flags() & Qt::ItemIsEnabled  )
+        if( index.flags() & Qt::ItemIsEnabled && !index.data(DISABLE_ROLE).toBool()  )
         {
             painter->setOpacity(1);
         }

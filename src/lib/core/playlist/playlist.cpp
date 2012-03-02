@@ -95,6 +95,7 @@ void core::playlist::shuffleEvent(shuffleEv* event)
     emit aboutToShuffle();
     randomShuffle(trackList.begin(),trackList.size() );
     emit shuffled();
+    event->accept();
 }
 
 void core::playlist::clearEvent(core::playlist::clearEv* event)
@@ -229,12 +230,14 @@ void core::playlist::customEvent(QEvent* event)
         case SHUFFLE_EVENT:
         {
             shuffleEvent(static_cast<shuffleEv*>(event) );
+            break;
         }
         default :
         {
+            QObject::customEvent(event);
             break ;
         }
     }
     
-    QObject::customEvent(event);
+    //QObject::customEvent(event);
 }

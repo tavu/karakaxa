@@ -20,11 +20,12 @@ folderContent::folderContent(QWidget *parent)
     navigator = new KUrlNavigator(navigatorModel,KUrl( QDir::home().path() ),this);
 
     model = new myFileSystemModel(this);
-    proxyM=new folderProxyModel(this);
-    proxyM->setFilterCaseSensitivity(Qt::CaseInsensitive);
+//     proxyM=new folderProxyModel(this);
+    proxyM=0;
+//     proxyM->setFilterCaseSensitivity(Qt::CaseInsensitive);
     
     view=new views::treeView(this);
-    view->setModel(proxyM);
+//     view->setModel(proxyM);
     view->setDragDropMode(QAbstractItemView::DragDrop);   
 
     toolBar=new KToolBar(this);
@@ -54,7 +55,7 @@ folderContent::folderContent(QWidget *parent)
     searchLine->setVisible(true);
     toolBar->addWidget(searchLine);
         
-    connect(searchLine,SIGNAL(textChanged ( const QString & )  ),proxyM,SLOT(setFilterFixedString(QString) ) );    
+    
     
     QVBoxLayout *layout = new QVBoxLayout();
     
@@ -119,46 +120,77 @@ void folderContent::setDir(const QModelIndex index)
 
 void folderContent::showUrl(KUrl url)
 {
-    if(proxyM->sourceModel()!=0)
-    {
-        saveStates();
-    }
     if(core::isPlaylist(url.toLocalFile()) )
     {
-        //due to a bug the view does not make the hidden columns visible again if we just change the sourceModel on the proxyM
-        //we set the model on the view to 0 and then set the proxyM again
-        
-        playlistM=new views::filePlaylistModel(this);
-        playlistM->setPlPath(url.toLocalFile());
-        proxyM->setSourceModel(playlistM);
-        view->setSortingEnabled(false);
-        view->setRatingColumn(RATING);
-        view->setNotHide(TITLE);
-        view->setModel(0);
-        view->setModel(proxyM);
-        view->header()->restoreState(playlistMState);
+        if(proxyM!=0)
+        {
+            saveStates();
+            delete proxyM;
+        }
+        goToPl(url);        
     }
     else
     {
-        if(proxyM->sourceModel()!=model )
+        if(proxyM ==0 )
         {
-            view->setNotHide(0);
-            view->setRatingColumn(DIRCOLUMN+RATING);
-            proxyM->setSourceModel(model);
-            view->header()->restoreState(folderModelState);
-            view->setSortingEnabled(true);
-
-            if(playlistM!=0)
-            {
-                delete playlistM;
-                playlistM=0;
-            }
+            goToFolder(url);
         }
-        
+        else if(proxyM->sourceModel()!=model  )
+        {
+            saveStates();
+            delete proxyM;
+            goToFolder(url);
+        }
+
         model->dirLister()->openUrl(url);
-    }
-    searchLine->clear();
+    }    
 }
+
+void folderContent::goToFolder(KUrl url)
+{    
+    proxyM=new folderProxyModel(this);
+    
+    view->setNotHide(0);
+    view->setRatingColumn(DIRCOLUMN+RATING);
+    proxyM->setSourceModel(model);
+    proxyM->setFilterCaseSensitivity(Qt::CaseInsensitive);
+
+    view->setModel(proxyM);
+    view->header()->restoreState(folderModelState);
+    view->setSortingEnabled(true);
+    
+    searchLine->clear();
+    connect(searchLine,SIGNAL(textChanged ( const QString & )  ),proxyM,SLOT(setFilterFixedString(QString) ) );    
+    if(playlistM!=0)
+    {
+        delete playlistM;
+        playlistM=0;
+    }
+}
+
+
+void folderContent::goToPl(KUrl url)
+{
+    view->setSortingEnabled(false);
+//     view->setModel(0);
+    playlistM=new views::filePlaylistModel(this);
+    playlistM->setPlPath(url.toLocalFile());
+//     delete proxyM;
+    proxyM=new folderProxyModel(this);    
+    proxyM->setSourceModel(playlistM);
+    proxyM->setFilterCaseSensitivity(Qt::CaseInsensitive);
+    proxyM->setFilterKeyColumn(-1);
+
+    view->setRatingColumn(RATING);
+    view->setNotHide(TITLE);
+    view->setModel(proxyM);
+    view->header()->restoreState(playlistMState);
+    searchLine->clear();
+    connect(searchLine,SIGNAL(textChanged ( const QString & )  ),proxyM,SLOT(setFilterFixedString(QString) ) );    
+}
+
+
+
 
 void folderContent::cd(KUrl url)
 {    
@@ -196,13 +228,13 @@ void folderContent::showContexMenuSlot(QModelIndex index, QModelIndexList list)
     QUrl u=index.data(URL_ROLE).toUrl();    
     QMenu *menu=new QMenu(this);
 
-    QAction *editA=new QAction(KIcon("document-edit"),tr("edit"),this );
+    QAction *editA=new QAction(KIcon("document-edit"),tr("edit"),menu );
     QAction *removeA=0;
     
     QString s=index.data(URL_ROLE).toUrl().toLocalFile();
     int tag=model->tag(index);
 
-    if(!isAudio(s) || tag==audioFiles::COUNTER||tag==audioFiles::BITRATE ||tag==LENGTH ||tag<0)
+    if( !(index.flags() & Qt::ItemIsEditable) || index.data(DISABLE_ROLE).toBool() )
     {
 	   editA->setEnabled(false);
     }
@@ -213,7 +245,7 @@ void folderContent::showContexMenuSlot(QModelIndex index, QModelIndexList list)
     
     if(proxyM->sourceModel()==playlistM)
     {
-        removeA=new QAction(KIcon("list-remove"),"remove",this);
+        removeA=new QAction(KIcon("list-remove"),"remove",menu);
         menu->addAction(removeA);
     }
 
@@ -259,8 +291,6 @@ void folderContent::unloaded()
 
 void folderContent::writeSettings()
 {
-    qDebug()<<"write";
-
     saveStates();
 
     KSharedConfigPtr config=core::config->configFile();

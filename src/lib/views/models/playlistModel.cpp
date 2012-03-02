@@ -14,7 +14,7 @@ QModelIndex views::playlistModel::index(int row, int column, const QModelIndex& 
     {
         return QModelIndex();
     }
-    createIndex(row,column);
+    return createIndex(row,column);
 }
 */
 
@@ -76,6 +76,10 @@ QVariant views::playlistModel::data(const QModelIndex & index, int role ) const
     core::nplPointer p=pl->item(index.row());
     if(p.isNull() )
     {
+        if(role ==DISABLE_ROLE)
+        {
+            return QVariant(true);
+        }
         return QVariant();
     }
 
@@ -88,10 +92,19 @@ QVariant views::playlistModel::data(const QModelIndex & index, int role ) const
     {
         KUrl u(p->path() );
         return QVariant(u);
-    }
+    }    
     else if(role == TAG_ROLE)
     {
         return QVariant(index.column() );
+    }
+    else if(role ==DISABLE_ROLE)
+    {
+        if(!p->isValid() )
+        {
+            return QVariant(true);
+        }
+
+        return QVariant(false);
     }
     return QVariant();
 }
@@ -165,7 +178,7 @@ Qt::ItemFlags views::playlistModel::flags(const QModelIndex &index) const
     static const Qt::ItemFlags ret=Qt::ItemIsDragEnabled|Qt::ItemIsEnabled|Qt::ItemIsSelectable|Qt::ItemIsEditable;
     if(pl==0)
     {
-        return ret & ~Qt::ItemIsEnabled;
+        return Qt::NoItemFlags;
     }
 
     if(!index.isValid() )
@@ -173,15 +186,12 @@ Qt::ItemFlags views::playlistModel::flags(const QModelIndex &index) const
         return Qt::ItemIsDropEnabled;
     }
 
-    core::nplPointer p=pl->item(index.row() );
-
-    if(p.isNull() || !p->isValid() )
+    core::nplPointer p=pl->item(index.row());
+    if(p.isNull() )
     {
-//         Qt::ItemFlags f=
-        return  (Qt::ItemFlags)~Qt::ItemIsEnabled|Qt::ItemIsSelectable;
+        return Qt::NoItemFlags;
     }
-
-    if (index.column()==BITRATE||index.column()==LENGTH||index.column()==COUNTER ||p->type()==NPLSTREAM )
+    if (index.column()==BITRATE ||index.column()==LENGTH || index.column()==COUNTER || p->type()==NPLSTREAM )
     {
          return ret & ~Qt::ItemIsEditable;
     }
@@ -203,6 +213,9 @@ void views::playlistModel::connectPl()
 
     connect(pl,SIGNAL(aboutToClear()),this,SLOT(beginClear()));
     connect(pl,SIGNAL(cleared()),this,SLOT(endClear()));
+
+    connect(pl,SIGNAL(aboutToShuffle()),this,SLOT(beginClear()));
+    connect(pl,SIGNAL(shuffled()),this,SLOT(endClear()));
 }
 
 bool views::playlistModel::dropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column, const QModelIndex& parent)
@@ -233,8 +246,8 @@ bool views::playlistModel::dropMimeData(const QMimeData* data, Qt::DropAction ac
 
 void views::playlistModel::reorder(int r, const std::set< int >& rows)
 {
-    disconnect(pl,SIGNAL(aboutToMoveTrack(int,int,int)),this,SLOT(beginMoveTracks(int,int,int)));
-    disconnect(pl,SIGNAL(tracksMoved(int,int,int)),this,SLOT(endMoveTracks()));
+//     disconnect(pl,SIGNAL(aboutToMoveTrack(int,int,int)),this,SLOT(beginMoveTracks(int,int,int)));
+//     disconnect(pl,SIGNAL(tracksMoved(int,int,int)),this,SLOT(endMoveTracks()));
 
     if(r<0||r>=rowCount() )
     {
@@ -242,7 +255,10 @@ void views::playlistModel::reorder(int r, const std::set< int >& rows)
     }
     std::set<int>::const_iterator it=rows.begin();
 
-    emit layoutAboutToBeChanged ();
+//I don't kwon what the fuck is going on but emitting the layoutAboutToBeChanged signals creates a lot of bugs on proxy models
+//     beginResetModel ();
+    
+//      emit layoutAboutToBeChanged ();
     int n=0;
     int k=0;
     for(;it!=rows.end();it++)
@@ -258,12 +274,31 @@ void views::playlistModel::reorder(int r, const std::set< int >& rows)
           k++;
        }
     }
+//       endResetModel();
+       reset();
 
-    emit layoutChanged ();
+//      emit layoutChanged ();
     
-    connect(pl,SIGNAL(aboutToMoveTrack(int,int,int)),this,SLOT(beginMoveTracks(int,int,int)));
-    connect(pl,SIGNAL(tracksMoved(int,int,int)),this,SLOT(endMoveTracks()));    
+//     connect(pl,SIGNAL(aboutToMoveTrack(int,int,int)),this,SLOT(beginMoveTracks(int,int,int)));
+//     connect(pl,SIGNAL(tracksMoved(int,int,int)),this,SLOT(endMoveTracks()));    
 }
 
+void views::playlistModel::beginMoveTracks(int first,int size,int dest)
+{
+    int d,f,l;
 
-
+    if(dest>first)//move down
+    {
+        f=first;
+        d=dest+1;
+        l=f+size-1;
+            
+    }
+    else
+    {
+        d=first+1;
+        f=dest+size-1;
+        l=first-1;
+    }
+    beginMoveRows(QModelIndex(),f,l,QModelIndex(),d);
+}

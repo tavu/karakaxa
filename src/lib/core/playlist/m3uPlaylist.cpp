@@ -2,6 +2,7 @@
 #include<QTextStream>
 #include"../core.h"
 #include<QTextStream>
+#include<QCoreApplication>
 using namespace audioFiles;
 core::m3uPlaylist::m3uPlaylist(const QString s,QObject *parent)
         :filePlaylist(s,parent)
@@ -32,8 +33,9 @@ bool core::m3uPlaylist::load()
     
     file.close();
     insertEv *e=new insertEv(0,l);
-    insertEvent(e);
-    delete e;
+    QCoreApplication::sendEvent(this,e);
+//     insertEvent(e);
+//     delete e;
 //     insert(0,l);
         
     return true;

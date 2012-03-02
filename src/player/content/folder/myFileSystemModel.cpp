@@ -178,11 +178,12 @@ Qt::ItemFlags myFileSystemModel::flags ( const QModelIndex & index ) const
         return f|Qt::ItemIsDropEnabled;
     }
 
-    if (index.column()!=0)
+    int tag=index.column()-DIRCOLUMN;
+    if(tag<0||tag==audioFiles::COUNTER||tag==audioFiles::LENGTH||tag==audioFiles::BITRATE||tag==audioFiles::RATING)
     {
-        return f;
+        return f & ~ Qt::ItemIsEditable;
     }
-    
+
     return f;
 }
 

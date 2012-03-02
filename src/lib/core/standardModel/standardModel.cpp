@@ -391,14 +391,14 @@ void standardItem::clear()
 {    
     if(rowCount()==0)
     {
-	return ;
+        return ;
     }
     
     beginRemoveRows(0,rowCount()-1 );
     standardItem **items=children.data();
     for(int i=0;i<children.size();i++)
     {
-	delete items[i];
+        delete items[i];
     }
     children.clear();
     endRemoveRows();
@@ -409,7 +409,7 @@ standardItem* standardItem::takeRow(int row)
 {
     if(row<0||row>children.size() )
     {
-	return false;
+        return false;
     }
     standardItem *item=children[row];
     children.remove(row);
@@ -425,8 +425,8 @@ bool standardItem::removeRow(int row)
     
     if(_model!=0)
     {
-	QModelIndex index=_model->indexFromItem(this,0);
-	_model->beginRemoveRows(index,row,row );
+        QModelIndex index=_model->indexFromItem(this,0);
+        _model->beginRemoveRows(index,row,row );
     }
     
     standardItem *item=children[row];
@@ -435,7 +435,7 @@ bool standardItem::removeRow(int row)
     
     if(_model!=0)
     {
-	_model->endRemoveRows();
+        _model->endRemoveRows();
     }
     return true;
 }
@@ -604,9 +604,9 @@ void standardItem::dataChanged(const int first, const int last)
 {
     if(_model!=0)
     {
-	QModelIndex a=_model->index(row(),first);
-	QModelIndex b=_model->index(row(),last);
-	_model->emitDataChanged(a,b);
+        QModelIndex a=_model->index(row(),first);
+        QModelIndex b=_model->index(row(),last);
+        _model->emitDataChanged(a,b);
     }
 }
 
@@ -614,7 +614,7 @@ void standardItem::prealocateChildren(int n)
 {
     if(children.size()<n)
     {
-	children.reserve(n);
+        children.reserve(n);
     }
 }
 

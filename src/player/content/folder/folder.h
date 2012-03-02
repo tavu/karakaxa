@@ -48,6 +48,9 @@ class folderContent :public core::abstractContent
         void                unloaded();        
         void                readSettings();
         void                saveStates();
+
+        void                goToPl(KUrl url);
+        void                goToFolder(KUrl url);
         
         folderContextMenu   *m;
         myFileSystemModel   *model;

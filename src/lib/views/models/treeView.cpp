@@ -301,6 +301,12 @@ void views::treeView::leaveEvent (QEvent *)
 
 void views::treeView::play(const QModelIndex &index)
 {
+    //return if item is disabled
+    if( !(index.flags() & Qt::ItemIsEditable) || index.data(DISABLE_ROLE).toBool() )
+    {
+        return ;
+    }
+    
     core::nplList list;
     int row=index.row();
     for (int i=0;i<model()->rowCount(index.parent() );i++)

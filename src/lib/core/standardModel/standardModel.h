@@ -176,26 +176,26 @@ class standardModel :public QAbstractItemModel
 // 	}
 // 	
     private:
-	void emitDataChanged(const QModelIndex & topLeft, const QModelIndex & bottomRight);
+        void emitDataChanged(const QModelIndex & topLeft, const QModelIndex & bottomRight);
 	
 	
-	class defaultHeadItem :public standardItem
-	{
-	  public:
-	    int columnCount() const
-	    {
-            return 1;
-	    }
-      
-	    QVariant data (int column, int role = Qt::UserRole + 1 ) const 
-	    {
-            Q_UNUSED(column)
-            Q_UNUSED(role)
-            return QVariant();
-	    }    
-	};	
-      
-	standardItem *head;
+        class defaultHeadItem :public standardItem
+        {
+        public:
+            int columnCount() const
+            {
+                return 1;
+            }
+
+            QVariant data (int column, int role = Qt::UserRole + 1 ) const
+            {
+                Q_UNUSED(column)
+                Q_UNUSED(role)
+                return QVariant();
+            }
+        };
+
+        standardItem *head;
 };
 
 

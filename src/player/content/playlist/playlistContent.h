@@ -34,8 +34,7 @@ class playlistContent :public core::abstractContent
         QIcon icon() const
         {
             return views::decor->playListIcon();
-        }
-	  
+        }	  
 	  
     private:
         QAction 		        *backAction;
@@ -76,6 +75,11 @@ class playlistContent :public core::abstractContent
 
         core::filesQueryGrt	    *quer;
         views::trackModelItem	*smItem;
+
+        QByteArray              plState;
+        QByteArray              smpState;
+
+        void                    readSettings();
 	  
     public slots:
         void back();
@@ -87,7 +91,7 @@ class playlistContent :public core::abstractContent
         void createSmpSlot();
         void editSmpSlot();
         void removeSlot();
-        void save();
+        void writeSettings();
         void contextMenuSlot(QModelIndex index);
         void contextMenuForTracks(QModelIndex index, QModelIndexList list);
         void updateQueries();

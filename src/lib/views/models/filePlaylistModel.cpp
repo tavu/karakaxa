@@ -21,10 +21,16 @@ void views::filePlaylistModel::setPlaylist(core::playlist* playlist)
         return ;
     }
 
-    playlistModel::setPlaylist(playlist);
-    thr->pl=pl;
-    connect(pl,SIGNAL(tracksInserted(int,int)),this,SLOT(updateData(int,int)) );
     fpl->load();
+    playlistModel::setPlaylist(playlist);    
+    
+    thr->pl=pl;
+    thr->row=0;
+    thr->num=pl->size();
+    thr->canceled=false;
+    thr->start();
+//     connect(pl,SIGNAL(tracksInserted(int,int)),this,SLOT(updateData(int,int)) );
+    
 }
 
 

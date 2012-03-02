@@ -28,6 +28,12 @@ bool folderProxyModel::filterAcceptsRow ( int row, const QModelIndex &parent ) c
     return false;
 }
 
+void folderProxyModel::sort(int column, Qt::SortOrder order)
+{
+    QSortFilterProxyModel::sort(column, order);
+}
+
+
 bool folderProxyModel::lessThan ( const QModelIndex & left, const QModelIndex & right ) const
 {
     QString pathL,pathR;

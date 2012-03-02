@@ -29,7 +29,6 @@ QString core::folder(QString path)
     {
         return QString();
     }
-    qDebug()<<"path "<<path.left(path.lastIndexOf('/') );
     return path.left(path.lastIndexOf('/') );
 }
 
