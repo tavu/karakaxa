@@ -61,20 +61,6 @@ void views::treeView::rowsInserted(const QModelIndex& parent, int start, int end
     
 }
 
-bool views::treeView::viewportEvent(QEvent* event)
-{
-    /*
-    if(event->type()==QEvent::ToolTip)
-    {
-         QToolTip::showText(QCursor::pos(),"<b> test</b>");
-         event->accept();
-         return true;
-    }
-    */
-    return QTreeView::viewportEvent(event);
-}
-
-
 void views::treeView::mouseDoubleClickEvent(QMouseEvent* event)
 {        
     QTreeView::mouseDoubleClickEvent(event);
