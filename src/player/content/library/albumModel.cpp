@@ -17,7 +17,7 @@ albumModel::albumModel(QObject *parent)
     itemSize.setHeight(150);
     itemSize.setWidth(150);
     
-    albumGrt=new core::albumQueryGrt(this);
+    albumGrt=new database::albumQueryGrt(this);
 
 }
 

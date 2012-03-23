@@ -21,7 +21,7 @@ core::nplFile::nplFile(QString s)
     }
     else
     {
-	   connect(db,SIGNAL(updated(audioFiles::audioFile)),this,SLOT(emitCh(audioFiles::audioFile) ) ) ;
+// 	   connect(db(),SIGNAL(updated(audioFiles::audioFile)),this,SLOT(emitCh(audioFiles::audioFile) ) ) ;
     }
 
     _loadFlag=audioFile::ONDATAB|audioFile::ONCACHE|audioFile::TITLEFP;

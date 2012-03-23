@@ -1,7 +1,7 @@
 #ifndef SMPLAYLISTITEM_H 
 #define SMPLAYLISTITEM_H
 #include<core.h>
-
+#include<queries/abstractQuery.h>
 
 class smplaylistItem :public core::xmlItem
 {
@@ -13,7 +13,7 @@ class smplaylistItem :public core::xmlItem
 	
 	virtual int type () const;
 	
- 	virtual core::queryGrt::abstractQuery* query() const;	
+ 	virtual database::abstractQuery* query() const;
 	
 	virtual bool insertRows ( int row, const QList< core::xmlItem* >& items )
 	{
@@ -35,11 +35,11 @@ class smplaylistItem :public core::xmlItem
 	
     protected:
 	
-	mutable core::queryGrt::abstractQuery *quer;
+	mutable database::abstractQuery *quer;
 // 	mutable QString _query;
 	
  	void generateQuery() const;
- 	core::queryGrt::abstractQuery * group(QDomNode nod) const;
+ 	database::abstractQuery * group(QDomNode nod) const;
 };
 
 

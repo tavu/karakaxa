@@ -5,7 +5,12 @@
 #include <QHBoxLayout>
 #include <QVariant>
 #include"../../core/core.h"
+
 #include <QStringListModel>
+#include<database.h>
+#include<queries/tagQuery.h>
+#include<queries/tagQueryGrt.h>
+
 namespace views
 {
 
@@ -19,8 +24,8 @@ class textEditor :public QLineEdit
         
     private:
       
-        core::tagQueryGrt  *q;
-        core::queryGrt::tagQuery tagQ;
+        database::tagQueryGrt  *q;
+        database::tagQuery tagQ;
 
         QCompleter *comp;
 

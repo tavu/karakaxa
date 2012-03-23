@@ -3,6 +3,7 @@
 #include"items.h"
 #include"sortProxyModel.h"
 #include<QFile>
+#include<queries/fileQueryGrt.h>
 #define XMLFILE QString("playlists.xml")
 
 using namespace core;
@@ -11,7 +12,7 @@ playlistContent::playlistContent(QWidget *parent)
         needUpdate(false),
         trackProxy(0)
 {    
-    quer=new filesQueryGrt(this);
+    quer=new database::filesQueryGrt(this);
     smItem=new views::trackModelItem();
     smItem->setQueryG(quer);
     
@@ -343,7 +344,7 @@ void playlistContent::activationSlot(QModelIndex in)
         trackProxy->setSourceModel(smpModel);
 
         
-        queryGrt::abstractQuery *q=i->query();
+        database::abstractQuery *q=i->query();
         quer->setQuery(q->clone() );
         quer->select();
         textS=item->data(0,Qt::DisplayRole).toString();

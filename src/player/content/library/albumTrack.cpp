@@ -8,6 +8,8 @@
 #include<core.h>
 #include<views.h>
 #include<KConfigGroup>
+#include<queries/matchQuery.h>
+#include<queries/queryGeneration.h>
 #include<editors/editMultFiles.h>
 using namespace core;
 
@@ -59,9 +61,9 @@ void albumTrack::trackVInit()
 
     trackV->setNotHide(TITLE);
     
-    queryGen=new core::filesQueryGrt(this);
+    queryGen=new database::filesQueryGrt(this);
 //     quer=new queryGrt::tagQuery();
-    andQ=new queryGrt::matchQuery(queryGrt::AND);
+    andQ=new database::matchQuery(database::AND);
 //     andQ->append(quer);
     queryGen->setQuery(andQ);
     
@@ -146,9 +148,9 @@ void albumTrack::albumActivated(const QModelIndex &n)
 {    
     int albumId=albumM->albumId(n.row() );
 
-   queryGrt::tagQuery *quer=new queryGrt::tagQuery();
+   database::tagQuery *quer=new database::tagQuery();
    
-   quer->init(ALBUM_ID,queryGrt::EQUAL,QVariant(albumId) );
+   quer->init(ALBUM_ID,database::EQUAL,QVariant(albumId) );
    andQ->clear();
    andQ->append(quer);
    if(searchQ!=0 && searchQ->isValid() )

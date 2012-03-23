@@ -7,9 +7,14 @@
 #include<QProgressBar>
 #include<QLineEdit>
 #include<KIcon>
-#include <database/scanTread.h>
+#include <database.h>
+#include<databaseScanner.h>
+#include <scanTread.h>
+#include<libraryFolder.h>
+
 
 using namespace core;
+using namespace database;
 configureContent::configureContent(QWidget *parent)
         :abstractContent(parent),
         dbNameS(QObject::tr("Database Name:")),
@@ -38,12 +43,12 @@ configureContent::configureContent(QWidget *parent)
     setLayout(layout);
     
     connect(rememberPl,SIGNAL(stateChanged(int) ),this,SLOT(rememberPlSlot(int) ) );
-    connect(db,SIGNAL(stateCanged(dbState,dbState)),this,SLOT(scanButtonActive()) );
+    connect(db(),SIGNAL(stateCanged(dbState,dbState)),this,SLOT(scanButtonActive()) );
 }
 
 void configureContent::scanButtonActive()
 {
-    if(db->state()==core::NORMAL)
+    if(db()->state()==NORMAL)
     {
         scanB->setDisabled(false);
         updateB->setDisabled(false);
@@ -82,8 +87,12 @@ void configureContent::libconfInit()
 {
     groupB=new QGroupBox(this);
     groupB->setTitle(tr("Library") );
-    listV=new QListView(this);
-    model=new QStringListModel(db->getLibraryFolders(),this);
+    listV=new QListView(this);    
+    model=new QStringListModel(this);
+
+    libraryFolder lf;
+    model->setStringList(lf.libraryFolders());
+    
     listV->setModel(model);
 
     addFolder=new QPushButton(KIcon("list-add"),tr("Add Folder"),this);
@@ -96,9 +105,9 @@ void configureContent::libconfInit()
     spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     
-    dbNameL = new QLineEdit(db->dataBName(),this);    
-    dbUserL = new QLineEdit(db->dataBUser(),this);
-    dbPassL = new QLineEdit(db->dataBPass(),this);
+    dbNameL = new QLineEdit(db()->dataBName(),this);
+    dbUserL = new QLineEdit(db()->dataBUser(),this);
+    dbPassL = new QLineEdit(db()->dataBPass(),this);
     dbPassL->setEchoMode(QLineEdit::Password);
     
      dbNameL->setMinimumWidth(150);
@@ -151,13 +160,13 @@ void configureContent::DbButtonClicked(QAbstractButton *button)
 {       
     if (DbButtons->buttonRole(button)==QDialogButtonBox::ApplyRole)
     {
-        db->dBConnect(dbNameL->text(),dbUserL->text(),dbPassL->text());
-        db->setUpDb();
+        db()->dBConnect(dbNameL->text(),dbUserL->text(),dbPassL->text());
+        db()->setUpDb();
     }
 
-    dbNameL->setText(db->dataBName());
-    dbUserL->setText(db->dataBUser());
-    dbPassL->setText(db->dataBPass());
+    dbNameL->setText(db()->dataBName());
+    dbUserL->setText(db()->dataBUser());
+    dbPassL->setText(db()->dataBPass());
 }
 
 void configureContent::addLibraryFolder()
@@ -172,26 +181,31 @@ void configureContent::addLibraryFolder()
     {
         return;
     }
-    db->addLibraryFolder(l.at(0) );
-    model->setStringList(db->getLibraryFolders());
+
+    libraryFolder lf;
+    lf.addLibraryFolder(l.at(0) );
+    model->setStringList(lf.libraryFolders());
 }
 
 void configureContent::removeLibraryFolder()
-{    
-    db->removeLibraryFolder(listV->currentIndex().data().toString() );    
-    model->setStringList(db->getLibraryFolders());
+{
+    libraryFolder lf;
+    lf.removeLibraryFolder(listV->currentIndex().data().toString() );
+    model->setStringList(lf.libraryFolders());
 }
 
 void configureContent::scanLibrary()
 {
-    core::scanThread *sc=new scanThread(core::RESCAN);
-    sc->setDirs(db->getLibraryFolders());
+    scanThread *sc=new scanThread(RESCAN);
+    libraryFolder lf;
+    sc->setDirs(lf.libraryFolders());
     sc->scan();
 }
 
 void configureContent::updateLibrary()
 {
-    core::scanThread *sc=new scanThread(core::UPDATE);
-    sc->setDirs(db->getLibraryFolders());
+    scanThread *sc=new scanThread(UPDATE);
+    libraryFolder lf;
+    sc->setDirs(lf.libraryFolders());
     sc->scan();
 }

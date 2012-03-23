@@ -8,6 +8,9 @@
 #include<QAbstractListModel>
 #include<QVariant>
 #include<core.h>
+#include<queries/abstractQuery.h>
+#include<queries/albumQueryGrt.h>
+
 #include "albumWidget.h"
 
 class albumModel :public QAbstractListModel
@@ -33,7 +36,7 @@ class albumModel :public QAbstractListModel
 	    return 1;
 	}
 	
-	void setSearch(core::queryGrt::abstractQuery *qe)
+	void setSearch(database::abstractQuery *qe)
 	{
 // 	    searchQ=qe;
 	    albumGrt->setQuery(qe);
@@ -45,7 +48,7 @@ class albumModel :public QAbstractListModel
 	    albumGrt->setArtist(s);
 	}
 	
-	const core::albumQueryGrt* queryGrt()
+	const database::albumQueryGrt* queryGrt()
 	{
 	    return albumGrt;
 	}
@@ -64,10 +67,10 @@ class albumModel :public QAbstractListModel
 	
 	QString artist;
 	
-	core::queryGrt::abstractQuery *searchQ;
-	core::albumQueryGrt *albumGrt;
+	database::abstractQuery *searchQ;
+	database::albumQueryGrt *albumGrt;
 	
-	QList<core::album> albums;
+	QList<database::album> albums;
 
 	void resizePix();
 };

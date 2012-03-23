@@ -14,7 +14,7 @@ artistModel::artistModel(QObject *parent)
     size.setWidth(100);
     itemSize.setHeight(100);
     artistPic=views::decor->tagIcon(ARTIST).pixmap(50,50);
-    artistQ=new core::artistQueryGrt(this);    
+    artistQ=new database::artistQueryGrt(this);
 }
 
 

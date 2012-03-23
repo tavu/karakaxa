@@ -5,9 +5,8 @@
 // #include".h"
 #include<QLabel>
 #include<QStatusBar>
-#include"../../core/database/database.h"
 #include"nowPlayList/nplaylist.h"
-#include<database/database.h>
+#include<database.h>
 namespace views
 {
 class statusBar :public QStatusBar
@@ -15,16 +14,13 @@ class statusBar :public QStatusBar
     Q_OBJECT
     public:
         statusBar(QWidget *parent=0);
-        //     QStatusBar* statusBar();
-        //     void addPermanentWidget(QWidget *w);
-        //     void removeWidget(QWidget *w);
         ~statusBar();
         void init();
     protected:    
         int timeOut;
         QLabel *label;
         QTimer *timer;
-        core::dbScanner scanner;
+        database::dbScanner scanner;
         
         
     public slots:

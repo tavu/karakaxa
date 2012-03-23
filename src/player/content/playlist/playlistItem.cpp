@@ -2,6 +2,7 @@
 #include"items.h"
 #include<KIcon>
 #include<views.h>
+#include<libraryFolder.h>
 using namespace core;
 playlistFolder::playlistFolder(const QString& name) 
   :standardItem(),
@@ -58,13 +59,16 @@ bool playlistFolder::canFetchMore() const
 
 void playlistFolder::fetchMore()
 {
-     QSqlQuery q=db->playlists();
-
-     while (q.next())
+     database::libraryFolder  lf;
+     QStringList l=lf.playLists();
+     QList< standardItem* > items;
+     
+     foreach(QString s,l)
      {
-	  playlistItem *item=new playlistItem(q.value(0).toString() );
-	  appendRow(item);
+        playlistItem *item=new playlistItem(s);
+        items<<item;
      }
+     insertRows(0,items);
      childrenFlag=true;
 }
 

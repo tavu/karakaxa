@@ -2,7 +2,7 @@
 #define EDITMULTFILES_H
 
 #include<QThread>
-#include"../files/audioFile.h"
+#include<audioFiles.h>
 // #include "func.h"
 #include<QDebug>
 
@@ -42,47 +42,47 @@ class editMultFiles :public QObject
         
     class editFiles :public  QThread 
     {
-	public:
-	      editFiles(QObject* parent = 0);
+        public:
+            editFiles(QObject* parent = 0);
 
-	      QList<audioFiles::audioFile> files()
-	      {
-            return fileList;
-	      }
+            QList<audioFiles::audioFile> files()
+            {
+                return fileList;
+            }
 
-	      void setFiles(const QList<audioFiles::audioFile> &list)
-	      {
-            fileList=list;
-	      }
+            void setFiles(const QList<audioFiles::audioFile> &list)
+            {
+                fileList=list;
+            }
 
-	      int tag()
-	      {
-            return tag_;
-	      }
+            int tag()
+            {
+                return tag_;
+            }
 
-	      void setTag(int t)
-	      {
-            tag_=t;
-	      }
+            void setTag(int t)
+            {
+                tag_=t;
+            }
 
-	      QVariant value()
-	      {
-            return value_;
-	      }
+            QVariant value()
+            {
+                return value_;
+            }
 
-	      void setValue(const QVariant &var)
-	      {
-            value_=var;
-	      }
+            void setValue(const QVariant &var)
+            {
+                value_=var;
+            }
 
-	      void start();
+            void start();
 
-	protected:
-	      void run();
-	      int tag_;
-	      QVariant value_;
-	      QList<audioFiles::audioFile> fileList;
-	      QList<int> errors;	 	  
+        protected:
+            void run();
+            int tag_;
+            QVariant value_;
+            QList<audioFiles::audioFile> fileList;
+            QList<int> errors;	 	  
     }; 
 
     private:
@@ -91,7 +91,6 @@ class editMultFiles :public QObject
 
         void multFilesEmiter()
         {
-            qDebug()<<"FF";
             emit finished();
         }
 
@@ -102,7 +101,7 @@ class editMultFiles :public QObject
         }
     	
     private slots:
-    void finishedSlot();
+        void finishedSlot();
     
     signals:
         void finished();

@@ -8,7 +8,7 @@ creatorItem::creatorItem(creatorItem* parent, creatorItem::Type t)
         QObject(),
         doc(parent->document()),
         equalSelector(0),
-	lineE(0),
+        lineE(0),
         tagsSpin(0)
 {
     
@@ -70,7 +70,7 @@ void creatorItem::setXml(QDomElement el)
 	
 	int eq=el.attribute("comparison","0").toInt(0,10);
 	
-	for(int i=0;i<queryGrt::LESS;i++)
+	for(int i=0;i<database::LESS;i++)
 	{
 	    if(equalSelector->itemData(i).toInt()==eq )
 	    {
@@ -160,9 +160,9 @@ void creatorItem::setupFilde(int num)
     {
 
         equalSelector->clear();
-        equalSelector->addItem(tr("Equal to"),queryGrt::EQUAL);
-        equalSelector->addItem(tr("Greater than"),queryGrt::GREATER);
-        equalSelector->addItem(tr("Less than"),queryGrt::LESS);
+        equalSelector->addItem(tr("Equal to"),database::EQUAL);
+        equalSelector->addItem(tr("Greater than"),database::GREATER);
+        equalSelector->addItem(tr("Less than"),database::LESS);
 
 	if(treeWidget()->itemWidget(this,3)!=tagsSpin ||treeWidget()->itemWidget(this,3)==0)
 	{
@@ -197,10 +197,10 @@ void creatorItem::setupFilde(int num)
 	}
 	
         equalSelector->clear();
-        equalSelector->addItem(tr("Equal to"),queryGrt::EQUAL);
-        equalSelector->addItem(tr("Contains"),queryGrt::CONTAINS);
-        equalSelector->addItem(tr("Starts with"),queryGrt::STARTS);
-        equalSelector->addItem(tr("Ends with"),queryGrt::ENDS);
+        equalSelector->addItem(tr("Equal to"),database::EQUAL);
+        equalSelector->addItem(tr("Contains"),database::CONTAINS);
+        equalSelector->addItem(tr("Starts with"),database::STARTS);
+        equalSelector->addItem(tr("Ends with"),database::ENDS);
     }
 
 }

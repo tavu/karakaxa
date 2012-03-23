@@ -6,6 +6,8 @@
 #include<QStringListModel>
 #include<QIcon>
 #include<core.h>
+#include<queries/abstractQuery.h>
+#include<queries/artistQueryGrt.h>
 class artistModel :public QStringListModel
 {
     Q_OBJECT
@@ -15,7 +17,7 @@ class artistModel :public QStringListModel
         
         QVariant data(const QModelIndex &item, int role) const;
         void updateQueries();
-        void setSearch(core::queryGrt::abstractQuery *qe)
+        void setSearch(database::abstractQuery *qe)
         {
             if(qe->isValid())
             {
@@ -37,7 +39,7 @@ class artistModel :public QStringListModel
             return _needUpdate;
         }
 
-        const core::artistQueryGrt * queryGrt()
+        const database::artistQueryGrt * queryGrt()
         {
             return artistQ;
         }
@@ -48,8 +50,8 @@ class artistModel :public QStringListModel
         QSize itemSize;
         QPixmap artistPic;
 
-        core::queryGrt::abstractQuery *q;
-        core::artistQueryGrt *artistQ;
+        database::abstractQuery *q;
+        database::artistQueryGrt *artistQ;
         bool _needUpdate;
 
 

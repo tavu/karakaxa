@@ -1,27 +1,28 @@
 #include"fileToDb.h"
-#include"../database/database.h"
+#include"database.h"
 #include<QtDebug>
 #include<QFileInfoList>
 
 #include<core.h>
 
+
 // using namespace player;
 using namespace core;
 
-audioFiles::fileToDb::fileToDb(QString path)
+database::fileToDb::fileToDb(QString path) :dbBase()
 {
   _path=path;  
 }
 
-
-audioFiles::fileToDb::~fileToDb()
+database::fileToDb::~fileToDb()
 {
-    core::db->closeDatabase(databs);
+    db()->closeDatabase(databs);
 }
 
 
-int audioFiles::fileToDb::setTag(int t, QVariant var)
+int database::fileToDb::setTag(int t, QVariant var)
 {
+    using namespace audioFiles;
     tag=t;
     value=var;
     
@@ -100,20 +101,15 @@ int audioFiles::fileToDb::setTag(int t, QVariant var)
     return err;    
 }
 
-int audioFiles::fileToDb::commit()
+int database::fileToDb::commit()
 {
-//     if (!databs.commit() )
-//     {
-//         qDebug()<<"Seting genre error: "<<databs.lastError().text();
-//         return DBERR;
-//     }
     return OK;
 
 }
 
-int audioFiles::fileToDb::prepare()
+int database::fileToDb::prepare()
 {
-    databs=core::db->getDatabase();
+    databs=db()->getDatabase();
     if (!databs.isOpen())
     {
         return DBERR;
@@ -122,14 +118,14 @@ int audioFiles::fileToDb::prepare()
     return OK;
 }
 
-int audioFiles::fileToDb::end()
+int database::fileToDb::end()
 {
     return OK;
 }
 
 
 
-int audioFiles::fileToDb::setArtist (const QString &s)
+int database::fileToDb::setArtist (const QString &s)
 {
     QSqlQuery q(databs );
 
@@ -154,7 +150,7 @@ int audioFiles::fileToDb::setArtist (const QString &s)
              
     if(_leadArtist.trimmed().isEmpty() )
     {
-	     q.prepare("select artist from artist_album where id=?");
+	    q.prepare("select artist from artist_album where id=?");
 		q.addBindValue( _albumId );
 		if (!q.exec())
 		{
@@ -177,7 +173,7 @@ int audioFiles::fileToDb::setArtist (const QString &s)
     return OK;
 }
 
-int audioFiles::fileToDb::setAlbum (const QString &s)
+int database::fileToDb::setAlbum (const QString &s)
 { 
     QSqlQuery q(databs );
 
@@ -233,7 +229,7 @@ int audioFiles::fileToDb::setAlbum (const QString &s)
 }
 
 
-int audioFiles::fileToDb::setGenre (const QString &s)
+int database::fileToDb::setGenre (const QString &s)
 {
     QSqlQuery q(databs);
 
@@ -258,7 +254,7 @@ int audioFiles::fileToDb::setGenre (const QString &s)
     return OK;
 }
 
-int audioFiles::fileToDb::setLeadArtist (const QString &s)
+int database::fileToDb::setLeadArtist (const QString &s)
 {
     QSqlQuery q(databs );    
 
@@ -301,7 +297,7 @@ int audioFiles::fileToDb::setLeadArtist (const QString &s)
     return OK;
 }
 
-bool audioFiles::fileToDb::setAlbumArtist(const QString &artist,QSqlQuery &q)
+bool database::fileToDb::setAlbumArtist(const QString &artist,QSqlQuery &q)
 {
     q.prepare( "CALL get_album(?,?,@k)");
     q.addBindValue(_album);
@@ -359,20 +355,9 @@ bool audioFiles::fileToDb::setAlbumArtist(const QString &artist,QSqlQuery &q)
 }
 
 
-int audioFiles::fileToDb::setComposer (const QString &s)
+int database::fileToDb::setComposer (const QString &s)
 {
     QSqlQuery q(databs );
-    q.prepare("select composer from tracks where path=?");
-    q.addBindValue(_path );
-    q.exec();
-
-    if (!q.first())
-    {
-        qDebug()<<"probably file not exist in library";
-        return NOTINDB;
-    }
-
-    int composerId=q.value(0).toInt();
 
     q.prepare("CALL get_composer (?,@i) ");
     q.addBindValue( s );
@@ -398,7 +383,7 @@ int audioFiles::fileToDb::setComposer (const QString &s)
 }
 
 
-int audioFiles::fileToDb::setTitle(const QString &s)
+int database::fileToDb::setTitle(const QString &s)
 {
     QSqlQuery q(databs);
 
@@ -423,7 +408,7 @@ int audioFiles::fileToDb::setTitle(const QString &s)
     return OK;
 }
 
-int audioFiles::fileToDb::setComment (const QString &s)
+int database::fileToDb::setComment (const QString &s)
 {
     QSqlQuery q(databs );
     q.prepare( "update tracks SET comment=? where path=?");
@@ -438,7 +423,7 @@ int audioFiles::fileToDb::setComment (const QString &s)
     return OK;
 }
 
-int audioFiles::fileToDb::setYear (const unsigned int &year)
+int database::fileToDb::setYear (const unsigned int &year)
 {
     QSqlQuery q(databs );
     q.prepare( "update tracks SET year=? where path=?");
@@ -453,7 +438,7 @@ int audioFiles::fileToDb::setYear (const unsigned int &year)
     return OK;
 }
 
-int audioFiles::fileToDb::setTrack (const unsigned int &track)
+int database::fileToDb::setTrack (const unsigned int &track)
 {
     QSqlQuery q(databs );
     q.prepare( "update tracks SET tracknumber=? where path=?");
@@ -468,7 +453,7 @@ int audioFiles::fileToDb::setTrack (const unsigned int &track)
     return OK;
 }
 
-int audioFiles::fileToDb::setRating (const unsigned int &rating)
+int database::fileToDb::setRating (const unsigned int &rating)
 {
     QSqlQuery q(databs );
     q.prepare( "update tracks SET rating=? where path=?");
@@ -483,7 +468,7 @@ int audioFiles::fileToDb::setRating (const unsigned int &rating)
     return OK;
 }
 
-int audioFiles::fileToDb::setCounter(const unsigned int &num )
+int database::fileToDb::setCounter(const unsigned int &num )
 {
     QSqlQuery q(databs );
     q.prepare( "update tracks SET count=? where path=?");
@@ -498,14 +483,14 @@ int audioFiles::fileToDb::setCounter(const unsigned int &num )
     return OK;
 }
 
-QSqlRecord audioFiles::fileToDb::record(const QString path,int &err)
+QSqlRecord database::fileToDb::record(const QString path,int &err)
 {    
-    QSqlDatabase databs=db->getDatabase();
+    QSqlDatabase databs=db()->getDatabase();
 
     if (!databs.isOpen() )
     {
          err=DBERR;
-         core::db->closeDatabase(databs);
+         db()->closeDatabase(databs);
          return QSqlRecord();
     }
     
@@ -522,7 +507,7 @@ QSqlRecord audioFiles::fileToDb::record(const QString path,int &err)
 		qDebug()<<"getting record error "<<q.lastError().text();
 		err=DBERR;
 
-		core::db->closeDatabase(databs);
+		db()->closeDatabase(databs);
 		r=QSqlRecord();
 	 }
 	 else
@@ -540,12 +525,13 @@ QSqlRecord audioFiles::fileToDb::record(const QString path,int &err)
 	 }
     }
     
-    core::db->closeDatabase(databs);
+    db()->closeDatabase(databs);
 
     return r;
 }
 
-QString audioFiles::fileToDb::albumArt(const int albumId,int &err)
+
+QString database::fileToDb::albumArt(const int albumId,int &err)
 {
     QSqlQuery q(databs);
     q.prepare("select image from albums where id=?");
@@ -563,7 +549,7 @@ QString audioFiles::fileToDb::albumArt(const int albumId,int &err)
     return q.value(0).toString();
 }
 
-int audioFiles::fileToDb::setAlbumArt(const int albumId,QString art)
+int database::fileToDb::setAlbumArt(const int albumId,QString art)
 {
     QSqlQuery q(databs );
 
@@ -578,60 +564,4 @@ int audioFiles::fileToDb::setAlbumArt(const int albumId,QString art)
    }
 
     return OK;
-}
-
-void fileToDb::cleanUp()
-{
-    clearArtist();
-    clearAlbum();    
-    clearGenre();    
-    clearComposer();
-}
-
-void fileToDb::clearArtist()
-{	   
-	 QSqlQuery q(databs );
-	 
-	 q.prepare("delete from artists where artists.id not in (select tracks.lead_artist from tracks) and artists.id not in (select tracks.artist from tracks)");
-
-	 if (!q.exec() )
-	 {
-		qDebug()<<"setting albumArt error "<<q.lastError().text();		
-	 }    
-}
-
-void fileToDb::clearAlbum()
-{	   
-	 QSqlQuery q(databs );
-	 
-	 q.prepare("delete from albums where albums.id not in (select tracks.album from tracks)");
-
-	 if (!q.exec() )
-	 {
-		qDebug()<<"setting albumArt error "<<q.lastError().text();		
-	 }    
-}
-
-void fileToDb::clearGenre()
-{	   
-	 QSqlQuery q(databs );
-	 
-	 q.prepare("delete from genres where genres.id not in (select tracks.genre from tracks)");
-
-	 if (!q.exec() )
-	 {
-		qDebug()<<"setting albumArt error "<<q.lastError().text();		
-	 }    
-}
-
-void fileToDb::clearComposer()
-{	   
-	 QSqlQuery q(databs );
-	 
-	 q.prepare("delete from composers where composers.id not in (select tracks.composer from tracks)");
-
-	 if (!q.exec() )
-	 {
-		qDebug()<<"setting albumArt error "<<q.lastError().text();		
-	 }    
 }

@@ -3,7 +3,7 @@
 #include"../../core/status/playerStatus.h"
 #include"../../core/nowPlayList/nplaylist.h"
 #include"../viewsFunc.h"
-#include"../../core/database/scanTread.h"
+#include<scanTread.h>
 
 using namespace core;
 views::statusBar::statusBar(QWidget *parent)
@@ -27,7 +27,7 @@ views::statusBar::statusBar(QWidget *parent)
     connect(npList,SIGNAL(tracksRemoved(int,int)),this,SLOT(setTrackTime() ) );
     connect(npList,SIGNAL(cleared() ),this,SLOT(setTrackTime() ) );
     
-    connect(db,SIGNAL(stateCanged(dbState,dbState)),this,SLOT(addScanner()));
+    connect(database::db(),SIGNAL(stateCanged(dbState,dbState)),this,SLOT(addScanner()));
 }
 
 void views::statusBar::showMessage(const QString &s,int time)
@@ -73,7 +73,8 @@ views::statusBar::~statusBar()
 
 void views::statusBar::addScanner()
 {
-    if(db->state()==NORMAL && !scanner.isNull())
+    using namespace database;
+    if(db()->state()==NORMAL && !scanner.isNull())
     {        
         timer=new QTimer(this);
         timer->setInterval(5000);
@@ -94,7 +95,7 @@ void views::statusBar::addScanner()
             removeWidget(scanner->widget() );
         }
 
-        scanner=core::db->scanner();
+        scanner=db()->scanner();
         if(scanner->widget() !=0)
         {
             scanner->widget()->setFixedWidth(230);

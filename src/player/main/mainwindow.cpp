@@ -23,6 +23,7 @@
 #include"content/edit/editTrackContent.h"
 #include"content/nowPlaylist/nowPlaylistContent.h"
 #include<QVBoxLayout>
+#include<dbFunc.h>
 
 #include<KHelpMenu>
 #include<KMenuBar>
@@ -36,8 +37,10 @@ using namespace core;
 
 mainWindow::mainWindow()
         :KMainWindow()
-{    
+{
+    audioFiles::init();
     core::init();
+    database::init();
     views::init();
 
     setIconSize(ICONZISE);
