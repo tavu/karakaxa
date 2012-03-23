@@ -5,11 +5,18 @@
 #include<QHash>
 #include<QMutex>
 #include<QReadWriteLock>
-#include"fileTags.h"
-#include"audioFiles.h"
-#include<QSharedMemory>
+// #include<QSharedMemory>
+
 #include<fileToDb.h>
-// #include<player.h>
+
+#include"fileTags.h"
+// #include"audioFiles.h"
+
+// #include<database.h>
+namespace database
+{
+    class fileToDb;
+}
 
 namespace audioFiles
 {
@@ -31,7 +38,7 @@ class fileCache
       
       inline QString path()
       {
-	  return _path;
+        return _path;
       }
       
       int 		loadTags(bool force=false);
@@ -39,7 +46,8 @@ class fileCache
       int 		select(bool force=false);
       QVariant 	tagFromFile(tagsEnum t, int &err);
       QVariant 	tagFromDb(int t, int& err);
-      
+      QString   coverPath();
+      QString   findCoverPath(int& err);
 	  
       int 		albumId(int &err);
 	 
@@ -51,7 +59,7 @@ class fileCache
 	 
 	 int 		prepareToSave();
 	 
-      void 		savingEnd();
+     void 		savingEnd();
       
   private:
       fileCache(QString path);
@@ -63,10 +71,12 @@ class fileCache
       QString _path;   
       
 	 fileTags *file;
-	 fileToDb *fdb;	
+	 database::fileToDb *fdb;	
 
-	 QMutex loadMutex;
-	 QMutex readMutex;
+     QString _coverPath;
+// 	 QMutex loadMutex;
+// 	 QMutex readMutex;
+     QReadWriteLock rwLock;
 
   public:
       static fileCache* 	getFileCache(QString path);

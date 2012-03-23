@@ -24,7 +24,7 @@ library::library(QWidget *parent)
     stack->addWidget(artistV);
     stack->addWidget(albumTrV);
 
-    searchQ=new queryGrt::matchQuery(queryGrt::OR);
+    searchQ=new database::matchQuery(database::OR);
     artistM->setSearch(searchQ);
 //     albumTrV->setSearch(searchQ);
     
@@ -103,14 +103,14 @@ void library::toolBarInit()
 void library::search(const QString & text)
 {    
 //     searchQ->clear();
-    queryGrt::matchQuery searchQ(queryGrt::OR);
+    database::matchQuery searchQ(database::OR);
     if(!text.isEmpty() )
     {
 	   QLinkedList<tagsEnum>::iterator i=searchTagL.begin();
 		    
 	   for(i=searchTagL.begin();i!=searchTagL.end();i++)
 	   {
-		  queryGrt::tagQuery *t=new queryGrt::tagQuery(*i,queryGrt::CONTAINS,text);
+		  database::tagQuery *t=new database::tagQuery(*i,database::CONTAINS,text);
 		  searchQ.append(t);
 	   }
     }

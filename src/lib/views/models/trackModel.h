@@ -1,10 +1,14 @@
 #ifndef TRACKMODEL_H
 #define TRACKMODEL_H
 #include <qobject.h>
+
+#include<queries/queryGeneration.h>
+#include<queries/fileQueryGrt.h>
+
 #include"../../core/standardModel/standardModel.h"
-#include"../../core/database/queryGeneration.h"
 #include"../../files/audioFiles.h"
 #include"../views.h"
+
 namespace views
 {
 
@@ -84,12 +88,12 @@ class trackModelItem :public standardItem
             return QVariant();
         }
 
-        core::filesQueryGrt* queryG()
+        database::filesQueryGrt* queryG()
         {
             return q;
         }
 
-        void setQueryG(core::filesQueryGrt *qe);
+        void setQueryG(database::filesQueryGrt *qe);
 
     public slots:
         void addItem(audioFile f, int pos);
@@ -105,7 +109,7 @@ class trackModelItem :public standardItem
         //this function returns a trackItem pointer.
         //is usefull if u want to use a subclass of trackItem.
         virtual standardItem* getItem(audioFiles::audioFile &f);
-        core::filesQueryGrt *q;
+        database::filesQueryGrt *q;
 
 };
 

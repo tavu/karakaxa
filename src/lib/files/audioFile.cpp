@@ -3,12 +3,12 @@
 #include<QFileInfoList>
 #include<QDir>
 // #include<player.h>
-#include"fileToDb.h"
+// #include"fileToDb.h"
 #include"mp3Tags.h"
-#include"../core/database/database.h"
 #include"../core/func.h"
 #define TRV_HIDE 1
-
+#include"fileCache.h"
+#include"audioFilesSelf.h"
 
 // using namespace player;
 
@@ -25,8 +25,7 @@ audioFiles::audioFile::audioFile()
         :QObject(),
         fileSize(0),
         saveFlag(true),
-        cache(0),
-        fdb(0)
+        cache(0)
 {    
 }
 
@@ -174,12 +173,8 @@ bool audioFiles::audioFile::setTag(int t, QVariant var)
   
     cache->select(true);
     cache->loadTags();
-    err=cache->prepareToSave();
-    if(err!=OK)
-    {
-	   return false;
-    }
-    
+    err=cache->prepareToSave();        
+
     setTagPrivate(t,var);
         
     save();
@@ -210,40 +205,41 @@ bool audioFiles::audioFile::setTagPrivate(int t,QVariant var)
     change.error=err;
     
     changes<<change;
+    return true;
 }
 
 void audioFiles::audioFile::setTags(QList<int> tags,QList<QVariant> values)
 {
     if(cache==0)
     {
-	err=INVALID_FILE;
-	return ;
+        err=INVALID_FILE;
+        return ;
     }
     
     if(tags.isEmpty() ||tags.size()!=values.size() )
     {
-	err=UNOWN;
-	return ;
+        err=UNOWN;
+        return ;
     }
+    
     cache->select(true);
     cache->loadTags();
     cache->prepareToSave();
     
     for(int i=0;i<tags.size();i++ )
     {
-	setTagPrivate(tags.at(i),values.at(i) );
+        setTagPrivate(tags.at(i),values.at(i) );
     }
     
     save();
-      
 }
 
 QVariant  audioFiles::audioFile::albumArtist()
 {     
     if(cache==0)
     {
-	err=INVALID_FILE;
-	return QVariant();
+        err=INVALID_FILE;
+        return QVariant();
     }
     
     QString s=tag(LEAD_ARTIST).toString();
@@ -258,31 +254,18 @@ QVariant  audioFiles::audioFile::albumArtist()
 
 QString audioFiles::audioFile::cover()
 {
-    fdb=new fileToDb(path() );
-    fdb->prepare();
-    QString coverPath=fdb->albumArt(albumId(),err);
-    
-    //if there is no album art on database we search on directory
-    if(coverPath.isEmpty() )
+
+    if(cache==0)
     {
-	   QLinkedList<QString> covers; 
-	   QDir dir(core::folder(path() ) );
-	   QFileInfoList infoList=dir.entryInfoList(QDir::Files|QDir::NoDotAndDotDot); 
-	   
-	   for (int i=0;i<infoList.size();i++)  
-	   {
-		  if(core::isImage(infoList.at(i).absoluteFilePath() ) )
-		  {
-			 covers<<infoList.at(i).absoluteFilePath();
-		  }
-	   }
-	   
-	   QString album=tag(ALBUM).toString();
- 	   audioFiles::bestCover(covers,album,coverPath);	
-    }    
-    fdb->end();
-    delete fdb;
-    return coverPath;
+        err=INVALID_FILE;
+        return QString();
+    }
+    QString ret=cache->coverPath();
+    if(ret.isEmpty() )
+    {
+        ret=cache->findCoverPath(err);
+    }
+    return ret;
 }
 
 int audioFiles::audioFile::size()
@@ -305,15 +288,15 @@ int audioFiles::audioFile::albumId()
 {
     if(cache==0)
     {
-	err=INVALID_FILE;
-	return -1;
+        err=INVALID_FILE;
+        return -1;
     }
     
     err=cache->select();
     
     if(err!=OK)
     {
-	return -1;
+        return -1;
     }
     return cache->albumId(err);
 }
@@ -322,15 +305,16 @@ void audioFiles::audioFile::save()
 {
     cache->savingEnd();    
     audioFile f(*this);
-    core::db->updateSig(f);        
+    self()->emitChanged(f);
+//     core::db->updateSig(f);        
 }
 
 void audioFiles::audioFile::load(const short int f)
 {
     if(cache==0)
     {
-	err=INVALID_FILE;
-	return ;
+        err=INVALID_FILE;
+        return ;
     }
   
     if(f & SELECT)
@@ -350,9 +334,28 @@ void audioFiles::audioFile::load(const short int f)
     }
     else
     {    
-	stat=UNOWN;
-	err=UNOWN;
+        stat=UNOWN;
+        err=UNOWN;
     }
+}
+
+QString audioFiles::audioFile::path() const
+{
+    if(cache==0)
+    {
+        return QString();
+    }
+    return cache->path();
+}
+
+
+void audioFiles::audioFile::setRecord(QSqlRecord r,bool force)
+{
+    if(cache==0)
+    {
+        cache=audioFiles::fileCache::getFileCache(r.value(PATH+1).toString() );
+    }
+    cache->setRecord(r,force);
 }
 
 audioFiles::audioFile* audioFiles::audioFile::operator=(const audioFile &f)
@@ -395,8 +398,8 @@ bool audioFiles::audioFile::inDataBase(bool force)
 {
     if( cache==0)
     {
-	 err=INVALID_FILE;
-	 return false;
+        err=INVALID_FILE;
+        return false;
     }
     
     err=cache->select(force);

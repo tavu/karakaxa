@@ -8,13 +8,13 @@
 #include<QSqlError>
 #include<QSqlRecord>
 // #include<player.h>
-#include"audioFiles.h"
-#include"fileCache.h"
-#include"fileToDb.h"
+#include"audioFilesFunc.h"
+#include"tagsTable.h"
+// #include"fileCache.h"
 #include<QUrl>
 namespace audioFiles
 {
-
+class fileCache;
 class audioFile :public QObject
 {
 //     using namespace audioFiles;
@@ -41,14 +41,7 @@ class audioFile :public QObject
 	
 	virtual ~audioFile();
 
-	inline QString path() const
-	{
-	    if(cache==0)
-	    {
-		  return QString();
-	    }
-	    return cache->path();
-	}
+	QString path() const;
 	
 	QVariant 			tag(int t,const short int f=DEFAULTF) const;
 	
@@ -60,7 +53,7 @@ class audioFile :public QObject
 	int 				albumId();
 
 
-	QString			folder();
+	QString			    folder();
 
 	int 				size();
 
@@ -97,15 +90,7 @@ class audioFile :public QObject
 	    return true;
 	}
 	
-	void setRecord(QSqlRecord r,bool force=false)
-	{
-	    if(cache==0)
-	    {
-		cache=audioFiles::fileCache::getFileCache(r.value(PATH+1).toString() );
-	    }
-	    cache->setRecord(r,force);
-	}
-	
+	void setRecord(QSqlRecord r,bool force=false);
 	bool inDataBase(bool force=false);
 	
     private:	
@@ -123,8 +108,8 @@ class audioFile :public QObject
 	mutable bool recFlag;
 	int fileSize;
 
-	fileTags *file;
-	fileToDb *fdb;
+// 	fileTags *file;
+// 	fileToDb *fdb;
 	
 	bool saveFlag;
 	

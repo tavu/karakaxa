@@ -9,7 +9,7 @@ views::trackItem::trackItem(audioFiles::audioFile f)
   :standardItem(),
   file(f)
 {
-    connect(core::db,SIGNAL(updated(audioFiles::audioFile)),this,SLOT(changed(audioFiles::audioFile)) );
+    connect(database::db(),SIGNAL(updated(audioFiles::audioFile)),this,SLOT(changed(audioFiles::audioFile)) );
 }
 
 
@@ -84,11 +84,11 @@ QVariant views::trackModelItem::headerData(int section, Qt::Orientation orientat
 }
 
 
-void views::trackModelItem::setQueryG(core::filesQueryGrt* qe)
+void views::trackModelItem::setQueryG(database::filesQueryGrt* qe)
 {
     if(q!=0)
     {
-	delete q;
+        delete q;
     }
     q=qe;
     q->setParent(this);
@@ -100,7 +100,7 @@ void views::trackModelItem::setQueryG(core::filesQueryGrt* qe)
     
     if(q->needUpdate() )
     {
-	q->select();
+        q->select();
     }
 }
 

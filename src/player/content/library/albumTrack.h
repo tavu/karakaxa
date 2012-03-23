@@ -11,95 +11,99 @@
 #include<core.h>
 #include<QSplitter>
 #include<QSortFilterProxyModel>
- 
+
+#include<queries/abstractQuery.h>
+#include<queries/matchQuery.h>
+#include<queries/queryGeneration.h>
+
 class albumTrack :public QWidget
 {
     Q_OBJECT
 
-    public:
-	albumTrack(QWidget *parent=0);
-	void goToArtist(QString &s);
-	void updateQueries();
-	
-	void setAlbumNeedUpdate(bool t)
-	{
-	    _albumNeedUpdate=t;
-	}
+public:
+    albumTrack(QWidget *parent=0);
+    void goToArtist(QString &s);
+    void updateQueries();
 
-	void setTrackNeedUpdate(bool t)
-	{
-	   _trackNeedUpdate=t;
-	}
+    void setAlbumNeedUpdate(bool t)
+    {
+        _albumNeedUpdate=t;
+    }
 
-    private:
+    void setTrackNeedUpdate(bool t)
+    {
+        _trackNeedUpdate=t;
+    }
 
-	void labelInit();
-	void albumVInit();
-	void trackVInit();
-		
-	void readSettings();
+private:
 
-	QSplitter *splitter;
-	albumModel *albumM;
-	standardModel *trackM;
-	QSortFilterProxyModel *proxyM;
-	views::trackModelItem *trmItem;
+    void labelInit();
+    void albumVInit();
+    void trackVInit();
 
-	QString artist;
+    void readSettings();
 
-	albumWidget *albumV;
-	views::treeView *trackV;
-	
-	core::filesQueryGrt *queryGen;
-// 	core::queryGrt::tagQuery *quer;
-	core::queryGrt::matchQuery *andQ;
-	core::queryGrt::abstractQuery *searchQ;   
+    QSplitter *splitter;
+    albumModel *albumM;
+    standardModel *trackM;
+    QSortFilterProxyModel *proxyM;
+    views::trackModelItem *trmItem;
+
+    QString artist;
+
+    albumWidget *albumV;
+    views::treeView *trackV;
+
+    database::filesQueryGrt *queryGen;
+//  core::queryGrt::tagQuery *quer;
+    database::matchQuery *andQ;
+    database::abstractQuery *searchQ;
 
 
-	QLabel *sLabel;
-	QLabel *pLabel;    
+    QLabel *sLabel;
+    QLabel *pLabel;
 
-	QPushButton *leftB;
-	QPushButton *rightB;
+    QPushButton *leftB;
+    QPushButton *rightB;
 
-	QWidget *albumW;
-	
-	bool _albumNeedUpdate;
-	bool _trackNeedUpdate;
+    QWidget *albumW;
 
-    
+    bool _albumNeedUpdate;
+    bool _trackNeedUpdate;
 
-    public slots:
-      
-	void writeSettings();
-      
-	void setSearch(core::queryGrt::abstractQuery *q)
-	{
-	    if(q->isValid())
-	    {
-		albumM->setSearch(q->clone());
-// 		core::queryGrt::matchQuery *m=new core::queryGrt::matchQuery(andQ);
-// 		andQ->append(q);
-		searchQ=q->clone();
-	    }
-	    else
-	    {
-// 		queryGen->setQuery(0);
-		albumM->setSearch(0);
-		searchQ=0;
-	    }
-// 	    _trackNeedUpdate=true;
-// 	    _albumNeedUpdate=true;
-	}
-	
-	void checkNeedUpdates();
-	void showContexMenuSlot(QModelIndex index, QModelIndexList list) ;
-	void albumActivated(const QModelIndex &n);
-	
-	void trackEdit()
-	{
-	    trackV->edit( trackV->currentIndex() );
-	}
+
+
+public slots:
+
+    void writeSettings();
+
+    void setSearch(database::abstractQuery *q)
+    {
+        if (q->isValid())
+        {
+            albumM->setSearch(q->clone());
+//      core::queryGrt::matchQuery *m=new core::queryGrt::matchQuery(andQ);
+//      andQ->append(q);
+            searchQ=q->clone();
+        }
+        else
+        {
+//      queryGen->setQuery(0);
+            albumM->setSearch(0);
+            searchQ=0;
+        }
+//      _trackNeedUpdate=true;
+//      _albumNeedUpdate=true;
+    }
+
+    void checkNeedUpdates();
+    void showContexMenuSlot(QModelIndex index, QModelIndexList list) ;
+    void albumActivated(const QModelIndex &n);
+
+    void trackEdit()
+    {
+        trackV->edit( trackV->currentIndex() );
+    }
 };
 
 #endif

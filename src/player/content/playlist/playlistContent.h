@@ -20,6 +20,7 @@
 #include<core.h>
 #include<QSortFilterProxyModel>
 #include<views.h>
+#include<queries/fileQueryGrt.h>
 
 
 class playlistContent :public core::abstractContent
@@ -73,7 +74,7 @@ class playlistContent :public core::abstractContent
         bool			        needUpdate;
         void 			        toolBarInit();
 
-        core::filesQueryGrt	    *quer;
+        database::filesQueryGrt	    *quer;
         views::trackModelItem	*smItem;
 
         QByteArray              plState;

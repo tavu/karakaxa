@@ -33,6 +33,29 @@ enum tagsEnum
 const int FRAME_NUM=COUNTER+1;
 //we set a number to ALBUM_ID different from the tagsEnum numbers
 const int ALBUM_ID=FRAME_NUM;
+
+struct changes
+{
+  int       tag;
+  QVariant  value;
+  int       error;
+};
+typedef struct changes tagChanges;
+
+enum errors
+{
+    OK=0            ,
+    NULL_FILE       ,
+    INVALID_FILE    ,
+    WRONG_FILETYPE  ,
+    NS_TAG      ,
+    EMPTY_RECORD    ,
+    TAGS_NOT_LOADED ,
+    UNOWN       ,
+    NOTINDB     ,
+    DBERR
+};
+
 };//namespace
 
 

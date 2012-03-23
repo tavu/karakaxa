@@ -4,6 +4,7 @@
 #include<QSpinBox>
 #include"../ratingWidget/ratingWidget.h"
 #include<QLineEdit>
+#include<database.h>
 
 #define CHAR_LIMIT 3
 
@@ -16,7 +17,7 @@ views::textEditor::textEditor(int tag,QWidget *parent)
         return ;
    }
    
-   q=new core::tagQueryGrt(this);
+   q=new database::tagQueryGrt(this);
    q->setTag(tag);
    q->select();
    

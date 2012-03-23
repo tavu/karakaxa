@@ -288,7 +288,7 @@ void views::treeView::leaveEvent (QEvent *)
 void views::treeView::play(const QModelIndex &index)
 {
     //return if item is disabled
-    if( !(index.flags() & Qt::ItemIsEditable) || index.data(DISABLE_ROLE).toBool() )
+    if( !(index.flags() & Qt::ItemIsEnabled) || index.data(DISABLE_ROLE).toBool() )
     {
         return ;
     }

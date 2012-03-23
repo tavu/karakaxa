@@ -1,4 +1,5 @@
 #include"loadInfoThr.h"
+#include<database.h>
 loadInfoThr::loadInfoThr(QObject *parent)
   :QThread(parent),
   canceled(false)
@@ -11,9 +12,9 @@ loadInfoThr::loadInfoThr(QObject *parent)
 void loadInfoThr::run()
 {
      canceled=false;
-     core::db->getDatabase();
+     database::db()->getDatabase();
      updateTracks();
-     core::db->closeDatabase();
+     database::db()->closeDatabase();
 }
 
 void loadInfoThr::updateTracks()
