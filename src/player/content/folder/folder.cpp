@@ -23,10 +23,10 @@ folderContent::folderContent(QWidget *parent)
 //     proxyM=new folderProxyModel(this);
     proxyM=0;
 //     proxyM->setFilterCaseSensitivity(Qt::CaseInsensitive);
-    
+
     view=new views::treeView(this);
 //     view->setModel(proxyM);
-    view->setDragDropMode(QAbstractItemView::DragDrop);   
+    view->setDragDropMode(QAbstractItemView::DragDrop);
 
     toolBar=new KToolBar(this);
     toolBar->setToolButtonStyle( Qt::ToolButtonIconOnly );
@@ -43,39 +43,39 @@ folderContent::folderContent(QWidget *parent)
     upAction = new QAction( KIcon( "go-up" ),"go up", this );
     toolBar->addAction( upAction );
     connect( upAction, SIGNAL( triggered( bool) ), this, SLOT( up() ) );
-   
+
     QWidget* spacer = new QWidget(this);
     spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     toolBar->addWidget(spacer);
-    
+
     searchLine =new KLineEdit(this);
     searchLine->setClearButtonShown(true);
     searchLine->setClickMessage(tr("filter"));
     searchLine->setFixedWidth(300);
     searchLine->setVisible(true);
     toolBar->addWidget(searchLine);
-        
-    
-    
+
+
+
     QVBoxLayout *layout = new QVBoxLayout();
-    
+
     QFrame *f=new QFrame(this);
     f->setFrameShape(QFrame::HLine);
     layout->addWidget(f);
     layout->addWidget(navigator);
-    
-    layout->addWidget(view);    
+
+    layout->addWidget(view);
 
     setLayout(layout);
 
     connect(view,SIGNAL(clicked ( const QModelIndex) ),this,SLOT(setDir(const QModelIndex) ) );
-   
+
     readSettings();
-    
+
     connect(navigator,SIGNAL(urlChanged (KUrl) ),this,SLOT(showUrl(KUrl) ) );
-   
+
     connect(qApp,SIGNAL(aboutToQuit() ),this,SLOT(writeSettings() ) );
-    
+
     connect(view,SIGNAL(showContextMenu(QModelIndex,QModelIndexList) ),this,SLOT(showContexMenuSlot(QModelIndex, QModelIndexList) ) );
 }
 
@@ -101,14 +101,14 @@ void folderContent::setDir(const QModelIndex index)
     {
         return ;
     }
-    
+
     Qt::KeyboardModifiers m=QApplication::keyboardModifiers();
-    
+
     if(m & Qt::ShiftModifier || m & Qt::ControlModifier )
     {
         return;
     }
-    
+
     QModelIndex i=proxyM->mapToSource(index);
 
     KFileItem item = model->itemForIndex(i);
@@ -120,6 +120,7 @@ void folderContent::setDir(const QModelIndex index)
 
 void folderContent::showUrl(KUrl url)
 {
+    searchLine->clear();
     if(core::isPlaylist(url.toLocalFile()) )
     {
         if(proxyM!=0)
@@ -127,7 +128,7 @@ void folderContent::showUrl(KUrl url)
             saveStates();
             delete proxyM;
         }
-        goToPl(url);        
+        goToPl(url);
     }
     else
     {
@@ -143,13 +144,13 @@ void folderContent::showUrl(KUrl url)
         }
 
         model->dirLister()->openUrl(url);
-    }    
+    }
 }
 
 void folderContent::goToFolder(KUrl url)
-{    
+{
     proxyM=new folderProxyModel(this);
-    
+
     view->setNotHide(0);
     view->setRatingColumn(DIRCOLUMN+RATING);
     proxyM->setSourceModel(model);
@@ -158,9 +159,9 @@ void folderContent::goToFolder(KUrl url)
     view->setModel(proxyM);
     view->header()->restoreState(folderModelState);
     view->setSortingEnabled(true);
-    
+
     searchLine->clear();
-    connect(searchLine,SIGNAL(textChanged ( const QString & )  ),proxyM,SLOT(setFilterFixedString(QString) ) );    
+    connect(searchLine,SIGNAL(textChanged ( const QString & )  ),proxyM,SLOT(setFilterFixedString(QString) ) );
     if(playlistM!=0)
     {
         delete playlistM;
@@ -176,7 +177,7 @@ void folderContent::goToPl(KUrl url)
     playlistM=new views::filePlaylistModel(this);
     playlistM->setPlPath(url.toLocalFile());
 //     delete proxyM;
-    proxyM=new folderProxyModel(this);    
+    proxyM=new folderProxyModel(this);
     proxyM->setSourceModel(playlistM);
     proxyM->setFilterCaseSensitivity(Qt::CaseInsensitive);
     proxyM->setFilterKeyColumn(-1);
@@ -186,14 +187,14 @@ void folderContent::goToPl(KUrl url)
     view->setModel(proxyM);
     view->header()->restoreState(playlistMState);
     searchLine->clear();
-    connect(searchLine,SIGNAL(textChanged ( const QString & )  ),proxyM,SLOT(setFilterFixedString(QString) ) );    
+    connect(searchLine,SIGNAL(textChanged ( const QString & )  ),proxyM,SLOT(setFilterFixedString(QString) ) );
 }
 
 
 
 
 void folderContent::cd(KUrl url)
-{    
+{
     navigator->setUrl( url );
 }
 
@@ -224,13 +225,13 @@ void folderContent::showContexMenuSlot(QModelIndex index, QModelIndexList list)
     {
         return ;
     }
-  
-    QUrl u=index.data(URL_ROLE).toUrl();    
+
+    QUrl u=index.data(URL_ROLE).toUrl();
     QMenu *menu=new QMenu(this);
 
     QAction *editA=new QAction(KIcon("document-edit"),tr("edit"),menu );
     QAction *removeA=0;
-    
+
     QString s=index.data(URL_ROLE).toUrl().toLocalFile();
     int tag=model->tag(index);
 
@@ -242,7 +243,7 @@ void folderContent::showContexMenuSlot(QModelIndex index, QModelIndexList list)
     {
 	   editA->setEnabled(true);
     }
-    
+
     if(proxyM->sourceModel()==playlistM)
     {
         removeA=new QAction(KIcon("list-remove"),"remove",menu);
@@ -269,12 +270,12 @@ void folderContent::showContexMenuSlot(QModelIndex index, QModelIndexList list)
                 playlistM->playlist()->remove(index.row() );
             }
         }
-        
+
         playlistM->save();
     }
 
     m->setShow(true);
-    
+
     menu->deleteLater();
 }
 
@@ -286,7 +287,7 @@ void folderContent::edit()
 void folderContent::unloaded()
 {
   core::contentHdl->removeMenu(m);
-  delete m;  
+  delete m;
 }
 
 void folderContent::writeSettings()
@@ -302,7 +303,7 @@ void folderContent::writeSettings()
 }
 
 void folderContent::readSettings()
-{    
+{
     KSharedConfigPtr config=core::config->configFile();
     KConfigGroup group( config, "folderContent");
     KUrl url=group.readEntry("dir",KUrl() );
@@ -313,7 +314,7 @@ void folderContent::readSettings()
     {
         navigator->setUrl(url );
     }
-    showUrl(navigator->url());        
+    showUrl(navigator->url());
 }
 
 void folderContent::saveStates()
