@@ -74,9 +74,9 @@ class fileCache
 	 database::fileToDb *fdb;	
 
      QString _coverPath;
-// 	 QMutex loadMutex;
-// 	 QMutex readMutex;
-     QReadWriteLock rwLock;
+ 	 QMutex loadMutex;
+ 	 QMutex readMutex;
+//      QReadWriteLock rwLock;
 
   public:
       static fileCache* 	getFileCache(QString path);

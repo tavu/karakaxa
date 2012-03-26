@@ -44,9 +44,8 @@ bool core::soundEngine::play(int n)
         return false;
     }
 
-	 qDebug()<<"SET SOURCE";
-      mediaObject->setCurrentSource(s);
-      mediaObject->play();
+    mediaObject->setCurrentSource(s);
+    mediaObject->play();
     mutex.unlock();
 
     return true;
@@ -118,7 +117,6 @@ MediaObject* core::soundEngine::getMediaObject()
 
 void core::soundEngine::mediaStateChanged ( Phonon::State newstate, Phonon::State oldstate )
 {
-    qDebug()<<oldstate<<"  "<<newstate<<"	"<<mediaObject->state();
     emit(stateChanged (newstate) );
     
     if (newstate==Phonon::ErrorState )
@@ -130,17 +128,17 @@ void core::soundEngine::mediaStateChanged ( Phonon::State newstate, Phonon::Stat
         qDebug()<<"engine error "<<mediaObject->errorString();
         errors++;
 	
-	if(errors<MAX_ERR)
-	{
-// 	    next();
-	}
-	status->addError("playing error");
+        if(errors<MAX_ERR)
+        {
+    // 	    next();
+        }
+        status->addError("playing error");
     }
+    
     if(newstate==Phonon::PlayingState)
     {
-	errors=0;
+        errors=0;
     }
-
 
 }
 

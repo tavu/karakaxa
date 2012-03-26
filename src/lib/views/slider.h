@@ -11,7 +11,6 @@ namespace views
     class Slider : public QSlider
     {
         Q_OBJECT
-
         public:
             explicit Slider( Qt::Orientation, uint max = 0, QWidget* parent = 0 );
 

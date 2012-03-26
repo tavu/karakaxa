@@ -101,8 +101,6 @@ bool core::isPlaylist(const QString &url)
 
 
 
-
-
 bool core::exists(const QString &url)
 {
     QFile f(url);

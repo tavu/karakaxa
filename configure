@@ -15,7 +15,7 @@ TARGET=$DIR/target
 #making the library
 
 cd src/lib
-qmake -project   -o lib.pro.tmp
+qmake -project -o lib.pro.tmp
 echo "TEMPLATE = lib" > lib.pro
 cat lib.pro.tmp|grep -v TEMPLATE >>lib.pro
 rm lib.pro.tmp
@@ -25,7 +25,7 @@ echo "MOC_DIR=$DIR/build/moc" >>lib.pro
 echo "TARGET = $TARGET/player" >>lib.pro
 echo "QMAKE_CXXFLAGS_DEBUG = -Wno-reorder " >>lib.pro
 
-qmake -Wlogic  lib.pro
+qmake  lib.pro
 
 
 
@@ -44,8 +44,8 @@ echo "INCLUDEPATH += ../lib/database">>application.pro
 echo "TARGET = $TARGET/player" >>application.pro
 echo "QMAKE_CXXFLAGS_DEBUG = -Wno-reorder " >>application.pro
 
-qmake -Wlogic  application.pro
+qmake  application.pro
 
 #creating the main makefile
 cd $DIR
-qmake -Wlogic 
+qmake 

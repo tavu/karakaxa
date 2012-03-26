@@ -6,6 +6,7 @@
 #include<ksharedconfig.h>
 #include<QSettings>
 #include<KConfigGroup>
+
 namespace core
 {
 

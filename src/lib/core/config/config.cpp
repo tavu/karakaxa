@@ -2,7 +2,8 @@
 #include<phonon/BackendCapabilities>
 // #include<KGlobal>
 #include<kstandarddirs.h>
-#include<ksharedconfig.h>
+#include<KSharedConfig>
+
 core::PlayerConfigure::PlayerConfigure()
 {
 //      supportesFilesList<<"*.mp3";
@@ -30,7 +31,7 @@ QStringList core::PlayerConfigure::imagefiles()
     
     if(supportedImageFiles.isEmpty() )
     {
-	supportedImageFiles<<"BMP"<<"GIF"<<"JPG"<<"JPEG"<<"PNG"<<"PBM"<<"PGM"<<"PPM"<<"TIFF"<<"XBM"<<"XPM";
+    	supportedImageFiles<<"BMP"<<"GIF"<<"JPG"<<"JPEG"<<"PNG"<<"PBM"<<"PGM"<<"PPM"<<"TIFF"<<"XBM"<<"XPM";
     }
     
     return supportedImageFiles;

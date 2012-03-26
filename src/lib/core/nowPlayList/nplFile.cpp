@@ -57,7 +57,6 @@ QVariant core::nplFile::artist()
 
 core::nplFile::~nplFile()
 {
-   qDebug()<<"deleting nplFile";
    delete file;
 }
 

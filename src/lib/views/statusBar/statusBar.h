@@ -10,8 +10,8 @@
 namespace views
 {
 class statusBar :public QStatusBar
-{
-    Q_OBJECT
+{    
+    Q_OBJECT    
     public:
         statusBar(QWidget *parent=0);
         ~statusBar();
