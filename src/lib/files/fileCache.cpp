@@ -10,16 +10,16 @@
 #include"../core/func.h"
 #include"audioFiles.h"
 #include<database/fileToDb.h>
-
+#include"tagsTable.h"
 // #define DATAB 1
 // #define FILE  2
-
+Q_DECLARE_METATYPE(audioFiles::tagChangesL)
 using namespace audioFiles;
 // using namespace player;
 
 audioFiles::fileCache::fileCache(QString path)
-        :notInDb(false),
-        tagsFlag(false),
+        :QObject(),
+        notInDb(false),
         tagTable(0),
         file(0),
         fdb(0)
@@ -324,7 +324,7 @@ void audioFiles::fileCache::setTagFromDb(tagsEnum t, QVariant var)
     }
 }
 
-void fileCache::savingEnd()
+void fileCache::savingEnd(QList<tagChanges> c)
 {    
     file->save();
     delete file;
@@ -336,9 +336,9 @@ void fileCache::savingEnd()
         delete fdb;
         fdb=0;
     }
-
-
     loadMutex.unlock();
+
+    emit changed(c);
 }
 
 

@@ -35,8 +35,7 @@ audioFiles::audioFile::audioFile(QUrl u)
         saveFlag(true)
 {
     cache=audioFiles::fileCache::getFileCache(u.toLocalFile());
-
-//     connect(cache,SIGNAL(changed(QList<tagChanges>) ),this,SLOT(emitChanged(QList<tagChanges>) ) );
+    connect(cache,SIGNAL(changed(audioFiles::tagChangesL) ),this,SLOT(emitChanged(audioFiles::tagChangesL) ),Qt::QueuedConnection );
 }
 
 
@@ -46,9 +45,8 @@ audioFiles::audioFile::audioFile(const QString url)
         fileSize(0),
         saveFlag(true)
 {
-    cache=audioFiles::fileCache::getFileCache(url);
-    
-//     connect(cache,SIGNAL(changed(QList<tagChanges>) ),this,SLOT(emitChanged(QList<tagChanges>) ) );
+    cache=audioFiles::fileCache::getFileCache(url);    
+    connect(cache,SIGNAL(changed(audioFiles::tagChangesL) ),this,SLOT(emitChanged(audioFiles::tagChangesL) ),Qt::QueuedConnection );
 }
 
 audioFiles::audioFile::audioFile(QSqlRecord r, bool force)
@@ -57,8 +55,8 @@ audioFiles::audioFile::audioFile(QSqlRecord r, bool force)
      saveFlag(true)
 {
     cache=audioFiles::fileCache::getFileCache(r.value(PATH+1).toString() );
-    cache->setRecord(r,force);
-//     connect(cache,SIGNAL(changed(QList<tagChanges>) ),this,SLOT(emitChanged(QList<tagChanges>) ) );
+    connect(cache,SIGNAL(changed(audioFiles::tagChangesL) ),this,SLOT(emitChanged(audioFiles::tagChangesL) ),Qt::QueuedConnection );
+    cache->setRecord(r,force);    
 }
 
 
@@ -68,10 +66,9 @@ audioFiles::audioFile::audioFile(const audioFile &f)
 {
      if( !f.path().isEmpty() )
      {
-	cache=audioFiles::fileCache::getFileCache(f.path() );
-// 	connect(cache,SIGNAL(changed(QList<tagChanges>) ),this,SLOT(emitChanged(QList<tagChanges>) ) );
+        cache=audioFiles::fileCache::getFileCache(f.path() );
+        connect(cache,SIGNAL(changed(audioFiles::tagChangesL) ),this,SLOT(emitChanged(audioFiles::tagChangesL) ),Qt::QueuedConnection );
      }
-//      changes.clear();
      changes.append(f.changes);
      fileSize=f.fileSize;
 
@@ -82,7 +79,6 @@ audioFiles::audioFile::audioFile(const audioFile &f)
 audioFiles::audioFile::~audioFile()
 {
     audioFiles::fileCache::releaseFileCache(cache);
-//     delete file;
 }
 
 
@@ -303,7 +299,7 @@ int audioFiles::audioFile::albumId()
 
 void audioFiles::audioFile::save()
 {
-    cache->savingEnd();    
+    cache->savingEnd(changes);    
     audioFile f(*this);
     self()->emitChanged(f);
 //     core::db->updateSig(f);        

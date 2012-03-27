@@ -24,7 +24,7 @@ namespace audioFiles
 
 //   using namespace audioFiles;
   
-class fileCache
+class fileCache :public QObject
 {
     
   struct fileCacheS
@@ -33,7 +33,7 @@ class fileCache
     int used;
   };
   
-  
+  Q_OBJECT  
   public:
       
       inline QString path()
@@ -59,7 +59,7 @@ class fileCache
 	 
 	 int 		prepareToSave();
 	 
-     void 		savingEnd();
+     void 		savingEnd(QList<tagChanges>);
       
   private:
       fileCache(QString path);
@@ -67,7 +67,6 @@ class fileCache
       tagRecord *tagTable;
       QSqlRecord record; 
       bool notInDb;
-      bool tagsFlag;
       QString _path;   
       
 	 fileTags *file;
@@ -80,12 +79,16 @@ class fileCache
 
   public:
       static fileCache* 	getFileCache(QString path);
-      static void		releaseFileCache(fileCache*);
-      static void	 	releaseFileCache(QString path);
+      static void		    releaseFileCache(fileCache*);
+      static void	 	    releaseFileCache(QString path);
       
   private:
       static QHash<QString, fileCacheS*> fileCacheMap;
       static QMutex gMutex;
+
+
+    signals:
+        void changed(audioFiles::tagChangesL);
       
 
 //   signals:

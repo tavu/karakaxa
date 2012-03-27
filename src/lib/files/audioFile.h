@@ -118,7 +118,7 @@ class audioFile :public QObject
 	
 
     protected slots:
-	void emitChanged(QList<tagChanges> l)
+	void emitChanged(audioFiles::tagChangesL l)
 	{
 	    emit changed(l);
 	}

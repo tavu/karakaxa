@@ -41,6 +41,7 @@ struct changes
   int       error;
 };
 typedef struct changes tagChanges;
+typedef QList<tagChanges> tagChangesL;
 
 enum errors
 {

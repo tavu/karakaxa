@@ -47,7 +47,6 @@ views::treeView::treeView(QWidget *parent,QString name)
     {
         setObjectName(name);
         readSettings();
-        connect(qApp,SIGNAL(commitDataRequest(QSessionManager &) ),this,SLOT(writeSettings() ) );
     }
     setEditTriggers(QAbstractItemView::SelectedClicked);
 }

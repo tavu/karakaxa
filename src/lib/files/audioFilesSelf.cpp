@@ -1,7 +1,9 @@
 #include"audioFilesSelf.h"
+#include"tagsTable.h"
 
 void audioFiles::init()
 {
+    qRegisterMetaType<audioFiles::tagChangesL>("audioFiles::tagChangesL");
     audioFiles::audioFilesSelf::_self=new audioFilesSelf;
 }
 
