@@ -1,6 +1,8 @@
 #ifndef DATABASEEVENT_H
 #define DATABASEEVENT_H
 #include<QStringList>
+#include<QSharedPointer>
+#include <audioFile.h>
 /*
  * Database events are classes inherits the dbEvent witch are be sending from dbConnection throw signals.
  * The purpose of these classes is to inform the resevers about any accion that occured in the database. 
@@ -24,10 +26,11 @@ enum dbEvents
     ANY             //anything else
 };
 
-class dbEvent
+class dbEvent :public QObject
 {
+    Q_OBJECT
     public:
-        dbEvent(int t)
+        dbEvent(int t) :QObject()
         {
                 _type=t;
         };
@@ -45,7 +48,18 @@ class dbEvent
         int _type;
 };
 
+class dbEventAF :public dbEvent
+{
+    Q_OBJECT
+    public:
+        dbEventAF() :dbEvent(FILES_CHANG) {};        
 
+        QLinkedList<audioFiles::audioFile> files;
+
+};
+
+
+typedef QSharedPointer<dbEvent> dbEventP;
 
 }//namespace
 #endif

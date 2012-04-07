@@ -4,6 +4,7 @@
 void audioFiles::init()
 {
     qRegisterMetaType<audioFiles::tagChangesL>("audioFiles::tagChangesL");
+    qRegisterMetaType<audioFiles::audioFile>("audioFiles::audioFile");    
     audioFiles::audioFilesSelf::_self=new audioFilesSelf;
 }
 

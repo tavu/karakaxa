@@ -30,6 +30,12 @@ core::nplaylist::nplaylist()
 
 }
 
+void nplaylist::clearEvent(playlist::clearEv* event)
+{
+    totalLength=0;
+    core::playlist::clearEvent(event);
+}
+
 
 void core::nplaylist::updateLengthInsert(int row, int num)
 {

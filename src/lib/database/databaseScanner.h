@@ -4,6 +4,7 @@
 #include<QThread>
 #include<QSharedPointer>
 
+#include"databaseEvent.h"
 #include "dbTypes.h"
 
 
@@ -33,6 +34,11 @@ class databaseScanner :public QThread
             return 0;
         }
 
+        dbEventP eventPointer()
+        {
+            return eventP;
+        }
+
     protected:
         //give the posibility to make some initialization befora start the thread
         virtual void startScan()
@@ -40,9 +46,10 @@ class databaseScanner :public QThread
             start();
         }
 
-        
+        dbEventP eventP;
     private:
         dbState _type;
+        
 };
 
 typedef QSharedPointer<database::databaseScanner> dbScanner;

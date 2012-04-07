@@ -43,20 +43,31 @@ bool database::artistQueryGrt::select()
     return true;
 }
 
-void database::artistQueryGrt::setNeedUpdate(const audioFiles::audioFile f)
+void database::artistQueryGrt::dbEvents(database::dbEventP e)
 {
     using namespace audioFiles;
-    
-    foreach(tagChanges c,f.tagChanged() )
+    if(e->type() ==FILES_CHANG)
     {
-        if(c.tag == ARTIST || c.tag == LEAD_ARTIST )
+        dbEventAF *ev= static_cast<dbEventAF*>(e.data() );
+        foreach(audioFile f, ev->files)
         {
-            _needUpdate =true;
-            emit updateNeeded();
-            return ;
+            foreach(tagChanges c,f.tagChanged() )
+            {
+                if(c.tag == ARTIST || c.tag == LEAD_ARTIST )
+                {
+                    setNeedUpdate();
+                    return ;
+                }
+            }
+            if(q->match(f) )
+            {
+                setNeedUpdate();
+                return ;
+            }
         }
     }
-    queryGrt::setNeedUpdate(f);
+    
+    database::queryGrt::dbEvents(e);
 }
 
 

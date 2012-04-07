@@ -2,6 +2,7 @@
 #include"database.h"
 #include<status/playerStatus.h>
 #include "dbFunc.h"
+#include"databaseEvent.h"
 database::libraryFolder::libraryFolder(QObject *parent):dbBase(parent)
 {}
 
@@ -37,6 +38,11 @@ void database::libraryFolder::removeLibraryFolder(const QString &s)
     }
     db()->closeDatabase(databs);
     list.clear();
+
+    dbEventP e(new dbEvent(LF_REM) );
+    e->urls<<s;
+    db()->emitEvent(e);
+    
 }
 
 bool database::libraryFolder::addLibraryFolder(const QString &s)
@@ -73,6 +79,11 @@ bool database::libraryFolder::addLibraryFolder(const QString &s)
     }
 
     db()->closeDatabase(databs);
+
+    dbEventP e(new dbEvent(NEW_LF) );
+    e->urls<<s;
+    db()->emitEvent(e);
+
     return ret;
 }
 
@@ -110,6 +121,11 @@ bool database::libraryFolder::removeFile(const QString& path)
     }
     cleanUp();
     db()->closeDatabase(databs);
+
+    dbEventP e(new dbEvent(FILES_REM) );
+    e->urls<<path;
+    db()->emitEvent(e);
+    
     return b;
 }
 
@@ -139,6 +155,11 @@ bool database::libraryFolder::removeFolder(QString path)
     cleanUp();
     db()->closeDatabase(databs);
 
+    dbEventP e(new dbEvent(FILES_REM) );
+    e->urls<<path;
+    e->setProperty("folder",QVariant(true) );
+    db()->emitEvent(e);
+
     return true;    
 }
 
@@ -158,6 +179,11 @@ bool database::libraryFolder::addPlaylist(const QString& path)
     }
 
     db()->closeDatabase(databs);
+
+    dbEventP e(new dbEvent(NEW_PL) );
+    e->urls<<path;
+    db()->emitEvent(e);
+    
     return ret;
 }
 
@@ -177,5 +203,10 @@ bool database::libraryFolder::removePlaylist(const QString& path)
     }
     
     db()->closeDatabase(databs);
+
+    dbEventP e(new dbEvent(PL_REM) );
+    e->urls<<path;
+    db()->emitEvent(e);
+    
     return b;
 }

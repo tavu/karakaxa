@@ -131,6 +131,6 @@ class audioFile :public QObject
 };//class
 
 };//namespace
-
+Q_DECLARE_METATYPE(audioFiles::audioFile)
 
 #endif

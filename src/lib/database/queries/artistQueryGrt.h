@@ -23,7 +23,7 @@ namespace database
             }
 
         private slots:
-            void setNeedUpdate(const audioFiles::audioFile f);
+             virtual void dbEvents(dbEventP e);
 
         private:
             QStringList list;

@@ -54,11 +54,14 @@ class nplaylist :public playlist
         QStringList getList() const;
         int         getLength() const;
         nplPointer  getPlayingTrack() const;
-
+        void        clearEvent(clearEv *event);
+        
         int         getPlayingPos() const
         {
             return trackList.indexOf(playing,0);
         }
+
+        
 
 
         bool rememberPlaylist() const

@@ -254,8 +254,12 @@ void database::databaseConection::scan(databaseScanner* sc)
 void database::databaseConection::scanFinished()
 {
     mutex.lock();
-    scanners.removeFirst();
+    dbScanner sc=scanners.takeFirst();
+    dbEventP e=sc->eventPointer();
+    e->setProperty("scanner",QVariant(sc) );
     nextState();
+
+    emit newEvent(e);
 }
 
 void database::databaseConection::nextState()
@@ -286,6 +290,10 @@ void database::databaseConection::emitUpdated(audioFiles::audioFile f)
     if(f.inDataBase() )
     {
         emit updated(f);
+        dbEventAF *ev=new dbEventAF();
+        ev->files.append(f);
+        dbEventP e=dbEventP(ev);        
+        emit newEvent(e);
     }
 }
 

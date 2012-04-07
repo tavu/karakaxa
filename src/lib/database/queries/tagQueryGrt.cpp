@@ -29,21 +29,42 @@ QString database::tagQueryGrt::queryString() const
     return ret;
 }
 
-void database::tagQueryGrt::setNeedUpdate(const audioFiles::audioFile f)
+
+void database::tagQueryGrt::dbEvents(database::dbEventP e)
 {
     using namespace audioFiles;
-    foreach(tagChanges c,f.tagChanged() )
+    if(needUpdate() )
     {
-        if (c.tag==tag_)
+        return ;
+    }
+    
+    int t=e->type();
+
+    if(t==FILES_CHANG)
+    {
+        dbEventAF *ev= static_cast<dbEventAF*>(e.data() );
+
+        foreach(audioFile f, ev->files)
         {
-            _needUpdate = true;
-            emit updateNeeded();
-            return ;
+            foreach(tagChanges c,f.tagChanged() )
+            {
+                if (c.tag == tag_ )
+                {
+                    setNeedUpdate();
+                    return ;
+                }
+            }
+            if(q->match(f) )
+            {
+                setNeedUpdate();
+                return ;
+            }
         }
     }
 
-    queryGrt::setNeedUpdate(f);
+    queryGrt::dbEvents(e);
 }
+
 
 
 bool database::tagQueryGrt::select()

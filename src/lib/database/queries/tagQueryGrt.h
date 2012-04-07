@@ -31,7 +31,7 @@ class tagQueryGrt :public queryGrt
         }
 
     private slots:
-        void setNeedUpdate(const audioFiles::audioFile f);
+         virtual void dbEvents(dbEventP e);
 
     private:
         int tag_;

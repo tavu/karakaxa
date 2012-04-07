@@ -84,18 +84,36 @@ QString database::albumQueryGrt::queryString() const
     return ret;
 }
 
-void database::albumQueryGrt::setNeedUpdate(const audioFiles::audioFile f)
+void database::albumQueryGrt::dbEvents(database::dbEventP e)
 {
     using namespace audioFiles;
-    foreach(tagChanges c,f.tagChanged() )
+    if(needUpdate() )
     {
-        if (c.tag == ARTIST || c.tag == LEAD_ARTIST ||c.tag == ALBUM )
-        {
-            _needUpdate =true;
-            emit updateNeeded();
-
-            return ;
-        }
+        return ;
     }
-    queryGrt::setNeedUpdate(f);
+    int t=e->type();
+    
+    if(t==FILES_CHANG)
+    {
+        dbEventAF *ev= static_cast<dbEventAF*>(e.data() );
+
+        foreach(audioFile f, ev->files)
+        {
+            foreach(tagChanges c,f.tagChanged() )
+            {
+                if (c.tag == ARTIST || c.tag == LEAD_ARTIST ||c.tag == ALBUM )
+                {
+                    setNeedUpdate();
+                    return ;
+                }
+            }
+            if(q->match(f) )
+            {
+                setNeedUpdate();
+                return ;
+            }
+        }
+
+    }
+    queryGrt::dbEvents(e);
 }

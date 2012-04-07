@@ -13,6 +13,7 @@
 #include"album.h"
 #include"dbTypes.h"
 #include"databaseScanner.h"
+#include "databaseEvent.h"
 
 namespace database 
 {
@@ -111,9 +112,14 @@ class databaseConection :public QObject
         void updated(audioFiles::audioFile);
         //state changed (dbState old,dbState new)
         void stateCanged(dbState ,dbState);
+        void newEvent(dbEventP);
 
     public slots:
         void scan(databaseScanner *sc);
+        void emitEvent(dbEventP e)
+        {
+            emit newEvent(e);
+        }
 
 
     private slots:

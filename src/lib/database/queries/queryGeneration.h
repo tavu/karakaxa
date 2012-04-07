@@ -11,7 +11,7 @@
 #include"abstractQuery.h"
 #include"queryThr.h"
 #include"../dbBase.h"
-
+#include"databaseEvent.h"
 
 namespace database
 {
@@ -57,20 +57,15 @@ class queryGrt :public dbBase
         }
 
 
-    protected:
+    protected:       
+        
         abstractQuery *q;
         bool _needUpdate;
 
     protected slots:
-
-        virtual void setNeedUpdate(const audioFiles::audioFile f);
-
-        void setNeedUpdate()
-        {
-            _needUpdate=true;
-            emit updateNeeded();
-        }
-
+        void setNeedUpdate();
+        virtual void dbEvents(dbEventP e);
+        
     signals:
         void updateNeeded();
 

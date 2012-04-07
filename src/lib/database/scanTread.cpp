@@ -57,12 +57,14 @@ void database::scanThread::init()
 {
     label->setText(tr("Starting") );
     if(type()== RESCAN)
-    {
+    {        
         importer = new libraryImpScan();
+        eventP=dbEventP(new dbEvent(RESCAN_COMP) );
     }
     else
     {
         importer = new libraryImpUpdate();
+        eventP=dbEventP(new dbEvent(UPDATE_COMP) );
     }
 }
 
@@ -190,6 +192,7 @@ void database::scanThread::run()
 void database::scanThread::stop()
 {
     stopped=true;
+    eventP->setProperty("canceld",QVariant(true) );
 }
 
 void database::scanThread::setDirs(const QStringList& l)
