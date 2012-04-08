@@ -230,7 +230,6 @@ int audioFiles::fileCache::albumId(int &err)
 
 int audioFiles::fileCache::prepareToSave()
 {
-//     rwLock.lockForWrite();
     loadMutex.lock();
     int err=OK;
     file=audioFiles::getFileTags(path());

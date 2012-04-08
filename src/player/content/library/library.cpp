@@ -4,7 +4,6 @@
 #include <QSpacerItem>
 #include"artistDelegate.h"
 #include<views.h>
-#include<editors/editMultFiles.h>
 
 using namespace core;
 
@@ -43,7 +42,6 @@ library::library(QWidget *parent)
 //     connect(db,SIGNAL(changed() ),this,SLOT(dbChanged() ) );
     
     connect(artistM->queryGrt(),SIGNAL(updateNeeded()),this,SLOT(checkNeedUpdates()) );
-    connect(views::editMultFiles::self(),SIGNAL(finished()),this,SLOT(checkNeedUpdates()) );
     artistM->updateQueries();
 }
 
@@ -59,12 +57,12 @@ void library::activated(const int n)
         goToArtist();
     }
     else if(stack->currentWidget()== artistV )    
-    {	
-	 artistM->updateQueries();	
-    }	
+    {
+        artistM->updateQueries();
+    }
     else if(stack->currentWidget()== albumTrV )
-    {		
-	 albumTrV->updateQueries();	
+    {
+        albumTrV->updateQueries();
     }    
 }
 
@@ -199,9 +197,9 @@ void library::checkNeedUpdates()
     
     */
     
-    if(artistV->isVisible() && !views::editMultFiles::isEditing() )
+    if(artistV->isVisible() )
     {
-	artistM->updateQueries();
+        artistM->updateQueries();
     }
 }
 

@@ -8,5 +8,7 @@ QT +=network
 
 LIBS += -lkdecore -lkdeui -lkfile -lkio -ltag -ltag-extras
 
+
+QMAKE_CXXFLAGS = -ggdb
 CONFIG += debug
 #QT += qt3support

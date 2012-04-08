@@ -22,7 +22,7 @@ QStringList core::PlayerConfigure::files()
 QStringList core::PlayerConfigure::playListFiles()
 {
     QStringList l;
-    return l<<QString("M3U");
+    return l<<QString("m3u");
 }
 
 QStringList core::PlayerConfigure::imagefiles()

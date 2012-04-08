@@ -2,6 +2,8 @@
 #include"m3uPlaylist.h"
 #include"../func.h"
 #include "nowPlayList/nplaylist.h"
+#include<libraryFolder.h>
+#include"../status/playerStatus.h"
 core::filePlaylist* core::getPlaylist(const QString &url)
 {
     filePlaylist *ret=0;
@@ -30,3 +32,28 @@ QString core::filePlaylist::toFullPath(const QString &s) const
     return ret.prepend(folder(path() )+'/' );
 }
 
+bool core::filePlaylist::create()
+{
+    if(!createFile() )
+    {
+        return false;
+    }
+
+    database::libraryFolder f;
+    KUrl u(path() );
+    if(f.onDb(u) )
+    {
+        f.addPlaylist(u);
+    }
+    return true;
+}
+
+bool core::filePlaylist::createFile()
+{
+    if ( file.open(  QIODevice::WriteOnly ) )
+    {
+        file.close();
+        return true;
+    }
+    return false;
+}

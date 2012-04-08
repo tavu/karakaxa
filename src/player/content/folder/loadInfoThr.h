@@ -15,17 +15,17 @@ class loadInfoThr :public QThread
       
       void cancel()
       {
-	  canceled=true;
+        canceled=true;
       }
       void addItems(QLinkedList<audioFiles::audioFile> &l);
       
   protected:
           
-	 QLinkedList<audioFiles::audioFile> fileList;
+      QLinkedList<audioFiles::audioFile> fileList;
       QLinkedList<audioFiles::audioFile>::iterator iter;
       void run();
       bool canceled;
-	 QMutex *mutex;
+	  QMutex *mutex;
       
   public slots:
       void cleanup();

@@ -3,9 +3,6 @@ database::filesQueryGrt::filesQueryGrt(QObject* parent)
   :queryGrt(parent),
   thr(this)
 {
-//    connect(database::db,SIGNAL(changed()),this,SLOT(setNeedUpdate()) );
-//    connect(database::db,SIGNAL(updated(audioFiles::audioFile)),this,SLOT(setNeedUpdate()) );
-
    connect(&thr,SIGNAL(finished()),this,SLOT(selectionFinished()) );
 }
 
@@ -14,8 +11,6 @@ database::filesQueryGrt::filesQueryGrt(abstractQuery *qe,QObject* parent)
   thr(this)
 {
    q=qe;
-//    connect(database::db,SIGNAL(changed()),this,SLOT(setNeedUpdate()) );
-//    connect(database::db,SIGNAL(updated(audioFiles::audioFile)),this,SLOT(setNeedUpdate()) );
 
    connect(&thr,SIGNAL(finished()),this,SLOT(selectionFinished()) );
 }
@@ -39,3 +34,27 @@ void database::filesQueryGrt::selectionFinished()
 {
    emit selectionMade();
 } 
+
+void database::filesQueryGrt::dbEvents(database::dbEventP e)
+{
+    using namespace audioFiles;
+    if(needUpdate() )
+    {
+        return ;
+    }
+    
+    if(e->type()==FILES_CHANG)
+    {        
+        dbEventAF *ev = static_cast<dbEventAF*>(e.data());
+        
+        foreach(const audioFile &f, ev->files)
+        {
+            if(q!=0 && q->match(f) )
+            {
+                setNeedUpdate();
+                return ;
+            }
+        }
+    }
+//     queryGrt::dbEvents(e);
+}

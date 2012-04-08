@@ -43,6 +43,11 @@ class filePlaylist :public playlist
             file.setFileName(_path);
             return true;
         }
+        bool exist()
+        {
+            return file.exists();
+        }
+        bool create();
 
     public:
         virtual QStringList urls() const=0;
@@ -70,6 +75,10 @@ class filePlaylist :public playlist
 
 
     protected:
+        //creates a new file and add the default data for every playlist
+        //this implementation just create an empty file.
+        virtual bool createFile();
+        
         bool _saveToRelative;
 
         QFile   file;

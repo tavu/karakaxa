@@ -51,6 +51,9 @@ class folderContent :public core::abstractContent
 
         void                goToPl(KUrl url);
         void                goToFolder(KUrl url);
+
+        KToolBar            *folderToolBar;
+        QAction *           folderToolBarAction;
         
         folderContextMenu   *m;
         myFileSystemModel   *model;
@@ -65,6 +68,7 @@ class folderContent :public core::abstractContent
         QAction             *upAction;
         QAction             *backAction;
         QAction             *forwardAction;
+        QAction             *newPlAction;
 
         KLineEdit           *searchLine;
         views::filePlaylistModel      *playlistM;
@@ -77,6 +81,7 @@ class folderContent :public core::abstractContent
         void up();
         void back();
         void forward();
+        void newPl();
         void setDir(const QModelIndex index);
 
     private slots:

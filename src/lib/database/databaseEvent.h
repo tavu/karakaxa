@@ -49,8 +49,7 @@ class dbEvent :public QObject
 };
 
 class dbEventAF :public dbEvent
-{
-    Q_OBJECT
+{    
     public:
         dbEventAF() :dbEvent(FILES_CHANG) {};        
 

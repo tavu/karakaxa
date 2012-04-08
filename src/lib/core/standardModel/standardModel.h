@@ -82,7 +82,7 @@ class standardItem :public QObject
       void prealocateChildren(int n);
       int freeChildrenSpace()
       {
-	  return children.capacity()-children.size();
+        return children.capacity()-children.size();
       }
       
       void squeezeChildren()

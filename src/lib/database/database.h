@@ -99,10 +99,12 @@ class databaseConection :public QObject
         bool    _isConnected;
         bool    _isScanning;
         dbState    _state;
-
+        dbEventP    editFiles;
+        
         QLinkedList<dbScanner>  scanners;
 
         void nextState();
+        
 
         QString apprName(QThread *thr);
         QMutex mutex;
@@ -112,7 +114,7 @@ class databaseConection :public QObject
         void updated(audioFiles::audioFile);
         //state changed (dbState old,dbState new)
         void stateCanged(dbState ,dbState);
-        void newEvent(dbEventP);
+        void newEvent(database::dbEventP);
 
     public slots:
         void scan(databaseScanner *sc);
@@ -125,9 +127,12 @@ class databaseConection :public QObject
     private slots:
         void scanFinished();
         void emitUpdated(audioFiles::audioFile f);
+        void editMultFilesStart();
+        void editMultFilesStop();
 
     private:
         static databaseConection *db;
+        
 
     
 };//class

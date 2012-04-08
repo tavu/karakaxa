@@ -14,6 +14,7 @@
 #include"database.h"
 #include"databaseScanner.h"
 #include<audioFiles.h>
+#include"editMultFiles.h"
 
 
 database::databaseConection::databaseConection()
@@ -23,6 +24,8 @@ database::databaseConection::databaseConection()
 //     using namespace audioFiles
     dBase=QSqlDatabase::addDatabase("QMYSQL");
     connect(audioFiles::self(),SIGNAL(changed(audioFiles::audioFile)),this,SLOT(emitUpdated(audioFiles::audioFile)) );
+    connect(editMultFiles::self(),SIGNAL(started()),this,SLOT(editMultFilesStart() ) );
+    connect(editMultFiles::self(),SIGNAL(finished()),this,SLOT(editMultFilesStop()) );
     readSettings();    
 }
 
@@ -166,20 +169,17 @@ void database::databaseConection::closeDatabase()
         core::status->addErrorP("Can't close a non exist database connection");
     }
     else
-    {
-	
-	dbE->used--;	    
-	if(dbE->used==0)
-	{
-	    QSqlDatabase dbase=QSqlDatabase::database(name,false);
-	    dbase.close();
-	    dbase=QSqlDatabase();
-	    QSqlDatabase::removeDatabase(name);
-	    dBMap.remove(name);
-	    delete dbE;
-	    
-	    qDebug()<<"close "<<name;
-	}
+    {	
+        dbE->used--;
+        if(dbE->used==0)
+        {
+            QSqlDatabase dbase=QSqlDatabase::database(name,false);
+            dbase.close();
+            dbase=QSqlDatabase();
+            QSqlDatabase::removeDatabase(name);
+            dBMap.remove(name);
+            delete dbE;
+        }
     }	 
     mutex.unlock();    
 }
@@ -287,15 +287,37 @@ database::database* database::db()
 
 void database::databaseConection::emitUpdated(audioFiles::audioFile f)
 {
-    if(f.inDataBase() )
+    if(!f.inDataBase() )
     {
-        emit updated(f);
+        return ;
+    }
+    if(editFiles.isNull() )
+    {
         dbEventAF *ev=new dbEventAF();
         ev->files.append(f);
-        dbEventP e=dbEventP(ev);        
+        dbEventP e=dbEventP(ev);
         emit newEvent(e);
     }
+    else
+    {
+        dbEventAF *e=static_cast<dbEventAF*>(editFiles.data() );
+        e->files<<f;
+    }
 }
+
+void database::databaseConection::editMultFilesStart()
+{
+        editFiles=dbEventP( new dbEventAF() );
+}
+
+void database::databaseConection::editMultFilesStop()
+{
+    dbEventP e=editFiles;
+    editFiles.clear();
+    emit newEvent(e);
+    
+}
+
 
 
 database::databaseConection* database::databaseConection::db=0;

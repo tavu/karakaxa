@@ -27,6 +27,7 @@ bool			exists(const QString &url);
 QThread*		mainThr();
 
 
+
 int getRandomN(int min,int max);
 
 

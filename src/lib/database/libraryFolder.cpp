@@ -3,6 +3,7 @@
 #include<status/playerStatus.h>
 #include "dbFunc.h"
 #include"databaseEvent.h"
+
 database::libraryFolder::libraryFolder(QObject *parent):dbBase(parent)
 {}
 
@@ -45,24 +46,37 @@ void database::libraryFolder::removeLibraryFolder(const QString &s)
     
 }
 
+bool database::libraryFolder::onDb(const KUrl& u)
+{
+    if(list.isEmpty() )
+    {
+        libraryFolders();
+    }
+    
+    foreach(QString s,list)
+    {
+        KUrl url(s);
+        if(url.isParentOf(u) )
+        {
+            
+            return true;
+        }
+    }
+    return false;
+}
+
+
 bool database::libraryFolder::addLibraryFolder(const QString &s)
 {
     databs=db()->getDatabase();
-    if(list.isEmpty() )
-    {
-        libraryFolder();
-    }
+
     KUrl newU(s);
-    foreach(QString s,list)    
+
+    if(onDb(newU) )
     {
-        KUrl u(s);
-        if(u.isParentOf(newU) )
-        {
-            //we do not need to add the newU as library folder
-            db()->closeDatabase(databs);
-            core::status->addInfo(tr("Some library folders have been merged") );
-            return false;
-        }
+        db()->closeDatabase(databs);
+        core::status->addInfo(tr("Some library folders have been merged") );
+        return false;
     }
 
     bool ret;
@@ -165,13 +179,21 @@ bool database::libraryFolder::removeFolder(QString path)
 
 bool database::libraryFolder::addPlaylist(const QString& path)
 {
+    databs=db()->getDatabase();
     bool ret;
     {
         QSqlQuery q(databs );
         q.prepare("insert into playlists(path) values(?)");
         q.addBindValue(path);
         ret=q.exec();
+
+        if(!ret)
+        {
+            core::status->addErrorP(q.lastError().text() );
+        }
     }
+
+
 
     if(ret && !plList.isEmpty())
     {
@@ -210,3 +232,6 @@ bool database::libraryFolder::removePlaylist(const QString& path)
     
     return b;
 }
+
+// QStringList database::libraryFolder::list;
+// QStringList database::libraryFolder::plList;

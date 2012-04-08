@@ -44,25 +44,26 @@ void loadInfoThr::addItems(QLinkedList<audioFiles::audioFile> &l)
     if(iter==fileList.end() )
     {
 	   //if the list is empty propably the thread is not running
+// 	   wait();
 	   if(fileList.isEmpty() )
 	   {
 		  fileList+=l;
 		  iter=fileList.begin();
 		  mutex->unlock();
-		  start();
+          start();
 	   }
 	   else
 	   {
 		  //make iter2 to show the last valid item
 		  QLinkedList<audioFiles::audioFile>::iterator iter2=fileList.end();
-		  iter2--;
+          iter2--;
 		  //append the list
 		  fileList+=l;
 		  //iter shows the first new item
-		  iter=iter2++;		  
+		  iter=++iter2;
 		  mutex->unlock();
 		  //the thread is about to terminate. wait for it
-		  wait();
+// 		  wait();
 		  start();
 	   }
 	   
@@ -82,5 +83,5 @@ void loadInfoThr::cleanup()
     mutex->lock();
     fileList.clear();
     iter=fileList.end();
-    mutex->unlock();;
+    mutex->unlock();;    
 }

@@ -58,6 +58,7 @@ namespace database
 
         private:
             queryThr thr;
+            void dbEvents(database::dbEventP e);
 
         private slots:
             void selectionFinished();

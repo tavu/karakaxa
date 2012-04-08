@@ -10,7 +10,7 @@
 #include<KConfigGroup>
 #include<queries/matchQuery.h>
 #include<queries/queryGeneration.h>
-#include<editors/editMultFiles.h>
+
 using namespace core;
 
 albumTrack::albumTrack(QWidget *parent)
@@ -79,7 +79,6 @@ void albumTrack::trackVInit()
     connect(queryGen,SIGNAL(updateNeeded()),this,SLOT(checkNeedUpdates()) );
     connect(albumM->queryGrt(),SIGNAL(updateNeeded()),this,SLOT(checkNeedUpdates()) );
     
-    connect(editMultFiles::self(),SIGNAL(finished() ),this,SLOT(checkNeedUpdates()) );
 //     trackV->setStyleSheet("QAbstractItemView {background-color: transparent; }");
     
 }
@@ -243,9 +242,8 @@ void albumTrack::readSettings()
 
 void albumTrack::checkNeedUpdates()
 {
-    qDebug()<<"UP "<<isVisible()<<" "<<views::editMultFiles::isEditing();
-    if(isVisible() && !views::editMultFiles::isEditing())
-    {	
-	updateQueries();
+    if(isVisible() )
+    {
+        updateQueries();
     }
 }

@@ -3,7 +3,7 @@
 
 #include"dbBase.h"
 #include<QStringList>
-
+#include<KUrl>
 namespace database
 {
 
@@ -17,11 +17,18 @@ class libraryFolder :public dbBase
 
         QStringList playLists();
         bool addPlaylist(const QString &path);
+        bool addPlaylist(const QUrl u)
+        {
+            QString s=u.toLocalFile();
+            return addPlaylist(s);
+        }
         bool removePlaylist(const QString &path);
         
         bool removeFile(const QString &path);
         bool removeFolder( QString path);
 
+        bool onDb(const KUrl &u);
+        
     private:
         QStringList list;
         QStringList plList;

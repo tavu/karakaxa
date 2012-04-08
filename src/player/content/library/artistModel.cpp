@@ -44,36 +44,12 @@ QVariant artistModel::data(const QModelIndex &index, int role) const
 }
 
 void artistModel::updateQueries()
-{
-    /*
-    if(!_needUpdate )
-    {
-	   return ;
-    }
-    if(q->isValid() )
-    {
-	artistQ->setQuery(q->clone() );
-    }
-    else
-    {
-	artistQ->setQuery(0);
-    }
-    */
-    
+{    
     if(artistQ->needUpdate() )
     {
-        qDebug()<<"ARTIST UP";
         artistQ->select();        
         setStringList(artistQ->result());
     }        
-/*    if(q!=0 && q->isValid() )
-    {
-	setStringList(core::queryGrt::artists(q) );
-    }
-    else
-    {
-	setStringList(core::queryGrt::artists() );
-    }*/
 }
 
 

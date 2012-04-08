@@ -156,7 +156,7 @@ void myFileSystemModel::insert(const KFileItemList &items)
     {
 	   if( core::isAudio(item.url().toLocalFile() )  )
         {
-		  l<<audioFiles::audioFile( item.url().toLocalFile() );
+            l<<audioFiles::audioFile( item.url().toLocalFile() );
         }
     }
     thr.addItems(l);    

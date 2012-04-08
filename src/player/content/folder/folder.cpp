@@ -8,8 +8,11 @@
 #include"myFileSystemModel.h"
 
 #include<KFileItemDelegate>
-#include<QDebug>
 #include<KConfigGroup>
+#include <QDialog>
+#include<QDialogButtonBox>
+#include<QComboBox>
+#include<libraryFolder.h>
 
 using namespace core;
 // #define DIRECTORYM "inode/directory"
@@ -20,16 +23,18 @@ folderContent::folderContent(QWidget *parent)
     navigator = new KUrlNavigator(navigatorModel,KUrl( QDir::home().path() ),this);
 
     model = new myFileSystemModel(this);
-//     proxyM=new folderProxyModel(this);
     proxyM=0;
-//     proxyM->setFilterCaseSensitivity(Qt::CaseInsensitive);
 
     view=new views::treeView(this);
-//     view->setModel(proxyM);
     view->setDragDropMode(QAbstractItemView::DragDrop);
 
     toolBar=new KToolBar(this);
     toolBar->setToolButtonStyle( Qt::ToolButtonIconOnly );
+
+    toolBar->setFixedHeight(25);
+    
+    folderToolBar=new KToolBar(this);
+    folderToolBar->setToolButtonStyle( Qt::ToolButtonIconOnly );    
 
     backAction = new QAction( KIcon( "go-previous" ),"go back", this );
     toolBar->addAction( backAction );
@@ -43,6 +48,17 @@ folderContent::folderContent(QWidget *parent)
     upAction = new QAction( KIcon( "go-up" ),"go up", this );
     toolBar->addAction( upAction );
     connect( upAction, SIGNAL( triggered( bool) ), this, SLOT( up() ) );
+    
+    folderToolBarAction = toolBar->addWidget(folderToolBar);
+
+    QFrame *fr=new QFrame(folderToolBar);
+    fr->setFrameStyle(QFrame::VLine|QFrame::Raised);
+//     fr->setFrameStyle(QFrame::Raised);
+    folderToolBar->addWidget(fr);
+    
+    newPlAction = new QAction(views::decor->playListIcon(),"create new playlist", this );
+    folderToolBar->addAction( newPlAction );
+    connect( newPlAction, SIGNAL( triggered( bool) ), this, SLOT( newPl() ) );
 
     QWidget* spacer = new QWidget(this);
     spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -73,9 +89,7 @@ folderContent::folderContent(QWidget *parent)
     readSettings();
 
     connect(navigator,SIGNAL(urlChanged (KUrl) ),this,SLOT(showUrl(KUrl) ) );
-
     connect(qApp,SIGNAL(aboutToQuit() ),this,SLOT(writeSettings() ) );
-
     connect(view,SIGNAL(showContextMenu(QModelIndex,QModelIndexList) ),this,SLOT(showContexMenuSlot(QModelIndex, QModelIndexList) ) );
 }
 
@@ -150,7 +164,7 @@ void folderContent::showUrl(KUrl url)
 void folderContent::goToFolder(KUrl url)
 {
     proxyM=new folderProxyModel(this);
-
+    folderToolBarAction->setVisible(true);
     view->setNotHide(0);
     view->setRatingColumn(DIRCOLUMN+RATING);
     proxyM->setSourceModel(model);
@@ -167,16 +181,17 @@ void folderContent::goToFolder(KUrl url)
         delete playlistM;
         playlistM=0;
     }
+    
 }
 
 
 void folderContent::goToPl(KUrl url)
 {
     view->setSortingEnabled(false);
-//     view->setModel(0);
+    folderToolBarAction->setVisible(false);
     playlistM=new views::filePlaylistModel(this);
+    
     playlistM->setPlPath(url.toLocalFile());
-//     delete proxyM;
     proxyM=new folderProxyModel(this);
     proxyM->setSourceModel(playlistM);
     proxyM->setFilterCaseSensitivity(Qt::CaseInsensitive);
@@ -187,6 +202,7 @@ void folderContent::goToPl(KUrl url)
     view->setModel(proxyM);
     view->header()->restoreState(playlistMState);
     searchLine->clear();
+    
     connect(searchLine,SIGNAL(textChanged ( const QString & )  ),proxyM,SLOT(setFilterFixedString(QString) ) );
 }
 
@@ -212,6 +228,62 @@ void folderContent::forward()
 {
     navigator->goForward();
 }
+
+void folderContent::newPl()
+{
+    QDialog dialog(this);
+    dialog.setWindowTitle(tr("New playlist"));
+    KLineEdit *name=new KLineEdit(&dialog);
+    QComboBox *box=new QComboBox(&dialog);
+    QLabel *label=new QLabel(tr("Create new playlist files"), &dialog);
+    QLabel *nameLabel=new QLabel(tr("name:"), &dialog);
+    QLabel *dot=new QLabel(".", &dialog);
+    QFont font=dot->font();
+    font.setBold(true);
+    dot->setFont(font);
+    QDialogButtonBox* buttons=new QDialogButtonBox(QDialogButtonBox::Ok|QDialogButtonBox::Cancel,Qt::Horizontal,this);
+    connect(buttons, SIGNAL(accepted()), &dialog, SLOT(accept()));
+    connect(buttons, SIGNAL(rejected()), &dialog, SLOT(reject()));
+    
+    QHBoxLayout *vl=new QHBoxLayout();
+    vl->addWidget(nameLabel);
+    vl->addWidget(name);
+    vl->addWidget(dot);
+    vl->addWidget(box);
+    
+    
+    QVBoxLayout *l=new QVBoxLayout(&dialog);
+    
+    l->addWidget(label);
+    l->addLayout(vl);
+    l->addWidget(buttons);
+    box->addItems(core::config->playListFiles() );
+
+    if(dialog.exec()==QDialog::Accepted)
+    {
+        KUrl u=navigator->locationUrl();
+        QString s=name->text();
+        s.append(".");
+        s.append(box->currentText() );
+        u.addPath(s);        
+        s=u.toLocalFile();
+        
+        core::filePlaylist *pl=getPlaylist(s);
+        if(pl->exist() )
+        {
+            core::status->addError(tr("file already exist") );
+            return ;
+        }
+        if(!pl->create() )
+        {
+            core::status->addError(tr("error creating playlist file") );
+        }
+        delete pl;
+    }
+
+}
+
+
 
 void folderContent::loaded()
 {

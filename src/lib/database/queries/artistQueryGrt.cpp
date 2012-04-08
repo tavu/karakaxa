@@ -49,7 +49,7 @@ void database::artistQueryGrt::dbEvents(database::dbEventP e)
     if(e->type() ==FILES_CHANG)
     {
         dbEventAF *ev= static_cast<dbEventAF*>(e.data() );
-        foreach(audioFile f, ev->files)
+        foreach(const audioFile &f, ev->files)
         {
             foreach(tagChanges c,f.tagChanged() )
             {
@@ -59,7 +59,7 @@ void database::artistQueryGrt::dbEvents(database::dbEventP e)
                     return ;
                 }
             }
-            if(q->match(f) )
+            if(q!=0 && q->match(f) )
             {
                 setNeedUpdate();
                 return ;

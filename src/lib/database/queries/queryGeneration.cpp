@@ -13,7 +13,7 @@ using namespace audioFiles;
 database::queryGrt::queryGrt(QObject *parent)
   :dbBase(parent),q(0)
 {
-    
+    connect(db(),SIGNAL( newEvent(database::dbEventP)),this,SLOT(dbEvents(database::dbEventP)) );    
 }
 
 database::queryGrt::queryGrt(abstractQuery* qe, QObject* parent)
@@ -38,6 +38,7 @@ void database::queryGrt::setNeedUpdate()
     {
         return ;
     }
+
     _needUpdate=true;
     emit updateNeeded();        
 }

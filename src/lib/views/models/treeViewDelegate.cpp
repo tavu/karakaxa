@@ -14,7 +14,7 @@
 #include <kiconeffect.h>
 #include <QVariant>
 #include<QStyle>
-#include"../editors/editMultFiles.h"
+#include<editMultFiles.h>
 #include"../editors/textEditor.h"
 #include<QDebug>
 #include<QStylePainter>
@@ -178,7 +178,7 @@ void views::treeViewDelegate::setModelData(QWidget *editor,QAbstractItemModel *m
         return ;
     }
 
-    editMultFiles::editFiles *thr=new editMultFiles::editFiles(parent());
+    database::editMultFiles::editFiles *thr=new database::editMultFiles::editFiles(parent());
     thr->setFiles(l);
     thr->setTag(tag );
 

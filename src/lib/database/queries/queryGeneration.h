@@ -64,7 +64,7 @@ class queryGrt :public dbBase
 
     protected slots:
         void setNeedUpdate();
-        virtual void dbEvents(dbEventP e);
+        virtual void dbEvents(database::dbEventP e);
         
     signals:
         void updateNeeded();
