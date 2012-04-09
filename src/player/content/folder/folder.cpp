@@ -53,7 +53,6 @@ folderContent::folderContent(QWidget *parent)
 
     QFrame *fr=new QFrame(folderToolBar);
     fr->setFrameStyle(QFrame::VLine|QFrame::Raised);
-//     fr->setFrameStyle(QFrame::Raised);
     folderToolBar->addWidget(fr);
     
     newPlAction = new QAction(views::decor->playListIcon(),"create new playlist", this );

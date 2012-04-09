@@ -47,7 +47,7 @@ playlistContent::playlistContent(QWidget *parent)
     proxyM->setSourceModel(treeModel);
     proxyM->setSortCaseSensitivity(Qt::CaseInsensitive);
     proxyM->setSortRole(Qt::DisplayRole);    
-
+    proxyM->setDynamicSortFilter(true);
     
     treeV->setModel(proxyM);        
     
@@ -106,7 +106,7 @@ playlistContent::playlistContent(QWidget *parent)
 
 
     
-    proxyM->sort(0,Qt::AscendingOrder);
+//     proxyM->sort(0,Qt::AscendingOrder);
 }
 
 void playlistContent::readSettings()
@@ -132,18 +132,6 @@ void playlistContent::readSettings()
     smHead=new smplalistHead(el);
 }
 
-void playlistContent::updateQueries()
-{
-    if(trackV->model()==smpModel)
-    {
-	   needUpdate=false;
-    }
-    else
-    {      
-	   needUpdate=true;
-    }
-}
-
 void playlistContent::removeSlot()
 {
     QModelIndex index=proxyM->mapToSource(treeV->currentIndex());
@@ -158,7 +146,10 @@ playlistContent::~playlistContent()
 
 void playlistContent::activated(const int n)
 {
-
+    if(stack->currentIndex()==1 && trackProxy->sourceModel()==smpModel &&quer->needUpdate())
+    {
+        quer->select();
+    }
 }
 
 QString playlistContent::name() const
@@ -234,7 +225,7 @@ void playlistContent::addFolderSlot()
     standardItem *i=treeModel->itemFromIndex(index);
     if(i->type()!=FOLDER_ITEM)
     {
-	i=i->parent();	
+        i=i->parent();	
     }    
     
     i->appendRow(f);
@@ -242,7 +233,7 @@ void playlistContent::addFolderSlot()
 //     proxyM->sort(0,Qt::AscendingOrder);
     treeV->expand( proxyM->mapFromSource(treeModel->indexFromItem(i,0) ) );    
     treeV->edit( proxyM->mapFromSource( treeModel->indexFromItem(f,0) ) );
-    proxyM->sort(0,Qt::AscendingOrder);
+//     proxyM->sort(0,Qt::AscendingOrder);
     
 }
 
