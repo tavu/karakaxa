@@ -11,6 +11,7 @@ class libraryFolder :public dbBase
 {
     public:
         libraryFolder(QObject *parent=0);
+        ~libraryFolder(){}
         QStringList libraryFolders();        
         void removeLibraryFolder(const QString &s);
         bool addLibraryFolder(const QString &s);
@@ -30,8 +31,8 @@ class libraryFolder :public dbBase
         bool onDb(const KUrl &u);
         
     private:
-        QStringList list;
-        QStringList plList;
+        static QStringList list;
+        static QStringList plList;
 };
 
 };

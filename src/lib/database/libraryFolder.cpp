@@ -233,5 +233,5 @@ bool database::libraryFolder::removePlaylist(const QString& path)
     return b;
 }
 
-// QStringList database::libraryFolder::list;
-// QStringList database::libraryFolder::plList;
+QStringList database::libraryFolder::list=QStringList();
+QStringList database::libraryFolder::plList=QStringList();

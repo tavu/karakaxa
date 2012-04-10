@@ -14,7 +14,7 @@ class dbBase :public QObject
 {
     protected:
         dbBase(QObject *parent=0) :QObject(parent){};
-        
+        virtual ~dbBase(){};
         static void lock()
         {
             mutex.lock();
