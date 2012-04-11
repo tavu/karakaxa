@@ -19,8 +19,8 @@ class audioFile :public QObject
 {
 //     using namespace audioFiles;
     Q_OBJECT
-    
-    
+
+
     public:
 
 	static const short int ONDATAB;
@@ -32,19 +32,19 @@ class audioFile :public QObject
 
 	audioFile();
     audioFile(QUrl u);
-    
+
 	audioFile(const QString);
 	audioFile(const audioFiles::audioFile &f);
 	audioFile(QSqlRecord r,bool force=false);
-	
+
 	audioFile* operator=(const audioFile &f);
-	
+
 	virtual ~audioFile();
 
 	QString path() const;
-	
+
 	QVariant 			tag(int t,const short int f=DEFAULTF) const;
-	
+
 	QVariant			albumArtist();
 	QString			    cover();
 
@@ -59,21 +59,21 @@ class audioFile :public QObject
 
 	QString 			format();
 
-	
-	
+
+
 	int error() const
 	{
 	    //return the last error
 	    return err;
 	}
-	
+
 	int status() const
 	{
 	    //return an int that shows from where the last tag was loaded
 	    return stat;
 	}
 
-	QList<tagChanges> tagChanged() const
+	tagChangesL tagChanged() const
 	{
 	    return changes;
 	}
@@ -89,40 +89,40 @@ class audioFile :public QObject
 
 	    return true;
 	}
-	
+
 	void setRecord(QSqlRecord r,bool force=false);
 	bool inDataBase(bool force=false);
-	
-    private:	
-      
-	bool setTagPrivate(int t,QVariant var); 
-	 
-	void save();	
+
+    private:
+
+	bool setTagPrivate(int t,QVariant var);
+
+	void save();
 	mutable int err;
 	mutable int stat;
-	
+
 
     protected:
-      	
+
 	QString	albumArt;
 	mutable bool recFlag;
 	int fileSize;
 
 // 	fileTags *file;
 // 	fileToDb *fdb;
-	
+
 	bool saveFlag;
-	
+
 	mutable fileCache* cache;
 	QList<tagChanges> changes;
-	
+
 
     protected slots:
 	void emitChanged(audioFiles::tagChangesL l)
 	{
 	    emit changed(l);
 	}
-	
+
     signals:
       void changed(QList<tagChanges>);
 

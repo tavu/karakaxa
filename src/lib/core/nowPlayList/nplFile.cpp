@@ -8,7 +8,7 @@ core::nplFile::nplFile(QString s)
         :nplTrack()
 {
     file=new audioFile(s);
-        
+
     if (file==0 )
     {
         qDebug()<<"null file";
@@ -21,19 +21,16 @@ core::nplFile::nplFile(QString s)
     }
     else
     {
-// 	   connect(db(),SIGNAL(updated(audioFiles::audioFile)),this,SLOT(emitCh(audioFiles::audioFile) ) ) ;
+ 	   connect(file,SIGNAL(changed(QList<tagChanges>)),this,SLOT(emitCh() ) );
     }
 
     _loadFlag=audioFile::ONDATAB|audioFile::ONCACHE|audioFile::TITLEFP;
 
 }
 
-void core::nplFile::emitCh(audioFiles::audioFile f)
+void core::nplFile::emitCh()
 {
-    if(f.path()==file->path() )
-    {
-	   nplTrack::emitChanged();
-    }
+    nplTrack::emitChanged();
 }
 
 core::nplTrack* core::nplFile::clone()
@@ -50,7 +47,7 @@ void core::nplFile::play()
 QVariant core::nplFile::artist()
 {
     if(file==0)	return QVariant();
-    
+
     return file->albumArtist();
 }
 
@@ -91,7 +88,7 @@ QString core::nplFile::cover()
 
 QVariant core::nplFile::tag(int t)
 {
-    if(file==0)	return QVariant();    
+    if(file==0)	return QVariant();
     return file->tag(t,_loadFlag);
 }
 

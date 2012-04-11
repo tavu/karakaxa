@@ -40,13 +40,13 @@ class nplFile :public nplTrack
         {
             return _loadFlag;
         }
-        
+
     private:
         audioFile   *file;
         short int   _loadFlag;
     private slots:
-        void emitCh(audioFiles::audioFile f);
-    
+        void emitCh();
+
 
 };
 };

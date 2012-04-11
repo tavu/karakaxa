@@ -26,7 +26,7 @@ namespace audioFiles
   
 class fileCache :public QObject
 {
-    
+
   struct fileCacheS
   {
     fileCache *p;
@@ -35,12 +35,12 @@ class fileCache :public QObject
   
   Q_OBJECT  
   public:
-      
+
       inline QString path()
       {
         return _path;
       }
-      
+
       int 		loadTags(bool force=false);
       void 		setRecord(QSqlRecord &r, bool force=false);
       int 		select(bool force=false);
@@ -48,29 +48,29 @@ class fileCache :public QObject
       QVariant 	tagFromDb(int t, int& err);
       QString   coverPath();
       QString   findCoverPath(int& err);
-	  
+
       int 		albumId(int &err);
-	 
-	 
+
+
 	 void 		setTag(tagsEnum t,QVariant var,int &err);
      void 		setTagFromFile(tagsEnum t,QVariant var);
 	 void 		setTagFromDb(tagsEnum t,QVariant var);
-	 	 
-	 
+
+
 	 int 		prepareToSave();
-	 
+
      void 		savingEnd(QList<tagChanges>);
-      
+
   private:
       fileCache(QString path);
       ~fileCache();
       tagRecord *tagTable;
-      QSqlRecord record; 
+      QSqlRecord record;
       bool notInDb;
-      QString _path;   
-      
+      QString _path;
+
 	 fileTags *file;
-	 database::fileToDb *fdb;	
+	 database::fileToDb *fdb;
 
      QString _coverPath;
  	 QMutex loadMutex;
@@ -81,7 +81,7 @@ class fileCache :public QObject
       static fileCache* 	getFileCache(QString path);
       static void		    releaseFileCache(fileCache*);
       static void	 	    releaseFileCache(QString path);
-      
+
   private:
       static QHash<QString, fileCacheS*> fileCacheMap;
       static QMutex gMutex;
@@ -91,9 +91,10 @@ class fileCache :public QObject
         void changed(audioFiles::tagChangesL);
       
 
+
 //   signals:
 //       void changed(QList<tagChanges>);
-      
+
 };
 
 }

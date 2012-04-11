@@ -42,7 +42,6 @@ class folderContent :public core::abstractContent
             return KIcon("folder-sound");
         }
 
-
     private:
         void                loaded();
         void                unloaded();        

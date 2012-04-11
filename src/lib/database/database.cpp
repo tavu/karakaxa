@@ -6,15 +6,17 @@
 #include<KStandardDirs>
 #include <QProcess>
 #include<QDebug>
- 
+
 #include<func.h>
 #include<config/config.h>
 #include<status/playerStatus.h>
+#include<audioFiles.h>
 
 #include"database.h"
 #include"databaseScanner.h"
-#include<audioFiles.h>
 #include"editMultFiles.h"
+
+
 
 
 database::databaseConection::databaseConection()
@@ -31,12 +33,12 @@ database::databaseConection::databaseConection()
 
 bool database::databaseConection::createConnection()
 {
-    
+
     if(dbName.isEmpty())
     {
         return false;
     }
-    
+
     dBase.setHostName("localhost");
     dBase.setDatabaseName(dbName);
     dBase.setUserName(dbUser);
@@ -49,7 +51,7 @@ bool database::databaseConection::createConnection()
 	   core::status->addErrorP("Database Error"+dBase.lastError().text());
        return false;
     }
-    
+
     core::status->addInfo(QObject::tr("Connected to database") );
     return true;
 }
@@ -72,13 +74,13 @@ void database::databaseConection::readSettings()
      KConfigGroup group( config, "database" );
      dbName=group.readEntry("database",QString());
      dbUser=group.readEntry("user",QString());
-     dbPass=group.readEntry("pass",QString());    
+     dbPass=group.readEntry("pass",QString());
 }
 
 void database::databaseConection::setUpDb()
 {
     QSqlQuery q(dBase);
-    QString s=KGlobal::dirs()->findResource("data",QString("player/sql/create.txt") );   
+    QString s=KGlobal::dirs()->findResource("data",QString("player/sql/create.txt") );
 
     QString command("mysql "+dbName+" -u "+dbUser+" -p"+dbPass+" < "+s);
     int stat=system(command.toStdString().c_str() );
@@ -101,8 +103,8 @@ void database::databaseConection::writeSettings()
     group.writeEntry("database",QVariant(dbName) );
     group.writeEntry("user",QVariant(dbUser));
     group.writeEntry("pass",QVariant(dbPass) );
-    group.config()->sync(); 
-  
+    group.config()->sync();
+
 }
 
 QSqlDatabase database::databaseConection::getDatabase()
@@ -119,9 +121,9 @@ QSqlDatabase database::databaseConection::getDatabase()
         return dBase;
     }
     else
-    {	
+    {
         QString name=apprName(QThread::currentThread() );
-		
+
         dBEntry* dbE=dBMap[name];
         QSqlDatabase newDb;
         if(dbE==0)
@@ -138,7 +140,7 @@ QSqlDatabase database::databaseConection::getDatabase()
             dbE->used++;
             newDb=QSqlDatabase::database(name,false);
         }
-	
+
         if(!newDb.isOpen() )
         {
             if(!newDb.open() )
@@ -146,25 +148,25 @@ QSqlDatabase database::databaseConection::getDatabase()
                 core::status->addErrorP("database error: "+dBase.lastError().text() );
             }
 	}
-	mutex.unlock();	
+	mutex.unlock();
 	return newDb;
-	
+
     }
 }
 
 void database::databaseConection::closeDatabase()
-{     
+{
     if(QThread::currentThread()==core::mainThr() )
     {
         return ;
     }
-    
+
     QString name=apprName(QThread::currentThread() );
-    
+
     mutex.lock();
-    dBEntry* dbE=dBMap.value(name);	
-	
-    if(dbE==0)	
+    dBEntry* dbE=dBMap.value(name);
+
+    if(dbE==0)
     {
         core::status->addErrorP("Can't close a non exist database connection");
     }
@@ -180,31 +182,31 @@ void database::databaseConection::closeDatabase()
             dBMap.remove(name);
             delete dbE;
         }
-    }	 
-    mutex.unlock();    
+    }
+    mutex.unlock();
 }
 
 void database::databaseConection::closeDatabase(QSqlDatabase &dbase)
-{   
-    mutex.lock();    
-    QString name=dbase.connectionName();    
+{
+    mutex.lock();
+    QString name=dbase.connectionName();
     if(name==dBase.connectionName() )
     {
         mutex.unlock();
         return ;
     }
-    
+
     dBEntry* dbE=dBMap.value(name);
-	
+
     if(dbE==0)
     {
         core::status->addErrorP("Can't close a non exist database connection");
-    }	
+    }
     else
-    {	
-	dbE->used--;	    
+    {
+	dbE->used--;
 	if(dbE->used==0)
-	{	
+	{
  	    dbase.close();
 	    dbase=QSqlDatabase();
 	    QSqlDatabase::removeDatabase(name);
@@ -212,7 +214,7 @@ void database::databaseConection::closeDatabase(QSqlDatabase &dbase)
  	    delete dbE;
 	}
     }
-    
+
     mutex.unlock();
 }
 
@@ -236,13 +238,13 @@ database::databaseConection::~databaseConection()
 
 void database::databaseConection::scan(databaseScanner* sc)
 {
-    mutex.lock();    
+    mutex.lock();
     scanners.append(dbScanner(sc) );
     connect(sc,SIGNAL(finished()),this,SLOT(scanFinished()),Qt::QueuedConnection);
 
     if(_state==NORMAL)
     {
-        nextState();        
+        nextState();
     }
     else
     {

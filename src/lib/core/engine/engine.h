@@ -4,12 +4,14 @@
 // #include <phonon>
 #include <Phonon/AudioOutput>
 #include <Phonon/MediaObject>
+#include <phonon/audiodataoutput.h>
+#include <Phonon/MediaController>
 #include<QString>
 #include<kurl.h>
 #include<QMutex>
 // #include"../coreNamespace.h"
 namespace core
-{  
+{
 class soundEngine :public QObject
 {
     Q_OBJECT
@@ -34,6 +36,8 @@ class soundEngine :public QObject
     private:
         Phonon::MediaObject* mediaObject;
         Phonon::AudioOutput *audioOutput;
+        Phonon::AudioDataOutput *audioDataOutput;
+        Phonon::MediaController   *controller;
 
         int errors;
         QMutex mutex;
@@ -43,8 +47,8 @@ class soundEngine :public QObject
         void getNext();
         void mediaStateChanged (Phonon::State, Phonon::State);
         void newSource( const Phonon::MediaSource  );
-	
-	
+
+
     public slots:
         bool next();
         bool previous();
@@ -54,7 +58,7 @@ class soundEngine :public QObject
         void muteToggle();
 
         void playPause();
-	
+
 
     signals:
         void stateChanged (Phonon::State state);

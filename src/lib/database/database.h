@@ -15,23 +15,24 @@
 #include"databaseScanner.h"
 #include "databaseEvent.h"
 
-namespace database 
+namespace database
 {
 
+class dbEvent;
 class databaseConection :public QObject
-{    
-    Q_OBJECT    
+{
+    Q_OBJECT
     friend void init();
     friend databaseConection* db();
 
     public:
         databaseConection();
         ~databaseConection();
-        
+
         QSqlDatabase getDatabase();
         void closeDatabase(QSqlDatabase& dbase);
         void closeDatabase();
-        
+
         const QString error();
 
         void changedSig()
@@ -62,7 +63,7 @@ class databaseConection :public QObject
         {
             return dbPass;
         }
-	
+
         bool dBConnect(QString n,QString u,QString p);
         void setUpDb();
 
@@ -134,7 +135,7 @@ class databaseConection :public QObject
         static databaseConection *db;
         
 
-    
+
 };//class
 
 inline databaseConection* db()

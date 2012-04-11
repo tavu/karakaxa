@@ -12,14 +12,22 @@ core::soundEngine::soundEngine(QObject *parent)
         mediaObject(0),
         audioOutput(0)
 {
-    mediaObject = new Phonon::MediaObject();
-    audioOutput = new Phonon::AudioOutput(Phonon::MusicCategory);
+    mediaObject = new Phonon::MediaObject(this);
+    mediaObject->setTickInterval( 100 );
+    audioOutput = new Phonon::AudioOutput(Phonon::MusicCategory,this);
 
+    audioDataOutput = new Phonon::AudioDataOutput( this );
+
+    Phonon::createPath( mediaObject, audioDataOutput );
     Phonon::Path path = Phonon::createPath(mediaObject, audioOutput);
+
+    controller = new Phonon::MediaController( mediaObject);
+
+
     connect(mediaObject,SIGNAL( aboutToFinish () ),this ,SLOT ( getNext() ) );
     connect(mediaObject,SIGNAL( currentSourceChanged( const Phonon::MediaSource  ) ),this ,SLOT ( newSource( const Phonon::MediaSource  ) ) );
     connect(mediaObject,SIGNAL( stateChanged ( Phonon::State , Phonon::State ) ),this ,SLOT ( mediaStateChanged ( Phonon::State , Phonon::State ) ));
-  
+
 }
 
 core::soundEngine::~soundEngine()
@@ -34,7 +42,7 @@ void core::soundEngine::init()
 }
 
 bool core::soundEngine::play(int n)
-{    
+{
     mutex.lock();
     QString s=npList->playUrl(n);
 
@@ -117,8 +125,9 @@ MediaObject* core::soundEngine::getMediaObject()
 
 void core::soundEngine::mediaStateChanged ( Phonon::State newstate, Phonon::State oldstate )
 {
+    qDebug()<<oldstate<<"  "<<newstate<<"	"<<mediaObject->state();
     emit(stateChanged (newstate) );
-    
+
     if (newstate==Phonon::ErrorState )
     {
         if (mediaObject->errorType()==Phonon::FatalError)
@@ -127,18 +136,18 @@ void core::soundEngine::mediaStateChanged ( Phonon::State newstate, Phonon::Stat
         }
         qDebug()<<"engine error "<<mediaObject->errorString();
         errors++;
-	
-        if(errors<MAX_ERR)
-        {
-    // 	    next();
-        }
-        status->addError("playing error");
+
+	if(errors<MAX_ERR)
+	{
+// 	    next();
+	}
+	status->addError("playing error");
     }
-    
     if(newstate==Phonon::PlayingState)
     {
-        errors=0;
+	errors=0;
     }
+
 
 }
 
@@ -214,10 +223,10 @@ void core::soundEngine::newSource( const Phonon::MediaSource  s)
 void core::soundEngine::setMute(bool f)
 {
     //due to a bug we don't use setMute from audioOutput but we set the volume to zero
-    static qreal v=audioOutput->volume();    
+    static qreal v=audioOutput->volume();
     if(f)
     {
-	v=audioOutput->volume();    
+	v=audioOutput->volume();
 	audioOutput->setVolume(0);
     }
     else if(v==0)

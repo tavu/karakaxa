@@ -5,7 +5,7 @@
 #include <audioFile.h>
 /*
  * Database events are classes inherits the dbEvent witch are be sending from dbConnection throw signals.
- * The purpose of these classes is to inform the resevers about any accion that occured in the database. 
+ * The purpose of these classes is to inform the resevers about any accion that occured in the database.
  * This event are absolutely irrelevant to the  qt events
  */
 namespace database
@@ -36,7 +36,7 @@ class dbEvent :public QObject
         };
 
         virtual ~dbEvent(){}
-        
+
         int type()
         {
             return _type;

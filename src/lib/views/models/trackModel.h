@@ -13,7 +13,7 @@ namespace views
 {
 
 class trackItem :public standardItem
-{    
+{
     Q_OBJECT
     public:
         trackItem(audioFiles::audioFile f);
@@ -34,25 +34,12 @@ class trackItem :public standardItem
         audioFiles::audioFile file;
 
         protected slots:
-            void changed(audioFiles::audioFile f)
-            {
-                if(f.path()==file.path() )
-                {
-                    if(f.tagChanged().size()==1)
-                    {
-                        standardItem::dataChanged(f.tagChanged().at(0).tag );
-                    }
-                    else
-                    {
-                        standardItem::dataChanged(0,FRAME_NUM-1);
-                    }
-                }
-            }
-	
+            void changed(audioFiles::tagChangesL);
+
 };
 
-  
-  
+
+
 class trackModelItem :public standardItem
 {
     Q_OBJECT
@@ -103,7 +90,7 @@ class trackModelItem :public standardItem
         {
             clear();
         }
-        
+
     protected:
 
         //this function returns a trackItem pointer.

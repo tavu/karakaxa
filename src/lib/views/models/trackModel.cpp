@@ -9,7 +9,19 @@ views::trackItem::trackItem(audioFiles::audioFile f)
   :standardItem(),
   file(f)
 {
-    connect(database::db(),SIGNAL(updated(audioFiles::audioFile)),this,SLOT(changed(audioFiles::audioFile)) );
+    connect(&f,SIGNAL(changed(audioFiles::tagChangesL)),this,SLOT(changed(audioFiles::tagChangesL)) );
+}
+
+void views::trackItem::changed(audioFiles::tagChangesL c)
+{
+    if(c.size()==1)
+    {
+        standardItem::dataChanged(c.at(0).tag );
+    }
+    else
+    {
+        standardItem::dataChanged(0,FRAME_NUM-1);
+    }
 }
 
 
@@ -19,10 +31,10 @@ QVariant views::trackItem::data(int column, int role) const
     {
         return QVariant();
     }
-    
+
     if(role==Qt::DisplayRole || role==Qt::ToolTipRole || role==Qt::EditRole)
     {
-	   return views::pretyTag(file.tag(column),column );	   
+	   return views::pretyTag(file.tag(column),column );
     }
     if(role==URL_ROLE)
     {
@@ -48,7 +60,7 @@ bool views::trackItem::setData(const QVariant& value, int column, int role)
             return true;
         }
     }
-    
+
     return false;
 }
 
@@ -56,7 +68,7 @@ bool views::trackItem::setData(const QVariant& value, int column, int role)
 views::trackModelItem::trackModelItem()
   :standardItem(),
   q(0)
-{   
+{
 }
 
 QVariant views::trackModelItem::headerData(int section, Qt::Orientation orientation, int role) const
@@ -97,7 +109,7 @@ void views::trackModelItem::setQueryG(database::filesQueryGrt* qe)
 //     connect(q,SIGNAL(newItems(QVector<audioFiles::audioFile>)),this,SLOT(addItems(QVector<audioFiles::audioFile>) ),Qt::QueuedConnection );
 //     connect(q,SIGNAL(inserted(audioFiles::audioFile,int) ),this,SLOT(addItem(audioFile &,int) ),Qt::QueuedConnection );
 //     connect(q,SIGNAL(removed(audioFiles::audioFile,int)),this,SLOT(removeItem(audioFiles::audioFile&,int)),Qt::QueuedConnection );
-    
+
     if(q->needUpdate() )
     {
         q->select();
@@ -106,18 +118,18 @@ void views::trackModelItem::setQueryG(database::filesQueryGrt* qe)
 
 void views::trackModelItem::addItems()
 {
-  
+
     prealocateChildren(q->size() );
     beginInsertRows(0,q->size()-1 );
-    
+
     for(int i=0;i<q->size();i++)
-    {        
+    {
 	audioFiles::audioFile f=q->at(i);
 	standardItem *item=getItem(f);
 	insert(i,item);
     }
-    
-    endInsertRows();        
+
+    endInsertRows();
 }
 
 
