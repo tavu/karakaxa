@@ -12,7 +12,7 @@ core::filePlaylist* core::getPlaylist(const QString &url)
     {
         ret=new m3uPlaylist(url);
     }
-    
+
     return ret;
 }
 

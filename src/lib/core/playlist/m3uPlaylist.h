@@ -22,9 +22,12 @@ class m3uPlaylist :public filePlaylist
 
         bool load();
         bool save();
-        
+
     public:
         QStringList urls() const;
+
+    protected:
+        bool createFile();
 };
 };
 #endif

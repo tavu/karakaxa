@@ -10,11 +10,11 @@
 */
 namespace core
 {
-  
+
 class filePlaylist :public playlist
-{      
+{
     public:
-      
+
         static const int OK=0;
         static const int FILENOTFOUND=1;
         static const int CANTOPENFILE=2;
@@ -26,7 +26,7 @@ class filePlaylist :public playlist
         {}
 
     public slots:
-        
+
         virtual void insertUrl(int pos,QString u)=0;
 //         virtual void insertUrls(int pos,QStringList l)=0;
         virtual bool load()=0;
@@ -78,16 +78,16 @@ class filePlaylist :public playlist
         //creates a new file and add the default data for every playlist
         //this implementation just create an empty file.
         virtual bool createFile();
-        
+
         bool _saveToRelative;
 
         QFile   file;
         QString _path;
         int     err;
-    
+
     protected:
         QString toFullPath(const QString &s) const;
-        
+
 };
 
 

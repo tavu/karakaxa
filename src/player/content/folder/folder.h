@@ -19,8 +19,9 @@
 #include"myFileSystemModel.h"
 #include<KLineEdit>
 #include<models/filePlaylistModel.h>
+#include<QStackedWidget>
 //#include "folderView.h"
-// #include <kfileplacesmodel.cpp>
+#include <kfileplacesmodel.h>
 
 class folderContextMenu;
 
@@ -44,24 +45,29 @@ class folderContent :public core::abstractContent
 
     private:
         void                loaded();
-        void                unloaded();        
+        void                unloaded();
         void                readSettings();
-        void                saveStates();
+
 
         void                goToPl(KUrl url);
         void                goToFolder(KUrl url);
 
         KToolBar            *folderToolBar;
         QAction *           folderToolBarAction;
-        
-        folderContextMenu   *m;
-        myFileSystemModel   *model;
-        KDirModel           *dirModel;
-        folderProxyModel    *proxyM;
 
-        KFilePlacesModel    *navigatorModel;
-        views::treeView     *view;    
+        folderContextMenu   *m;
         KUrlNavigator       *navigator;
+        KFilePlacesModel    *navigatorModel;
+        KLineEdit           *searchLine;
+        views::filePlaylistModel      *playlistM;
+
+        QStackedWidget      *stacked;
+        myFileSystemModel   *folderM;
+        folderProxyModel    *folProxy;
+        views::filePlaylistModel *plModel;
+        QSortFilterProxyModel  *plProxy;
+        views::treeView     *plView;
+        views::treeView     *folView;
 
         //actions
         QAction             *upAction;
@@ -69,12 +75,10 @@ class folderContent :public core::abstractContent
         QAction             *forwardAction;
         QAction             *newPlAction;
 
-        KLineEdit           *searchLine;
-        views::filePlaylistModel      *playlistM;
+    //functions
+        inline void toolBarInit();
+        inline void layoutInit();
 
-        QByteArray          folderModelState;
-        QByteArray          playlistMState;
-        
     public slots:
         void cd(KUrl);
         void up();
@@ -87,7 +91,8 @@ class folderContent :public core::abstractContent
         void cleanup();
         void writeSettings();
         void showUrl(KUrl);
-        void showContexMenuSlot(QModelIndex index, QModelIndexList list);
+        void plMenu(QModelIndex index, QModelIndexList list);
+        void folMenu(QModelIndex index, QModelIndexList list);
         void edit();
 };
 
@@ -95,7 +100,7 @@ class folderContextMenu :public core::abstractMenu
 {
     Q_OBJECT
     public:
-	
+
         folderContextMenu(folderContent *c)
         :abstractMenu(), f(c) , _show(true)
         {
@@ -126,8 +131,8 @@ class folderContextMenu :public core::abstractMenu
         {
             _show=b;
         }
-    
-    private:      
+
+    private:
         folderContent *f;
         QAction *act;
         bool _show ;
@@ -138,7 +143,7 @@ class folderContextMenu :public core::abstractMenu
             f->cd(core::folder(url().toLocalFile()) );
             core::contentHdl->setCurrentContent(f);
         }
-	
+
 };
 
 

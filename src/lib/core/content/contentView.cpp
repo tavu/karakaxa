@@ -8,9 +8,10 @@ core::contentView::contentView(QObject* parent): QObject(parent)
     stack=new QStackedWidget();
     stack->setMinimumSize(QSize(0,0) );
     _toolBar=new KToolBar( 0,true,false );
-    _toolBar->setStyleSheet("QToolBar {background-color: transparent; }");        
+    _toolBar->setStyleSheet("QToolBar {background-color: transparent; }");
     _toolBar->setAutoFillBackground(true);
-    
+    _toolBar->setFixedHeight(25);
+
     connect(core::contList,SIGNAL(contentAdded(core::abstractContent*) ),this,SLOT(contentAdded(core::abstractContent* ) ) );
     connect(core::contList,SIGNAL(contentChanged(core::abstractContent*)),this,SLOT(contentActivated(core::abstractContent*)) );
     connect(core::contList,SIGNAL(contentRemoved(core::abstractContent*)),this,SLOT(contentRemoved(core::abstractContent*)) );
@@ -40,16 +41,16 @@ void core::contentView::activateContFromIndex(const QModelIndex& in)
     {
         return;
     }
-    
+
     view->setCurrentIndex(in);
     abstractContent *cont=contentFromIndex(in);
-    
+
     if(view->isExpanded(in) )
     {
 	   view->collapse(in);
     }
     else
-    {    
+    {
 	   view->expand(in);
     }
 
@@ -57,10 +58,10 @@ void core::contentView::activateContFromIndex(const QModelIndex& in)
     if(in.parent().isValid() )
     {
 	r=in.row();
-    }    
-        
+    }
+
     contList->setCurrentContent(cont,r);
-    
+
 }
 
 void core::contentView::contentActivated(core::abstractContent* content)
@@ -86,18 +87,18 @@ void core::contentView::contentAdded(core::abstractContent* content)
 {
     stack->addWidget(content);
     model->appendRow( content->item() );
-    
+
     content->setParent(stack);
 //     content->setPalette(stack->palette() );
-    content->setMinimumSize(QSize(0,0) );    
-    
+    content->setMinimumSize(QSize(0,0) );
+
     if(content->toolBar!=0)
     {
 // 	   content->toolBar->setParent(_toolBar);
 // 	   content->toolBar->setIconSize(SIZE);
 	   content->toolBar->setVisible(false);
 	   content->toolBar->setAutoFillBackground(true);
-	   
+
 	   QAction *a=_toolBar->addWidget(content->toolBar);
 	   content->toolBarAction=a;
 	   a->setVisible(false);
@@ -122,7 +123,7 @@ void core::contentView::contentRemoved(core::abstractContent* content)
     if(content->toolBar!=0)
     {
       _toolBar->removeAction(content->toolBarAction);
-    }    
+    }
 }
 
 

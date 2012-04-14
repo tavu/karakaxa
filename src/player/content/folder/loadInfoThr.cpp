@@ -18,7 +18,7 @@ void loadInfoThr::run()
 }
 
 void loadInfoThr::updateTracks()
-{	
+{
 	while(!canceled)
 	{
 		iter->load();
@@ -29,7 +29,7 @@ void loadInfoThr::updateTracks()
 		    mutex->unlock();
 		    break ;
 		}
-		mutex->unlock();		
+		mutex->unlock();
 	}
 }
 
@@ -66,7 +66,7 @@ void loadInfoThr::addItems(QLinkedList<audioFiles::audioFile> &l)
 // 		  wait();
 		  start();
 	   }
-	   
+
     }
     else
     {
@@ -83,5 +83,5 @@ void loadInfoThr::cleanup()
     mutex->lock();
     fileList.clear();
     iter=fileList.end();
-    mutex->unlock();;    
+    mutex->unlock();;
 }

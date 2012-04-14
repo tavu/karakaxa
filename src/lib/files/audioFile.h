@@ -124,7 +124,7 @@ class audioFile :public QObject
 	}
 
     signals:
-      void changed(QList<tagChanges>);
+      void changed(audioFiles::tagChangesL);
 
 // 	void recordClean();
 

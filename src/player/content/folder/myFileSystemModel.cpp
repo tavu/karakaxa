@@ -51,14 +51,14 @@ bool myFileSystemModel::dropMimeData(const QMimeData* data, Qt::DropAction actio
     {
         dest=dirLister()->url();
     }
- 
+
     if(!data->hasUrls() )
     {
         return false;
     }
 
     KUrl::List urls;
-    
+
     foreach(QUrl u,data->urls())
     {
         urls.append(KUrl(u) );
@@ -84,12 +84,12 @@ int myFileSystemModel::columnCount( const QModelIndex & parent ) const
 }
 
 QVariant myFileSystemModel::data(const QModelIndex &index, int role) const
-{   
+{
     if(role == URL_ROLE)
     {
 	   return QVariant(url(index.row() ) );
     }
-  
+
     if (index.column()<DIRCOLUMN)
     {
         return KDirModel::data(index,role);
@@ -100,18 +100,18 @@ QVariant myFileSystemModel::data(const QModelIndex &index, int role) const
         QVariant var;
         KFileItem item=itemForIndex(index);
         if (item.isDir() )	return QVariant();
-	
-        audioFile f(item.url().toLocalFile() );	
+
+        audioFile f(item.url().toLocalFile() );
 
         int filde=index.column()-DIRCOLUMN;
-	
-        var=f.tag(filde, audioFile::ONCACHE|audioFile::ONDATAB );	
-	   
+
+        var=f.tag(filde, audioFile::ONCACHE|audioFile::ONDATAB );
+
 	   return views::pretyTag(var,filde);
     }
     if(role == TAG_ROLE )
     {
-        
+
         return QVariant(index.column()-DIRCOLUMN );
     }
 
@@ -123,7 +123,7 @@ bool myFileSystemModel::setData( const QModelIndex & index, const QVariant & val
 {
     int tag=index.column()-DIRCOLUMN;
     QUrl u=index.data(URL_ROLE).toUrl();
-    
+
     if(u.isValid() )
     {
 	   audioFile f(u.toLocalFile() );
@@ -131,7 +131,7 @@ bool myFileSystemModel::setData( const QModelIndex & index, const QVariant & val
   	   emit dataChanged(index,index);
 	   return true;
     }
-    
+
     return true;
 }
 
@@ -145,12 +145,12 @@ QVariant myFileSystemModel::headerData ( int section, Qt::Orientation orientatio
     if (role ==Qt::DisplayRole)
     {
         return views::tagName( (tagsEnum)(section-DIRCOLUMN) );
-    }    
+    }
     return QVariant();
 }
 
 void myFileSystemModel::insert(const KFileItemList &items)
-{    
+{
     QLinkedList<audioFiles::audioFile> l;
     foreach(KFileItem item , items)
     {
@@ -159,7 +159,7 @@ void myFileSystemModel::insert(const KFileItemList &items)
             l<<audioFiles::audioFile( item.url().toLocalFile() );
         }
     }
-    thr.addItems(l);    
+    thr.addItems(l);
 }
 
 
@@ -171,7 +171,7 @@ int myFileSystemModel::infoC()
 
 Qt::ItemFlags myFileSystemModel::flags ( const QModelIndex & index ) const
 {
-    static Qt::ItemFlags f= Qt::ItemIsEnabled | Qt::ItemIsSelectable |Qt::ItemIsDragEnabled|Qt::ItemIsEditable;
+    static Qt::ItemFlags f= Qt::ItemIsEnabled | Qt::ItemIsSelectable |Qt::ItemIsDragEnabled;
 
     if(!index.isValid() || itemForIndex(index).isDir() )
     {
@@ -181,10 +181,10 @@ Qt::ItemFlags myFileSystemModel::flags ( const QModelIndex & index ) const
     int tag=index.column()-DIRCOLUMN;
     if(tag<0||tag==audioFiles::COUNTER||tag==audioFiles::LENGTH||tag==audioFiles::BITRATE||tag==audioFiles::RATING)
     {
-        return f & ~ Qt::ItemIsEditable;
+        return f;
     }
 
-    return f;
+    return f|Qt::ItemIsEditable;
 }
 
 KUrl myFileSystemModel::url( int row) const

@@ -11,7 +11,6 @@ core::m3uPlaylist::m3uPlaylist(const QString s,QObject *parent)
 
 bool core::m3uPlaylist::load()
 {
-    qDebug()<<"load";
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text) )
     {
         status->addErrorP("can not open file "+path() );
@@ -30,14 +29,14 @@ bool core::m3uPlaylist::load()
             l.append(p);
         }
     }
-    
+
     file.close();
     insertEv *e=new insertEv(0,l);
     QCoreApplication::sendEvent(this,e);
 //     insertEvent(e);
 //     delete e;
 //     insert(0,l);
-        
+
     return true;
 }
 
@@ -62,10 +61,10 @@ bool core::m3uPlaylist::save()
         status->addErrorP("file does not exist");
         return false;
     }
-    
+
     QTextStream t( &file );
     QString f=core::folder(_path);
-            
+
     foreach(nplPointer p,trackList)
     {
         QString s=p->path();
@@ -75,10 +74,22 @@ bool core::m3uPlaylist::save()
         }
         t<<s<<endl;
     }
-    
+
     file.close();
-    
     return true;
+}
+
+bool core::m3uPlaylist::createFile()
+{
+    qDebug()<<"CRE";
+    if (file.open(QIODevice::WriteOnly | QIODevice::Text) )
+    {
+        QTextStream t( &file );
+        t<<"#EXTM3U"<<endl;
+        file.close();
+        return true;
+    }
+    return false;
 }
 
 void core::m3uPlaylist::insertUrl(int pos,QString u)

@@ -21,7 +21,7 @@ core::nplFile::nplFile(QString s)
     }
     else
     {
- 	   connect(file,SIGNAL(changed(QList<tagChanges>)),this,SLOT(emitCh() ) );
+ 	   connect(file,SIGNAL(changed(audioFiles::tagChangesL)),this,SLOT(emitCh() ) );
     }
 
     _loadFlag=audioFile::ONDATAB|audioFile::ONCACHE|audioFile::TITLEFP;
