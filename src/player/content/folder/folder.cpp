@@ -118,7 +118,7 @@ folderContent::folderContent(QWidget *parent)
     plProxy->setFilterCaseSensitivity(Qt::CaseInsensitive);
     plProxy->setFilterKeyColumn(-1);
     plView->setModel(plProxy);
-    plView->setNotHide(0);
+    plView->setNotHide(TITLE);
     plView->setRatingColumn(RATING);
 
 
@@ -432,16 +432,25 @@ void folderContent::plMenu(QModelIndex index, QModelIndexList list)
     }
     else if(a==removeA && a!=0)
     {
+        std::set<int> rowL;
         foreach(QModelIndex in,list)
         {
-            QModelIndex index=plProxy->mapToSource(in);
-            if(index.column()==plView->notHide())
+            if(in.column()==plView->notHide())
             {
-                playlistM->playlist()->remove(index.row() );
+                QModelIndex index=plProxy->mapToSource(in);
+                rowL.insert(index.row() );
             }
         }
-        playlistM->save();
+        int n=0;
+        std::set<int>::iterator it;
+        for(it=rowL.begin();it!=rowL.end();it++)
+        {
+            plModel->playlist()->remove(*it-n);
+            n++;
+        }
+        plModel->save();
     }
+
     m->setShow(true);
     menu->deleteLater();
 }

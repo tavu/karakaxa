@@ -8,7 +8,7 @@ bool folderProxyModel::filterAcceptsRow ( int row, const QModelIndex &parent ) c
     QModelIndex index=sourceModel()->index(row, 0, parent);
     QUrl u=index.data(URL_ROLE).toUrl();
     QString path=u.toString();
-    
+
     if(core::isAudio(path) )
     {
         return QSortFilterProxyModel::filterAcceptsRow(row,parent);
@@ -39,25 +39,35 @@ bool folderProxyModel::lessThan ( const QModelIndex & left, const QModelIndex & 
     QString pathL,pathR;
     pathL=left.data(URL_ROLE).toUrl().toLocalFile();
     pathR=right.data(URL_ROLE).toUrl().toLocalFile();
-    
+
     bool isFolderL,isFolderR;
-    isFolderL=core::isDirectory(pathL);
-    isFolderR=core::isDirectory(pathR);
-    
-    if(isFolderL && isFolderR) //both are directories
+
+    int r=0,l=0;
+
+    if(core::isDirectory(pathL) )
+    {
+        l=2;
+    }
+    else if(core::isPlaylist(pathL) )
+    {
+        l=1;
+    }
+
+    if(core::isDirectory(pathR) )
+    {
+        r=2;
+    }
+    else if(core::isPlaylist(pathR) )
+    {
+        r=1;
+    }
+
+    if(r==l)
     {
         return QSortFilterProxyModel::lessThan(left,right);
     }
-    if( isFolderL && ~isFolderR ) //only the left are directory
-    {
-        return true;
-    }
-    if( ~isFolderL && isFolderR ) //only the righy are directory
-    {
-        return false;    
-    }
-    
-    return QSortFilterProxyModel::lessThan(left,right);    
+
+    return l<r;
 }
 
 bool folderProxyModel::setData( const QModelIndex & index, const QVariant & value, int role)

@@ -59,7 +59,6 @@ class folderContent :public core::abstractContent
         KUrlNavigator       *navigator;
         KFilePlacesModel    *navigatorModel;
         KLineEdit           *searchLine;
-        views::filePlaylistModel      *playlistM;
 
         QStackedWidget      *stacked;
         myFileSystemModel   *folderM;

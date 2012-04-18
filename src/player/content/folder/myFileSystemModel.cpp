@@ -2,7 +2,7 @@
 #include<views.h>
 #include <kio/jobclasses.h>
 #include <kio/copyjob.h>
-
+#include"playlist/filePlaylist.h"
 #define DIRCOLUMN 7
 using namespace core;
 myFileSystemModel::myFileSystemModel(QWidget *parent)
@@ -29,6 +29,7 @@ void myFileSystemModel::updateLibrary()
 
 bool myFileSystemModel::dropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column, const QModelIndex& parent)
 {
+    /*
     KUrl dest;
     QMenu menu(static_cast<QWidget*>(QObject::parent() ) );
     QAction *copyA=new QAction(KIcon("edit-copy"),tr("Copy here"),&menu);
@@ -65,6 +66,58 @@ bool myFileSystemModel::dropMimeData(const QMimeData* data, Qt::DropAction actio
     }
 
     if(a==copyA)
+    {
+        KIO::copy(urls,dest );
+    }
+    else
+    {
+        KIO::move(urls,dest );
+    }
+
+    return true;
+    */
+
+    if(!data->hasUrls() || action==Qt::IgnoreAction )
+    {
+        return false;
+    }
+
+    KUrl dest;
+    if(parent.isValid() )
+    {
+        dest=itemForIndex(parent).url();
+    }
+    else
+    {
+        dest=dirLister()->url();
+    }
+
+    if(core::isPlaylist(dest.toLocalFile() ) )
+    {
+        nplList list;
+        foreach(QUrl u,data->urls())
+        {
+            nplPointer p=core::nplTrack::getNplTrack(u);
+            if( !p.isNull() )
+            {
+                list<<p;
+            }
+        }
+        filePlaylist *pl=getPlaylist(dest.toLocalFile());
+        pl->load();
+        pl->insert(pl->size(),list);
+        pl->save();
+        return true;
+    }
+
+    KUrl::List urls;
+
+    foreach(QUrl u,data->urls())
+    {
+        urls.append(KUrl(u) );
+    }
+
+    if(action==Qt::CopyAction)
     {
         KIO::copy(urls,dest );
     }
@@ -173,7 +226,7 @@ Qt::ItemFlags myFileSystemModel::flags ( const QModelIndex & index ) const
 {
     static Qt::ItemFlags f= Qt::ItemIsEnabled | Qt::ItemIsSelectable |Qt::ItemIsDragEnabled;
 
-    if(!index.isValid() || itemForIndex(index).isDir() )
+    if(!index.isValid() || itemForIndex(index).isDir()||core::isPlaylist( url(index.row()).toLocalFile() ) )
     {
         return f|Qt::ItemIsDropEnabled;
     }
