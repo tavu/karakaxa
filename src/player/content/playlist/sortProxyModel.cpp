@@ -34,3 +34,13 @@ void sortProxyModel::fetchMore(const QModelIndex& parent)
     QSortFilterProxyModel::fetchMore(parent);
     sort(0,Qt::AscendingOrder);
 }
+
+bool sortProxyModel::setData(const QModelIndex& index, const QVariant& value, int role)
+{
+    if(QSortFilterProxyModel::setData(index, value, role) )
+    {
+        sort(0,Qt::AscendingOrder);
+        return true;
+    }
+    return false;
+}

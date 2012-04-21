@@ -28,7 +28,10 @@ class playlistContent :public core::abstractContent
     Q_OBJECT
     public:
         playlistContent(QWidget *parent=0);
-        ~playlistContent();
+        ~playlistContent()
+        {
+             writeSettings();
+        }
         QString name() const;
         void activated(const int n);
 
@@ -42,7 +45,7 @@ class playlistContent :public core::abstractContent
         QAction 		        *forwardAction;
         QStackedWidget       	*stack;
 
-        QTreeView		        *treeV;
+        views::treeView         *treeV;
         views::treeView	        *trackV;
         views::filePlaylistModel  	*plModel;
         standardModel	        *smpModel;
@@ -87,11 +90,13 @@ class playlistContent :public core::abstractContent
         void forward();
         void search();
         void activationSlot(QModelIndex in);
+        void dataChanged(QModelIndex,QModelIndex);
 
         void addFolderSlot();
         void createSmpSlot();
         void editSmpSlot();
         void removeSlot();
+        void renameFolderSlot();
         void writeSettings();
         void contextMenuSlot(QModelIndex index);
         void contextMenuForTracks(QModelIndex index, QModelIndexList list);

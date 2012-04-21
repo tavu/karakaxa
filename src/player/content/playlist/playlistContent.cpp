@@ -25,7 +25,8 @@ playlistContent::playlistContent(QWidget *parent)
     treeV->setSelectionMode(QAbstractItemView::SingleSelection);
     treeV->setRootIsDecorated(true);
     treeV->setAnimated(true);
-    
+    treeV->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    treeV->setPlayOnDoubleCl(false);
     
     trackV=new views::treeView(this);
     trackV->setRatingColumn(RATING);
@@ -47,7 +48,7 @@ playlistContent::playlistContent(QWidget *parent)
     proxyM->setSourceModel(treeModel);
     proxyM->setSortCaseSensitivity(Qt::CaseInsensitive);
     proxyM->setSortRole(Qt::DisplayRole);    
-    proxyM->setDynamicSortFilter(true);
+    proxyM->setDynamicSortFilter(false);
     
     treeV->setModel(proxyM);        
     
@@ -86,13 +87,14 @@ playlistContent::playlistContent(QWidget *parent)
     createSmpAction=new QAction(KIcon("list-add"),"create smart playlist",this);
     removeAction=new QAction(KIcon("list-remove"),"remove",this);
     editSmpAction=new QAction(KIcon("document-edit"),"edit",this);
+    renameAction=new QAction(KIcon("document-edit"),"rename",this);
     
     connect(addFolderAction,SIGNAL(triggered(bool)),this,SLOT(addFolderSlot()));
     connect(createSmpAction,SIGNAL(triggered(bool)),this,SLOT(createSmpSlot()));
     connect(editSmpAction,SIGNAL(triggered(bool)),this,SLOT(editSmpSlot()));
     connect(removeAction,SIGNAL(triggered(bool)),this,SLOT(removeSlot()));
+    connect(renameAction,SIGNAL(triggered(bool)),this,SLOT(renameFolderSlot()) );
         
-//     connect(qApp,SIGNAL(aboutToQuit() ),this,SLOT(save() ) );
     
     stack->setCurrentWidget(treeV);
 
@@ -105,9 +107,18 @@ playlistContent::playlistContent(QWidget *parent)
     treeModel->appendRow(plHead);
 
 
-    
-//     proxyM->sort(0,Qt::AscendingOrder);
+    connect(smpModel,SIGNAL(dataChanged(QModelIndex,QModelIndex)),this,SLOT(dataChanged(QModelIndex,QModelIndex)) );
+//     connect(proxyM,SIGNAL(dataChanged(QModelIndex,QModelIndex)),this,SLOT(dataChanged(QModelIndex,QModelIndex)) );
+// connect(proxyM,SIGNAL(dataChanged(QModelIndex,QModelIndex)),this,SLOT(dataChanged(QModelIndex,QModelIndex)) );
+    proxyM->sort(0,Qt::AscendingOrder);
 }
+
+void playlistContent::dataChanged(QModelIndex a, QModelIndex e)
+{
+    qDebug()<<a<<" "<<e;
+    proxyM->sort(0,Qt::AscendingOrder);
+}
+
 
 void playlistContent::readSettings()
 {
@@ -136,12 +147,7 @@ void playlistContent::removeSlot()
 {
     QModelIndex index=proxyM->mapToSource(treeV->currentIndex());
     treeModel->removeRow(index.row(),index.parent());
-}
-
-
-playlistContent::~playlistContent()
-{
-    writeSettings();
+    proxyM->sort(0,Qt::AscendingOrder);
 }
 
 void playlistContent::activated(const int n)
@@ -233,8 +239,20 @@ void playlistContent::addFolderSlot()
 //     proxyM->sort(0,Qt::AscendingOrder);
     treeV->expand( proxyM->mapFromSource(treeModel->indexFromItem(i,0) ) );    
     treeV->edit( proxyM->mapFromSource( treeModel->indexFromItem(f,0) ) );
-//     proxyM->sort(0,Qt::AscendingOrder);
-    
+//     proxyM->sort(0,Qt::AscendingOrder);    
+}
+
+
+void playlistContent::renameFolderSlot()
+{
+    QModelIndex index=proxyM->mapToSource(treeV->currentIndex() );
+    standardItem *i=treeModel->itemFromIndex(index);
+    if(i->type()!=FOLDER_ITEM)
+    {
+        return ;
+    }
+
+    treeV->edit( treeV->currentIndex() );
 }
 
 void playlistContent::createSmpSlot()
@@ -380,7 +398,7 @@ void playlistContent::contextMenuSlot(QModelIndex in)
 {          
     if(!in.isValid() )
     {
-	return ;
+        return ;
     }
     
     QModelIndex index=proxyM->mapToSource(in);
@@ -405,6 +423,10 @@ void playlistContent::contextMenuSlot(QModelIndex in)
         if(index.parent().isValid() )//if it's not a top level item
         {
             menu->addAction(removeAction);
+            if(item->type()==FOLDER_ITEM)
+            {
+                menu->addAction(renameAction);
+            }
         }
     }
     

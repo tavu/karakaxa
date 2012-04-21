@@ -33,6 +33,16 @@ class treeView :public QTreeView
 
         static QList<QUrl> getUrls(const QModelIndexList &list);
 
+        bool playOnDoubleCl()
+        {
+            return _playOnDoubleCl;
+        }
+
+        void setPlayOnDoubleCl(bool b)
+        {
+            _playOnDoubleCl=b;
+        }
+
     protected:
 	   QPoint startPos;
        int _ratingColumn;
@@ -51,6 +61,9 @@ class treeView :public QTreeView
     protected slots:
         virtual void commitData ( QWidget * editor ) ;
         virtual void rowsInserted ( const QModelIndex & parent, int start, int end );
+
+    private:
+        bool _playOnDoubleCl;
         
 	
     public slots:

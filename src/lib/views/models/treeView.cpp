@@ -24,7 +24,7 @@ views::treeView::~treeView()
 }
 
 views::treeView::treeView(QWidget *parent,QString name)
-        :QTreeView(parent),_ratingColumn(-1)
+        :QTreeView(parent),_ratingColumn(-1),_playOnDoubleCl(true)
 {
     setHeader(new treeViewHeader(this));
     setUniformRowHeights(true);
@@ -64,7 +64,9 @@ void views::treeView::mouseDoubleClickEvent(QMouseEvent* event)
 {        
     QTreeView::mouseDoubleClickEvent(event);
     QModelIndex index=indexAt (event->pos() );
-    play(index);   
+
+    if(_playOnDoubleCl)
+        play(index);   
 }
 
 void views::treeView::mousePressEvent(QMouseEvent *event)

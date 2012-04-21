@@ -11,7 +11,7 @@ class sortProxyModel :public QSortFilterProxyModel
     virtual bool lessThan ( const QModelIndex & left, const QModelIndex & right ) const;
     
     virtual void fetchMore ( const QModelIndex & parent );
-
+    bool setData (const QModelIndex &index, const QVariant &value, int role=Qt::EditRole);
 };
 
 #endif

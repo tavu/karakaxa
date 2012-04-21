@@ -101,7 +101,7 @@ class standardItem :public QObject
       void dataChanged ( const int first, const int last);
       void dataChanged ( const int column)
       {
-	  dataChanged(column,column);
+        dataChanged(column,column);
       }
       
       inline void beginRemoveRows(int first, int last );
@@ -113,9 +113,9 @@ class standardItem :public QObject
       void endInsertRows();
       
       
-    private:	
-	int _row;
-	standardItem *_parent;
+    private:
+        int _row;
+        standardItem *_parent;
       
 };
 
@@ -123,52 +123,52 @@ class standardItem :public QObject
 
 class standardModel :public QAbstractItemModel
 {
-//     Q_OBJECT
+    Q_OBJECT
     friend class standardItem;
     
     public:
-	standardModel(QObject * parent = 0 );
-	virtual ~standardModel();
+        standardModel(QObject * parent = 0 );
+        virtual ~standardModel();
 
-	virtual bool canFetchMore ( const QModelIndex & parent ) const;
-	virtual void fetchMore ( const QModelIndex & parent ) ;
-	virtual bool hasChildren ( const QModelIndex & parent = QModelIndex() ) const;
-// 	virtual standardItem* head(QModelIndex index) const;
-	virtual bool removeRows ( int row, int count, const QModelIndex & parent = QModelIndex() );
-	virtual bool removeRow ( int row, const QModelIndex & parent = QModelIndex() );
-	virtual bool removeRow ( standardItem *item );		
-		
-	virtual bool insertRow ( int row, standardItem* item, const QModelIndex& parent = QModelIndex() );
-	virtual bool insertRows ( int row, const QList< standardItem* >& items, const QModelIndex& parent );
-	virtual bool appendRow ( standardItem* item, const QModelIndex& parent = QModelIndex() );
-  	
-	virtual QModelIndex index ( int row, int column, const QModelIndex & parent = QModelIndex() ) const; 
+        virtual bool canFetchMore ( const QModelIndex & parent ) const;
+        virtual void fetchMore ( const QModelIndex & parent ) ;
+        virtual bool hasChildren ( const QModelIndex & parent = QModelIndex() ) const;
+    // 	virtual standardItem* head(QModelIndex index) const;
+        virtual bool removeRows ( int row, int count, const QModelIndex & parent = QModelIndex() );
+        virtual bool removeRow ( int row, const QModelIndex & parent = QModelIndex() );
+        virtual bool removeRow ( standardItem *item );
 
-	QVariant headerData ( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const
-	{
-	    return head->headerData(section,orientation,role);
-	}
-	
-	QVariant data(const QModelIndex & index, int role = Qt::DisplayRole ) const;
-	
-	bool setData (const QModelIndex& index, const QVariant& value, int role );
-	
-	void setHeadItem(standardItem *h);
-	
-	standardItem* headItem()
-	{
-	    return head;
-	}
-	
-	virtual int rowCount(const QModelIndex& index=QModelIndex()) const;
-	virtual int columnCount(const QModelIndex& index=QModelIndex() ) const;
-	
-	Qt::ItemFlags flags ( const QModelIndex & index ) const;
-	
-	standardItem* itemFromIndex(const QModelIndex &index) const;
-	QModelIndex indexFromItem(const standardItem *item,int column) const;
-	QModelIndex parent ( const QModelIndex & index ) const;		
-	
+        virtual bool insertRow ( int row, standardItem* item, const QModelIndex& parent = QModelIndex() );
+        virtual bool insertRows ( int row, const QList< standardItem* >& items, const QModelIndex& parent );
+        virtual bool appendRow ( standardItem* item, const QModelIndex& parent = QModelIndex() );
+
+        virtual QModelIndex index ( int row, int column, const QModelIndex & parent = QModelIndex() ) const;
+
+        QVariant headerData ( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const
+        {
+            return head->headerData(section,orientation,role);
+        }
+
+        QVariant data(const QModelIndex & index, int role = Qt::DisplayRole ) const;
+
+        bool setData (const QModelIndex& index, const QVariant& value, int role );
+
+        void setHeadItem(standardItem *h);
+
+        standardItem* headItem()
+        {
+            return head;
+        }
+
+        virtual int rowCount(const QModelIndex& index=QModelIndex()) const;
+        virtual int columnCount(const QModelIndex& index=QModelIndex() ) const;
+
+        Qt::ItemFlags flags ( const QModelIndex & index ) const;
+
+        standardItem* itemFromIndex(const QModelIndex &index) const;
+        QModelIndex indexFromItem(const standardItem *item,int column) const;
+        QModelIndex parent ( const QModelIndex & index ) const;
+        
 // 	void refresh()
 // 	{
 // 	    emit layoutAboutToBeChanged () ;
@@ -196,6 +196,10 @@ class standardModel :public QAbstractItemModel
         };
 
         standardItem *head;
+
+//     signals:
+//         void dataChanged ( const QModelIndex & topLeft, const QModelIndex & bottomRight);
+
 };
 
 

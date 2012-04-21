@@ -305,7 +305,7 @@ QVariant standardItem::headerData(int section, Qt::Orientation orientation, int 
 {
     if(role==Qt::DisplayRole)
     {
-	return QString::number(section);	
+        return QString::number(section);	
     }
     return QVariant();
 }
@@ -316,7 +316,7 @@ QVariant standardModel::data(const QModelIndex& index, int role) const
     standardItem *item=itemFromIndex(index);
     if(item==0)
     {
-	return QVariant();
+        return QVariant();
     }
     return item->data(index.column(),role);
 }
@@ -338,11 +338,11 @@ int standardModel::columnCount(const QModelIndex &index ) const
     standardItem *item=head;
     if(index.isValid() )
     {
-	item=itemFromIndex(index);
-	if(item==0)
-	{
-	    return 0;
-	}
+        item=itemFromIndex(index);
+        if(item==0)
+        {
+            return 0;
+        }
     }  
     
     return item->columnCount();
@@ -601,7 +601,7 @@ Qt::ItemFlags standardItem::flags(int column) const
 }
 
 void standardItem::dataChanged(const int first, const int last)
-{
+{    
     if(_model!=0)
     {
         QModelIndex a=_model->index(row(),first);
@@ -624,7 +624,7 @@ Qt::ItemFlags standardModel::flags(const QModelIndex& index) const
     
     if(item!=0)
     {
-	return item->flags(index.column() );
+        return item->flags(index.column() );
     }
     return Qt::NoItemFlags;
 }

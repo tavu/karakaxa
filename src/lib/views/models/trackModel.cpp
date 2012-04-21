@@ -9,7 +9,7 @@ views::trackItem::trackItem(audioFiles::audioFile f)
   :standardItem(),
   file(f)
 {
-    connect(&f,SIGNAL(changed(audioFiles::tagChangesL)),this,SLOT(changed(audioFiles::tagChangesL)) );
+    connect(&file,SIGNAL(changed(audioFiles::tagChangesL)),this,SLOT(changed(audioFiles::tagChangesL)) );
 }
 
 void views::trackItem::changed(audioFiles::tagChangesL c)
