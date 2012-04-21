@@ -52,6 +52,7 @@ bool core::soundEngine::play(int n)
         return false;
     }
 
+    mediaObject->clearQueue();
     mediaObject->setCurrentSource(s);
     mediaObject->play();
     mutex.unlock();
@@ -71,8 +72,8 @@ bool core::soundEngine::next()
         return false;
     }
 
+    mediaObject->clearQueue();
     mediaObject->setCurrentSource(s);
-
     mediaObject->play();
 
     mutex.unlock();
@@ -93,6 +94,8 @@ bool core::soundEngine::previous()
         mutex.unlock();
         return false;
     }
+
+    mediaObject->clearQueue();
     mediaObject->setCurrentSource( s );
     mediaObject->play();
     mutex.unlock();
@@ -111,8 +114,8 @@ void core::soundEngine::getNext()
         mutex.unlock();
         return ;
     }
+    
     mediaObject->enqueue( s );
-//      mediaObject->play();
     mutex.unlock();
 
     return ;
@@ -137,15 +140,15 @@ void core::soundEngine::mediaStateChanged ( Phonon::State newstate, Phonon::Stat
         qDebug()<<"engine error "<<mediaObject->errorString();
         errors++;
 
-	if(errors<MAX_ERR)
-	{
-// 	    next();
-	}
-	status->addError("playing error");
+        if(errors<MAX_ERR)
+        {
+    // 	    next();
+        }
+        status->addError("playing error");
     }
     if(newstate==Phonon::PlayingState)
     {
-	errors=0;
+        errors=0;
     }
 
 

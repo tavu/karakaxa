@@ -88,10 +88,9 @@ smplaylistItem* smartPlaylistCreator::item()
     
     if(!el.isNull() )
     {
-	ret=new smplaylistItem(el );
-// 	ret->setXml(el);
+        ret=new smplaylistItem(el );
+// 	    ret->setXml(el);
     }
-//     qDebug()<<ret->xml().attribute("name");
     return ret;
 }
 
@@ -133,7 +132,9 @@ void smartPlaylistCreator::init()
     setWindowTitle(tr("Creating smart Playlist"));
     lineE=new QLineEdit(this);
     treeW=new QTreeWidget(this);
+        
     treeW->setColumnCount(5);
+//     treeW->headerItem()->setSizeHint(0,QSize(300,20));
 
 
     buttons=new QDialogButtonBox(QDialogButtonBox::Ok|QDialogButtonBox::Cancel,Qt::Horizontal,this);

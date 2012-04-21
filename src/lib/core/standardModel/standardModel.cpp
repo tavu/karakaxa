@@ -275,7 +275,7 @@ bool standardModel::removeRow(int row, const QModelIndex& parent)
     standardItem *item=itemFromIndex(parent);
     if(item==0)
     {
-	return false;
+        return false;
     }
     return item->removeRow(row);
    

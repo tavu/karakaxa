@@ -81,21 +81,7 @@ playlistContent::playlistContent(QWidget *parent)
     connect(treeV,SIGNAL(showContextMenu(QModelIndex,QModelIndexList) ),this,SLOT(contextMenuSlot(QModelIndex)) );
     connect(trackV,SIGNAL(showContextMenu(QModelIndex,QModelIndexList) ),this,SLOT(contextMenuForTracks(QModelIndex,QModelIndexList)) );
     connect(treeV, SIGNAL(activated(QModelIndex)), this, SLOT(activationSlot(QModelIndex) )) ;
-    
-    
-    addFolderAction=new QAction(KIcon("folder") ,"create folder",this);
-    createSmpAction=new QAction(KIcon("list-add"),"create smart playlist",this);
-    removeAction=new QAction(KIcon("list-remove"),"remove",this);
-    editSmpAction=new QAction(KIcon("document-edit"),"edit",this);
-    renameAction=new QAction(KIcon("document-edit"),"rename",this);
-    
-    connect(addFolderAction,SIGNAL(triggered(bool)),this,SLOT(addFolderSlot()));
-    connect(createSmpAction,SIGNAL(triggered(bool)),this,SLOT(createSmpSlot()));
-    connect(editSmpAction,SIGNAL(triggered(bool)),this,SLOT(editSmpSlot()));
-    connect(removeAction,SIGNAL(triggered(bool)),this,SLOT(removeSlot()));
-    connect(renameAction,SIGNAL(triggered(bool)),this,SLOT(renameFolderSlot()) );
-        
-    
+
     stack->setCurrentWidget(treeV);
 
     readSettings();
@@ -104,21 +90,10 @@ playlistContent::playlistContent(QWidget *parent)
 
     plHead=new playlistFolder("Playlist");
     plHead->setSizeHint(QSize(40,30) );
-    treeModel->appendRow(plHead);
+    treeModel->appendRow(plHead);  
 
-
-    connect(smpModel,SIGNAL(dataChanged(QModelIndex,QModelIndex)),this,SLOT(dataChanged(QModelIndex,QModelIndex)) );
-//     connect(proxyM,SIGNAL(dataChanged(QModelIndex,QModelIndex)),this,SLOT(dataChanged(QModelIndex,QModelIndex)) );
-// connect(proxyM,SIGNAL(dataChanged(QModelIndex,QModelIndex)),this,SLOT(dataChanged(QModelIndex,QModelIndex)) );
     proxyM->sort(0,Qt::AscendingOrder);
 }
-
-void playlistContent::dataChanged(QModelIndex a, QModelIndex e)
-{
-    qDebug()<<a<<" "<<e;
-    proxyM->sort(0,Qt::AscendingOrder);
-}
-
 
 void playlistContent::readSettings()
 {
@@ -150,7 +125,7 @@ void playlistContent::removeSlot()
     proxyM->sort(0,Qt::AscendingOrder);
 }
 
-void playlistContent::activated(const int n)
+void playlistContent::activated(const int )
 {
     if(stack->currentIndex()==1 && trackProxy->sourceModel()==smpModel &&quer->needUpdate())
     {
@@ -278,6 +253,7 @@ void playlistContent::createSmpSlot()
     
     if(newItem==0)
     {
+        status->addError(tr("Can't create empty smart playlist") );
         return;
     }
     
@@ -402,47 +378,91 @@ void playlistContent::contextMenuSlot(QModelIndex in)
     }
     
     QModelIndex index=proxyM->mapToSource(in);
-    
-    QMenu *menu=new QMenu(this); 	
-    
     standardItem *item=treeModel->itemFromIndex(index);
-    
-    //if we are on smart Playlist tree add the create smart playlist action
-    if(head(item)==smHead)
-    {
-        menu->addAction(addFolderAction);
-        menu->addSeparator();
 
-        if(item->type()==SMARTPL_ITEM)
-        {
-            menu->addAction(editSmpAction);
-        }
-
-        menu->addAction(createSmpAction);
-
-        if(index.parent().isValid() )//if it's not a top level item
-        {
-            menu->addAction(removeAction);
-            if(item->type()==FOLDER_ITEM)
-            {
-                menu->addAction(renameAction);
-            }
-        }
-    }
-    
     if(head(item)==plHead)
     {
-        if(index.parent().isValid() )//if it's not a top level item
-        {
-            menu->addAction(removeAction);
-        }
+        plMenu(item);
     }
-	
-    if( !menu->isEmpty() )
+    else
     {
-        menu->popup( QCursor::pos() );
+        smMenu(item);
     }
 }
+
+void playlistContent::smMenu(standardItem *item)
+{
+    QMenu menu(this);
+
+    QAction *addFolderAction=new QAction(KIcon("folder") ,"create folder",&menu);
+    QAction *createSmpAction=new QAction(KIcon("list-add"),"create smart playlist",&menu);
+    QAction *removeAction=new QAction(KIcon("list-remove"),"remove",&menu);
+    QAction *editSmpAction=new QAction(KIcon("document-edit"),"edit",&menu);
+    QAction *renameAction=new QAction(KIcon("document-edit"),"rename",&menu);
+
+    
+    menu.addAction(addFolderAction);
+    menu.addSeparator();
+    if(item->type()==SMARTPL_ITEM )
+    {        
+        menu.addAction(editSmpAction);        
+    }
+    else
+    {
+        menu.addAction(renameAction);        
+    }
+    
+    if(item->parent()!=0 )//if it's not a top level itemFromIndex
+    {
+        menu.addAction(removeAction);
+    }
+    menu.addAction(createSmpAction);
+
+    QAction *a=menu.exec(QCursor::pos());
+
+    if(a==addFolderAction)
+    {
+        addFolderSlot();
+    }
+    if(a==createSmpAction)
+    {
+        createSmpSlot();
+    }
+    if(a==editSmpAction)
+    {
+        editSmpSlot();
+    }
+    else if(a==renameAction)
+    {
+        renameFolderSlot();
+    }
+    else if(a==removeAction)
+    {
+        removeSlot();
+    }
+}
+
+void playlistContent::plMenu(standardItem* item)
+{
+    if(item->parent()==0)
+    {
+        return ;
+    }
+    
+    QMenu menu(this);
+    QAction *removeAction=new QAction(KIcon("list-remove"),"remove",&menu);
+    menu.addAction(removeAction);
+        
+    QAction *a=menu.exec(QCursor::pos());
+    if(a==removeAction)
+    {
+        removeSlot();
+    }    
+}
+
+
+
+
 
 void playlistContent::writeSettings()
 {    

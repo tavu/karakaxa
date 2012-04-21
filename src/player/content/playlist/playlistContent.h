@@ -60,22 +60,16 @@ class playlistContent :public core::abstractContent
         QLabel 		            iconL;
         QLabel		            textL;
         QString		            textS;
-
-        //actions
-        QAction 		        *removeAction;
-        QAction		            *addFolderAction;
-        QAction		            *createSmpAction;
-        QAction		            *editSmpAction;
-        QAction 		        *renameAction;
     
         QAction		            *searchAction;
-
         KLineEdit 		        *searchLine;
-
+        
         QDomDocument 		    doc;
 
         bool			        needUpdate;
-        void 			        toolBarInit();
+        inline void             toolBarInit();
+        inline void             plMenu(standardItem *item);
+        inline void             smMenu(standardItem *item);
 
         database::filesQueryGrt	    *quer;
         views::trackModelItem	*smItem;
@@ -90,7 +84,6 @@ class playlistContent :public core::abstractContent
         void forward();
         void search();
         void activationSlot(QModelIndex in);
-        void dataChanged(QModelIndex,QModelIndex);
 
         void addFolderSlot();
         void createSmpSlot();
