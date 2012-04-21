@@ -25,7 +25,7 @@ void nplDelegate::paint ( QPainter * painter, const QStyleOptionViewItem & optio
     
     painter->setRenderHint(QPainter::Antialiasing, true);
  
-    if(npList->getPlayingPos()==index.row() )
+    if(npList()->getPlayingPos()==index.row() )
     {
 // 	   painter->save();
 	   QPointF a(option.rect.topLeft() );
@@ -93,7 +93,7 @@ void nplDelegate::drawContent(QPainter* painter, const QStyleOptionViewItem& opt
     down.setBottom(down.bottom()-5);
     
     
-    nplPointer p=npList->getTrack(index.row() );
+    nplPointer p=npList()->getTrack(index.row() );
     if(p.isNull() )
     {
         core::status->addErrorP("nplDelegate:nplPointer is null");

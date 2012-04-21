@@ -27,19 +27,19 @@ NEVER delete it outside.
 
 namespace core
 {
+void cleanUp();
 
 class nplaylist :public playlist
 {
     Q_OBJECT
-
+    friend void core::cleanUp();
     friend class soundEngine;
 
     public:
         const static int ADD;
         const static int REMOVE;
         const static int CLEAR;
-
-        nplaylist();
+        
         ~nplaylist();
 
         nplPointer  getTrack(int pos) const
@@ -60,9 +60,6 @@ class nplaylist :public playlist
         {
             return trackList.indexOf(playing,0);
         }
-
-        
-
 
         bool rememberPlaylist() const
         {
@@ -85,8 +82,22 @@ class nplaylist :public playlist
             return circle;
         }
 
-	
+        static void init()
+        {
+            if(npList==0)
+            {
+                npList=new nplaylist;
+            }
+        }
+
+        static nplaylist* instance()
+        {
+            return npList;
+        }
+
     private:
+
+        nplaylist();
 
         int totalLength;
         nplPointer playing;
@@ -99,6 +110,11 @@ class nplaylist :public playlist
         QString playUrl(int n);
         QString previous();
 
+        static nplaylist* npList;
+        static void cleanUp()
+        {
+            delete npList;
+        }
 
     signals:
         void cancelThreads();
@@ -122,7 +138,10 @@ class nplaylist :public playlist
 	
 };
 
-    extern nplaylist *npList;
+inline nplaylist* npList()
+{
+    return nplaylist::instance();
+}
     
 };
 

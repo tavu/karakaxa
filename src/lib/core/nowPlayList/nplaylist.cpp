@@ -24,7 +24,7 @@ core::nplaylist::nplaylist()
     KConfigGroup group( config, "nowPlaylist" );	
     rememberPl=group.readEntry( "rememberPl", false);
 
-    connect(engine,SIGNAL(trackChanged(QString) ),this,SLOT(informTrack() )  );
+    connect(engine(),SIGNAL(trackChanged(QString) ),this,SLOT(informTrack() )  );
     connect(this,SIGNAL(tracksInserted(int,int)),this,SLOT(updateLengthInsert(int,int)) );
     connect(this,SIGNAL(aboutToRemoveTracks(int,int)),this,SLOT(updateLengthRemove(int,int)) );
 
@@ -287,8 +287,4 @@ const int core::nplaylist::ADD=1;
 const int core::nplaylist::REMOVE=2;
 const int core::nplaylist::CLEAR=3;
 
-
-namespace core
-{
-    nplaylist *npList;
-}
+core::nplaylist* core::nplaylist::npList=0;

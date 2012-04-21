@@ -14,13 +14,13 @@ views::volumeBar::volumeBar(QWidget *parent)
     
     volumeAction = new QAction(  decor->volumeMedium(),tr("mute"), this );
     addAction( volumeAction );
-    connect(volumeAction,SIGNAL(triggered( bool)),engine,SLOT(muteToggle() ) );
-    connect(engine->getAudio(),SIGNAL(volumeChanged(qreal)),this,SLOT(volumeC(qreal)));
+    connect(volumeAction,SIGNAL(triggered( bool)),engine(),SLOT(muteToggle() ) );
+    connect(engine()->getAudio(),SIGNAL(volumeChanged(qreal)),this,SLOT(volumeC(qreal)));
             
-    volume = new Phonon::VolumeSlider(engine->getAudio(),this );
+    volume = new Phonon::VolumeSlider(engine()->getAudio(),this );
     volume->setMuteVisible(false);
     
-    volumeC(engine->getAudio()->volume() );
+    volumeC(engine()->getAudio()->volume() );
     addWidget( volume );
 }
 

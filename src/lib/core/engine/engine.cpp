@@ -10,10 +10,11 @@ core::soundEngine::soundEngine(QObject *parent)
         :QObject(parent),
         errors(0),
         mediaObject(0),
-        audioOutput(0)
+        audioOutput(0),
+        _newSource(true)
 {
     mediaObject = new Phonon::MediaObject(this);
-    mediaObject->setTickInterval( 100 );
+//     mediaObject->setTickInterval( 100 );
     audioOutput = new Phonon::AudioOutput(Phonon::MusicCategory,this);
 
     audioDataOutput = new Phonon::AudioDataOutput( this );
@@ -21,7 +22,7 @@ core::soundEngine::soundEngine(QObject *parent)
     Phonon::createPath( mediaObject, audioDataOutput );
     Phonon::Path path = Phonon::createPath(mediaObject, audioOutput);
 
-    controller = new Phonon::MediaController( mediaObject);
+//     controller = new Phonon::MediaController( mediaObject);
 
 
     connect(mediaObject,SIGNAL( aboutToFinish () ),this ,SLOT ( getNext() ) );
@@ -36,24 +37,19 @@ core::soundEngine::~soundEngine()
         delete audioOutput;
 }
 
-void core::soundEngine::init()
-{
-
-}
-
 bool core::soundEngine::play(int n)
 {
     mutex.lock();
-    QString s=npList->playUrl(n);
+    QString s=npList()->playUrl(n);
 
     if (s.isNull() || s.isEmpty() )
     {
         mutex.unlock();
         return false;
     }
-
-    mediaObject->clearQueue();
+    _newSource=true;
     mediaObject->setCurrentSource(s);
+    mediaObject->clearQueue();
     mediaObject->play();
     mutex.unlock();
 
@@ -63,7 +59,7 @@ bool core::soundEngine::play(int n)
 bool core::soundEngine::next()
 {
     mutex.lock();
-    QString s=npList->next();
+    QString s=npList()->next();
 
     if (s.isEmpty() )
     {
@@ -71,9 +67,9 @@ bool core::soundEngine::next()
         mediaObject->stop();
         return false;
     }
-
-    mediaObject->clearQueue();
+    _newSource=true;
     mediaObject->setCurrentSource(s);
+    mediaObject->clearQueue();
     mediaObject->play();
 
     mutex.unlock();
@@ -86,7 +82,7 @@ bool core::soundEngine::next()
 bool core::soundEngine::previous()
 {
     mutex.lock();
-    QString s=npList->previous();
+    QString s=npList()->previous();
 
     if (s.isEmpty() )
     {
@@ -94,9 +90,9 @@ bool core::soundEngine::previous()
         mutex.unlock();
         return false;
     }
-
-    mediaObject->clearQueue();
+    _newSource=true;
     mediaObject->setCurrentSource( s );
+    mediaObject->clearQueue();
     mediaObject->play();
     mutex.unlock();
 
@@ -107,14 +103,14 @@ bool core::soundEngine::previous()
 void core::soundEngine::getNext()
 {
     mutex.lock();
-    QString s=npList->next();
+    QString s=npList()->next();
 
     if (s.isEmpty() )
     {
         mutex.unlock();
         return ;
     }
-    
+    _newSource=true;
     mediaObject->enqueue( s );
     mutex.unlock();
 
@@ -128,7 +124,7 @@ MediaObject* core::soundEngine::getMediaObject()
 
 void core::soundEngine::mediaStateChanged ( Phonon::State newstate, Phonon::State oldstate )
 {
-    qDebug()<<oldstate<<"  "<<newstate<<"	"<<mediaObject->state();
+//    qDebug()<<oldstate<<"  "<<newstate<<"	"<<mediaObject->state();
     emit(stateChanged (newstate) );
 
     if (newstate==Phonon::ErrorState )
@@ -178,15 +174,17 @@ bool core::soundEngine::play()
 
         //this is the same as play(int n)
         //we write it agane because the mutex is alrede locked
-        QString s=npList->playUrl(0);
+        QString s=npList()->playUrl(0);
 
         if (s.isEmpty() )
         {
             mutex.unlock();
-// 	       errors<<"can't play this";
             return false;
         }
+        
+        _newSource=true;
         mediaObject->setCurrentSource( s );
+        
         mediaObject->play();
         mutex.unlock();
 
@@ -207,6 +205,16 @@ Phonon::AudioOutput* core::soundEngine::getAudio()
 
 void core::soundEngine::newSource( const Phonon::MediaSource  s)
 {
+    /*
+     * Some times due to a bug the mediaObject emits the newSource signal multiple times.
+     * We prevent emiting the trackChanged signal more than one times by checking the _newSource variable
+     */
+    if(!_newSource)
+    {
+        return ;
+    }
+    _newSource=false;
+
     QUrl u=s.url();
     if (s.type()==Phonon::MediaSource::LocalFile)
     {
@@ -252,7 +260,4 @@ bool core::soundEngine::isMuted()
     return audioOutput->volume()==0;
 }
 
-namespace core
-{
-    soundEngine *engine;
-}
+core::soundEngine* core::soundEngine::engine=0;

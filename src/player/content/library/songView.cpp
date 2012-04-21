@@ -80,10 +80,10 @@ void songView::play(const QModelIndex index)
         QModelIndex index=model()->index(i,0);
          list<<core::nplTrack::getNplTrack(model()->data(index,URL_ROLE).toUrl() );
     }
-    core::npList->clear();
-    core::npList->insert(0,list);
+    core::npList()->clear();
+    core::npList()->insert(0,list);
     
-    core::engine->play(index.row() );
+    core::engine()->play(index.row() );
 }
 
 

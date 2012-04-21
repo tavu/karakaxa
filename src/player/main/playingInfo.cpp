@@ -101,7 +101,7 @@ playingInfo::playingInfo(QWidget *parent)
       
       
 //      setFixedHeight(50);    
-    connect(engine,SIGNAL(trackChanged(QString) ),this,SLOT(update()) );
+    connect(engine(),SIGNAL(trackChanged(QString) ),this,SLOT(update()) );
     connect(stars,SIGNAL(ratingChanged(int) ),SLOT(setRating(int) ) );
     
 //     setSizePolicy(QSizePolicy::Preferred,QSizePolicy::Preferred);
@@ -125,7 +125,7 @@ void playingInfo::update()
 	{
 	   disconnect(track.data(), 0, this, 0);
 	}
-     track=npList->getPlayingTrack();
+     track=npList()->getPlayingTrack();
      connect(track.data(),SIGNAL(changed()),this,SLOT(getInfo()) );
      getInfo();
 }

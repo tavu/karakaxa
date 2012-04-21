@@ -33,7 +33,7 @@ configureContent::configureContent(QWidget *parent)
     libconfInit();
 
     rememberPl=new QCheckBox("remember playlist on exit",this);
-    rememberPl->setChecked(npList->rememberPlaylist() );
+    rememberPl->setChecked(npList()->rememberPlaylist() );
     layout->addWidget(l);
     layout->addWidget(groupB);
     layout->addWidget(rememberPl);
@@ -74,11 +74,11 @@ void configureContent::rememberPlSlot(int state)
 {
     if(state==Qt::Checked)
     {
-	   npList->setRememberPlaylist(true);
+	   npList()->setRememberPlaylist(true);
     }
     else
     {
-	   npList->setRememberPlaylist(false);
+	   npList()->setRememberPlaylist(false);
     }
 }
 

@@ -1,20 +1,27 @@
 #include<mainwindow.h>
+
 #include<QSplitter>
-#include"nplaylistModel.h"
-#include"nplaylistDelegate.h"
 #include<QGroupBox>
 #include<QString>
 #include <QTextCodec>
 #include<QApplication>
 #include<QMenuBar>
-
 #include<QToolButton>
-#include<core.h>
 #include<KConfig>
 #include<KConfigGroup>
-#include<views.h>
 #include<QHeaderView>
 #include <kcmdlineargs.h>
+#include<QVBoxLayout>
+#include<KHelpMenu>
+#include<KMenuBar>
+#include<KMenu>
+
+#include<core.h>
+#include<views.h>
+#include<dbFunc.h>
+
+#include"nplaylistModel.h"
+#include"nplaylistDelegate.h"
 
 #include"content/library/library.h"
 #include"content/folder/folder.h"
@@ -22,12 +29,8 @@
 #include"content/configure/configureContent.h"
 #include"content/edit/editTrackContent.h"
 #include"content/nowPlaylist/nowPlaylistContent.h"
-#include<QVBoxLayout>
-#include<dbFunc.h>
 
-#include<KHelpMenu>
-#include<KMenuBar>
-#include<KMenu>
+
 #define ICONZISE QSize(35,35)
 
 using namespace views;
@@ -57,13 +60,13 @@ mainWindow::mainWindow()
     
     setStatusBar(new views::statusBar(this) );    
 
-    connect( core::engine ,SIGNAL(stateChanged ( Phonon::State) ),this, SLOT( stateChanged ( Phonon::State) ) );
+    connect( core::engine() ,SIGNAL(stateChanged ( Phonon::State) ),this, SLOT( stateChanged ( Phonon::State) ) );
     
     defaultContent();
     readSettings();
 
     
-    npList->loadSavedPlaylist();
+    npList()->loadSavedPlaylist();
 }
 
 mainWindow::~mainWindow()
@@ -233,15 +236,15 @@ void mainWindow::toolBarInit()
     
     previousAction = new QAction(  views::decor->previous() ,"play previous", this );
     toolBar ->addAction( previousAction );
-    connect(previousAction,SIGNAL(triggered( bool)),engine,SLOT(previous() ) );
+    connect(previousAction,SIGNAL(triggered( bool)),engine(),SLOT(previous() ) );
 
     playAction = new QAction(  views::decor->play(),"play-pause", this );
     toolBar->addAction( playAction );
-    connect(playAction,SIGNAL(triggered( bool)),engine,SLOT(playPause() ) );
+    connect(playAction,SIGNAL(triggered( bool)),engine(),SLOT(playPause() ) );
 
     nextAction = new QAction(  views::decor->next(),"play next", this );
     toolBar->addAction( nextAction );
-    connect(nextAction,SIGNAL(triggered( bool)),engine,SLOT(next() ) );
+    connect(nextAction,SIGNAL(triggered( bool)),engine(),SLOT(next() ) );
    
     
 //     slider = new Phonon::SeekSlider(this);
@@ -354,7 +357,7 @@ void mainWindow::writeSettings()
     KSharedConfigPtr config=core::config->configFile();
     KConfigGroup group( config, "MainWindow" );
     group.writeEntry("geometry", QVariant(saveGeometry() ) );
-    group.writeEntry("volume", QVariant(engine->volume() ) );
+    group.writeEntry("volume", QVariant(engine()->volume() ) );
     group.writeEntry( "state", QVariant(saveState() ) );
     group.writeEntry( "layoutLocked", QVariant(lockLayout->isChecked() ) );
     group.config()->sync();
@@ -368,7 +371,7 @@ void mainWindow::readSettings()
     KConfigGroup group( config, "MainWindow" );
     restoreGeometry(group.readEntry("geometry",QByteArray() ) );
     lockLayout->setChecked(group.readEntry("layoutLocked",false) );
-    engine->setVolume(group.readEntry("volume",0.5 ));        
+    engine()->setVolume(group.readEntry("volume",0.5 ));        
     restoreState(group.readEntry("state",QByteArray()) );
 
     if(lockLayout->isChecked() )

@@ -130,8 +130,8 @@ void core::init()
       config =new PlayerConfigure();
 //       db=new database();
 //       db->createConnection();
-      engine =new soundEngine();
-      npList=new nplaylist();
+      soundEngine::init();
+      nplaylist::init();
       contentHdl=new contentHandler(qApp );
       
       
@@ -144,9 +144,9 @@ void core::init()
 void core::cleanUp()
 {
 //     contentHdl->clear();
-    delete status;
-    delete npList;
-    delete engine;
+    delete status;    
+    nplaylist::cleanUp();
+    soundEngine::cleanUp();
 //     delete db;
     delete config;
     delete contentHdl;

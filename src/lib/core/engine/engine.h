@@ -12,14 +12,16 @@
 // #include"../coreNamespace.h"
 namespace core
 {
+void cleanUp();
+
 class soundEngine :public QObject
 {
     Q_OBJECT
     public:
-        soundEngine(QObject *parent=0);
+        friend void core::cleanUp();
+                
         Phonon::AudioOutput* getAudio();
-        ~soundEngine();
-        void init();
+        ~soundEngine();        
         Phonon::MediaObject* getMediaObject();
         inline bool isMuted();
 
@@ -33,15 +35,35 @@ class soundEngine :public QObject
             audioOutput->setVolume(n);
         }
 
+        static void init()
+        {
+            if(engine==0)
+            {
+                engine=new  soundEngine();
+            }
+        }
+        static soundEngine *instance()
+        {
+            return engine;
+        }
     private:
+        soundEngine(QObject *parent=0);
+        
         Phonon::MediaObject* mediaObject;
         Phonon::AudioOutput *audioOutput;
         Phonon::AudioDataOutput *audioDataOutput;
-        Phonon::MediaController   *controller;
+//         Phonon::MediaController   *controller;
 
+        bool _newSource;
         int errors;
         QMutex mutex;
-        bool flag;
+
+        static soundEngine *engine;
+
+        static void cleanUp()
+        {
+            delete engine;
+        }
 
     private slots:
         void getNext();
@@ -65,6 +87,10 @@ class soundEngine :public QObject
         void trackChanged (QString );
 };
 
-extern soundEngine *engine;
-};
+inline soundEngine* engine()
+{
+    return soundEngine::instance();
+}
+
+}
 #endif

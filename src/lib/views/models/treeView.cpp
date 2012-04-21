@@ -314,15 +314,15 @@ void views::treeView::play(const QModelIndex &index)
         }
     }
     
-    core::npList->clear();
-    core::npList->insert(0,list);
+    core::npList()->clear();
+    core::npList()->insert(0,list);
     
     if(list.size() != model()->rowCount(index.parent() ) )
     {
         core::status->addError(tr("Some media could not be inserted to playlist") );
     }
     
-    core::engine->play(row );
+    core::engine()->play(row );
 }
 
 QList<QUrl> views::treeView::getUrls(const QModelIndexList &list)

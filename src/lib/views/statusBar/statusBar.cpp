@@ -23,9 +23,9 @@ views::statusBar::statusBar(QWidget *parent)
 
     connect(status,SIGNAL(errorMessage(const QString &) ),this,SLOT(showMessage(const QString &) ) );
     connect(status,SIGNAL(infoMessage(const QString &) ),this,SLOT(showMessage(const QString &) ) );
-    connect(npList,SIGNAL(tracksInserted(int,int)),this,SLOT(setTrackTime() ));
-    connect(npList,SIGNAL(tracksRemoved(int,int)),this,SLOT(setTrackTime() ) );
-    connect(npList,SIGNAL(cleared() ),this,SLOT(setTrackTime() ) );
+    connect(npList(),SIGNAL(tracksInserted(int,int)),this,SLOT(setTrackTime() ));
+    connect(npList(),SIGNAL(tracksRemoved(int,int)),this,SLOT(setTrackTime() ) );
+    connect(npList(),SIGNAL(cleared() ),this,SLOT(setTrackTime() ) );
     
     connect(database::db(),SIGNAL(stateCanged(dbState,dbState)),this,SLOT(addScanner()));
 }
@@ -57,8 +57,8 @@ void views::statusBar::init()
 
 void views::statusBar::setTrackTime()
 {
-    int l=core::npList->getLength();
-    int n=npList->size();
+    int l=core::npList()->getLength();
+    int n=npList()->size();
     label->setText(QString::number(n)+" tracks "+views::prettyLength(l) );
 }
 

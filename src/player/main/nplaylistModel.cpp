@@ -15,7 +15,7 @@ using namespace views;
 nplModel::nplModel( QObject * parent)
         :playlistModel(parent)
 {
-    setPlaylist(npList);
+    setPlaylist(npList());
 }
 
 
@@ -31,7 +31,7 @@ bool nplModel::dropMimeData ( const QMimeData *data, Qt::DropAction action, int 
 
     if (views::reorderL.size()==0 )
     {
-        npList->addMediaList( data->urls(),row );
+        npList()->addMediaList( data->urls(),row );
     }
     else
     {
@@ -52,12 +52,12 @@ void nplModel::reorder(int r)
     {
 	   if(*it<r )
 	   {
-		  npList->move(*it-n,r-1);
+		  npList()->move(*it-n,r-1);
 		  n++;
 	   }
 	   else
 	   {
-		  npList->move(*it,r+k);
+		  npList()->move(*it,r+k);
 		  k++;
 	   }
     }

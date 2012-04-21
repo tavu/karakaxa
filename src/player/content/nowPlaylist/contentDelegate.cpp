@@ -26,7 +26,7 @@ void nowPlaylistDelegate::paint ( QPainter * painter, const QStyleOptionViewItem
     painter->setRenderHint(QPainter::Antialiasing, true);
  
 //     QApplication::style()->drawPrimitive( QStyle::PE_PanelItemViewItem, &option, painter );
-    if(npList->getPlayingPos()==index.row() )
+    if(npList()->getPlayingPos()==index.row() )
     {
 	   painter->save();
 	   QPointF a(option.rect.topLeft() );
@@ -136,7 +136,7 @@ void nowPlaylistDelegate::paint ( QPainter * painter, const QStyleOptionViewItem
 		align=Qt::AlignVCenter|Qt::AlignLeft;
     }
         
-    if (npList->isPlaying(index.row() ) )
+    if (npList()()->isPlaying(index.row() ) )
     {        
 	   if (option.state & QStyle::State_Selected)    
 	   {
@@ -175,7 +175,7 @@ void nowPlaylistDelegate::paint ( QPainter * painter, const QStyleOptionViewItem
     }
     
     
-    nplPointer t=npList->getTrack(index.row() );
+    nplPointer t=npList()()->getTrack(index.row() );
     
     if(!t->isValid() )
     {
@@ -242,7 +242,7 @@ void nowPlaylistDelegate::drawContent(QPainter* painter, const QStyleOptionViewI
     down.setBottom(down.bottom()-5);
     
     
-    nplPointer p=npList->getTrack(index.row() );
+    nplPointer p=npList()->getTrack(index.row() );
     
     int track=p->tag(TRACK).toInt();
     

@@ -19,12 +19,12 @@ views::sliderWidget::sliderWidget(QWidget* parent): QWidget(parent)
     left->setText("     ");
     right->setText("     ");
 
-    core::engine->getMediaObject()->setTickInterval(500);    
+    core::engine()->getMediaObject()->setTickInterval(500);    
     
-    connect(core::engine->getMediaObject(),SIGNAL(totalTimeChanged(qint64)),this,SLOT(totalTimeChanged(qint64)) );
-    connect(core::engine->getMediaObject(),SIGNAL(tick(qint64)),this,SLOT(setSliderValue(qint64)) );
+    connect(core::engine()->getMediaObject(),SIGNAL(totalTimeChanged(qint64)),this,SLOT(totalTimeChanged(qint64)) );
+    connect(core::engine()->getMediaObject(),SIGNAL(tick(qint64)),this,SLOT(setSliderValue(qint64)) );
     connect(slider,SIGNAL(valueChanged(int)),this,SLOT(updateTime(int)));
-    connect(core::engine,SIGNAL(trackChanged(QString)),this,SLOT(trackChanged()));
+    connect(core::engine(),SIGNAL(trackChanged(QString)),this,SLOT(trackChanged()));
     
     QHBoxLayout *layout=new QHBoxLayout(this);
     layout->addWidget(left);
@@ -80,7 +80,7 @@ void views::sliderWidget::updateTime(int currentTime)
 
 void views::sliderWidget::seek(int pos)
 {    
-    Phonon::MediaObject *m=core::engine->getMediaObject();
+    Phonon::MediaObject *m=core::engine()->getMediaObject();
 
     if(m->isSeekable() )
     {

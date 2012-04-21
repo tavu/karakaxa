@@ -28,7 +28,7 @@ nplaylistView::nplaylistView(QWidget *parent)
 
     _removeAction=new QAction(KIcon("list-remove"),tr("&Remove track"),this);
     connect(_removeAction,SIGNAL(triggered( bool)),this,SLOT(remove() ) );
-    connect( engine ,SIGNAL(trackChanged ( QString) ),viewport(), SLOT(update()) );
+    connect( engine() ,SIGNAL(trackChanged ( QString) ),viewport(), SLOT(update()) );
 }
 
 void nplaylistView::mouseDoubleClickEvent(QMouseEvent* event)
@@ -54,7 +54,7 @@ QAction* nplaylistView::goToCurrent()
 
 void nplaylistView::goToCurrentTrack()
 {
-    int pos=core::npList->getPlayingPos();
+    int pos=core::npList()->getPlayingPos();
     QModelIndex index=model()->index(pos,0,QModelIndex());
     scrollTo(index,QAbstractItemView::PositionAtCenter);
 }
@@ -94,13 +94,13 @@ void nplaylistView::duplicate()
     {
         if(index.column()==0 )
         {
-            nplPointer p=npList->getTrack(index.row());
+            nplPointer p=npList()->getTrack(index.row());
             l<<nplPointer(p->clone() );
         }
     }
 
     int row=currentIndex().row()+1;
-    npList->insert(row,l);
+    npList()->insert(row,l);
     QItemSelection s;
     s.select(model()->index(row,0),model()->index(row+l.size()-1,0) );
     selectionModel()->select (s,QItemSelectionModel::SelectCurrent | QItemSelectionModel::Rows );
@@ -121,7 +121,7 @@ void nplaylistView::remove()
     std::set<int>::iterator it;
     for(it=rowL.begin();it!=rowL.end();it++)
     {
-        npList->remove(*it-n);
+        npList()->remove(*it-n);
         n++;
     }
 }
@@ -166,7 +166,7 @@ void nplaylistView::play(const QModelIndex &index)
 {
 	if(index.isValid() )
 	{
-	   engine->play(index.row() );
+	   engine()->play(index.row() );
 	}
 }
 

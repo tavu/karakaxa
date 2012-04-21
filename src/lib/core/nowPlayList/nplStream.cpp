@@ -38,9 +38,8 @@ core::nplTrack* core::nplStream::clone()
 }
 
 void core::nplStream::play()
-{
-    mediaObject=engine->getMediaObject();
-    connect(mediaObject,SIGNAL(metaDataChanged() ),this,SLOT(getMetaData() ) );
+{    
+    connect(engine()->getMediaObject(),SIGNAL(metaDataChanged() ),this,SLOT(getMetaData() ) );
 }
 
 void core::nplStream::finish()
@@ -61,13 +60,13 @@ QString core::nplStream::title()
 
 void core::nplStream::getMetaData()
 {
-    QStringList l=mediaObject->metaData("TITLE");
+    QStringList l=engine()->getMediaObject()->metaData("TITLE");
     if (!l.isEmpty() )
     {
         titleS=l.at(0);
         qDebug()<<"MO "<<titleS;
     }
-    l=engine->getMediaObject()->metaData("ALBUM");
+    l=engine()->getMediaObject()->metaData("ALBUM");
     if (!l.isEmpty() )
     {
         albumS=l.at(0);

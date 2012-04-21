@@ -19,7 +19,7 @@ nplTread::nplTread()
 //     statusBar.addPermanentWidget(w);
 
     connect(this,SIGNAL(finished() ),this ,SLOT(deleteLater () ),Qt::QueuedConnection );
-//     connect(&npList,SIGNAL(cancelThreads()),this ,SLOT(cancel() ),Qt::QueuedConnection );
+//     connect(&npList(),SIGNAL(cancelThreads()),this ,SLOT(cancel() ),Qt::QueuedConnection );
 }
 
 void nplTread::cancel()
@@ -66,7 +66,7 @@ void nplTread::cleanUp()
 {
     if(!list.isEmpty() )
     {
-      npList->insert(pos,list);
+      npList()->insert(pos,list);
     }
 }
 
@@ -76,7 +76,7 @@ void nplTread::addMedia(const QUrl &url)
     {
         if(list.size()>0)
         {
-            npList->insert(pos,list);
+            npList()->insert(pos,list);
             pos+=list.size();
             list.clear();
         }
@@ -132,7 +132,7 @@ void nplTread::addSingleFile(nplPointer tr)
 
     if(list.size()>=size )
     {
-        npList->insert(pos,list);
+        npList()->insert(pos,list);
         pos+=list.size();
         list.clear();
     }  
@@ -183,7 +183,7 @@ void nplTread::addDirectory(const QUrl &url)
        }
 	   
 	   qSort(files.begin(),files.end(),trackLessThan);
-	   npList->insert(pos,files);
+	   npList()->insert(pos,files);
 	   pos+=files.size();    
     }
 
