@@ -3,7 +3,9 @@
 #include"../../core/status/playerStatus.h"
 #include"../../core/nowPlayList/nplaylist.h"
 #include"../viewsFunc.h"
-#include<scanTread.h>
+
+#define W_WIDTH 200
+#define W_TIME  3000
 
 using namespace core;
 views::statusBar::statusBar(QWidget *parent)
@@ -12,7 +14,6 @@ views::statusBar::statusBar(QWidget *parent)
         timer(0)
 {
     label=new QLabel(this);
-//     label->setText(prettyLength(0));
     setSizeGripEnabled(false);
     setFixedHeight(35);
     QFrame *f=new QFrame(this);
@@ -26,8 +27,9 @@ views::statusBar::statusBar(QWidget *parent)
     connect(npList(),SIGNAL(tracksInserted(int,int)),this,SLOT(setTrackTime() ));
     connect(npList(),SIGNAL(tracksRemoved(int,int)),this,SLOT(setTrackTime() ) );
     connect(npList(),SIGNAL(cleared() ),this,SLOT(setTrackTime() ) );
-    
-    connect(database::db(),SIGNAL(stateCanged(dbState,dbState)),this,SLOT(addScanner()));
+
+//     connect(database::db(),SIGNAL(stateCanged(dbState,dbState)),this,SLOT(addScanner()));
+    connect(database::db(),SIGNAL(newJob(database::dbJobP) ),this,SLOT(addJob(database::dbJobP)) );
 }
 
 void views::statusBar::showMessage(const QString &s,int time)
@@ -51,8 +53,6 @@ void views::statusBar::addPermanentWidget(QWidget *w)
 void views::statusBar::init()
 {
 //     bar=new QStatusBar();
-
-
 }
 
 void views::statusBar::setTrackTime()
@@ -71,43 +71,34 @@ views::statusBar::~statusBar()
 
 }
 
-void views::statusBar::addScanner()
+void views::statusBar::addJob(database::dbJobP job)
 {
-    using namespace database;
-    if(db()->state()==NORMAL && !scanner.isNull())
-    {        
-        timer=new QTimer(this);
-        timer->setInterval(5000);
-        timer->start();
-        connect(timer,SIGNAL(timeout()),this,SLOT(scanDone()));
-    }
-    else
+    if(job.isNull() )
     {
-        if(timer!=0)
-        {
-            timer->stop();
-            delete timer;
-            timer=0;
-        }
-        
-        if(!scanner.isNull() )
-        {
-            removeWidget(scanner->widget() );
-        }
+        return ;
+    }
 
-        scanner=db()->scanner();
-        if(scanner->widget() !=0)
-        {
-            scanner->widget()->setFixedWidth(230);
-            insertPermanentWidget(0,scanner->widget());
-        }
-    }    
+    QWidget *w=job->widget();
+    if(w!=0)
+    {
+        timer=new QTimer(this);
+        timer->setInterval(W_TIME);
+        jobMap[timer]=job;
+        w->setFixedWidth(W_WIDTH);
+        insertPermanentWidget(0,w);
+        connect(timer,SIGNAL(timeout() ),this,SLOT(jobDone() ) );
+        connect(job.data(),SIGNAL(finished()),timer,SLOT(start()) );
+    }
 }
 
-void views::statusBar::scanDone()
+void views::statusBar::jobDone()
 {
-    removeWidget(scanner->widget());
-    scanner.clear();
-    delete timer;
-    timer=0;
+    QObject *sen=sender ();
+    database::dbJobP job=jobMap.take(sen);
+
+    if(!job.isNull() && job->widget()!=0)
+    {
+        removeWidget(job->widget());
+    }
+    delete sen;
 }

@@ -1,6 +1,6 @@
 #include"dbFunc.h"
 #include "database.h"
-
+#include"databaseEvent.h"
 void database::toSqlSafe(QString &s)
 {
     s.replace('\\',"\\\\");
@@ -11,6 +11,11 @@ void database::toSqlSafe(QString &s)
 
 void database::init()
 {
-    databaseConection::db=new databaseConection();
-    databaseConection::db->createConnection();
+    qRegisterMetaType<database::dbEventP>("database::dbEventP");
+    databaseConection::init();
+}
+
+void database::cleanup()
+{
+    delete databaseConection::db;
 }

@@ -32,7 +32,13 @@ class filePlaylistModel :public playlistModel
             }
             return b;
         }
-        
+
+        void remove(const QModelIndexList& list)
+        {
+            playlistModel::remove(list);
+            save();
+        }
+
     protected slots:
         void updateData(int,int);
         void callUpdate();
@@ -52,7 +58,7 @@ class filePlaylistModel :public playlistModel
                 }
                 int row;
                 int num;
-                
+
                 bool canceled;
         };
 

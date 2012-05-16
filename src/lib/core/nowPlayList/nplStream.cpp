@@ -17,16 +17,17 @@ core::nplStream::nplStream(QString s)
     }
 
     url=KUrl(s);
-    
+
     if (! core::isStream(url) )
     {
         ok=false;
         return ;
     }
 
-    
+
     mediaObject = 0;
-    titleS=QObject::tr("Stream: ")+url.host();
+    titleS=url.host();
+    artistS=QObject::tr("Streamming");
     albumS=url.url();
 
 //      connect(mediaObject,SIGNAL(metaDataChanged() ),this,SLOT(getMetaData() ) );
@@ -44,7 +45,8 @@ void core::nplStream::play()
 
 void core::nplStream::finish()
 {
-    disconnect(mediaObject, SIGNAL(metaDataChanged()), 0, 0);
+    disconnect(mediaObject, 0, this, 0);
+//     disconnect(mediaObject, SIGNAL(stateChanged(Phonon::State,Phonon::State)), 0, 0);
 }
 
 
@@ -56,6 +58,12 @@ QString core::nplStream::path()
 QString core::nplStream::title()
 {
     return titleS;
+}
+
+void core::nplStream::stateCh(Phonon::State newstate, Phonon::State oldstate)
+{
+//     if(oldstate==Phonon::LoadingState)
+        getMetaData();
 }
 
 void core::nplStream::getMetaData()
@@ -72,50 +80,52 @@ void core::nplStream::getMetaData()
         albumS=l.at(0);
         qDebug()<<"MO "<<albumS;
     }
-    l=mediaObject->metaData("ARTIST");     
+    l=mediaObject->metaData("ARTIST");
     if (!l.isEmpty() )
     {
         artistS=l.at(0);
         qDebug()<<"MO "<<artistS;
-    }      
-    l=mediaObject->metaData("DESCRIPTION");     
+    }
+    l=mediaObject->metaData("DESCRIPTION");
     if (!l.isEmpty() )
     {
         commentS=l.at(0);
         qDebug()<<"MO "<<commentS;
     }
-    l=mediaObject->metaData("GENRE");  
+    l=mediaObject->metaData("GENRE");
     if (!l.isEmpty() )
     {
         genreS=l.at(0);
         qDebug()<<"MO "<<genreS;
     }
-    
+
+    emitChanged();
+
 }
 
 QVariant core::nplStream::tag(int t)
 {
     if(t==TITLE)
     {
-	return QVariant(titleS);
+        return QVariant(titleS);
     }
     else if(t==ALBUM)
     {
-	return QVariant(albumS);
+        return QVariant(albumS);
     }
     else if(t==GENRE)
     {
-	return QVariant(genreS);
+        return QVariant(genreS);
     }
     else if(t==ARTIST)
     {
-	return QVariant(artistS);	
+        return QVariant(artistS);
     }
     else if(t==COMMENT)
     {
-	return QVariant(commentS);	
+        return QVariant(commentS);
     }
-    
+
     return QVariant();
 }
 

@@ -10,7 +10,7 @@ namespace views
 {
 
 class playlistModel :public  QAbstractListModel
-{    
+{
     Q_OBJECT
     public:
         playlistModel(QObject* parent = 0);
@@ -27,6 +27,7 @@ class playlistModel :public  QAbstractListModel
         virtual QVariant headerData ( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const;
 
         virtual Qt::ItemFlags flags ( const QModelIndex & index ) const;
+        virtual void remove(const QModelIndexList &list);
         bool setData( const QModelIndex & index, const QVariant & value, int role);
         bool dropMimeData ( const QMimeData * data,Qt::DropAction action,int row, int column, const QModelIndex &parent);
         Qt::DropActions supportedDropActions () const;
@@ -59,7 +60,7 @@ class playlistModel :public  QAbstractListModel
             endRemoveRows();
         }
         void beginMoveTracks(int first,int size,int dest);
-        
+
         void endMoveTracks()
         {
             endMoveRows();
@@ -88,4 +89,4 @@ class playlistModel :public  QAbstractListModel
 };
 
 }//namespace
-#endif 
+#endif

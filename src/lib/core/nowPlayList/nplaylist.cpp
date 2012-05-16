@@ -19,9 +19,9 @@ core::nplaylist::nplaylist()
 {
     circle=true;
     qRegisterMetaType<nplList>("nplList");
-    
-    KSharedConfigPtr config=core::config->configFile();	
-    KConfigGroup group( config, "nowPlaylist" );	
+
+    KSharedConfigPtr config=core::config->configFile();
+    KConfigGroup group( config, "nowPlaylist" );
     rememberPl=group.readEntry( "rememberPl", false);
 
     connect(engine(),SIGNAL(trackChanged(QString) ),this,SLOT(informTrack() )  );
@@ -75,7 +75,7 @@ void core::nplaylist::prepareToQuit()
     if(rememberPl)
     {
 	   QStringList l;
-	   
+
 	   foreach(nplPointer p ,trackList)
 	   {
 		  l<<p->path();
@@ -84,19 +84,19 @@ void core::nplaylist::prepareToQuit()
 	   KSharedConfigPtr config=core::config->configFile("nowPlaylist");
 	   KConfigGroup group( config, "list" );
 	   group.writeEntry( "list", QVariant(l) );
-	   group.config()->sync(); 
-    }    
+	   group.config()->sync();
+    }
 }
 
 void core::nplaylist::loadSavedPlaylist()
 {
     if(rememberPl)
     {
-	   KSharedConfigPtr config=core::config->configFile("nowPlaylist");	
-	   KConfigGroup group( config, "list" );	
+	   KSharedConfigPtr config=core::config->configFile("nowPlaylist");
+	   KConfigGroup group( config, "list" );
 	   QStringList l=group.readEntry("list", QStringList() );
-	   		
-	   addMediaList(l,0);    
+
+	   addMediaList(l,0);
     }
 }
 
@@ -141,37 +141,45 @@ void core::nplaylist::addMediaList(const QStringList &list,int pos)
 
 QString core::nplaylist::url(int n) const
 {
-     
+
     if (n>=trackList.size() )
     {
-         
+
         return QString();
     }
 
     nplPointer p=trackList.at(n);
 
-     
+
     return p->path();
 }
 
 QString core::nplaylist::playUrl(int n)
 {
-     
+    if(!playing.isNull() )
+    {
+        playing->finish();
+    }
+
     QString ret;
     if (n>=trackList.size() || n<0 )
-    {         
+    {
         return ret;
     }
-    
+
     playing=trackList.at(n);
     ret=playing->path();
-     
+
     return ret;
 }
 
 QString core::nplaylist::next()
 {
-     
+    if(!playing.isNull() )
+    {
+        playing->finish();
+    }
+
     QString ret;
     int pos=trackList.indexOf(playing,0);
 
@@ -181,10 +189,10 @@ QString core::nplaylist::next()
         {
             playing=trackList.at(0);
             ret=playing->path();
-             
+
             return ret;
         }
-         
+
         return QString();
     }
 
@@ -196,47 +204,51 @@ QString core::nplaylist::next()
 
             playing=trackList.at(0);
             ret=playing->path();
-             
+
             return ret;
         }
         else
         {
             playing.clear();
         }
-         
+
         return ret;
     }
 
     playing=trackList.at(pos);
     ret=playing->path();
-     
+
     return ret;
 }
 
 QString core::nplaylist::previous()
-{     
+{
+    if(!playing.isNull() )
+    {
+        playing->finish();
+    }
     int k=trackList.indexOf(playing,0);
     QString ret;
-    
+
     k--;
     if (k<0 )
     {
-         
+
         return ret;
     }
 
     playing=trackList.at(k);
-     
+
     ret=playing->path();
     return ret;
 }
 
 
 bool core::nplaylist::isPlaying(const int pos) const
-{     
+{
     if (pos>=trackList.size() )
     {
-         
+
         return false;
     }
 
@@ -244,12 +256,12 @@ bool core::nplaylist::isPlaying(const int pos) const
 
     if ( t==playing)
     {
-         
+
         return true;
     }
     else
     {
-         
+
         return false;
     }
 }
@@ -271,8 +283,8 @@ int core::nplaylist::getLength() const
 }
 
 void core::nplaylist::suffle()
-{    
-   shuffle();   
+{
+   shuffle();
 }
 
 void core::nplaylist::informTrack()

@@ -13,8 +13,9 @@
 #include<audioFiles.h>
 
 #include"database.h"
-#include"databaseScanner.h"
 #include"editMultFiles.h"
+#include"dbJobs/rescanJob.h"
+#include"libraryFolder.h"
 
 
 
@@ -28,7 +29,7 @@ database::databaseConection::databaseConection()
     connect(audioFiles::self(),SIGNAL(changed(audioFiles::audioFile)),this,SLOT(emitUpdated(audioFiles::audioFile)) );
     connect(editMultFiles::self(),SIGNAL(started()),this,SLOT(editMultFilesStart() ) );
     connect(editMultFiles::self(),SIGNAL(finished()),this,SLOT(editMultFilesStop()) );
-    readSettings();    
+    readSettings();
 }
 
 bool database::databaseConection::createConnection()
@@ -171,7 +172,7 @@ void database::databaseConection::closeDatabase()
         core::status->addErrorP("Can't close a non exist database connection");
     }
     else
-    {	
+    {
         dbE->used--;
         if(dbE->used==0)
         {
@@ -236,56 +237,67 @@ database::databaseConection::~databaseConection()
     QSqlDatabase::removeDatabase(dBase.databaseName() );
 }
 
-void database::databaseConection::scan(databaseScanner* sc)
+database::dbJobP database::databaseConection::rescan()
+{
+    rescanJob *sc=new rescanJob(RESCAN);
+    libraryFolder lf;
+    sc->setDirs(lf.libraryFolders());
+
+    dbJobP p(sc);
+    addJob(p);
+
+    return p;
+}
+
+database::dbJobP database::databaseConection::update()
+{
+    rescanJob *sc=new rescanJob(UPDATE);
+    libraryFolder lf;
+    sc->setDirs(lf.libraryFolders());
+
+    dbJobP p(sc);
+    addJob(p);
+
+    return p;
+}
+
+
+void database::databaseConection::addJob(database::dbJobP j)
 {
     mutex.lock();
-    scanners.append(dbScanner(sc) );
-    connect(sc,SIGNAL(finished()),this,SLOT(scanFinished()),Qt::QueuedConnection);
-
-    if(_state==NORMAL)
+    jobs.append(j);
+    if(currJob.isNull())
     {
-        nextState();
+        nextJob();
     }
     else
     {
         mutex.unlock();
     }
-
 }
 
-void database::databaseConection::scanFinished()
+void database::databaseConection::nextJob()
+{
+    if(jobs.size()==0 || !currJob.isNull())
+    {
+        mutex.unlock();
+        emit newJob(dbJobP() );
+        return ;
+    }
+    currJob=jobs.first();
+    jobs.removeFirst();
+    connect(currJob.data(),SIGNAL(finished()),this,SLOT(jobFinished()),Qt::QueuedConnection);
+    mutex.unlock();
+    currJob->start();
+    emit newJob(currJob );
+}
+
+void database::databaseConection::jobFinished()
 {
     mutex.lock();
-    dbScanner sc=scanners.takeFirst();
-    dbEventP e=sc->eventPointer();
-    e->setProperty("scanner",QVariant(sc) );
-    nextState();
-
-    emit newEvent(e);
+    currJob.clear();
+    nextJob();
 }
-
-void database::databaseConection::nextState()
-{
-    dbState oldState=_state;
-    if(scanners.isEmpty() )
-    {
-        _state=NORMAL;
-        mutex.unlock();
-        emit stateCanged(oldState,_state);
-    }
-    else
-    {
-        _state=scanners.first()->type();
-        mutex.unlock();
-        emit stateCanged(oldState,_state);
-        scanners.first()->startScan();
-    }
-}
-/*
-database::database* database::db()
-{
-   return database::db;
-}*/
 
 void database::databaseConection::emitUpdated(audioFiles::audioFile f)
 {
@@ -317,10 +329,17 @@ void database::databaseConection::editMultFilesStop()
     dbEventP e=editFiles;
     editFiles.clear();
     emit newEvent(e);
-    
+
 }
 
-
+void database::databaseConection::init()
+{
+    if(db==0)
+    {
+        databaseConection::db=new databaseConection();
+        databaseConection::db->createConnection();
+    }
+}
 
 database::databaseConection* database::databaseConection::db=0;
 

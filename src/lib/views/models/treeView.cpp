@@ -29,7 +29,7 @@ views::treeView::treeView(QWidget *parent,QString name)
     setHeader(new treeViewHeader(this));
     setUniformRowHeights(true);
     setAlternatingRowColors(true);
-      
+
     delegate=new treeViewDelegate(this);
     setItemDelegate(delegate);
 
@@ -40,7 +40,7 @@ views::treeView::treeView(QWidget *parent,QString name)
     setDragDropMode( QAbstractItemView::DragDrop );
     setRootIsDecorated(false);
     setSortingEnabled (true);
-    
+
     setMouseTracking(true);
 
     if (!name.isEmpty() )
@@ -57,11 +57,11 @@ void views::treeView::rowsInserted(const QModelIndex& parent, int start, int end
 
     if(ratingColumn()>-1)
         updateStarWidget(parent,start,end);
-    
+
 }
 
 void views::treeView::mouseDoubleClickEvent(QMouseEvent* event)
-{        
+{
     QTreeView::mouseDoubleClickEvent(event);
     QModelIndex index=indexAt (event->pos() );
 
@@ -112,16 +112,16 @@ void views::treeView::reset()
 
 
 void views::treeView::performDrag()
-{    
+{
     QModelIndexList list=selectedIndexes();
-        
+
     QList<QUrl> urls=getUrls(list);
-    
+
     if(urls.isEmpty() )
     {
         return ;
     }
-    
+
     QMimeData *mimeData = new QMimeData;
     mimeData->setUrls(urls);
 
@@ -129,14 +129,14 @@ void views::treeView::performDrag()
     drag->setMimeData(mimeData);
     drag->setPixmap(QPixmap(decor->tagIcon(-1).pixmap(48,48)) );
 
-    drag->exec(Qt::CopyAction);
+    drag->exec(Qt::CopyAction|Qt::MoveAction);
 
     if(reorderL.size() == 0)
     {
         return ;
     }
 
-    QItemSelection sel;    
+    QItemSelection sel;
     std::set<int>::const_iterator it=reorderL.begin();
     for(;it!=reorderL.end();it++)
     {
@@ -162,18 +162,18 @@ void views::treeView::dataChanged ( const QModelIndex & topLeft, const QModelInd
      if(ratingColumn()>-1)
      {
          updateStarWidget(topLeft.parent(),topLeft.row(),bottomRight.row());
-        
+
      }
 }
 
 void views::treeView::contextMenuEvent(QContextMenuEvent *e)
 {
-    emit showContextMenu(indexAt(e->pos() ),selectedIndexes() ); 
+    emit showContextMenu(indexAt(e->pos() ),selectedIndexes() );
 }
 
 
 void views::treeView::setRatingColumn(const int n)
-{    
+{
     _ratingColumn=n;
 }
 
@@ -188,17 +188,17 @@ void views::treeView::writeSettings()
     {
         return ;
     }
-        
+
     KSharedConfigPtr config=core::config->configFile();
     KConfigGroup group( config, objectName() );
     group.writeEntry( "state", QVariant(header()->saveState() ));
-    group.config()->sync();    
+    group.config()->sync();
 }
 
 void views::treeView::readSettings()
 {
     KSharedConfigPtr config=core::config->configFile();
-    KConfigGroup group( config, objectName() );    
+    KConfigGroup group( config, objectName() );
     header()->restoreState(group.readEntry( "state", QByteArray() ) );
 }
 
@@ -224,13 +224,13 @@ int views::treeView::notHide()
 }
 
 void views::treeView::updateStarWidget(QModelIndex parent, int start, int end)
-{    
+{
     for(int i=start;i<=end;i++)
     {
 	   QModelIndex item=model()->index(i,ratingColumn(),parent );
 	   bool b;
 	   item.data().toInt(&b);
-	   
+
 	   if(b)
 	   {
 		  openPersistentEditor(item);
@@ -248,8 +248,8 @@ void views::treeView::updateStarWidget()
 }
 
 
-void views::treeView::commitData ( QWidget * editor ) 
-{    
+void views::treeView::commitData ( QWidget * editor )
+{
     QModelIndexList list=selectedIndexes();
 
     QVariant var=QVariant::fromValue<QModelIndexList>(list);
@@ -267,20 +267,20 @@ void views::treeView::closeEditor ( QWidget * editor, QAbstractItemDelegate::End
 void views::treeView::headerRepaint()
 {
     QModelIndex index=indexAt( viewport()->mapFromGlobal(QCursor::pos() )  );
-    
+
     int mouseColumn=index.column();
-    
+
     if(mouseColumn!=header()->property("highlight") )
-    {      	
+    {
         mouseColumn=index.column();
         header()->setProperty("highlight",QVariant(mouseColumn) );
         QWidget * viewport = header()->viewport();
         viewport->update();
-    }   
+    }
 }
 
-void views::treeView::leaveEvent (QEvent *) 
-{ 
+void views::treeView::leaveEvent (QEvent *)
+{
      QWidget * viewport = header()->viewport();
      header()->setProperty("highlight",QVariant(-1) );
      viewport->update();
@@ -293,7 +293,7 @@ void views::treeView::play(const QModelIndex &index)
     {
         return ;
     }
-    
+
     core::nplList list;
     int row=index.row();
     for (int i=0;i<model()->rowCount(index.parent() );i++)
@@ -313,49 +313,49 @@ void views::treeView::play(const QModelIndex &index)
             }
         }
     }
-    
+
     core::npList()->clear();
     core::npList()->insert(0,list);
-    
+
     if(list.size() != model()->rowCount(index.parent() ) )
     {
         core::status->addError(tr("Some media could not be inserted to playlist") );
     }
-    
+
     core::engine()->play(row );
 }
 
 QList<QUrl> views::treeView::getUrls(const QModelIndexList &list)
 {
-    QList<QUrl> urls;    
-    
+    QList<QUrl> urls;
+
     if(list.isEmpty() )
     {
 	   return urls;
-    }    
-    
+    }
+
     int k=list.at(0).column();
-    
+
     foreach(QModelIndex index,list)
     {
 	   if(index.column()==k)
-	   {        
+	   {
           reorderL.insert(index.row() );
 		  QUrl u=index.data(URL_ROLE).toUrl();
-		  
+
 		  if(u.isValid() )
 		  {
 			 urls.append(u);
 		  }
 	   }
-    }    
-  
+    }
+
     return urls;
 }
 
 void views::treeView::paintEvent(QPaintEvent * event)
 {
-    QPainter painter(viewport());    
+    QPainter painter(viewport());
     drawTree(&painter, event->region());
 
     if(state() ==QAbstractItemView::DraggingState && showDropIndicator() )
@@ -387,17 +387,17 @@ void views::treeView::paintEvent(QPaintEvent * event)
             painter.setPen(pen);
 
             painter.drawLine(rect.bottomLeft(),rect.bottomRight());
-        }        
+        }
         else if(pos==OnViewport)
         {
             if(model()==0)
                 return ;
-            
+
             QModelIndex in=model()->index(model()->rowCount()-1,notHide(),QModelIndex()  );
             while(indexBelow(in).isValid() )
             {
                 in=indexBelow(in);
-            }            
+            }
             QRect rect=visualRect(in);
             rect.setX(viewport()->rect().x() );
             rect.setWidth(viewport()->rect().width());
@@ -418,7 +418,7 @@ void views::treeView::paintEvent(QPaintEvent * event)
             pen.setWidth(2);
             painter.setPen(pen);
 
-            
+
             painter.drawRect(rect);
         }
 

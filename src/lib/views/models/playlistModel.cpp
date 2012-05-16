@@ -59,7 +59,7 @@ QStringList views::playlistModel::mimeTypes() const
 {
     QStringList l;
     if(_acceptDrops)
-    {        
+    {
         l<<"text/uri-list";
     }
     return l;
@@ -92,7 +92,7 @@ QVariant views::playlistModel::data(const QModelIndex & index, int role ) const
     {
         KUrl u(p->path() );
         return QVariant(u);
-    }    
+    }
     else if(role == TAG_ROLE)
     {
         return QVariant(index.column() );
@@ -115,7 +115,7 @@ bool views::playlistModel::setData(const QModelIndex& index, const QVariant& val
     {
         return false;
     }
-    
+
     core::nplPointer f=pl->item(index.row() );
     if(f->type()==NPLAUDIOFILE)
     {
@@ -155,13 +155,13 @@ void views::playlistModel::setPlaylist(core::playlist *playlist)
 {
     beginResetModel();
     if(pl!=0)
-    {       
+    {
        delete pl;
     }
 
     pl=playlist;
     if(pl!=0)
-    { 
+    {
         connectPl();
     }
     endResetModel();
@@ -227,13 +227,13 @@ bool views::playlistModel::dropMimeData(const QMimeData* data, Qt::DropAction ac
     {
         return false;
     }
-    
+
     if (views::reorderL.size()!=0 )
     {
         reorder(row,views::reorderL);
         return true;
     }
-    
+
     core::nplList l;
     foreach(QUrl u,data->urls())
     {
@@ -257,7 +257,7 @@ void views::playlistModel::reorder(int r, const std::set< int >& rows)
 
 //I don't kwon what the fuck is going on but emitting the layoutAboutToBeChanged signals creates a lot of bugs on proxy models
 //     beginResetModel ();
-    
+
 //      emit layoutAboutToBeChanged ();
     int n=0;
     int k=0;
@@ -278,9 +278,9 @@ void views::playlistModel::reorder(int r, const std::set< int >& rows)
        reset();
 
 //      emit layoutChanged ();
-    
+
 //     connect(pl,SIGNAL(aboutToMoveTrack(int,int,int)),this,SLOT(beginMoveTracks(int,int,int)));
-//     connect(pl,SIGNAL(tracksMoved(int,int,int)),this,SLOT(endMoveTracks()));    
+//     connect(pl,SIGNAL(tracksMoved(int,int,int)),this,SLOT(endMoveTracks()));
 }
 
 void views::playlistModel::beginMoveTracks(int first,int size,int dest)
@@ -292,7 +292,7 @@ void views::playlistModel::beginMoveTracks(int first,int size,int dest)
         f=first;
         d=dest+1;
         l=f+size-1;
-            
+
     }
     else
     {
@@ -302,3 +302,20 @@ void views::playlistModel::beginMoveTracks(int first,int size,int dest)
     }
     beginMoveRows(QModelIndex(),f,l,QModelIndex(),d);
 }
+
+void views::playlistModel::remove(const QModelIndexList& list)
+{
+    std::set<int> rowL;
+    foreach(QModelIndex index,list)
+    {
+        rowL.insert(index.row() );
+    }
+    int n=0;
+    std::set<int>::iterator it;
+    for(it=rowL.begin();it!=rowL.end();it++)
+    {
+        pl->remove(*it-n);
+        n++;
+    }
+}
+

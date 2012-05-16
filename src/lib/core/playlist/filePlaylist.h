@@ -22,7 +22,7 @@ class filePlaylist :public playlist
 
 
         filePlaylist(const QString s,QObject *parent=0)
-        :playlist(parent),_saveToRelative(false),_path(s),file(s,this)
+        :playlist(parent),_saveToRelative(true),_path(s),file(s,this)
         {}
 
     public slots:

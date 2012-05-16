@@ -6,7 +6,7 @@ QT += sql
 QT += xml
 QT +=network
 
-LIBS += -lkdecore -lkdeui -lkfile -lkio -ltag -ltag-extras
+LIBS += -lkdecore -lkdeui -lkfile -lkio -ltag -ltag-extras 
 
 
 QMAKE_CXXFLAGS = -ggdb

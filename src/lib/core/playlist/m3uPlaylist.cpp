@@ -63,7 +63,12 @@ bool core::m3uPlaylist::save()
     }
 
     QTextStream t( &file );
+    t<<"#EXTM3U"<<endl;
     QString f=core::folder(_path);
+    if(!f.endsWith('/') )
+    {
+        f.append('/');
+    }
 
     foreach(nplPointer p,trackList)
     {
@@ -81,7 +86,6 @@ bool core::m3uPlaylist::save()
 
 bool core::m3uPlaylist::createFile()
 {
-    qDebug()<<"CRE";
     if (file.open(QIODevice::WriteOnly | QIODevice::Text) )
     {
         QTextStream t( &file );

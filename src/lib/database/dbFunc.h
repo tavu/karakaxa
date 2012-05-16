@@ -5,5 +5,6 @@ namespace database
 {
     void toSqlSafe(QString &s);
     void init();
+    void cleanup();
 }
 #endif

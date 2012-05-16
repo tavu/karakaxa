@@ -39,31 +39,31 @@ core::soundEngine::~soundEngine()
 
 bool core::soundEngine::play(int n)
 {
-    mutex.lock();
+    //mutex.lock();
     QString s=npList()->playUrl(n);
 
     if (s.isNull() || s.isEmpty() )
     {
-        mutex.unlock();
+        //mutex.unlock();
         return false;
     }
     _newSource=true;
     mediaObject->setCurrentSource(s);
     mediaObject->clearQueue();
     mediaObject->play();
-    mutex.unlock();
+    //mutex.unlock();
 
     return true;
 }
 
 bool core::soundEngine::next()
 {
-    mutex.lock();
+    //mutex.lock();
     QString s=npList()->next();
 
     if (s.isEmpty() )
     {
-        mutex.unlock();
+        //mutex.unlock();
         mediaObject->stop();
         return false;
     }
@@ -72,7 +72,7 @@ bool core::soundEngine::next()
     mediaObject->clearQueue();
     mediaObject->play();
 
-    mutex.unlock();
+    //mutex.unlock();
 
 //      emit(trackChanged(s) );
 
@@ -81,20 +81,20 @@ bool core::soundEngine::next()
 
 bool core::soundEngine::previous()
 {
-    mutex.lock();
+    //mutex.lock();
     QString s=npList()->previous();
 
     if (s.isEmpty() )
     {
         mediaObject->stop();
-        mutex.unlock();
+        //mutex.unlock();
         return false;
     }
     _newSource=true;
     mediaObject->setCurrentSource( s );
     mediaObject->clearQueue();
     mediaObject->play();
-    mutex.unlock();
+    //mutex.unlock();
 
 //      emit(trackChanged(s) );
     return true;
@@ -102,17 +102,17 @@ bool core::soundEngine::previous()
 
 void core::soundEngine::getNext()
 {
-    mutex.lock();
+    //mutex.lock();
     QString s=npList()->next();
 
     if (s.isEmpty() )
     {
-        mutex.unlock();
+        //mutex.unlock();
         return ;
     }
     _newSource=true;
     mediaObject->enqueue( s );
-    mutex.unlock();
+    //mutex.unlock();
 
     return ;
 }
@@ -147,7 +147,6 @@ void core::soundEngine::mediaStateChanged ( Phonon::State newstate, Phonon::Stat
         errors=0;
     }
 
-
 }
 
 void core::soundEngine::playPause()
@@ -167,7 +166,7 @@ bool core::soundEngine::play()
 {
     //check that there is a loaded file and plays it.
     //if there isn't load the first file
-    mutex.lock();
+    //mutex.lock();
 
     if (mediaObject->currentSource().url().isEmpty() )
     {
@@ -178,7 +177,7 @@ bool core::soundEngine::play()
 
         if (s.isEmpty() )
         {
-            mutex.unlock();
+            //mutex.unlock();
             return false;
         }
         
@@ -186,7 +185,7 @@ bool core::soundEngine::play()
         mediaObject->setCurrentSource( s );
         
         mediaObject->play();
-        mutex.unlock();
+        //mutex.unlock();
 
         return true;
     }
@@ -194,7 +193,7 @@ bool core::soundEngine::play()
     {
         mediaObject->play();
     }
-    mutex.unlock();
+    //mutex.unlock();
     return true;
 }
 

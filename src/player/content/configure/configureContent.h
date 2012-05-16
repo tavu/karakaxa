@@ -10,6 +10,8 @@
 #include<QDialogButtonBox>
 #include<core.h>
 #include<KIcon>
+#include<dbJobs/dbJob.h>
+
 class configureContent :public core::abstractContent
 {
     Q_OBJECT
@@ -21,7 +23,7 @@ class configureContent :public core::abstractContent
         {
             return KIcon("configure-other");
         }
-	
+
     private:
         QFileDialog 		*fDialog;
         QListView   		*listV;
@@ -53,8 +55,6 @@ class configureContent :public core::abstractContent
         void removeLibraryFolder();
         void DbButtonClicked(QAbstractButton*);
         void rememberPlSlot(int);
-        void scanLibrary();
-        void updateLibrary();
-        void scanButtonActive();
+        void scanButtonActivate(database::dbJobP);
 };
 #endif

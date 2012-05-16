@@ -12,7 +12,7 @@
 
 #include"album.h"
 #include"dbTypes.h"
-#include"databaseScanner.h"
+#include"dbJobs/dbJob.h"
 #include "databaseEvent.h"
 
 namespace database
@@ -22,12 +22,17 @@ class dbEvent;
 class databaseConection :public QObject
 {
     Q_OBJECT
-    friend void init();
-    friend databaseConection* db();
+    friend void cleanup();
 
     public:
         databaseConection();
         ~databaseConection();
+
+        static void init();
+        static databaseConection* instance()
+        {
+            return db;
+        }
 
         QSqlDatabase getDatabase();
         void closeDatabase(QSqlDatabase& dbase);
@@ -72,15 +77,9 @@ class databaseConection :public QObject
             return _state;
         }
 
-        //if its on the update or rescan state return the scanThread
-        dbScanner scanner()
+        dbJobP currentJob()
         {
-            if(scanners.isEmpty() )
-            {
-                return dbScanner();
-            }
-
-            return scanners.first();
+            return currJob;
         }
 
     private:
@@ -101,11 +100,12 @@ class databaseConection :public QObject
         bool    _isScanning;
         dbState    _state;
         dbEventP    editFiles;
-        
-        QLinkedList<dbScanner>  scanners;
 
-        void nextState();
-        
+        QLinkedList<dbJobP>  jobs;
+        dbJobP currJob;
+
+        void nextJob();
+
 
         QString apprName(QThread *thr);
         QMutex mutex;
@@ -116,9 +116,14 @@ class databaseConection :public QObject
         //state changed (dbState old,dbState new)
         void stateCanged(dbState ,dbState);
         void newEvent(database::dbEventP);
+        void newJob(database::dbJobP);
 
     public slots:
-        void scan(databaseScanner *sc);
+        void addJob(dbJobP j);
+
+        dbJobP rescan();
+        dbJobP update();
+
         void emitEvent(dbEventP e)
         {
             emit newEvent(e);
@@ -126,21 +131,21 @@ class databaseConection :public QObject
 
 
     private slots:
-        void scanFinished();
+        void jobFinished();
         void emitUpdated(audioFiles::audioFile f);
         void editMultFilesStart();
         void editMultFilesStop();
 
     private:
         static databaseConection *db;
-        
+
 
 
 };//class
 
 inline databaseConection* db()
 {
-    return databaseConection::db;
+    return databaseConection::instance();
 }
 
 
