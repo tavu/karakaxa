@@ -1,5 +1,5 @@
-donwload from svn:
-     svn co https://linuxplayer.svn.sourceforge.net/svnroot/linuxplayer/trunk
+donwload from github:
+     git clone git://github.com/tavu/karakaxa.git
 
 Dependencies
      kdelibs5-dev
@@ -11,5 +11,5 @@ Dependencies
      kdelibs 
      kdelibs-dev (kdelibs5-dev)
 
-to install run
+in order to install run:
      sudo ./install.sh
