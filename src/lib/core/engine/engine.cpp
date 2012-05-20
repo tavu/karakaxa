@@ -28,7 +28,7 @@ core::soundEngine::soundEngine(QObject *parent)
     connect(mediaObject,SIGNAL( aboutToFinish () ),this ,SLOT ( getNext() ) );
     connect(mediaObject,SIGNAL( currentSourceChanged( const Phonon::MediaSource  ) ),this ,SLOT ( newSource( const Phonon::MediaSource  ) ) );
     connect(mediaObject,SIGNAL( stateChanged ( Phonon::State , Phonon::State ) ),this ,SLOT ( mediaStateChanged ( Phonon::State , Phonon::State ) ));
-
+    connect(mediaObject,SIGNAL( totalTimeChanged(qint64)),this,SLOT(totalTimeSlot(qint64)) );
 }
 
 core::soundEngine::~soundEngine()
@@ -112,6 +112,7 @@ void core::soundEngine::getNext()
     }
     _newSource=true;
     mediaObject->enqueue( s );
+    
     //mutex.unlock();
 
     return ;
@@ -228,7 +229,27 @@ void core::soundEngine::newSource( const Phonon::MediaSource  s)
         emit(trackChanged(QString() ) );
     }
 
+    mediaObject->clearQueue();
+
+    if(_totalTime )
+    {
+        emit (totalTimeChanged(mediaObject->totalTime() ) );
+    }
+
 }
+
+void soundEngine::totalTimeSlot(qint64 time)
+{
+    if(_newSource )
+    {
+        _totalTime=true;
+    }
+    else
+    {
+        emit (totalTimeChanged(time) );
+    }
+}
+
 
 void core::soundEngine::setMute(bool f)
 {
@@ -236,16 +257,16 @@ void core::soundEngine::setMute(bool f)
     static qreal v=audioOutput->volume();
     if(f)
     {
-	v=audioOutput->volume();
-	audioOutput->setVolume(0);
+        v=audioOutput->volume();
+        audioOutput->setVolume(0);
     }
     else if(v==0)
     {
-	audioOutput->setVolume(0.5);
+        audioOutput->setVolume(0.5);
     }
     else
     {
-	audioOutput->setVolume(v);
+        audioOutput->setVolume(v);
     }
 }
 

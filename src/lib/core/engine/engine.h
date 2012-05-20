@@ -55,6 +55,7 @@ class soundEngine :public QObject
 //         Phonon::MediaController   *controller;
 
         bool _newSource;
+        bool _totalTime;
         int errors;
         QMutex mutex;
 
@@ -69,6 +70,7 @@ class soundEngine :public QObject
         void getNext();
         void mediaStateChanged (Phonon::State, Phonon::State);
         void newSource( const Phonon::MediaSource  );
+        void totalTimeSlot(qint64 time);
 
 
     public slots:
@@ -85,6 +87,7 @@ class soundEngine :public QObject
     signals:
         void stateChanged (Phonon::State state);
         void trackChanged (QString );
+        void totalTimeChanged(qint64 );
 };
 
 inline soundEngine* engine()

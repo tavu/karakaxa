@@ -7,10 +7,6 @@
 
 views::sliderWidget::sliderWidget(QWidget* parent): QWidget(parent)
 {
-//     slider = new Phonon::SeekSlider(this);
-//     slider->setMediaObject(core::engine->getMediaObject() );
-//     slider->setIconVisible(false);
-
     slider=new Slider(Qt::Horizontal,0,this);
     connect(slider,SIGNAL(sliderReleased(int)),this,SLOT(seek(int)) );
     
@@ -21,7 +17,7 @@ views::sliderWidget::sliderWidget(QWidget* parent): QWidget(parent)
 
     core::engine()->getMediaObject()->setTickInterval(500);    
     
-    connect(core::engine()->getMediaObject(),SIGNAL(totalTimeChanged(qint64)),this,SLOT(totalTimeChanged(qint64)) );
+    connect(core::engine(),SIGNAL(totalTimeChanged(qint64)),this,SLOT(totalTimeChanged(qint64)) );
     connect(core::engine()->getMediaObject(),SIGNAL(tick(qint64)),this,SLOT(setSliderValue(qint64)) );
     connect(slider,SIGNAL(valueChanged(int)),this,SLOT(updateTime(int)));
     connect(core::engine(),SIGNAL(trackChanged(QString)),this,SLOT(trackChanged()));
@@ -53,15 +49,28 @@ void views::sliderWidget::setSliderValue(qint64 time)
 
 void views::sliderWidget::totalTimeChanged(qint64 time)
 {
-    slider->setMaximum((int) (time) );
-    slider->setValue(0);
-    updateTime(0);
+    if(time==0)
+    {
+        slider->setMaximum(0);
+        slider->setValue(-1);
+        slider->setDisabled(true);
+    }
+    else
+    {    
+        int t=(int)time;
+        if(t!=slider->maximum() )
+        {
+            slider->setMaximum(t);
+            qint64 currTime=core::engine()->getMediaObject()->currentTime ();
+            slider->setDisabled(false);
+            updateTime(currTime);
+        }
+    }
 }
 
 
 void views::sliderWidget::updateTime(int currentTime)
 {
-//     Phonon::MediaObject *m=core::engine->getMediaObject();
     int totalTime=(int)( slider->maximum()/1000 );
     currentTime /=1000;
     left->setText(views::prettyLength(currentTime));
@@ -74,7 +83,6 @@ void views::sliderWidget::updateTime(int currentTime)
     s.prepend('-');
     
     right->setText(s);
-
     
 }
 
