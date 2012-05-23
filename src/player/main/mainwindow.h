@@ -31,10 +31,6 @@ class mainWindow :public KMainWindow
     public:
 	mainWindow();
 	~mainWindow();
-// 	bool fullScreen()
-// 	{
-// 	    return _fullScreen;
-// 	}
 	
     private:
 	

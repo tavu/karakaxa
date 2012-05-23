@@ -1,5 +1,5 @@
 #include"viewsFunc.h"
-#include"../../files/tagsTable.h"
+#include"../files/tagsTable.h"
 #include<QDebug>
 #include"actionMenu.h"
 

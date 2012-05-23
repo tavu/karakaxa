@@ -1,4 +1,4 @@
-#include<mainwindow.h>
+#include"mainwindow.h"
 
 #include<QSplitter>
 #include<QGroupBox>
@@ -23,12 +23,12 @@
 #include"nplaylistModel.h"
 #include"nplaylistDelegate.h"
 
-#include"content/library/library.h"
-#include"content/folder/folder.h"
-#include"content/playlist/playlistContent.h"
-#include"content/configure/configureContent.h"
-#include"content/edit/editTrackContent.h"
-#include"content/nowPlaylist/nowPlaylistContent.h"
+#include"../content/library/library.h"
+#include"../content/folder/folder.h"
+#include"../content/playlist/playlistContent.h"
+#include"../content/configure/configureContent.h"
+#include"../content/edit/editTrackContent.h"
+#include"../content/nowPlaylist/nowPlaylistContent.h"
 
 
 #define ICONZISE QSize(35,35)
@@ -71,29 +71,8 @@ mainWindow::mainWindow()
 
 mainWindow::~mainWindow()
 {
-    
       writeSettings();
-      views::cleanUp();
-      core::cleanUp();
-//     delete viewport;
-
 }
-
-// inline void mainWindow::init()
-// {
-//     core::statusBar.init();
-//     db.init();
-//     core::engine.init();
-// //      core::nowPl=new nowPlaylist();
-// 
-// 
-// //      core::config=new PlayerConfigure();
-// 
-//     
-// 
-//     core::contentHandlr=new contentHandler(conTree,conView);
-// 
-// }
 
 inline void mainWindow::infoInit()
 {
@@ -246,11 +225,6 @@ void mainWindow::toolBarInit()
     toolBar->addAction( nextAction );
     connect(nextAction,SIGNAL(triggered( bool)),engine(),SLOT(next() ) );
    
-    
-//     slider = new Phonon::SeekSlider(this);
-//     slider->setMediaObject(core::engine->getMediaObject() );
-//     slider->setIconVisible(false);
-
     views::sliderWidget *slider=new views::sliderWidget(this);
     
     toolBar->addWidget(slider);
@@ -416,7 +390,7 @@ void mainWindow::iconActivated(QSystemTrayIcon::ActivationReason reason)
 
 void mainWindow::createMenus()
 {
-    playerMenu=menuBar()->addMenu(tr("&Player"));
+    playerMenu=menuBar()->addMenu(tr("&Karakaxa"));
 
     quitAction = new QAction(KIcon("application-exit"), tr("&Quit"), this);
     

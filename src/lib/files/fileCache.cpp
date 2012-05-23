@@ -6,10 +6,9 @@
 #include<QDir>
 
 
-#include"fileToDb.h"
 #include"../core/func.h"
 #include"audioFiles.h"
-#include<database/fileToDb.h>
+#include "../database/fileToDb.h"
 #include"tagsTable.h"
 // #define DATAB 1
 // #define FILE  2

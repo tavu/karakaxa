@@ -10,7 +10,7 @@
 #include"../decoration/decoration.h"
 #include"treeViewDelegate.h"
 #include"urlRole.h"
-#include <decoration.h>
+#include <decoration/decoration.h>
 #include<QMetaProperty>
 // class editTrack;
  #include <QToolTip>

@@ -11,7 +11,7 @@
 #include<set>
 #define FONT_SIZE 10
 
-#include<nplaylistDelegate.h>
+#include"nplaylistDelegate.h"
 
 nplaylistView::nplaylistView(QWidget *parent)
         :views::treeView(parent)

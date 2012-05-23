@@ -9,35 +9,35 @@ class playingInfo :public QFrame
 {
     Q_OBJECT
     public:
-	playingInfo(QWidget *parent=0);
-	~playingInfo();
- 	virtual QSize sizeHint() const;
-	
-    private:
-	QPoint startPos;
-	void mouseMoveEvent(QMouseEvent *event);
-	void mousePressEvent(QMouseEvent *event);
-	void performDrag();
-	views::coverWidget *cover;
-	views::ratingWidget *stars;
-    // 	  QLabel *titleL;
-    // 	  QLabel *artistL;
-    // 	  QLabel *albumL;
-    // 	  QLabel *commentL;
+        playingInfo(QWidget *parent=0);
+        ~playingInfo();
+        virtual QSize sizeHint() const;
 
-	scrolText *titleT;
-	scrolText *albumT;
-	scrolText *artistT;
-	scrolText *commentT;
-	scrolText *genreT;
+        private:
+        QPoint startPos;
+        void mouseMoveEvent(QMouseEvent *event);
+        void mousePressEvent(QMouseEvent *event);
+        void performDrag();
+        views::coverWidget *cover;
+        views::ratingWidget *stars;
+        // 	  QLabel *titleL;
+        // 	  QLabel *artistL;
+        // 	  QLabel *albumL;
+        // 	  QLabel *commentL;
 
-	QLabel 	  *titleIcon;
-	QLabel 	  *albumIcon;
-	QLabel 	  *artistIcon;
-	QLabel 	  *commentIcon;
-	QLabel 	  *genreIcon;
-	
-	core::nplPointer track;
+        scrolText *titleT;
+        scrolText *albumT;
+        scrolText *artistT;
+        scrolText *commentT;
+        scrolText *genreT;
+
+        QLabel 	  *titleIcon;
+        QLabel 	  *albumIcon;
+        QLabel 	  *artistIcon;
+        QLabel 	  *commentIcon;
+        QLabel 	  *genreIcon;
+
+        core::nplPointer track;
 
     public slots:
         void update();

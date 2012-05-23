@@ -1,5 +1,5 @@
 #include"sortProxyModel.h"
-#include<items.h>
+#include"items.h"
 #include<core.h>
 
 bool sortProxyModel::lessThan(const QModelIndex& left, const QModelIndex& right) const

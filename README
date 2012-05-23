@@ -11,5 +11,9 @@ Dependencies
      kdelibs 
      kdelibs-dev (kdelibs5-dev)
 
-in order to install run:
-     sudo ./install.sh
+in order to install run the following commands
+     mkdir -p build
+     cd build
+     cmake ..
+     make
+     make install

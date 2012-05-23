@@ -1,7 +1,7 @@
 #include"queryThr.h"
-#include"../status/playerStatus.h"
+#include"../../core/status/playerStatus.h"
 #include"queryGeneration.h"
-#include"database.h"
+#include"../database.h"
 
 void database::queryThr::run()
 {
@@ -20,7 +20,6 @@ void database::queryThr::run()
             return ;
         }
 
-        int i=0;
         if(quer.size()>0 )
         {
             files.reserve(quer.size() );

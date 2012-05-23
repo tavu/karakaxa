@@ -13,6 +13,7 @@ namespace core
 
 class filePlaylist :public playlist
 {
+    Q_OBJECT
     public:
 
         static const int OK=0;
