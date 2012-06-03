@@ -56,7 +56,7 @@ database::albumEntry database::libraryImporter::import(const QString &url)
         }
     }    
     
-    if(!var[LEAD_ARTIST].toString().isEmpty() )
+    if(!var[LEAD_ARTIST].toString().simplified().isEmpty() )
     {
         albumArtist=&(var[LEAD_ARTIST] );
     }
@@ -64,8 +64,6 @@ database::albumEntry database::libraryImporter::import(const QString &url)
     {
        albumArtist=&(var[ARTIST] );
     }
-
-    qDebug()<<"FR "<< var[FRAME_NUM];
     
     return importToDb(var,albumArtist);
 }
@@ -162,9 +160,7 @@ void database::libraryImporter::saveAlbumArt(const QString &albumArt , const alb
 
 QVariant database::libraryImporter::getId(QVariant var,QString table)
 {
-    QSqlQuery q(database);
-
-    qDebug()<<"get id "<<table;
+    QSqlQuery q(database);    
     
     QString s("select id from %1 where name =?");
     s=s.arg(table);
