@@ -161,3 +161,23 @@ void views::cleanUp()
 }
 
 
+int views::compare(const QString& first, const QString& second)
+{
+	QString s1=first.simplified();
+	QString s2=second.simplified();
+	
+	if(s1.startsWith("the ") )
+	{
+		s1.remove(0, 4);
+	}
+	s1.remove("'");
+
+	if(s2.startsWith("the ") )
+	{
+		s2.remove(0,4);
+	}
+	s2.remove("'");
+	
+	return s1.compare(s2,Qt::CaseInsensitive);
+
+}

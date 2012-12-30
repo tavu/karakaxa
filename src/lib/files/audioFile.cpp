@@ -25,17 +25,20 @@ audioFiles::audioFile::audioFile()
         :QObject(),
         fileSize(0),
         saveFlag(true),
-        cache(0)
+        cache(0),
+        _exist(false)
 {    
 }
 
 audioFiles::audioFile::audioFile(QUrl u)
         :QObject(),
         fileSize(0),
-        saveFlag(true)
+        saveFlag(true),
+        _exist(true)
 {
     cache=audioFiles::fileCache::getFileCache(u.toLocalFile());
     connect(cache,SIGNAL(changed(audioFiles::tagChangesL) ),this,SLOT(emitChanged(audioFiles::tagChangesL) ),Qt::QueuedConnection );
+	connect(cache,SIGNAL(removed()),this,SLOT(invalidSlot() ),Qt::QueuedConnection );
 }
 
 
@@ -43,19 +46,23 @@ audioFiles::audioFile::audioFile(QUrl u)
 audioFiles::audioFile::audioFile(const QString url)
         :QObject(),
         fileSize(0),
-        saveFlag(true)
+        saveFlag(true),
+        _exist(true)
 {
     cache=audioFiles::fileCache::getFileCache(url);    
     connect(cache,SIGNAL(changed(audioFiles::tagChangesL) ),this,SLOT(emitChanged(audioFiles::tagChangesL) ),Qt::QueuedConnection );
+	connect(cache,SIGNAL(removed()),this,SLOT(invalidSlot() ),Qt::QueuedConnection );
 }
 
 audioFiles::audioFile::audioFile(QSqlRecord r, bool force)
     :QObject(),
      fileSize(0),
-     saveFlag(true)
+     saveFlag(true),
+     _exist(true)
 {
     cache=audioFiles::fileCache::getFileCache(r.value(PATH+1).toString() );
     connect(cache,SIGNAL(changed(audioFiles::tagChangesL) ),this,SLOT(emitChanged(audioFiles::tagChangesL) ),Qt::QueuedConnection );
+	connect(cache,SIGNAL(removed()),this,SLOT(invalidSlot() ),Qt::QueuedConnection );
     cache->setRecord(r,force);    
 }
 
@@ -68,10 +75,11 @@ audioFiles::audioFile::audioFile(const audioFile &f)
      {
         cache=audioFiles::fileCache::getFileCache(f.path() );
         connect(cache,SIGNAL(changed(audioFiles::tagChangesL) ),this,SLOT(emitChanged(audioFiles::tagChangesL) ),Qt::QueuedConnection );
+		connect(cache,SIGNAL(removed()),this,SLOT(invalidSlot() ),Qt::QueuedConnection );
      }
+     _exist=f._exist;
      changes.append(f.changes);
      fileSize=f.fileSize;
-
 }
 
 
@@ -81,6 +89,40 @@ audioFiles::audioFile::~audioFile()
     audioFiles::fileCache::releaseFileCache(cache);
 }
 
+bool audioFiles::audioFile::isValid() const
+{
+
+	if(cache==0)
+	{
+		err=INVALID_FILE;
+		return false;
+	}			
+
+	if(!_exist)
+	{
+		err=NULL_FILE;
+		return false;
+	}
+	
+	err=OK;
+	return true;
+}
+
+bool audioFiles::audioFile::exist(bool force)
+{
+	if(cache==0)
+	{
+		err=INVALID_FILE;
+		return false;
+	}
+	
+	if(force)
+	{
+		_exist=cache->exist();
+	}
+	err=OK;
+	return _exist;
+}
 
 QVariant audioFiles::audioFile::tag(int t, const short int f) const
 {
@@ -361,7 +403,7 @@ audioFiles::audioFile* audioFiles::audioFile::operator=(const audioFile &f)
 
     if(f.cache!=0)
     {
-	cache=audioFiles::fileCache::getFileCache(f.path() );
+		cache=audioFiles::fileCache::getFileCache(f.path() );
     }
     
     changes.append(f.changes);

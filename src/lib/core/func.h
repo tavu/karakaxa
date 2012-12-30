@@ -4,6 +4,8 @@
 #include<QString>
 #include<QVariant>
 #include<QUrl>
+#include <QSizePolicy>
+#include<QWidget>
 
 namespace core
 {
@@ -26,10 +28,10 @@ void    		cleanUp();
 bool			exists(const QString &url);
 QThread*		mainThr();
 
-
+QWidget* spacerWidget(QWidget *parent=0);
 
 int getRandomN(int min,int max);
-
+void karakaxaMsg(QtMsgType type, const char *msg);
 
 template <class RandomAccessIterator>
 void randomShuffle ( RandomAccessIterator first, int size )

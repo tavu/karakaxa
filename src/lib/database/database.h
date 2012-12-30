@@ -19,6 +19,7 @@ namespace database
 {
 
 class dbEvent;
+class dbJob;
 class databaseConection :public QObject
 {
     Q_OBJECT

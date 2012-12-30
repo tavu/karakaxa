@@ -3,6 +3,7 @@
 #include<QMutex>
 #include<QObject>
 #include<QSqlDatabase>
+// #include"database.h"
 
 namespace database
 {
@@ -12,7 +13,7 @@ namespace database
 
 class dbBase :public QObject
 {
-    protected:
+	public:
         dbBase(QObject *parent=0) :QObject(parent){};
         virtual ~dbBase(){};
         static void lock()
@@ -23,6 +24,10 @@ class dbBase :public QObject
         {
             mutex.unlock();
         }
+        
+        void getDb();
+		
+		void closeDb();
 
         void            cleanUp();
         void            clearArtist();

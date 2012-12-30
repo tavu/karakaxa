@@ -12,6 +12,8 @@ namespace views
     QString	    tagName(int t);
     void	    init();
     void 	    cleanUp();
+	
+	int 		compare(const QString &,const QString &);
 };
 
 #endif

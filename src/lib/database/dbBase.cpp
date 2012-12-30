@@ -3,6 +3,7 @@
 #include<QSqlError>
 
 #include<status/playerStatus.h>
+#include"database.h"
 void database::dbBase::cleanUp()
 {
     clearArtist();
@@ -59,4 +60,14 @@ void database::dbBase::clearComposer()
      {
         core::status->addErrorP("setting albumArt error "+q.lastError().text() );
      }
+}
+
+void database::dbBase::getDb()
+{
+	databs=db()->getDatabase();
+}
+		
+void database::dbBase::closeDb()
+{
+	db()->closeDatabase(databs);
 }

@@ -9,8 +9,8 @@
 
 #include<core.h>
 
-#include"libraryImpScan.h"
-#include"libraryImpUpdate.h"
+#include"../libraryImpScan.h"
+#include"../libraryImpUpdate.h"
 
 
 

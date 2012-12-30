@@ -2,15 +2,15 @@
 #define DBJOB_H
 #include<QWidget>
 #include<QThread>
-
+#include"../dbBase.h"
 namespace database
 {
 
-class dbJob :public QObject
+class dbJob :public dbBase
 {
     Q_OBJECT
     public:
-        dbJob(QObject *parent):QObject(parent){}
+        dbJob(QObject *parent):dbBase(parent){}
         virtual ~dbJob(){}
 
         virtual void start()=0;

@@ -3,6 +3,7 @@
 #include<status/playerStatus.h>
 #include "dbFunc.h"
 #include"databaseEvent.h"
+#include <QDir>
 
 database::libraryFolder::libraryFolder(QObject *parent):dbBase(parent)
 {}
@@ -143,8 +144,64 @@ bool database::libraryFolder::removeFile(const QString& path)
     return b;
 }
 
-bool database::libraryFolder::removeFolder(QString path)
+bool database::libraryFolder::removeFiles(const QStringList paths)
 {
+    bool b;
+    databs=db()->getDatabase();
+	dbEventP e(new dbEvent(FILES_REM) );
+	dbEventP folE(new dbEvent(FILES_REM) );
+    {
+		foreach(QString path,paths)
+		{
+			QSqlQuery q(databs);
+			QDir d(path);
+			if(d.exists() )
+			{
+				QString p=path;
+				if(!p.endsWith ('/') )
+				{
+					p.append('/');        
+				}
+				toSqlSafe(p);
+				p.append('%');
+				
+				q.prepare("delete from tracks where path like "+p);
+				if(q.exec())
+				{					
+					e->urls<<path;
+				}
+			}
+			else
+			{
+				q.prepare("delete from tracks where path=?");
+				q.addBindValue(path);
+				b=q.exec();
+				if(b)
+				{
+					e->urls<<path;
+				}
+			}
+		}
+    }
+    cleanUp();
+    db()->closeDatabase(databs);
+	if(e->urls.size()!=0)
+	{
+		db()->emitEvent(e);	
+	}
+	if(folE->urls.size()!=0)
+	{
+		db()->emitEvent(folE);
+	}
+    
+    return true;
+
+}
+
+
+bool database::libraryFolder::removeFolder(QString p)
+{
+	QString path=p;
     if(!path.endsWith ('/') )
     {
         path.append('/');        
@@ -170,7 +227,7 @@ bool database::libraryFolder::removeFolder(QString path)
     db()->closeDatabase(databs);
 
     dbEventP e(new dbEvent(FILES_REM) );
-    e->urls<<path;
+    e->urls<<p;
     e->setProperty("folder",QVariant(true) );
     db()->emitEvent(e);
 

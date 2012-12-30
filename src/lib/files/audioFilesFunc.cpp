@@ -5,7 +5,7 @@
 #include"audioFile.h"
 #include<core.h>
 #include"tagsTable.h"
-
+#include"fileCache.h"
 audioFiles::fileTags* audioFiles::getFileTags(const QString path)
 {
     fileTags *ret;

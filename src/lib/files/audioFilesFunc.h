@@ -34,6 +34,7 @@ int coverMark(const QString &album, const QString &cover);
 
 int bestCover( const QLinkedList< QString > &covers, QString album, QString& cover);
 
+
 };
 
 

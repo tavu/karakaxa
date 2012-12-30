@@ -2,10 +2,17 @@
 #include<QFile>
 #include<QTextCodec>
 #include"../files/tagsTable.h"
-// #include"coreNamespace.h"
 #include<kmimetype.h>
 #include"core.h"
 #include <kapplication.h>
+
+#include <qapplication.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+#ifdef USE_LAST_FM 
+	#include<lastFmFunc.h>
+#endif
 
 QString core::titleFromPath(const QString &path)
 {
@@ -117,7 +124,7 @@ void core::init()
       QTextCodec::setCodecForTr(QTextCodec::codecForName ("UTF-8"));
         
 //       nplaylist *l=const_cast<nplaylist*>(npList);
-      
+      qInstallMsgHandler(karakaxaMsg);
       mainThr();
       
       
@@ -128,13 +135,13 @@ void core::init()
       
       status=new playetStatus();
       config =new PlayerConfigure();
-//       db=new database();
-//       db->createConnection();
       soundEngine::init();
       nplaylist::init();
       contentHdl=new contentHandler(qApp );
       
-      
+#ifdef USE_LAST_FM
+	  lastFm::init();
+#endif
       
       flag=false;            
     }
@@ -166,19 +173,31 @@ QThread* core::mainThr()
     return t;
 }
 
-/*
-template <class RandomAccessIterator>
-void core::randomShuffle ( RandomAccessIterator first, int size ) 
+void core::karakaxaMsg(QtMsgType type, const char *msg)
 {
-      RandomAccessIterator it,tmp;
-      it=first;
-      for(int i=0;i<size;i++)
-      {	  	  
-	  int r=getRandomN(0,size-1);
-	  tmp=first+r;
- 	  qSwap(*it,*tmp );
-	  it++;
-      }
-	
-} 
-*/
+     switch (type) 
+	 {
+		case QtDebugMsg:
+#ifdef DEBUG			
+			fprintf(stderr, "Debug: %s\n", msg);
+#endif			
+			break;
+		case QtWarningMsg:
+			fprintf(stderr, "Warning: %s\n", msg);
+			break;
+		case QtCriticalMsg:
+			fprintf(stderr, "Critical: %s\n", msg);
+			break;
+		case QtFatalMsg:
+			fprintf(stderr, "Fatal: %s\n", msg);
+			abort();
+     }
+}
+
+QWidget* core::spacerWidget(QWidget* parent)
+{
+    QWidget* spacer = new QWidget(parent);
+    spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+	return spacer;
+}
+

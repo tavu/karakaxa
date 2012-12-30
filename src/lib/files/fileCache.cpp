@@ -4,7 +4,7 @@
 #include<QFileInfo>
 #include<QFileInfoList>
 #include<QDir>
-
+#include<QFile>
 
 #include"../core/func.h"
 #include"audioFiles.h"
@@ -339,6 +339,19 @@ void fileCache::savingEnd(QList<tagChanges> c)
     emit changed(c);
 }
 
+bool fileCache::exist()
+{
+	loadMutex.lock();
+	QFile f(_path);
+	bool b=f.exists();
+	loadMutex.unlock();
+	if(!b)
+	{
+		emit removed();
+	}
+	return b;
+}
+
 
 audioFiles::fileCache* audioFiles::fileCache::getFileCache(QString path)
 {
@@ -403,7 +416,29 @@ void audioFiles::fileCache::releaseFileCache(audioFiles::fileCache *cache)
     releaseFileCache(path);
 }
 
+QLinkedList< fileCache* > fileCache::getAllCache()
+{
+	QLinkedList<fileCache*> list;
+	gMutex.lock();		
+	
+	foreach (fileCacheS* t, fileCacheMap)
+	{
+		 t->used++;
+		 list<<t->p;
+	}	
+	gMutex.unlock();
+	return list;
+}
 
+void audioFiles::checkAudioFilesExist()
+{
+	QLinkedList<fileCache*> list=fileCache::getAllCache();
+	foreach(fileCache *c,list)
+	{
+		c->exist();
+		fileCache::releaseFileCache(c);
+	}
+}
 
 QHash<QString, audioFiles::fileCache::fileCacheS*> audioFiles::fileCache::fileCacheMap;
 QMutex audioFiles::fileCache::gMutex;

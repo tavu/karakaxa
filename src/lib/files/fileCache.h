@@ -5,7 +5,7 @@
 #include<QHash>
 #include<QMutex>
 #include<QReadWriteLock>
-// #include<QSharedMemory>
+#include<QLinkedList>
 
 #include<fileToDb.h>
 
@@ -33,10 +33,10 @@ class fileCache :public QObject
     int used;
   };
   
-  Q_OBJECT  
+  Q_OBJECT
   public:
 
-      inline QString path()
+      QString path()
       {
         return _path;
       }
@@ -60,6 +60,8 @@ class fileCache :public QObject
 	 int 		prepareToSave();
 
      void 		savingEnd(QList<tagChanges>);
+	 
+	 bool 		exist() ;	 
 
   private:
       fileCache(QString path);
@@ -67,6 +69,7 @@ class fileCache :public QObject
       tagRecord *tagTable;
       QSqlRecord record;
       bool notInDb;
+	  bool _exist;
       QString _path;
 
 	 fileTags *file;
@@ -79,6 +82,7 @@ class fileCache :public QObject
 
   public:
       static fileCache* 	getFileCache(QString path);
+	  static QLinkedList<fileCache*> 	getAllCache();
       static void		    releaseFileCache(fileCache*);
       static void	 	    releaseFileCache(QString path);
 
@@ -89,14 +93,18 @@ class fileCache :public QObject
 
     signals:
         void changed(audioFiles::tagChangesL);
+		void removed();
+// 		void moved();
       
 
 
 //   signals:
 //       void changed(QList<tagChanges>);
 
-};
+};//class
 
-}
+void checkAudioFilesExist();
+	
+}//namespace
 
 #endif

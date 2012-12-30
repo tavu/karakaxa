@@ -187,6 +187,7 @@ void database::rescanJob::run()
     findAllItemN();
     scanAllFolders();
     save();
+    db()->emitEvent(eventP);
 }
 
 void database::rescanJob::cancel()

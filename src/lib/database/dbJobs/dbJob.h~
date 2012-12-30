@@ -2,11 +2,11 @@
 #define DBJOB_H
 #include<QWidget>
 #include<QThread>
-
+#include"../dbBase.h"
 namespace database
 {
 
-class dbJob :public QObject
+class dbJob :public dbBase
 {
     Q_OBJECT
     public:
@@ -16,7 +16,7 @@ class dbJob :public QObject
         virtual void start()=0;
 
         //returns an appropriate widget for the status bar
-        QWidget* widget()
+        virtual QWidget* widget()
         {
             return 0;
         }

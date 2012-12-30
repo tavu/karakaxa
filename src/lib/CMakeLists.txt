@@ -1,5 +1,6 @@
+#library CMAKE file
 cmake_minimum_required(VERSION 2.8)
-project(test)
+project(karakaxa)
 
 
 # SET( SAMPLE_SRCS
@@ -11,9 +12,20 @@ project(test)
 #   ./src/w.h
 # )
 
+set( LAST_FM_FILES ../lastFm)
+
 file(GLOB_RECURSE  LIB_CPP "./*.cpp")
 file(GLOB_RECURSE  LIB_HDRS "./*.h")
 
+
+# if ( ${LAST_FM_FOUND}  )
+# # 	file(GLOB_RECURSE  LAST_FM_CPP  "../lastFm/*.cpp")
+# # 	file(GLOB_RECURSE  LAST_FM_HDRS "../lastFm/*.h")
+# # 	QT4_WRAP_CPP( LAST_FM_MOC_SRCS ${LAST_FM_HDRS} )
+# # 	TARGET_LINK_LIBRARIES( karakaxa lastfm )
+# #  	TARGET_LINK_LIBRARIES( karakaxa_lfm lastfm )
+# 	subdirs(../lastFm)
+# endif()
 
 SET( HDRS
      ./database 
@@ -27,38 +39,27 @@ FIND_PACKAGE( Qt4 REQUIRED )
 SET( QT_USE_PHONON TRUE )
 SET( QT_USE_SQL TRUE )
 SET( QT_USE_XML TRUE)
-# 
-# 
-# include_directories(./database)
-# include_directories(./core )
-# include_directories(./files )
-# include_directories(./views )
-# 
-# include_directories( ${HDRS})
-# include_directories( /usr/include/KDE/)
-# include_directories( /usr/include/taglib)
-# 
-# INCLUDE_DIRECTORIES(${QT_QTSQL_INCLUDE_DIR})
-# INCLUDE_DIRECTORIES(${QT_QTXML_INCLUDE_DIR})
-# 
-# ADD_DEFINITIONS( -Wall -Wno-reorder )
-# INCLUDE(${QT_USE_FILE})
 
 
 QT4_WRAP_CPP( LIB_MOC_SRCS ${LIB_HDRS} )
 
-# LIBS += -lkdecore -lkdeui -lkfile -lkio -ltag -ltag-extras 
-# ADD_EXECUTABLE( karakaxa ${LIB_CPP} )
-add_library ( karakaxa SHARED ${LIB_CPP} ${LIB_MOC_SRCS}  )
-TARGET_LINK_LIBRARIES( karakaxa ${QT_LIBRARIES} )
-TARGET_LINK_LIBRARIES( karakaxa ${QT_QTSQL_LIBRARIES} )
-TARGET_LINK_LIBRARIES( karakaxa ${QT_QTXM_LIBRARIES} )
+add_library ( karakaxa SHARED ${LIB_CPP} ${LIB_MOC_SRCS}    ${LAST_FM_CPP}  ${LAST_FM_MOC_SRCS}  )
+#TARGET_LINK_LIBRARIES( karakaxa ${QT_LIBRARIES} )
+#TARGET_LINK_LIBRARIES( karakaxa ${QT_QTSQL_LIBRARIES} )
+#TARGET_LINK_LIBRARIES( karakaxa ${QT_QTXM_LIBRARIES} )
 
-TARGET_LINK_LIBRARIES( karakaxa kdecore )
-TARGET_LINK_LIBRARIES( karakaxa kdeui )
-TARGET_LINK_LIBRARIES( karakaxa kfile )
-TARGET_LINK_LIBRARIES( karakaxa kio )
-TARGET_LINK_LIBRARIES( karakaxa tag )
-TARGET_LINK_LIBRARIES( karakaxa tag-extras )
+#TARGET_LINK_LIBRARIES( karakaxa kdecore )
+#TARGET_LINK_LIBRARIES( karakaxa kdeui )
+#TARGET_LINK_LIBRARIES( karakaxa kfile )
+#TARGET_LINK_LIBRARIES( karakaxa kio )
+#TARGET_LINK_LIBRARIES( karakaxa tag )
+#TARGET_LINK_LIBRARIES( karakaxa tag-extras )
+
+# TARGET_LINK_LIBRARIES( karakaxa karakaxa_lfm )
+
+# if ( USE_LAST_FM  )
+#   	TARGET_LINK_LIBRARIES( karakaxa karakaxa_lfm )
+# endif()
+
 
 INSTALL(TARGETS karakaxa LIBRARY DESTINATION lib)

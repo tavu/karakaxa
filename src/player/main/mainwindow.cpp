@@ -30,6 +30,7 @@
 #include"../content/edit/editTrackContent.h"
 #include"../content/nowPlaylist/nowPlaylistContent.h"
 
+// #include<coverWidget/coverDownloaderWidget.h>
 
 #define ICONZISE QSize(35,35)
 
@@ -318,6 +319,8 @@ void mainWindow::defaultContent()
       editTrackMenu *m=new editTrackMenu();
       contentHdl->addMenu(m);
 
+// 	  coverDownloaderWidget *w=new coverDownloaderWidget(this);
+// 	  contentHdl->addWidget(w);
 }
 
 void mainWindow::closeEvent(QCloseEvent *event)

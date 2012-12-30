@@ -22,7 +22,7 @@ class fileTags
     //      using namespace TagLib;
     public:
         fileTags(QString);
-        ~fileTags();
+        virtual ~fileTags();
 
     private:
         QString 			path;

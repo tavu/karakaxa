@@ -26,7 +26,8 @@ class libraryFolder :public dbBase
         bool removePlaylist(const QString &path);
         
         bool removeFile(const QString &path);
-        bool removeFolder( QString path);
+		bool removeFiles(const QStringList paths);
+        bool removeFolder( QString p);
 
         bool onDb(const KUrl &u);
         

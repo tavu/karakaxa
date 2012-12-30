@@ -8,7 +8,11 @@
 #include<dbFunc.h>
 
 karakaxa::karakaxa(int argc, char *argv[])
+#ifdef DEBUG
+	:KApplication()
+#else	
     :KUniqueApplication()
+#endif	
 {    
     setApplicationName("karakaxa");
     setApplicationVersion(VERSION);
