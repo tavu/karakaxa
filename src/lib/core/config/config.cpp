@@ -41,7 +41,7 @@ QStringList core::PlayerConfigure::imagefiles()
 QString core::PlayerConfigure::saveLocation( const QString &directory )
 {
   globalDirsMutex.lock();    
-  QString result = KGlobal::dirs()->saveLocation( "data", QString("player/") + directory, true );
+  QString result = KGlobal::dirs()->saveLocation( "data", QString("karakaxa/") + directory, true );
   globalDirsMutex.unlock();  
   return result;    
 }
