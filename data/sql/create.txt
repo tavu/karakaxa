@@ -1,23 +1,27 @@
-CREATE DATABASE IF NOT EXISTS karakaxa CHARACTER SET utf8;
-use karakaxa;
+#CREATE DATABASE IF NOT EXISTS karakaxa CHARACTER SET utf8;
+#use karakaxa;
 
 create table IF NOT EXISTS library_folders(
      path varchar(255) not null,
      PRIMARY KEY(path)
-)default charset=utf8 collate=utf8_general_ci TYPE=myisam;
+)default charset=utf8 collate=utf8_general_ci ENGINE=myisam;
 
 create table IF NOT EXISTS playlists(
      path varchar(255) not null,
      PRIMARY KEY(path)
-)default charset=utf8 collate=utf8_general_ci TYPE=myisam;
+)default charset=utf8 collate=utf8_general_ci ENGINE=myisam;
 
+select "Creating playlists table" as "Action";
 
 create table IF NOT EXISTS artists(
      id int(10) not null auto_increment,
-     name varchar(255),
-     unique(name),
+     name varchar(255) ,
+     image varchar(255) ,
+     unique(name) ,
      PRIMARY KEY(id)
-)default charset=utf8 collate=utf8_general_ci TYPE=myisam;
+)default charset=utf8 collate=utf8_general_ci ENGINE=myisam;
+
+select "Creating artists table" as "Action";
 
 create table IF NOT EXISTS albums(
      id int(10) not null auto_increment,
@@ -27,21 +31,25 @@ create table IF NOT EXISTS albums(
      foreign key(artist) references artists(id),
      PRIMARY KEY(id),
      unique(name,artist)
-)default charset=utf8 collate=utf8_general_ci TYPE=myisam;
+)default charset=utf8 collate=utf8_general_ci ENGINE=myisam;
+
+select "Creating albums table" as "Action";
 
 create table IF NOT EXISTS genres(
      id int(10) not null auto_increment,
      name varchar(255),
      unique(name),
      PRIMARY KEY(id)
-)default charset=utf8 collate=utf8_general_ci TYPE=myisam;
+)default charset=utf8 collate=utf8_general_ci ENGINE=myisam;
+
+select "Creating genres table" as "Action";
 
 create table IF NOT EXISTS composers(
      id int(10) not null auto_increment,
      name varchar(255),
      unique(name),
      PRIMARY KEY(id)
-)default charset=utf8 collate=utf8_general_ci TYPE=myisam;
+)default charset=utf8 collate=utf8_general_ci ENGINE=myisam;
 
 create table IF NOT EXISTS tracks(
      id int(10) not null auto_increment,
@@ -79,96 +87,20 @@ create table IF NOT EXISTS tracks(
 
      unique(path),
      PRIMARY KEY(id)
-)default charset=utf8 collate=utf8_general_ci TYPE=myisam;
+)default charset=utf8 collate=utf8_general_ci ENGINE=myisam;
 
 
-create table IF NOT EXISTS track_artists(
-     track int(10) not null,
-     artist int(10) not null,
+#create table IF NOT EXISTS track_artists(
+#     track int(10) not null,
+#     artist int(10) not null,
      
-     foreign key(artist) references artists(id),
-     foreign key(track) references tracks(id),
-     primary key(artist,track)
-)default charset=utf8 collate=utf8_general_ci TYPE=myisam;
+#     foreign key(artist) references artists(id),
+#     foreign key(track) references tracks(id),
+#     primary key(artist,track)
+#)default charset=utf8 collate=utf8_general_ci ENGINE=myisam;
 
 
 #=====================procedures=========================
-
-DROP PROCEDURE IF EXISTS insert_track;
-delimiter $
-CREATE PROCEDURE insert_track
-     (
-	  IN	album_artist	varchar(255)	,
-	  
-	  IN	t_tracknumber 	int  		,
-	  IN	t_title 	varchar(255)	,
-	  IN	album_name	varchar(255)	,
-	  IN	artist_name	varchar(255)	,
-	  IN	lead_artist_name  varchar(255)	,
-	  IN	t_comment 	text 		,
-	  IN	t_genre 	varchar(255)	,
-	  IN	t_composer 	varchar(255)	,	  
-	  IN	t_length 	int		,
-	  IN	t_rating 	SMALLINT	,
-	  IN	t_bitrate 	SMALLINT	,
-	  IN	t_year 		int		,
-	  IN	t_path 		varchar(255) 	
-     )
-BEGIN
-     declare album_id		int(10);
-     declare artist_id 		int(10);
-     declare lead_artist_id 	int(10);
-     declare genre_id   	int(10);
-     declare composer_id  	int(10);
-
-     CALL  get_album(album_name ,album_artist,album_id);
-
-     CALL  get_artist(artist_name,artist_id);
-
-     CALL  get_artist(lead_artist_name,lead_artist_id);     
-     
-     CALL  get_genre(t_genre,genre_id);
-
-     CALL  get_composer(t_composer,composer_id);
-
-     INSERT INTO tracks
-     (
-	  path 		,
-	  title		,
-	  composer 	,
-	  genre		,  
-	  comment 	,
-	  tracknumber	,
-	  lead_artist	,
-	  artist	,
-	  album 	,
-	  year 		,
-	  length	,
-	  rating 	,
-	  bitrate 	
-     )
-     VALUES
-     (
-	  t_path	,
-	  t_title 	,
-	  composer_id	,
-	  genre_id	,
-	  t_comment 	,
-	  t_tracknumber ,
-	  lead_artist_id,
-	  artist_id	,
-	  album_id 	,
-	  t_year	,
-	  t_length 	,
-	  t_rating 	,
-	  t_bitrate 	
-	  #'0'		
-     );
-#     ON DUPLICATE KEY UPDATE;
-     
-#     select id into id_out from tracks  where path=t_path;
-END$
-delimiter ;
 
 DROP PROCEDURE IF EXISTS get_artist;
 delimiter $
@@ -252,26 +184,34 @@ delimiter ;
 CREATE OR REPLACE view leadArtists as select name ,id from artists;
 
 
-CREATE OR REPLACE VIEW artist_album(artist,album,image,id) AS
-     select artists.name,albums.name,albums.image,albums.id from albums
-     inner join artists on artists.id=albums.artist;
+CREATE OR REPLACE VIEW artist_album(artist,album,image,id,artist_id,artist_image) AS
+	select 
+		artists.name,
+		albums.name,
+		albums.image,
+		albums.id ,
+		artists.id,
+		artists.image as artist_image
+	from albums
+	inner join artists on artists.id=albums.artist;
  
 CREATE OR REPLACE VIEW trackView 	AS
      select
-	  albums.id		as album_id	,
-	  tracknumber	 				,
-	  title						,
+	  albums.artist 	as artist_id	,
+	  albums.id			as album_id		,
+	  tracknumber	 					,
+	  title								,
 	  albums.name		as album		,
 	  artists.name		as artist		,
 	  leadArtists.name	as leadArtist	,
-	  comment 					,
+	  comment 							,
 	  genres.name   	as genre		,
-	  composers.name 	as composer	,
-	  length						,
-	  rating 						,
-	  year 						,
-	  bitrate 					,
-	  path						,
+	  composers.name 	as composer		,
+	  length							,
+	  rating 							,
+	  year 								,
+	  bitrate 							,
+	  path								,
 	  count					
 	  
      from tracks,artists,albums,genres,composers,leadArtists

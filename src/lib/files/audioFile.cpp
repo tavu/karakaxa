@@ -60,7 +60,7 @@ audioFiles::audioFile::audioFile(QSqlRecord r, bool force)
      saveFlag(true),
      _exist(true)
 {
-    cache=audioFiles::fileCache::getFileCache(r.value(PATH+1).toString() );
+    cache=audioFiles::fileCache::getFileCache(r.value(PATH+2).toString() );
     connect(cache,SIGNAL(changed(audioFiles::tagChangesL) ),this,SLOT(emitChanged(audioFiles::tagChangesL) ),Qt::QueuedConnection );
 	connect(cache,SIGNAL(removed()),this,SLOT(invalidSlot() ),Qt::QueuedConnection );
     cache->setRecord(r,force);    

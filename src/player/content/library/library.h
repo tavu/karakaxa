@@ -14,6 +14,7 @@
 #include"albumTrack.h"
 #include<QLinkedList>
 #include<queries/matchQuery.h>
+#include<delayLineEdit.h>
 class library :public core::abstractContent
 {
     Q_OBJECT
@@ -36,7 +37,7 @@ class library :public core::abstractContent
 
         QAction     *backAction;
         QAction     *forwardAction;
-        KLineEdit   *searchLine;
+        views::delayLineEdit   *searchLine;
 
 
         QLinkedList<tagsEnum> searchTagL;

@@ -46,6 +46,7 @@ QVariant views::trackItem::data(int column, int role) const
         return QVariant(column);
     }
 
+
     return QVariant();
 }
 
@@ -124,9 +125,9 @@ void views::trackModelItem::addItems()
 
     for(int i=0;i<q->size();i++)
     {
-	audioFiles::audioFile f=q->at(i);
-	standardItem *item=getItem(f);
-	insert(i,item);
+		audioFiles::audioFile f=q->at(i);
+		standardItem *item=getItem(f);
+		insert(i,item);
     }
 
     endInsertRows();

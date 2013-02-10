@@ -74,7 +74,7 @@ QString library::name() const
 void library::toolBarInit()
 {
     toolBar=new KToolBar(this);
-    searchLine =new KLineEdit(this);
+    searchLine =new views::delayLineEdit(this);
     searchLine->setClearButtonShown(true);
     searchLine->setClickMessage("Search");
     searchLine->setPalette(palette() );
@@ -95,7 +95,7 @@ void library::toolBarInit()
 
 //     connect(searchLine,SIGNAL(editingFinished () ),this,SLOT(search() ) );
 //     connect(searchLine,SIGNAL(clearButtonClicked() ),this,SLOT(search() ) );textChanged ( const QString & text ) 
-    connect(searchLine,SIGNAL(textChanged ( const QString & ) ),this,SLOT(search(const QString &) ) );
+    connect(searchLine,SIGNAL(textChangedDelay ( const QString & ) ),this,SLOT(search(const QString &) ) );
 }
 
 void library::search(const QString & text)

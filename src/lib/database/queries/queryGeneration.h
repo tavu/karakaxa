@@ -12,7 +12,7 @@
 #include"queryThr.h"
 #include"../dbBase.h"
 #include"databaseEvent.h"
-
+#include<tagInfo.h>
 namespace database
 {
 
@@ -50,6 +50,11 @@ class queryGrt :public dbBase
 
         virtual QString queryString() const=0;
         virtual bool select()=0;
+		
+		QList<audioFiles::tagInfo> results()
+		{
+			return resultsList;
+		}
 
         bool needUpdate() const
         {
@@ -62,6 +67,8 @@ class queryGrt :public dbBase
         abstractQuery *q;
         bool _needUpdate;
 
+		QList<audioFiles::tagInfo> resultsList;
+		
     protected slots:
         void setNeedUpdate();
         virtual void dbEvents(database::dbEventP e);

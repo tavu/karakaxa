@@ -24,27 +24,28 @@ namespace database
 
             QVector<audioFiles::audioFile> result()
             {
-                return thr.files;
+                return files;
             }
 
             //use this function after selectionMade signal
             audioFiles::audioFile at(int n)
             {
-                if (n<0||n>=thr.files.size() )
+                if (n<0||n>=files.size() )
                 {
                     return audioFiles::audioFile();
                 }
 
-                return thr.files[n];
+                return files[n];
             }
 
             bool select();
 
             int size()
             {
-                return thr.files.size();
+                return files.size();
             }
 
+            /*
             int step()
             {
                 return thr.step;
@@ -54,14 +55,20 @@ namespace database
             {
                 thr.step=n;
             }
-
+			*/
 
         private:
-            queryThr thr;
-            void dbEvents(database::dbEventP e);
+//             queryThr thr;
 
-        private slots:
-            void selectionFinished();
+			bool doSelect();
+
+            void dbEvents(database::dbEventP e);
+			
+			QVector<audioFiles::audioFile> files;	
+			QMap<QString ,audioFiles::audioFile> map;
+
+//         private slots:
+//             void selectionFinished();
 
         signals:
             void selectionCalled();

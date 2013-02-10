@@ -31,8 +31,14 @@ enum tagsEnum
 };
 
 const int FRAME_NUM=COUNTER+1;
-//we set a number to ALBUM_ID different from the tagsEnum numbers
+//we set a number to values below different from the tagsEnum numbers
 const int ALBUM_ID=FRAME_NUM;
+const int ALBUM_ARTIST=FRAME_NUM+1;
+const int FILES=FRAME_NUM+2;
+const int INVALID=FRAME_NUM+3;
+
+
+
 
 struct changes
 {

@@ -60,24 +60,24 @@ Qt::DropActions contentTree::supportedDropActions () const
 void contentTree::dragEnterEvent ( QDragEnterEvent * event )
 {
     event->accept();
-    return ;
-    QTreeView::dragEnterEvent(event);
+//     return ;
+//     QTreeView::dragEnterEvent(event);
 }
 
 void contentTree::dragLeaveEvent ( QDragLeaveEvent* event )
 {
 	   timer->stop();
-        QTreeView::dragLeaveEvent ( event );
+       QTreeView::dragLeaveEvent ( event );
 }
 
 
 void contentTree::dropTime()
 {
-//     if(dropIndex.isValid() )
+ 	if(dropIndex.isValid() )
     {
-	 expand(dropIndex);
- 	 abstractContent* content=core::contentHdl->content(dropIndex);
- 	 core::contentHdl->setCurrentContent(dropIndex);
+		expand(dropIndex);
+		abstractContent* content=core::contentHdl->content(dropIndex);
+		core::contentHdl->setCurrentContent(dropIndex);
     }
 }
 

@@ -3,6 +3,7 @@
 #include<QDebug>
 #include <func.h>
 #include<models/urlRole.h>
+
 void folderView::dropEvent(QDropEvent* event)
 {
     if(model()==0 || !event->mimeData()->hasUrls())
@@ -38,8 +39,7 @@ void folderView::dropEvent(QDropEvent* event)
         {
             break;
         }
-    }
-    const QMimeData *data=event->mimeData();
+    }    
     Qt::DropAction action;
 
     event->accept();
@@ -47,7 +47,7 @@ void folderView::dropEvent(QDropEvent* event)
 
     if(core::isPlaylist(index.data(URL_ROLE).toString()) )
     {
-        model()->dropMimeData(event->mimeData(),action,row,column,index);
+        model()->dropMimeData(event->mimeData(),Qt::CopyAction,row,column,index);
         return ;
     }
 

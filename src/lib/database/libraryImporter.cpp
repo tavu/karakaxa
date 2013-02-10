@@ -54,7 +54,7 @@ database::albumEntry database::libraryImporter::import(const QString &url)
         {
             var[i]=f.tag((tagsEnum)i,audioFile::ONDATAB|audioFile::SELECT);
         }
-    }    
+    }
     
     if(!var[LEAD_ARTIST].toString().simplified().isEmpty() )
     {
@@ -193,6 +193,7 @@ QVariant database::libraryImporter::getId(QVariant var,QString table)
     {	
       qDebug()<<"insert to "+table+" error";
       qDebug()<<q.lastError().text();
+	  return QVariant();
     }    
     
     q.prepare(s );
@@ -202,6 +203,7 @@ QVariant database::libraryImporter::getId(QVariant var,QString table)
     {
         qDebug()<<"select from "+table+" error";
         qDebug()<<q.lastError().text();
+		return QVariant();
     }
     q.next();
            

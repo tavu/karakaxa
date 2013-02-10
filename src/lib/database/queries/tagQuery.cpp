@@ -3,7 +3,7 @@
 #include<audioFiles.h>
 
 #include"../dbFunc.h"
-
+#include<QDebug>
 
 database::tagQuery::tagQuery(QObject *parent)
         :abstractQuery(parent),
@@ -46,12 +46,13 @@ void database::tagQuery::init(int t, equal e, QVariant var, bool n)
     QString val=var.toString();
 
     //var should be an int;
-    if (t==YEAR||t==TRACK||t==LENGTH||t==RATING||t==COUNTER||t==BITRATE || t==ALBUM_ID)
+    if (t==YEAR||t==TRACK||t==LENGTH||t==RATING||t==COUNTER||t==BITRATE || t==ALBUM_ID || t==ALBUM_ARTIST)
     {
         bool k;
         var.toInt(&k);
         if (!k)
         {
+			qDebug()<<"variable "<<var<<" can not be converted to an int";
             valid=false;
             return ;
         }

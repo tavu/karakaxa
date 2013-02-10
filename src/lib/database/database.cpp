@@ -81,7 +81,7 @@ void database::databaseConection::readSettings()
 void database::databaseConection::setUpDb()
 {
     QSqlQuery q(dBase);
-    QString s=KGlobal::dirs()->findResource("data",QString("player/sql/create.txt") );
+    QString s=KGlobal::dirs()->findResource("data",QString("karakaxa/sql/create.txt") );
 
     QString command("mysql "+dbName+" -u "+dbUser+" -p"+dbPass+" < "+s);
     int stat=system(command.toStdString().c_str() );

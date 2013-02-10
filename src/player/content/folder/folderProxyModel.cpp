@@ -40,8 +40,6 @@ bool folderProxyModel::lessThan ( const QModelIndex & left, const QModelIndex & 
     pathL=left.data(URL_ROLE).toUrl().toLocalFile();
     pathR=right.data(URL_ROLE).toUrl().toLocalFile();
 
-    bool isFolderL,isFolderR;
-
     int r=0,l=0;
 
     if(core::isDirectory(pathL) )

@@ -6,6 +6,7 @@
 bool database::artistQueryGrt::select()
 {
     list.clear();
+	resultsList.clear();
     QString s=queryString();
 
     if(s.isEmpty() )
@@ -30,11 +31,15 @@ bool database::artistQueryGrt::select()
         if(quer.size()>0 )
         {
             list.reserve(quer.size() );
+			resultsList.reserve(quer.size() );
         }
 
         while ( quer.next() )
         {
             list.append(quer.record().value(0).toString() );
+			audioFiles::tagInfo t=audioFiles::tagInfo(audioFiles::ALBUM_ARTIST,quer.record().value(0) );
+			t.setProperty("id",quer.record().value(1));
+			resultsList<<t;
         }
     }
 
@@ -73,7 +78,7 @@ void database::artistQueryGrt::dbEvents(database::dbEventP e)
 
 QString database::artistQueryGrt::queryString() const
 {
-    QString ret("select distinct artist_album.artist from artist_album ");
+    QString ret("select distinct artist_album.artist, artist_album.artist_id from artist_album ");
 
     if(q!=0)
     {

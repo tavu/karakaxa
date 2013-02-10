@@ -73,8 +73,13 @@ class treeView :public QTreeView
 	   virtual void dataChanged ( const QModelIndex & topLeft, const QModelIndex & bottomRight );
 	   virtual void closeEditor ( QWidget * editor, QAbstractItemDelegate::EndEditHint hint );
 	   virtual void play(const QModelIndex &index);
+	   
        virtual void updateStarWidget(QModelIndex parent, int start, int end);
        virtual void updateStarWidget();
+	   
+	   virtual void needExpanding(QModelIndex parent, int start, int end);
+	   
+	   virtual void itemClicked(const QModelIndex &);
 
        void editCurrent()
 	   {

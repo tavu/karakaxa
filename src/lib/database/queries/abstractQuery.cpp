@@ -67,6 +67,10 @@ QString database::abstractQuery::tagToSql(int t)
         {
             return QString("album_id ");
         }
+		case ALBUM_ARTIST:
+        {
+            return QString("trackView.artist_id ");
+        }
     }
     return QString();
 }

@@ -71,3 +71,5 @@ void database::dbBase::closeDb()
 {
 	db()->closeDatabase(databs);
 }
+
+QMutex database::dbBase::mutex;

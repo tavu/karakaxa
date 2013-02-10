@@ -66,8 +66,6 @@ void views::treeViewHeader::mousePressEvent(QMouseEvent *e)
 
 }
 
-
-
 void views::treeViewHeader::hideClickedColumn()
 {
     treeV->setColumnHidden(columnClicked,true);

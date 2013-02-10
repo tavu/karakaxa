@@ -82,13 +82,13 @@ void views::treeViewDelegate::paint ( QPainter * painter, const QStyleOptionView
     {	   
         QString text = option.fontMetrics.elidedText(var.toString(),Qt::ElideRight,r.width() );
 
-        if( index.flags() & Qt::ItemIsEnabled && !index.data(DISABLE_ROLE).toBool()  )
+        if( index.flags() & !Qt::ItemIsEnabled || index.data(DISABLE_ROLE).toBool() || index.data(OPACITY_ROLE).toBool() )
         {
-            painter->setOpacity(1);
+            painter->setOpacity(0.5);
         }
         else
         {
-            painter->setOpacity(0.5);
+			painter->setOpacity(1);
         }
         painter->drawText( r,Qt::AlignLeft|Qt::AlignVCenter, text);
     }

@@ -52,7 +52,7 @@ class fileToDb :public dbBase
 
     // 	void save();
         static QSqlRecord 	record(const QString path,int &err);
-        QString			albumArt(const int albumId,int &err);
+        QString				albumArt(const int albumId,int &err);
 
 
 
@@ -85,7 +85,7 @@ class fileToDb :public dbBase
 
         QSqlDatabase    databs;
 
-        static QMutex 	mutex;
+//         static QMutex 	mutex;
       
         
 };//class

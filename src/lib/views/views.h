@@ -13,3 +13,4 @@
 #include"editors/textEditor.h"
 #include"actionMenu.h"
 #include"slider.h"
+#include"delayLineEdit.h"

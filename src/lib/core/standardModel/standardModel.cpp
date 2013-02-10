@@ -409,7 +409,7 @@ standardItem* standardItem::takeRow(int row)
 {
     if(row<0||row>children.size() )
     {
-        return false;
+        return 0;
     }
     standardItem *item=children[row];
     children.remove(row);

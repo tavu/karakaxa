@@ -118,7 +118,7 @@ QString fileCache::findCoverPath(int &err)
     {
         fdb=new database::fileToDb(path() );
         fdb->prepare();
-        _coverPath=fdb->albumArt(record.value(0).toInt(),err);
+        _coverPath=fdb->albumArt(record.value(1).toInt(),err);
         fdb->end();
     }
     
@@ -190,7 +190,7 @@ QVariant audioFiles::fileCache::tagFromDb(int t, int &err)
 
     if (!record.isEmpty())
     {
-        ret=record.value(t+1);
+        ret=record.value(t+2);
         err=OK;
     }
     else
@@ -215,7 +215,7 @@ int audioFiles::fileCache::albumId(int &err)
     }
     else if (!record.isEmpty())
     {
-        ret=record.value(0).toInt();
+        ret=record.value(1).toInt();
         err=OK;
     }
     else
@@ -242,10 +242,10 @@ int audioFiles::fileCache::prepareToSave()
     {
         fdb=new database::fileToDb(path() );
 
-        fdb->setAlbumC(record.value(ALBUM+1).toString() );
-        fdb->setArtistC(record.value(ARTIST+1).toString());
-        fdb->setLeadArtistC(record.value(LEAD_ARTIST+1).toString());
-        fdb->setAlbumIdC(record.value(0).toInt());
+        fdb->setAlbumC(record.value(ALBUM+2).toString() );
+        fdb->setArtistC(record.value(ARTIST+2).toString());
+        fdb->setLeadArtistC(record.value(LEAD_ARTIST+2).toString());
+        fdb->setAlbumIdC(record.value(1).toInt());
         err=fdb->prepare();
     }
     return err;
@@ -317,7 +317,7 @@ void audioFiles::fileCache::setTagFromDb(tagsEnum t, QVariant var)
     if (! record.isEmpty() )
     {
         readMutex.lock();
-        record.setValue(t+1,var);
+        record.setValue(t+2,var);
         readMutex.unlock();
     }
 }

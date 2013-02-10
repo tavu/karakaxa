@@ -11,6 +11,7 @@ QString database::tagQueryGrt::queryString() const
 
     if (s.isEmpty() )
     {
+		qDebug()<<"wrong tag";
         return QString();
     }
     ret=ret.append(s).append(" from trackView" );
@@ -23,6 +24,7 @@ QString database::tagQueryGrt::queryString() const
         }
         else
         {
+			qDebug()<<"invalid query filter";
             return QString();
         }
     }
@@ -68,6 +70,7 @@ void database::tagQueryGrt::dbEvents(database::dbEventP e)
 bool database::tagQueryGrt::select()
 {
     list.clear();
+	resultsList.clear();
     QString s=queryString();
 
     if (s.isEmpty() )
@@ -77,30 +80,41 @@ bool database::tagQueryGrt::select()
 
     QSqlDatabase dBase=db()->getDatabase();
 
+	if(!dBase.isOpen() )
+	{
+		return false;
+	}
+
+	//we use extra {} to pass quer out of scope before closing the connection to the database
+	bool ret;
     {
         QSqlQuery quer(dBase );
 
         if (!quer.exec(s) )
         {
             core::status->addErrorP(quer.lastError().text() );
-            core::status->addError("executing query error");
-            db()->closeDatabase(dBase);
-            return false;
+            core::status->addError("executing query error");            
+            ret=false;
         }
+        else
+		{
+			if (quer.size()>0 )
+			{
+				list.reserve(quer.size() );
+				resultsList.reserve(quer.size() );
+			}
 
-        if (quer.size()>0 )
-        {
-            list.reserve(quer.size() );
-        }
-
-        while ( quer.next() )
-        {
-            list.append(quer.record().value(0).toString() );
-        }
+			while ( quer.next() )
+			{
+				list.append(quer.record().value(0).toString() );
+				resultsList.append(audioFiles::tagInfo(tag_,quer.record().value(0)) );
+			}
+			ret=true;
+		}
     }
 
     db()->closeDatabase(dBase);
-    _needUpdate=false;
-    return true;
+    _needUpdate=ret;
+    return ret;
 }
 

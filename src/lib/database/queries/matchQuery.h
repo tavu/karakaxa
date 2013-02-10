@@ -41,7 +41,6 @@ namespace database
             void clear();
 
         private:
-            bool valid;
             MATCH matchType;
             QList<abstractQuery*> queries;
             QString q;

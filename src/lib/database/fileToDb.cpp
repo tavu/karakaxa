@@ -114,12 +114,13 @@ int database::fileToDb::prepare()
     {
         return DBERR;
     }    
-    
+    lock();
     return OK;
 }
 
 int database::fileToDb::end()
 {
+	unlock();
     return OK;
 }
 
@@ -136,7 +137,6 @@ int database::fileToDb::setArtist (const QString &s)
     {
         qDebug()<<"can't set artist"<< q.lastError();
         return DBERR;
-
     }
         
     q.prepare( "update tracks SET artist=@i where path=?");
@@ -150,22 +150,20 @@ int database::fileToDb::setArtist (const QString &s)
              
     if(_leadArtist.trimmed().isEmpty() )
     {
-	    q.prepare("select artist from artist_album where id=?");
-		q.addBindValue( _albumId );
-		if (!q.exec())
-		{
-		  return DBERR;
-		}
+// 	    q.prepare("select artist from artist_album where id=?");
+// 		q.addBindValue( _albumId );
+// 		if (!q.exec())
+// 		{
+// 			return DBERR;
+// 		}
 		
-		if(q.value(0).toString().trimmed().isEmpty() )
+		if (!setAlbumArtist(s,q) )
 		{
-		    if (!setAlbumArtist(s,q) )
-		    {
-			   qDebug()<<"Can't update album artist";
-			   return DBERR;
-		    }
-		    clearAlbum();
+			qDebug()<<"Can't update album artist";
+			return DBERR;
 		}
+		clearAlbum();
+		
     }
     
     clearArtist();
@@ -175,6 +173,7 @@ int database::fileToDb::setArtist (const QString &s)
 
 int database::fileToDb::setAlbum (const QString &s)
 { 
+	QString albumS=s.trimmed();
     QSqlQuery q(databs );
 
     q.prepare("select artist,image into @j,@k from artist_album where id=?");
@@ -182,6 +181,7 @@ int database::fileToDb::setAlbum (const QString &s)
 
     if (!q.exec())
     {
+		qDebug()<<"Setting album error: "<<databs.lastError().text();
         return DBERR;
     }
 
@@ -220,8 +220,9 @@ int database::fileToDb::setAlbum (const QString &s)
         qDebug()<<"Setting album error: "<<databs.lastError().text();
         return DBERR;
     }
-    
+        
     _albumId=q.value(0).toInt();
+	qDebug()<<"new album id:"<<_albumId;
 
     clearAlbum();
 

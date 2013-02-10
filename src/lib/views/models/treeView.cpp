@@ -49,7 +49,23 @@ views::treeView::treeView(QWidget *parent,QString name)
         readSettings();
     }
     setEditTriggers(QAbstractItemView::SelectedClicked);
+	
+	setExpandsOnDoubleClick(false);
+	connect(this, SIGNAL(clicked(const QModelIndex &)), this, SLOT(itemClicked(const QModelIndex &)) );
 }
+
+void views::treeView::itemClicked(const QModelIndex &index  )
+{
+	if(isExpanded(index) )
+	{
+		collapse(index);
+	}
+	else
+	{
+		expand(index);
+	}
+}
+
 
 void views::treeView::rowsInserted(const QModelIndex& parent, int start, int end)
 {
@@ -58,6 +74,7 @@ void views::treeView::rowsInserted(const QModelIndex& parent, int start, int end
     if(ratingColumn()>-1)
         updateStarWidget(parent,start,end);
 
+	needExpanding(parent,start,end);
 }
 
 void views::treeView::mouseDoubleClickEvent(QMouseEvent* event)
@@ -152,18 +169,19 @@ void views::treeView::performDrag()
 void views::treeView::setModel ( QAbstractItemModel * model )
 {
     QTreeView::setModel(model);
+	needExpanding(QModelIndex(),0,model->rowCount()-1 );
 }
 
 
 
 void views::treeView::dataChanged ( const QModelIndex & topLeft, const QModelIndex & bottomRight )
 {
-     QTreeView::dataChanged(topLeft,bottomRight);
-     if(ratingColumn()>-1)
-     {
-         updateStarWidget(topLeft.parent(),topLeft.row(),bottomRight.row());
-
-     }
+    QTreeView::dataChanged(topLeft,bottomRight);
+    if(ratingColumn()>-1)
+	{
+		updateStarWidget(topLeft.parent(),topLeft.row(),bottomRight.row());
+    }
+	needExpanding(topLeft.parent(),topLeft.row(),bottomRight.row());
 }
 
 void views::treeView::contextMenuEvent(QContextMenuEvent *e)
@@ -247,6 +265,32 @@ void views::treeView::updateStarWidget()
     updateStarWidget(QModelIndex(),0,model()->rowCount() );
 }
 
+void views::treeView::needExpanding(QModelIndex parent, int start, int end)
+{
+// 	QVariant var=parent.data(EXPAND_ROLE);
+	QVariant var;
+	
+	if( parent.isValid() )
+	{
+		
+		var=parent.data(SPAND_ROLE);
+		qDebug()<<"PROP2 "<<var;
+	}
+	else
+	{
+		var=model()->property(SPAN_PROP);
+		qDebug()<<"PROP "<<var;
+	}
+	
+	if(var.canConvert<bool>() && var.toBool() )
+	{
+		for(int i=start;i<=end;i++)
+		{
+			setFirstColumnSpanned(i,parent,true);
+		}
+    }
+}
+
 
 void views::treeView::commitData ( QWidget * editor )
 {
@@ -313,7 +357,10 @@ void views::treeView::play(const QModelIndex &index)
             }
         }
     }
-
+	if(list.isEmpty() )
+	{
+		return ;
+	}
     core::npList()->clear();
     core::npList()->insert(0,list);
 

@@ -31,6 +31,7 @@
 #include"../content/nowPlaylist/nowPlaylistContent.h"
 
 // #include<coverWidget/coverDownloaderWidget.h>
+#include"../content/newLibrary/libraryContent.h"
 
 #define ICONZISE QSize(35,35)
 
@@ -305,14 +306,17 @@ void mainWindow::defaultContent()
       configureContent *c=new configureContent();
       nowPlaylistContent *n=new nowPlaylistContent();
       
+    libraryContent *nl=new libraryContent();
+	  
       n->setModel(nowPlayListM);
       
       contentHdl->addContent(l);
       contentHdl->addContent(f);
       contentHdl->addContent(pl);
-      contentHdl->addContent(n);
-      
+      contentHdl->addContent(n);      
       contentHdl->addContent(c);
+	  
+      contentHdl->addContent(nl);
 
       contentHdl->setCurrentContent(l);
       

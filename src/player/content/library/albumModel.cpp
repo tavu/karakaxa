@@ -67,9 +67,8 @@ QVariant albumModel::data(const QModelIndex &index, int role) const
     }
     
     if (role==Qt::DisplayRole||role==Qt::ToolTipRole)
-    {       
-	
-	return pretyTag(albums[index.row()].name,ALBUM);
+    {       	
+		return pretyTag(albums[index.row()].name,ALBUM);
     }
 
     if (role==Qt::DecorationRole)
@@ -113,7 +112,7 @@ int albumModel::albumId(const int row)
 {
     if(row<0||row>=albums.size() )
     {
-	return -1;
+		return -1;
     }
   
     return albums[row].id;

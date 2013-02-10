@@ -2,14 +2,12 @@
 
 database::matchQuery::matchQuery(MATCH m,QObject *parent)
         :abstractQuery(parent),
-        valid(false),
         matchType(m)
 {
 }
 
 database::matchQuery::matchQuery(matchQuery* mq,QObject *parent)
     :abstractQuery(parent),
-    valid(mq->valid),
     matchType(mq->matchType)
 {    
     foreach(abstractQuery *q,  mq->queries)
@@ -38,10 +36,6 @@ bool database::matchQuery::match(const audioFiles::audioFile& f) const
 
 }
 
-
-
-
-
 database::matchQuery::~matchQuery()
 {
     clear();
@@ -57,7 +51,7 @@ bool database::matchQuery::isValid() const
 
     foreach(abstractQuery *q,queries)
     {
-        if(!q->isValid() )
+		if(!q->isValid() )
         {
             return false;
         }
@@ -78,8 +72,11 @@ void database::matchQuery::clear()
 
 bool database::matchQuery::append(abstractQuery *q)
 {
+	if(q==0)
+	{
+		return false;
+	}
     queries.append(q);
-    valid=true;
     return true;
 }
 

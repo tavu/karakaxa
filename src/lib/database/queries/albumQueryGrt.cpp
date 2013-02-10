@@ -9,6 +9,7 @@
 bool database::albumQueryGrt::select()
 {
     list.clear();
+	resultsList.clear();
     QString s=queryString();
 
     if (s.isEmpty() )
@@ -42,6 +43,12 @@ bool database::albumQueryGrt::select()
             a.artist=quer.record().value(2).toString();
             a.cover=quer.record().value(3).toString();
             list.append(a );
+			
+			audioFiles::tagInfo t(audioFiles::ALBUM,quer.record().value(1));
+			t.setProperty("id",quer.record().value(0));
+			t.setProperty("artist",quer.record().value(2));
+			t.setProperty("cover",quer.record().value(3));
+			resultsList<<t;
         }
     }
 

@@ -2,7 +2,7 @@
 #define VIEWS_FUNC_H
 #include<QString>
 #include<QVariant>
-#include"decoration/decoration.h"
+// #include"decoration/decoration.h"
 namespace views
 {
     QString 	prettyLength(int l);
