@@ -1,5 +1,6 @@
+#application
 cmake_minimum_required(VERSION 2.8)
-project(test)
+project(karakaxa)
 
 
 file(GLOB_RECURSE  APP_CPP "./*.cpp")
@@ -19,9 +20,10 @@ TARGET_LINK_LIBRARIES( karakaxa_exec kdeui )
 TARGET_LINK_LIBRARIES( karakaxa_exec kfile )
 TARGET_LINK_LIBRARIES( karakaxa_exec kio )
 TARGET_LINK_LIBRARIES( karakaxa_exec tag )
-TARGET_LINK_LIBRARIES( karakaxa_exec tag-extras )
+# TARGET_LINK_LIBRARIES( karakaxa_exec tag-extras )
+# TARGET_LINK_LIBRARIES( karakaxa_exec lastfm )
 
-if ( USE_LAST_FM  )
+if ( ${USE_LAST_FM}  )
   	TARGET_LINK_LIBRARIES( karakaxa_exec karakaxa_lfm )
 endif()
 

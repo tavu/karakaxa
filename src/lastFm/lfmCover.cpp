@@ -1,6 +1,6 @@
 #include"lfmCover.h"
-#include<XmlQuery>
-#include<ws.h>
+// #include<XmlQuery>
+#include<lastfm/ws.h>
 #include <KUrl>
 #include<viewsFunc.h>
 #include <unistd.h>

@@ -17,41 +17,41 @@ views::decoration::decoration()
         pauseIcon( "media-playback-pause" ),
         pixSize(170,150)
 {
-    QString s=KGlobal::dirs()->findResource("data",QString("player/icons/artist.png") );
-    icons[ARTIST]=KIcon(s);
+    artistIcon=KGlobal::dirs()->findResource("data",QString("karakaxa/icons/artist.png") );
+    icons[ARTIST]=icon("artist");
         
-    s=KGlobal::dirs()->findResource("data",QString("player/icons/lead-artist.png") );
-    icons[LEAD_ARTIST]=KIcon(s);
+//     s=KGlobal::dirs()->findResource("data",QString("player/icons/lead-artist.png") );
+    icons[LEAD_ARTIST]=icon("lead-artist");
     
-    albumIcon=KGlobal::dirs()->findResource("data",QString("player/icons/album.png") );
-    icons[ALBUM]=KIcon(albumIcon);
+    albumIcon=KGlobal::dirs()->findResource("data",QString("karakaxa/icons/album.png") );
+    icons[ALBUM]=icon("album");
     
     icons[RATING]=KIcon("rating");
     
-    QString commentIcon=KGlobal::dirs()->findResource("data",QString("player/icons/comment.png") );
-    icons[COMMENT]=KIcon(commentIcon);
+//     QString commentIcon=KGlobal::dirs()->findResource("data",QString("player/icons/comment.png") );
+    icons[COMMENT]=icon("comment");
     
-    QString genreIcon=KGlobal::dirs()->findResource("data",QString("player/icons/genre.png") );
-    icons[GENRE]=KIcon(genreIcon);
+//     QString genreIcon=KGlobal::dirs()->findResource("data",QString("player/icons/genre.png") );
+    icons[GENRE]=icon("genre");
     
-    QString trackIcon=KGlobal::dirs()->findResource("data",QString("player/icons/track.png") );
-    icons[TRACK]=KIcon(trackIcon);
+//     QString trackIcon=KGlobal::dirs()->findResource("data",QString("player/icons/track.png") );
+    icons[TRACK]=icon("track");
     
-    QString lengthIcon=KGlobal::dirs()->findResource("data",QString("player/icons/clock.png") );
-    icons[LENGTH]=KIcon(lengthIcon);
+//     QString lengthIcon=KGlobal::dirs()->findResource("data",QString("player/icons/clock.png") );
+    icons[LENGTH]=icon("clock");
     
-    QString defaultS=KGlobal::dirs()->findResource("data",QString("player/icons/music.png"));
-    defaultIcon=KIcon(defaultS);
+//     QString defaultS=KGlobal::dirs()->findResource("data",QString("player/icons/music.png"));
+    defaultIcon=icon("music");
     
-    defaultS=KGlobal::dirs()->findResource("data",QString("player/icons/karakaxa.png"));
-    playerIcon=KIcon(defaultS);
+//     defaultS=KGlobal::dirs()->findResource("data",QString("player/icons/karakaxa.png"));
+    playerIcon=icon("karakaxa");
     
     initPalete();    
 }
 
 KIcon views::decoration::icon(const QString s)
 {
-    QString iconString("player/icons/");
+    QString iconString("karakaxa/icons/");
     iconString=iconString.append(s).append(".png");
     QString iconPath=KGlobal::dirs()->findResource("data",iconString );
 

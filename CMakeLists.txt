@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8)
-project(test)
+project(karakaxa)
 
 
 # SET( SAMPLE_SRCS
@@ -19,6 +19,8 @@ SET( QT_USE_PHONON TRUE )
 SET( QT_USE_SQL TRUE ) 
 SET( QT_USE_XML TRUE)
 
+SET( USE_LAST_FM TRUE )
+
 SET( DATA_DIR /usr/share/kde4/apps)
 
 include_directories(./src/lib/database)
@@ -31,6 +33,7 @@ include_directories( /usr/include/taglib)
 
 INCLUDE_DIRECTORIES(${QT_QTSQL_INCLUDE_DIR})
 INCLUDE_DIRECTORIES(${QT_QTXML_INCLUDE_DIR})
+INCLUDE_DIRECTORIES(${QT_QTNETWORK_INCLUDE_DIR})
 
 ADD_DEFINITIONS( -Wall -Wno-reorder )
 

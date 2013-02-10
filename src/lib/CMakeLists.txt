@@ -17,21 +17,23 @@ set( LAST_FM_FILES ../lastFm)
 file(GLOB_RECURSE  LIB_CPP "./*.cpp")
 file(GLOB_RECURSE  LIB_HDRS "./*.h")
 
+# FIND_PACKAGE( lastfm REQUIRED )
 
-# if ( ${LAST_FM_FOUND}  )
-# # 	file(GLOB_RECURSE  LAST_FM_CPP  "../lastFm/*.cpp")
-# # 	file(GLOB_RECURSE  LAST_FM_HDRS "../lastFm/*.h")
-# # 	QT4_WRAP_CPP( LAST_FM_MOC_SRCS ${LAST_FM_HDRS} )
-# # 	TARGET_LINK_LIBRARIES( karakaxa lastfm )
-# #  	TARGET_LINK_LIBRARIES( karakaxa_lfm lastfm )
-# 	subdirs(../lastFm)
-# endif()
+if ( ${USE_LAST_FM}  )
+#  	file(GLOB_RECURSE  LAST_FM_CPP  "../lastFm/*.cpp")
+#   	file(GLOB_RECURSE  LAST_FM_HDRS "../lastFm/*.h")
+#   	QT4_WRAP_CPP( LAST_FM_MOC_SRCS ${LAST_FM_HDRS} )
+  	subdirs(../lastFm)
+  	include_directories(../lastFm)
+#   	TARGET_LINK_LIBRARIES( karakaxa lastfm )
+#    	TARGET_LINK_LIBRARIES( karakaxa_lfm lastfm ) 	
+endif()
 
 SET( HDRS
      ./database 
      ./core 
      ./files 
-     ./views    
+     ./views
 )
 
 
@@ -39,11 +41,11 @@ FIND_PACKAGE( Qt4 REQUIRED )
 SET( QT_USE_PHONON TRUE )
 SET( QT_USE_SQL TRUE )
 SET( QT_USE_XML TRUE)
-
+SET( QT_USE_NETWORK TRUE )
 
 QT4_WRAP_CPP( LIB_MOC_SRCS ${LIB_HDRS} )
 
-add_library ( karakaxa SHARED ${LIB_CPP} ${LIB_MOC_SRCS}    ${LAST_FM_CPP}  ${LAST_FM_MOC_SRCS}  )
+add_library ( karakaxa SHARED ${LIB_CPP} ${LIB_MOC_SRCS} )
 #TARGET_LINK_LIBRARIES( karakaxa ${QT_LIBRARIES} )
 #TARGET_LINK_LIBRARIES( karakaxa ${QT_QTSQL_LIBRARIES} )
 #TARGET_LINK_LIBRARIES( karakaxa ${QT_QTXM_LIBRARIES} )

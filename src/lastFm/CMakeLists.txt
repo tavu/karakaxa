@@ -1,8 +1,15 @@
-#last CMAKE file
+#lastfm CMAKE file
 cmake_minimum_required(VERSION 2.8)
 project(karakaxa)
 
-include_directories( ${LAST_FM_INCL})
+FIND_PACKAGE( Qt4 4.7.3 COMPONENTS QtCore QtNetwork QtXml REQUIRED )
+SET( QT_USE_NETWORK TRUE )
+# INCLUDE_DIRECTORIES(${QT_QTNETWORK_INCLUDE_DIR})
+
+SET( QT_USE_XML TRUE)
+
+# INCLUDE_DIRECTORIES()
+include_directories( ${LAST_FM_INCL} ${QT_QTNETWORK_INCLUDE_DIR} ${QT_QTXML_INCLUDE_DIR})
 
 file(GLOB_RECURSE  LFM_CPP "./*.cpp")
 file(GLOB_RECURSE  LFM_HDRS "./*.h")
@@ -10,3 +17,5 @@ QT4_WRAP_CPP( LFM_MOC_SRCS ${LFM_HDRS} )
 
 ADD_LIBRARY (karakaxa_lfm STATIC ${LFM_CPP} ${LFM_MOC_SRCS} )
 TARGET_LINK_LIBRARIES( karakaxa_lfm lastfm )
+TARGET_LINK_LIBRARIES( karakaxa_lfm ${QT_QTNETWORK_LIBRARIES} )  
+TARGET_LINK_LIBRARIES( karakaxa_lfm ${QT_LIBRARIES}  )

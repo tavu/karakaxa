@@ -1,7 +1,7 @@
 #include"lastFmFunc.h"
 
 #include<QDebug>
-#include<ws.h>
+#include<lastfm/ws.h>
 #include<string>
 void lastFm::init()
 {

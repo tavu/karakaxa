@@ -1,6 +1,9 @@
 #include"searchAlbum.h"
-#include<XmlQuery>
-#include<ws.h>
+// #include<XmlQuery>
+#include<QDomDocument>
+#include<QDomNodeList>
+
+#include<lastfm/ws.h>
 #include<status/playerStatus.h>
 #include"lastFmFunc.h"
 bool lastFm::searchAlbum::canFetchMore()
