@@ -27,7 +27,6 @@ QStandardItem* core::abstractContent::item()
 {   
     if(_item==0)
     {
-// 	_item=new QStandardItem( name() );
 	if(!icon().isNull() )
 	{
 	    _item=new QStandardItem( icon(),name() );
@@ -38,6 +37,7 @@ QStandardItem* core::abstractContent::item()
 	}
 	
 	_item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsDropEnabled | Qt::ItemIsEnabled);
+        _item->setEditable(false);
     }
     
     return _item;
@@ -47,13 +47,14 @@ void core::abstractContent::addSubmenu(const QString& s, QIcon icon)
 {
     QStandardItem *it;
     it=new QStandardItem(icon,s);
-
+    it->setEditable(false);
     item()->appendRow(it);
 }
 
 void core::abstractContent::addSubmenu(const int pos, const QString& s, QIcon icon)
 {
     QStandardItem *it=new QStandardItem(s);
+    it->setEditable(false);
     _item->insertRow(pos,it);
 }
 
@@ -96,8 +97,7 @@ void core::abstractContent::hiden()
 
 bool core::abstractContent::isActive()
 {
-//   return false;
-  return core::contentHdl->currentContent()==this;
+    return core::contentHdl->currentContent()==this;
 }
 
 
@@ -132,19 +132,5 @@ void core::abstractContent::loadContent()
 
 void core::abstractContent::unload()
 {
-     contentHdl->removeContent(this);   
+    contentHdl->removeContent(this);
 }
-
-void core::abstractContent::saveToHistory()
-{
-    QVariant var=state();
-    
-    if(var.isValid() )
-    {	
-	content_history h;
-	h.p=this;
-	h.value=var;
-// 	contentHdl->history.addHistory(h);
-    }
-}
-

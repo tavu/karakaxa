@@ -1,16 +1,18 @@
 #include "menuList.h"
-void core::menuList::addMenu(core::abstractMenu* m)
+#include "abstractMenu.h"
+
+void core::contentsPrivate::menuList::addMenu(core::abstractMenu* m)
 {
     menus.append(m);
 }
 
-void core::menuList::removeMenu(core::abstractMenu* m)
+void core::contentsPrivate::menuList::removeMenu(core::abstractMenu* m)
 {
     int pos=menus.indexOf(m);
     menus.removeAt(pos);
 }
 
-void core::menuList::contextMenu(QMenu* menu, QUrl u,const QList<QUrl> &urls)
+void core::contentsPrivate::menuList::contextMenu(QMenu* menu, QUrl u,const QList<QUrl> &urls)
 {
   abstractMenu::_url=u;
   abstractMenu::_urls=urls;
@@ -29,5 +31,9 @@ QList<QUrl> core::abstractMenu::_urls;
 
 namespace core
 {
-  menuList *menuL;
+namespace contentsPrivate
+{
+    menuList *menuL;
+}
+
 };

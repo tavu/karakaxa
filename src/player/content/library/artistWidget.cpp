@@ -8,11 +8,11 @@ artistWidget::artistWidget(QWidget *parent)
     artistM=new artistModel(this);
     artistDelegate *del=new artistDelegate(this);
     setItemDelegate(del);
-               
     setModel(artistM);    
     setUniformItemSizes (true);
-    setIconSize(QSize(70,70));
+//     setIconSize(QSize(70,70));
     setWordWrap(true);
+    setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
 //     artistM->update();
 
 

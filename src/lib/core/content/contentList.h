@@ -7,27 +7,21 @@
 #include"contentHistory.h"
 namespace core
 {
-class contentList :public QObject
+    
+namespace contentsPrivate
 {
-    Q_OBJECT
+
+class contentList :public QObject
+{    
     public:
-	explicit contentList(QObject* parent = 0);
+	explicit contentList();
 	
 	inline core::abstractContent *currentContent()
 	{
 	    return current;
 	}
-		
-	inline core::abstractContent *previousContent()
-	{
-	    return previous;
-	}
 	
-	void setCurrentContent(core::abstractContent* p,int submenuPos);
-	void setCurrentContent(core::abstractContent *p)
-	{
-	    setCurrentContent(p,-1);
-	}
+	void setCurrentContent(core::abstractContent* p,int submenuPos=-1);
 	
 	void addContent(core::abstractContent *c);
     
@@ -42,7 +36,7 @@ class contentList :public QObject
 	}
 	
 	void removeContent(core::abstractContent *p);
-    void clear();
+        void clear();
 	
 	void removeContent(int pos);
 	
@@ -53,20 +47,16 @@ class contentList :public QObject
     private:
         QList<core::abstractContent*> contents;
         core::abstractContent *current;
-        core::abstractContent *previous;
         QMap<QString ,core::abstractContent *> uniqueContentMap;
         contentHistory history;
 	
 	void setCurrentContentP(core::abstractContent *p,int n);
-	
-    signals:
-        void contentAdded(core::abstractContent *c);
-        void contentChanged(core::abstractContent *c);
-        void contentRemoved(core::abstractContent *c);
 
-};
+};//class
 
 extern contentList *contList;
 
-}
+};//contentsPrivate
+
+};//core
 #endif

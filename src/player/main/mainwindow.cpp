@@ -306,7 +306,7 @@ void mainWindow::defaultContent()
       configureContent *c=new configureContent();
       nowPlaylistContent *n=new nowPlaylistContent();
       
-    libraryContent *nl=new libraryContent();
+//     libraryContent *nl=new libraryContent();
 	  
       n->setModel(nowPlayListM);
       
@@ -316,7 +316,7 @@ void mainWindow::defaultContent()
       contentHdl->addContent(n);      
       contentHdl->addContent(c);
 	  
-      contentHdl->addContent(nl);
+//       contentHdl->addContent(nl);
 
       contentHdl->setCurrentContent(l);
       

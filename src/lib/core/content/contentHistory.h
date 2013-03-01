@@ -5,9 +5,14 @@
 #include<QLinkedList>
 namespace core
 {
+
+namespace contentsPrivate
+{
+
 class content_history
 {
     public:
+        content_history():p(0){}
 	abstractContent *p;
 	QVariant value;
 	bool operator==(const content_history &h)
@@ -44,6 +49,10 @@ class contentHistory
         QLinkedList<content_history> history;
         int _maxSize;
         QLinkedList<content_history>::iterator curentPos;
-};
-};
+};//class
+
+extern contentHistory *history;
+};//contentsPrivate
+
+};//core
 #endif

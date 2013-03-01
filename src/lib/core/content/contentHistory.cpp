@@ -1,24 +1,31 @@
 #include"contentHistory.h"
 
-core::contentHistory::contentHistory()
+core::contentsPrivate::contentHistory::contentHistory():_maxSize(5)
 {
     curentPos=history.end();
 }
 
-void core::contentHistory::addHistory(core::content_history& h)
+void core::contentsPrivate::contentHistory::addHistory(core::contentsPrivate::content_history& h)
 {
     if(history.size()==_maxSize)
     {
 	history.erase(history.begin() );
     }
     
-    history.erase(curentPos,history.end());
+    if(curentPos!=history.end() )
+    {
+        curentPos++;
+        if(curentPos!=history.end() )
+        {
+            history.erase(curentPos,history.end());
+        }
+    }
     history.append(h);
     
     curentPos=history.end();
 }
 
-void core::contentHistory::addHistory(core::abstractContent* c)
+void core::contentsPrivate::contentHistory::addHistory(core::abstractContent* c)
 {
     content_history h;
     h.value=c->state();
@@ -27,7 +34,7 @@ void core::contentHistory::addHistory(core::abstractContent* c)
 }
 
 
-core::content_history core::contentHistory::back()
+core::contentsPrivate::content_history core::contentsPrivate::contentHistory::back()
 {    
     if(!history.isEmpty() && curentPos!=history.begin() )
     {
@@ -38,7 +45,8 @@ core::content_history core::contentHistory::back()
     return content_history();
 }
 
-core::content_history core::contentHistory::forword()
+
+core::contentsPrivate::content_history core::contentsPrivate::contentHistory::forword()
 {
     if(curentPos!=history.end() )
     {
@@ -49,10 +57,17 @@ core::content_history core::contentHistory::forword()
     return content_history();
 }
 
-void core::contentHistory::removeAll(core::abstractContent* c)
+void core::contentsPrivate::contentHistory::removeAll(core::abstractContent* c)
 {
-    history.erase(curentPos,history.end());
-    QLinkedList<core::content_history>::iterator it;
+    if(curentPos!=history.end() )
+    {
+        curentPos++;
+        if(curentPos!=history.end())
+        {
+            history.erase(curentPos,history.end());
+        }
+    }
+    QLinkedList<core::contentsPrivate::content_history>::iterator it;
     content_history h;
     h.p=c;
     history.removeAll(h);
@@ -60,3 +75,10 @@ void core::contentHistory::removeAll(core::abstractContent* c)
     curentPos=history.end();
 }
 
+namespace core
+{
+namespace contentsPrivate
+{
+    contentHistory *history;
+}
+}

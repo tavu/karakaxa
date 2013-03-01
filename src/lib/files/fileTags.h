@@ -41,8 +41,8 @@ class fileTags
 
 
     public:
-        virtual QVariant		tag(tagsEnum t)	const;
-        virtual bool 			setTag(tagsEnum,const QVariant &var);
+        virtual QVariant		tag(int t)	const;
+        virtual bool 			setTag(int,const QVariant &var);
 
         virtual QVariant 		title () const ;
         virtual QVariant 		artist () const ;

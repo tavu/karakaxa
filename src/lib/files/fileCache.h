@@ -1,5 +1,6 @@
 #ifndef FILECACHE_H
 #define FILECACHE_H
+
 #include<QString>
 #include <QSqlRecord>
 #include<QHash>
@@ -7,95 +8,75 @@
 #include<QReadWriteLock>
 #include<QLinkedList>
 
-#include<fileToDb.h>
+
 
 #include"fileTags.h"
-// #include"audioFiles.h"
-
-// #include<database.h>
+#include<filesToDb/fileToDb.h>
 namespace database
 {
-    class fileToDb;
+class fileToDb;
 }
 
 namespace audioFiles
 {
 
+class fileCacheFactory;
 
-//   using namespace audioFiles;
-  
 class fileCache :public QObject
 {
 
-  struct fileCacheS
-  {
-    fileCache *p;
-    int used;
-  };
-  
-  Q_OBJECT
-  public:
+    friend class fileCacheFactory;
+    Q_OBJECT
+    public:
 
-      QString path()
-      {
-        return _path;
-      }
+        QString path()
+        {
+            return _path;
+        }
 
-      int 		loadTags(bool force=false);
-      void 		setRecord(QSqlRecord &r, bool force=false);
-      int 		select(bool force=false);
-      QVariant 	tagFromFile(tagsEnum t, int &err);
-      QVariant 	tagFromDb(int t, int& err);
-      QString   coverPath();
-      QString   findCoverPath(int& err);
+        int       loadTags ( bool force=false );
+        void      setRecord ( QSqlRecord &r, bool force=false );
+        int       select ( bool force=false );
+        QVariant  tagFromFile ( int t, int &err );
+        QVariant  tagFromDb ( int t, int &err );
+        QString   coverPath();
+        QString   findCoverPath ( int &err );
 
-      int 		albumId(int &err);
+        int       albumId ( int &err );
 
 
-	 void 		setTag(tagsEnum t,QVariant var,int &err);
-     void 		setTagFromFile(tagsEnum t,QVariant var);
-	 void 		setTagFromDb(tagsEnum t,QVariant var);
+        void       setTag ( int t,QVariant var,int &err );
+        void       setTagFromFile ( int t,QVariant var );
+        void       setTagFromDb ( int t,QVariant var );
 
 
-	 int 		prepareToSave();
+        int        prepareToSave();
 
-     void 		savingEnd(QList<tagChanges>);
-	 
-	 bool 		exist() ;	 
+        QList<tagChanges> savingEnd ( );
 
-  private:
-      fileCache(QString path);
-      ~fileCache();
-      tagRecord *tagTable;
-      QSqlRecord record;
-      bool notInDb;
-	  bool _exist;
-      QString _path;
+        bool       exist() ;
 
-	 fileTags *file;
-	 database::fileToDb *fdb;
+    private:
+        fileCache ( QString path );
+        ~fileCache();
+        
+        tagRecord *tagTable;
+        bool _exist;
+        QString _path;
 
-     QString _coverPath;
- 	 QMutex loadMutex;
- 	 QMutex readMutex;
-//      QReadWriteLock rwLock;
+        fileTags *file;
+        database::fileToDb fdb;
 
-  public:
-      static fileCache* 	getFileCache(QString path);
-	  static QLinkedList<fileCache*> 	getAllCache();
-      static void		    releaseFileCache(fileCache*);
-      static void	 	    releaseFileCache(QString path);
-
-  private:
-      static QHash<QString, fileCacheS*> fileCacheMap;
-      static QMutex gMutex;
-
+        QMutex loadMutex;
+//         QMutex readMutex;
+        
+        QList<tagChanges> changes;
 
     signals:
-        void changed(audioFiles::tagChangesL);
-		void removed();
-// 		void moved();
-      
+        void changed ( audioFiles::tagChangesL );
+        void removed();
+//      void moved();
+
 
 
 //   signals:
@@ -103,8 +84,6 @@ class fileCache :public QObject
 
 };//class
 
-void checkAudioFilesExist();
-	
 }//namespace
 
 #endif

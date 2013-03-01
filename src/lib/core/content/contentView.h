@@ -1,11 +1,14 @@
 #ifndef CONTENTVIEW_H
 #define CONTENTVIEW_H
 #include "abstractContent.h"
-#include"contentList.h"
+// #include"contentList.h"
 #include<QTreeView>
 #include<KToolBar>
 #include<QStackedWidget>
 namespace core
+{
+    
+namespace contentsPrivate
 {
     
 class contentView :public QObject
@@ -38,17 +41,18 @@ class contentView :public QObject
         KToolBar *_toolBar;
         
 	
-    private slots:
-        void contentActivated(core::abstractContent *content);
+    public slots:
+        void contentActivated(core::abstractContent *content,core::abstractContent *pre);
         void contentAdded(core::abstractContent *content);
         void contentRemoved(core::abstractContent *content);
         
     public slots:
         void activateContFromIndex(const QModelIndex &in);
-};
+};//class
 
 extern contentView *contView;  
 
-};
+};//contentsPrivate
 
+};//core
 #endif

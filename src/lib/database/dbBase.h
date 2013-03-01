@@ -13,9 +13,10 @@ namespace database
 
 class dbBase :public QObject
 {
-	public:
+    public:
         dbBase(QObject *parent=0) :QObject(parent){};
         virtual ~dbBase(){};
+        
         static void lock()
         {
             mutex.lock();
@@ -27,7 +28,16 @@ class dbBase :public QObject
         
         void getDb();
 		
-		void closeDb();
+        void closeDb();
+        
+        QVariant getId(QVariant var,const QString &table);
+        /*variables: 
+            album:the name of the album
+            artist:the id of the artist
+            table:the name of the database table of the albums
+        */
+        QVariant getAlbumId(QVariant album,int artistId,const QString &table);
+        
 
         void            cleanUp();
         void            clearArtist();
@@ -37,12 +47,9 @@ class dbBase :public QObject
         
     protected:
         QSqlDatabase    databs;
+        
     private:
         static QMutex mutex;
-        
-
-        
-
 };
 
 

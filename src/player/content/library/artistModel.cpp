@@ -10,10 +10,8 @@ artistModel::artistModel(QObject *parent)
         q(0),
         _needUpdate(true)
 {
-    size.setHeight(100);
-    size.setWidth(100);
-    itemSize.setHeight(100);
-    artistPic=views::decor->tagIcon(ARTIST).pixmap(50,50);
+    itemSize.setHeight(30);
+    artistPic=views::decor->tagIcon(ARTIST).pixmap(30,30);
     artistQ=new database::artistQueryGrt(this);
 }
 
