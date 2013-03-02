@@ -178,7 +178,7 @@ void views::treeViewDelegate::setModelData(QWidget *editor,QAbstractItemModel *m
         return ;
     }
 
-    database::editMultFiles::editFiles *thr=new database::editMultFiles::editFiles(parent());
+    database::editMultFiles::editFiles *thr=new database::editMultFiles::editFiles();
     thr->setFiles(l);
     thr->setTag(tag );
 

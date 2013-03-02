@@ -13,11 +13,14 @@ void database::editMultFiles::editFiles::run()
 
 void database::editMultFiles::finishedSlot()
 {
+    mutex.lock();
     num--;
+    mutex.unlock();
     if(num==0)
     {
         emit finished();
     }
+    sender()->deleteLater();
 }
 
 void database::editMultFiles::editFiles::start()
@@ -30,6 +33,7 @@ void database::editMultFiles::editFiles::start()
 database::editMultFiles::editFiles::editFiles(QObject* parent): QThread(parent)
 {
     tag_=-1;
+//     editMultFiles::self()->prepare(this);
     
 }
 
