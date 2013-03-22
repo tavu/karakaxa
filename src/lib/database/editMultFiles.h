@@ -16,31 +16,11 @@ namespace database
 class editMultFiles :public QObject
 {
     Q_OBJECT
-    public:
-        editMultFiles() :QObject()
-        {
-            num=0;
-        }
-
-        static editMultFiles* self()
-        {
-            if(p==0)
-            {
-                p=new  editMultFiles();
-            }
-            return p;
-        }
-
-        static bool isEditing()
-        {
-            if(num>0)
-            {
-                return true;
-            }
-            return false;
-        }
+    private:    
+        static editMultFiles *p;
         
-    class editFiles :public  QThread 
+    public:
+        class editFiles :public  QThread 
     {
         public:
             editFiles(QObject* parent = 0);
@@ -82,12 +62,41 @@ class editMultFiles :public QObject
             int tag_;
             QVariant value_;
             QList<audioFiles::audioFile> fileList;
-            QList<int> errors;	 	  
+            QList<int> errors;            
     }; 
+    
+    friend class editFiles;
+    
+        editMultFiles() :QObject()
+        {
+            num=0;
+        }
+
+        static editMultFiles* self()
+        {
+            if(p==0)
+            {
+                p=new  editMultFiles();
+            }
+            return p;
+        }
+
+        static bool isEditing()
+        {
+            if(num>0)
+            {
+                return true;
+            }
+            return false;
+        }
+        
+
+            
 
     private:
-        static int num;
-        static editMultFiles *p;
+        static int num;        
+        
+        QMutex mutex;
 
         void multFilesEmiter()
         {
@@ -96,7 +105,9 @@ class editMultFiles :public QObject
 
         void prepare(editFiles *p)
         {            
+            mutex.lock();
             num++;
+            mutex.unlock();
             connect(p,SIGNAL(finished()),this,SLOT(finishedSlot()));
             if(num==1)
             {
