@@ -274,12 +274,10 @@ void views::treeView::needExpanding(QModelIndex parent, int start, int end)
 	{
 		
 		var=parent.data(SPAND_ROLE);
-		qDebug()<<"PROP2 "<<var;
 	}
 	else
 	{
 		var=model()->property(SPAN_PROP);
-		qDebug()<<"PROP "<<var;
 	}
 	
 	if(var.canConvert<bool>() && var.toBool() )

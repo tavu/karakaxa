@@ -2,6 +2,8 @@
 #include<QApplication>
 #include<kconfiggroup.h>
 #include<ksharedconfig.h>
+#include <QtSql/QSqlDatabase>
+#include <QtSql/QSqlQuery>
 #include<KGlobal>
 #include<KStandardDirs>
 #include <QProcess>
@@ -16,212 +18,293 @@
 #include"editMultFiles.h"
 #include"dbJobs/rescanJob.h"
 #include"libraryFolder.h"
+#include<QSqlDriverPlugin>
 
 
+#include<QDir>
 
+#define DB_VERSION 1
+
+#ifdef EMBEDDED_MYSQL
+#include"embeddedMysqlCreator.h"
+#endif
 
 database::databaseConection::databaseConection()
-        :QObject(),
-        _state(NORMAL)
+    :QObject(),
+     _state ( NORMAL )
 {
-//     using namespace audioFiles
-    dBase=QSqlDatabase::addDatabase("QMYSQL");
-    connect(audioFiles::self(),SIGNAL(changed(audioFiles::audioFile)),this,SLOT(emitUpdated(audioFiles::audioFile)) );
-    connect(editMultFiles::self(),SIGNAL(started()),this,SLOT(editMultFilesStart() ) );
-    connect(editMultFiles::self(),SIGNAL(finished()),this,SLOT(editMultFilesStop()) );
-    readSettings();
+
+
+    initDb();
+    connect ( audioFiles::self(),SIGNAL ( changed ( audioFiles::audioFile ) ),this,SLOT ( emitUpdated ( audioFiles::audioFile ) ) );
+    connect ( editMultFiles::self(),SIGNAL ( started() ),this,SLOT ( editMultFilesStart() ) );
+    connect ( editMultFiles::self(),SIGNAL ( finished() ),this,SLOT ( editMultFilesStop() ) );
+
 }
+
+void database::databaseConection::initDb()
+{
+#ifdef EMBEDDED_MYSQL
+    QString s=core::config->saveLocation ( "database" );
+    mysqlServerOptions.append ( QString() );
+    mysqlServerOptions.append ( "--datadir="+s );
+    mysqlServerOptions.append ( "--character-set-server=utf8" );
+    mysqlServerOptions.append ( "--collation-server=utf8_bin" );
+    mysqlServerOptions.append ( QString() );
+    mysqlHome=s;
+
+    bool firstTime=false;
+
+    QDir dbPath=QDir ( s );
+
+    if ( !dbPath.exists ( "karakaxa" ) )
+    {
+        dbPath.mkpath ( "karakaxa" );
+        firstTime=true;
+    }
+
+    QSqlDatabase::registerSqlDriver ( "EM_QMYSQL",new  embeddedMysqlCreator );
+    createConnection();
+
+    if ( firstTime||needSetup() )
+    {
+        setUpDb();
+    }
+
+#else
+    createConnection();
+
+    if ( needSetup() )
+    {
+        setUpDb();
+    }
+
+#endif
+}
+
 
 bool database::databaseConection::createConnection()
 {
+    if ( dBase.isValid() )
+    {
+        dBase.close();
+        QSqlDatabase::removeDatabase ( dBase.connectionName() );
+    }
 
-    if(dbName.isEmpty())
+#ifdef EMBEDDED_MYSQL
+    dBase=QSqlDatabase::addDatabase ( "EM_QMYSQL" );
+    dBase.setDatabaseName ( "karakaxa" );
+#else
+    dBase=QSqlDatabase::addDatabase ( "QMYSQL" );
+    KSharedConfigPtr config=core::config->configFile ( "database.conf" );
+    KConfigGroup group ( config, "database" );
+    dBase.setHostName ( "localhost" );
+    dBase.setDatabaseName ( group.readEntry ( "database",QString() ) );
+    dBase.setUserName ( group.readEntry ( "user",QString() ) );
+    dBase.setPassword ( group.readEntry ( "pass",QString() ) );
+
+    if ( dBase.databaseName().isEmpty() )
     {
         return false;
     }
 
-    dBase.setHostName("localhost");
-    dBase.setDatabaseName(dbName);
-    dBase.setUserName(dbUser);
-    dBase.setPassword(dbPass);
+#endif
 
-    if (!dBase.open())
+    if ( !dBase.open() )
     {
-
-	   core::status->addError(QObject::tr("Can not connect to database") );
-	   core::status->addErrorP("Database Error"+dBase.lastError().text());
-       return false;
+        core::status->addError ( QObject::tr ( "Can not connect to database" ) );
+        core::status->addErrorP ( "Database Error"+dBase.lastError().text() );
+        return false;
     }
 
-    core::status->addInfo(QObject::tr("Connected to database") );
     return true;
 }
 
-bool database::databaseConection::dBConnect(QString n,QString u,QString p)
+bool database::databaseConection::needSetup()
 {
-    dbName=n;
-    dbUser=u;
-    dbPass=p;
-    bool k=createConnection();
-    emit(changed() );
-    writeSettings();
-    return k;
-}
+    QSqlQuery q ( dBase );
+    q.prepare ( "select dbVersion from karakaxa_info" );
 
+    if ( !q.exec() )
+    {
+        qDebug() <<q.lastError().text();
+        return true;
+    }
 
-void database::databaseConection::readSettings()
-{
-     KSharedConfigPtr config=core::config->configFile("database");
-     KConfigGroup group( config, "database" );
-     dbName=group.readEntry("database",QString());
-     dbUser=group.readEntry("user",QString());
-     dbPass=group.readEntry("pass",QString());
+    return false;
+    /*
+
+    bool b;
+    int version=q.value(0).toInt(&b);
+    if(b==false || version!=DB_VERSION)
+    {
+        return true;
+    }
+    return false;
+    */
 }
 
 void database::databaseConection::setUpDb()
 {
-    QSqlQuery q(dBase);
-    QString s=KGlobal::dirs()->findResource("data",QString("karakaxa/sql/create.txt") );
+    qDebug() <<"updating database tables";
+    QString s=KGlobal::dirs()->findResource ( "data",QString ( "karakaxa/sql/create.txt" ) );
+    QFile scriptFile ( s );
+    QSqlQuery q ( dBase );
 
-    QString command("mysql "+dbName+" -u "+dbUser+" -p"+dbPass+" < "+s);
-    int stat=system(command.toStdString().c_str() );
-    core::status->addInfoP("setting up the database");
-    core::status->addInfoP("exec: "+command);
-    core::status->addInfoP("exit status "+QString::number(stat) );
-
-    if(stat!=0)
+    if ( scriptFile.open ( QIODevice::ReadOnly ) )
     {
-        core::status->addError(QObject::tr("Could not set up database") );
+        QStringList scriptQueries = QTextStream ( &scriptFile ).readAll().split ( ';' );
+
+        foreach ( QString queryTxt, scriptQueries )
+        {
+            if ( queryTxt.trimmed().isEmpty() )
+            {
+                continue;
+            }
+
+            if ( !q.exec ( queryTxt ) )
+            {
+                core::status->addError ( QObject::tr ( "Could not set up database" ) );
+                core::status->addErrorP ( q.lastError().text() );
+                q.finish();
+                return ;
+            }
+
+            q.finish();
+
+        }
+        q.prepare ( QString ( "INSERT INTO karakaxa_info (dbVersion) VALUES (" ) + DB_VERSION + QString ( ")" ) );
+
+        if ( !q.exec() )
+        {
+            core::status->addError ( QObject::tr ( "Could not set up database" ) );
+            core::status->addErrorP ( q.lastError().text() );
+        }
     }
-}
-
-
-void database::databaseConection::writeSettings()
-{
-
-    KSharedConfigPtr config=core::config->configFile("database");
-    KConfigGroup group( config, "database" );
-    group.writeEntry("database",QVariant(dbName) );
-    group.writeEntry("user",QVariant(dbUser));
-    group.writeEntry("pass",QVariant(dbPass) );
-    group.config()->sync();
-
 }
 
 QSqlDatabase database::databaseConection::getDatabase()
 {
     mutex.lock();
-    if(QThread::currentThread()==core::mainThr() )
+
+    if ( QThread::currentThread() ==core::mainThr() )
     {
-        if(!dBase.isOpen() )
+        if ( !dBase.isOpen() )
         {
-            core::status->addErrorP("database is closed: "+dBase.lastError().text() );
+            core::status->addErrorP ( "database is closed: "+dBase.lastError().text() );
             createConnection();
         }
+
         mutex.unlock();
         return dBase;
     }
     else
     {
-        QString name=apprName(QThread::currentThread() );
+        QString name=apprName ( QThread::currentThread() );
 
-        dBEntry* dbE=dBMap[name];
+        dBEntry *dbE=dBMap[name];
         QSqlDatabase newDb;
-        if(dbE==0)
+
+        if ( dbE==0 )
         {
             dbE=new dBEntry;
             dbE->name=name;
             dbE->thr=QThread::currentThread();
             dbE->used=1;
             dBMap[name]=dbE;
-            newDb=QSqlDatabase::cloneDatabase(dBase,name);
+            newDb=QSqlDatabase::cloneDatabase ( dBase,name );
         }
         else
         {
             dbE->used++;
-            newDb=QSqlDatabase::database(name,false);
+            newDb=QSqlDatabase::database ( name,false );
         }
 
-        if(!newDb.isOpen() )
+        if ( !newDb.isOpen() )
         {
-            if(!newDb.open() )
+            if ( !newDb.open() )
             {
-                core::status->addErrorP("database error: "+dBase.lastError().text() );
+                core::status->addErrorP ( "database error: "+dBase.lastError().text() );
             }
-	}
-	mutex.unlock();
-	return newDb;
+        }
+
+        mutex.unlock();
+        return newDb;
 
     }
 }
 
 void database::databaseConection::closeDatabase()
 {
-    if(QThread::currentThread()==core::mainThr() )
+    if ( QThread::currentThread() ==core::mainThr() )
     {
         return ;
     }
 
-    QString name=apprName(QThread::currentThread() );
+    QString name=apprName ( QThread::currentThread() );
 
     mutex.lock();
-    dBEntry* dbE=dBMap.value(name);
+    dBEntry *dbE=dBMap.value ( name );
 
-    if(dbE==0)
+    if ( dbE==0 )
     {
-        core::status->addErrorP("Can't close a non exist database connection");
+        core::status->addErrorP ( "Can't close a non exist database connection" );
     }
     else
     {
         dbE->used--;
-        if(dbE->used==0)
+
+        if ( dbE->used==0 )
         {
-            QSqlDatabase dbase=QSqlDatabase::database(name,false);
+            QSqlDatabase dbase=QSqlDatabase::database ( name,false );
             dbase.close();
             dbase=QSqlDatabase();
-            QSqlDatabase::removeDatabase(name);
-            dBMap.remove(name);
+            QSqlDatabase::removeDatabase ( name );
+            dBMap.remove ( name );
             delete dbE;
         }
     }
+
     mutex.unlock();
 }
 
-void database::databaseConection::closeDatabase(QSqlDatabase &dbase)
+void database::databaseConection::closeDatabase ( QSqlDatabase &dbase )
 {
     mutex.lock();
     QString name=dbase.connectionName();
-    if(name==dBase.connectionName() )
+
+    if ( name==dBase.connectionName() )
     {
         mutex.unlock();
         return ;
     }
 
-    dBEntry* dbE=dBMap.value(name);
+    dBEntry *dbE=dBMap.value ( name );
 
-    if(dbE==0)
+    if ( dbE==0 )
     {
-        core::status->addErrorP("Can't close a non exist database connection");
+        core::status->addErrorP ( "Can't close a non exist database connection" );
     }
     else
     {
-	dbE->used--;
-	if(dbE->used==0)
-	{
- 	    dbase.close();
-	    dbase=QSqlDatabase();
-	    QSqlDatabase::removeDatabase(name);
-	    dBMap.remove(name);
- 	    delete dbE;
-	}
+        dbE->used--;
+
+        if ( dbE->used==0 )
+        {
+            dbase.close();
+            dbase=QSqlDatabase();
+            QSqlDatabase::removeDatabase ( name );
+            dBMap.remove ( name );
+            delete dbE;
+        }
     }
 
     mutex.unlock();
 }
 
-QString database::databaseConection::apprName(QThread *thr)
+QString database::databaseConection::apprName ( QThread *thr )
 {
-    return QString::number((long int) thr);
+    return QString::number ( ( long int ) thr );
 }
 
 const QString database::databaseConection::error()
@@ -232,41 +315,43 @@ const QString database::databaseConection::error()
 
 database::databaseConection::~databaseConection()
 {
-    if(dBase.isOpen())	dBase.close();
+    if ( dBase.isOpen() )  dBase.close();
+
     dBase=QSqlDatabase();
-    QSqlDatabase::removeDatabase(dBase.databaseName() );
+    QSqlDatabase::removeDatabase ( dBase.connectionName() );
 }
 
 database::dbJobP database::databaseConection::rescan()
 {
-    rescanJob *sc=new rescanJob(RESCAN);
+    rescanJob *sc=new rescanJob ( RESCAN );
     libraryFolder lf;
-    sc->setDirs(lf.libraryFolders());
+    sc->setDirs ( lf.libraryFolders() );
 
-    dbJobP p(sc);
-    addJob(p);
+    dbJobP p ( sc );
+    addJob ( p );
 
     return p;
 }
 
 database::dbJobP database::databaseConection::update()
 {
-    rescanJob *sc=new rescanJob(UPDATE);
+    rescanJob *sc=new rescanJob ( UPDATE );
     libraryFolder lf;
-    sc->setDirs(lf.libraryFolders());
+    sc->setDirs ( lf.libraryFolders() );
 
-    dbJobP p(sc);
-    addJob(p);
+    dbJobP p ( sc );
+    addJob ( p );
 
     return p;
 }
 
 
-void database::databaseConection::addJob(database::dbJobP j)
+void database::databaseConection::addJob ( database::dbJobP j )
 {
     mutex.lock();
-    jobs.append(j);
-    if(currJob.isNull())
+    jobs.append ( j );
+
+    if ( currJob.isNull() )
     {
         nextJob();
     }
@@ -278,18 +363,19 @@ void database::databaseConection::addJob(database::dbJobP j)
 
 void database::databaseConection::nextJob()
 {
-    if(jobs.size()==0 || !currJob.isNull())
+    if ( jobs.size() ==0 || !currJob.isNull() )
     {
         mutex.unlock();
-        emit newJob(dbJobP() );
+        emit newJob ( dbJobP() );
         return ;
     }
+
     currJob=jobs.first();
     jobs.removeFirst();
-    connect(currJob.data(),SIGNAL(finished()),this,SLOT(jobFinished()),Qt::QueuedConnection);
+    connect ( currJob.data(),SIGNAL ( finished() ),this,SLOT ( jobFinished() ),Qt::QueuedConnection );
     mutex.unlock();
     currJob->start();
-    emit newJob(currJob );
+    emit newJob ( currJob );
 }
 
 void database::databaseConection::jobFinished()
@@ -299,47 +385,47 @@ void database::databaseConection::jobFinished()
     nextJob();
 }
 
-void database::databaseConection::emitUpdated(audioFiles::audioFile f)
+void database::databaseConection::emitUpdated ( audioFiles::audioFile f )
 {
-    if(!f.inDataBase() )
+    if ( !f.inDataBase() )
     {
         return ;
     }
-    if(editFiles.isNull() )
+
+    if ( editFiles.isNull() )
     {
         dbEventAF *ev=new dbEventAF();
-        ev->files.append(f);
-        dbEventP e=dbEventP(ev);
-        emit newEvent(e);
+        ev->files.append ( f );
+        dbEventP e=dbEventP ( ev );
+        emit newEvent ( e );
     }
     else
     {
-        dbEventAF *e=static_cast<dbEventAF*>(editFiles.data() );
+        dbEventAF *e=static_cast<dbEventAF *> ( editFiles.data() );
         e->files<<f;
     }
 }
 
 void database::databaseConection::editMultFilesStart()
 {
-        editFiles=dbEventP( new dbEventAF() );
+    editFiles=dbEventP ( new dbEventAF() );
 }
 
 void database::databaseConection::editMultFilesStop()
 {
     dbEventP e=editFiles;
     editFiles.clear();
-    emit newEvent(e);
+    emit newEvent ( e );
 
 }
 
 void database::databaseConection::init()
 {
-    if(db==0)
+    if ( db==0 )
     {
         databaseConection::db=new databaseConection();
-        databaseConection::db->createConnection();
     }
 }
 
-database::databaseConection* database::databaseConection::db=0;
+database::databaseConection *database::databaseConection::db=0;
 

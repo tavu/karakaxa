@@ -2,31 +2,19 @@
 #define CONTENTHANDLER_H
 
 #include"abstractContent.h"
-#include <QList>
-#include<QTreeWidget>
-#include<QStackedWidget>
-#include<QMutex>
-#include <QStandardItemModel>
-#include<KToolBar>
-#include<KUrl>
-#include"contentHistory.h"
-#include"contentList.h"
-#include"contentView.h"
-#include"menuList.h"
-// class abstractContent;
-// #include<QStandardItemModel>
+#include "abstractMenu.h"
+#include<QTreeView>
+#include<QModelIndex>
+#include<QMenu>
+
 namespace core
 {
-
-// class abstractMenu;
-
-// class contentHistory;
 
 class abstractContent;
 
 /*
- * ContentHandler provides a set of functions  that is usefull to manage the contents ,the menus and every add-on
- * without concern the indernal structure of that operation.
+ * ContentHandler provides a set of functions usefull to manage the contents ,the menus and every add-on
+ * without concern of the indernal structure of these operations.
  */
 
 class contentHandler :public QObject
@@ -35,110 +23,52 @@ class contentHandler :public QObject
 
         class genericContent :public abstractContent
         {
-        public:
-            genericContent(QWidget *parent);
-            QString name() const;
+            public:
+                genericContent(QWidget *parent);
+                QString name() const;
 
-        private:
-            QWidget *widget;
+            private:
+                QWidget *widget;
         };
 
-    Q_OBJECT
+    Q_OBJECT    
     public:
         contentHandler(QObject *parent=0);
         ~contentHandler();
     
-        QWidget* view()
-        {
-            return contView->mainView();
-        }
+        QWidget* view();
+        
+        void setView(QTreeView *v);
 
-        void setView(QTreeView *v)
-        {
-            contView->setView(v);
-        }
+        void setCurrentContent(abstractContent *c,int submenu=-1);
 
-        void setCurrentContent(abstractContent *c,int submenu=-1)
-        {
-            contList->setCurrentContent(c,submenu);
-        }
+        void setCurrentContent(const QModelIndex &in);
 
-        void setCurrentContent(const QModelIndex &in)
-        {
-            contView->activateContFromIndex(in);
-        }
+        core::abstractContent* currentContent();
 
-        core::abstractContent* currentContent()
-        {
-        return contList->currentContent();
-        }
+        void addContent(abstractContent *c,bool activate=false);
+        void removeContent(abstractContent *c);
 
-        void addContent(abstractContent *c,bool activate=false)
-        {
-            c->setParent(contView->mainView() );
-            contList->addContent(c);
-            if(activate)
-            {
-                contList->setCurrentContent(c);
-            }
-        }
+        void removeContent(int pos);
 
-        void removeContent(abstractContent *c)
-        {
-            contList->removeContent(c);
-        }
+        core::abstractContent* content(int i);
+
+        core::abstractContent* content(const QModelIndex &in);
 
 
-        void removeContent(int pos)
-        {
-            contList->removeContent(pos);
-        }
-
-        core::abstractContent* content(int i)
-        {
-            return contList->contentFromPos(i);
-        }
-
-        core::abstractContent* content(const QModelIndex &in)
-        {
-            return contView->contentFromIndex(in);
-        }
-
-
-        void addWidget(QWidget *w,bool activate=true)
-        {
-            genericContent *g=new genericContent(w);
-            addContent(g,activate);
-        }
-
+        void addWidget(QWidget *w,bool activate=true);
         //for menus
-        void addMenu(core::abstractMenu* m)
-        {
-            menuL->addMenu(m);
-        }
+        void addMenu(core::abstractMenu* m);
 
 
-        void removeMenu(core::abstractMenu* m)
-        {
-            menuL->removeMenu(m);
-        }
+        void removeMenu(core::abstractMenu* m);
 
-        void contextMenu(QMenu* menu, QUrl u,const QList<QUrl> &urls)
-        {
-            menuL->contextMenu(menu,u,urls);
-        }
+        void contextMenu(QMenu* menu, QUrl u,const QList<QUrl> &urls);
 
-        KToolBar* toolBar()
-        {
-            return contView->toolBar();
-        }
+        KToolBar* toolBar();
 
     public slots:
-        void clear()
-        {
-            contList->clear();
-        }
-
+        void clear();
 };
   
   extern contentHandler *contentHdl;

@@ -15,6 +15,7 @@
 #include"dbJobs/dbJob.h"
 #include "databaseEvent.h"
 
+
 namespace database
 {
 
@@ -51,26 +52,10 @@ class databaseConection :public QObject
             return dBase.isOpen();
         }
 
-        bool createConnection();
-        void readSettings();
-        void writeSettings();
+        
+//         void readSettings();
+//         void writeSettings();
 
-        QString dataBName()
-        {
-            return dbName;
-        }
-
-        QString dataBUser()
-        {
-            return dbUser;
-        }
-
-        QString dataBPass()
-        {
-            return dbPass;
-        }
-
-        bool dBConnect(QString n,QString u,QString p);
         void setUpDb();
 
         dbState state()
@@ -93,11 +78,9 @@ class databaseConection :public QObject
         QMap<QString,dBEntry*> dBMap;
 
         QSqlDatabase dBase;
-        QString dbName;
-        QString dbUser;
-        QString dbPass;
+        
+        inline bool createConnection();
 
-        bool    _isConnected;
         bool    _isScanning;
         dbState    _state;
         dbEventP    editFiles;
@@ -107,9 +90,12 @@ class databaseConection :public QObject
 
         void nextJob();
 
-
+        
         QString apprName(QThread *thr);
         QMutex mutex;
+        
+        bool needSetup();
+        inline void initDb();
 
     signals:
         void changed();

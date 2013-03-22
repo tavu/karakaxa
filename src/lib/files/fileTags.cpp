@@ -265,7 +265,6 @@ void audioFiles::fileTags::getTags(audioFiles::tagRecord *t)
 	t[i].value=tag( (tagsEnum)i);
 	t[i].status=err;
     }
-  
 }
 
 void audioFiles::fileTags::save()
@@ -274,7 +273,7 @@ void audioFiles::fileTags::save()
 }
 
 
-QVariant audioFiles::fileTags::tag(tagsEnum t) const
+QVariant audioFiles::fileTags::tag(int t) const
 {
     switch (t)
     {
@@ -324,7 +323,7 @@ QVariant audioFiles::fileTags::tag(tagsEnum t) const
     }
 }
 
-bool audioFiles::fileTags::setTag(tagsEnum t,const QVariant &var)
+bool audioFiles::fileTags::setTag(int t,const QVariant &var)
 {
     switch (t)
     {

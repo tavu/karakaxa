@@ -66,6 +66,10 @@ KIcon views::decoration::icon(const QString s)
 
 KIcon views::decoration::tagIcon(int t)
 {
+    if(t==audioFiles::ALBUM_ARTIST)
+    {
+        return icons[audioFiles::ARTIST];
+    }
     if(t>=audioFiles::FRAME_NUM||t<0)
     {
 	return defaultIcon;
@@ -163,7 +167,7 @@ void views::decoration::initPalete()
     pal.setColor(QPalette::Base,pal.color(QPalette::Window) );
     pal.setColor(QPalette::Window,c);
     c.setAlpha(30);
-    pal.setColor(QPalette::AlternateBase,c );
+    pal.setColor(QPalette::AlternateBase,c);
     
 
 }

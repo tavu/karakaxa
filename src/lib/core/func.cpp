@@ -9,6 +9,8 @@
 #include <qapplication.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include<QFileInfo>
+#include<QDir>
 
 #ifdef USE_LAST_FM 
 	#include<lastFmFunc.h>
@@ -201,3 +203,26 @@ QWidget* core::spacerWidget(QWidget* parent)
 	return spacer;
 }
 
+bool core::removeDir(const QString &dirName)
+{
+    bool result = true;
+    QDir dir(dirName);
+ 
+    if (dir.exists(dirName)) {
+        Q_FOREACH(QFileInfo info, dir.entryInfoList(QDir::NoDotAndDotDot | QDir::System | QDir::Hidden  | QDir::AllDirs | QDir::Files, QDir::DirsFirst)) {
+            if (info.isDir()) {
+                result = removeDir(info.absoluteFilePath());
+            }
+            else {
+                result = QFile::remove(info.absoluteFilePath());
+            }
+ 
+            if (!result) {
+                return result;
+            }
+        }
+        result = dir.rmdir(dirName);
+    }
+ 
+    return result;
+}

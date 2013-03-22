@@ -20,6 +20,7 @@ bool			isPlaylist(const QString &url);
 bool 		    isAudio(const QString &url);
 bool			isImage(const QString &url);
 
+bool removeDir(const QString &dirName);
 QString 		format(QString path);
 
 

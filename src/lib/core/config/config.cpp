@@ -46,9 +46,9 @@ QString core::PlayerConfigure::saveLocation( const QString &directory )
   return result;    
 }
 
-KSharedConfigPtr core::PlayerConfigure::configFile(const QString& s)
+KSharedConfigPtr core::PlayerConfigure::configFile(const QString& s,const QString &directory)
 {
-    return KSharedConfig::openConfig(saveLocation()+s);
+    return KSharedConfig::openConfig(saveLocation(directory)+s);
 }
 
 

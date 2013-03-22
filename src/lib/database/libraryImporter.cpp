@@ -24,7 +24,7 @@ database::libraryImporter::libraryImporter(QObject *parent)
     {
         core::status->addErrorP("Database Error: "+database.lastError().text() );
         return;
-    }  
+    }
 }
 
 database::albumEntry database::libraryImporter::import(const QString &url)
@@ -138,12 +138,12 @@ void database::libraryImporter::saveAlbumArt(const QString &albumArt , const alb
 {     
     if(!database.isOpen() )
     {
-	   qDebug()<<"Database is closed trying to reopen";
-	   if(!database.open() )
-	   {
-		  qDebug()<<"Can't open database";
-		  return ;
-	   }
+            qDebug()<<"Database is closed trying to reopen";
+            if(!database.open() )
+            {
+                qDebug()<<"Can't open database";
+		return ;
+            }
     }
     
     QSqlQuery query(database);        

@@ -55,12 +55,13 @@ enum errors
     NULL_FILE       ,
     INVALID_FILE    ,
     WRONG_FILETYPE  ,
-    NS_TAG      ,
+    NS_TAG          ,
     EMPTY_RECORD    ,
     TAGS_NOT_LOADED ,
     UNOWN       ,
     NOTINDB     ,
-    DBERR
+    DBERR,
+    NOT_SELECTED
 };
 
 };//namespace

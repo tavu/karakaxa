@@ -2,7 +2,8 @@
 #include"contentList.h"
 #include<QVBoxLayout>
 #include<QApplication>
-core::contentView::contentView(QObject* parent): QObject(parent)
+#include"contentHistory.h"
+core::contentsPrivate::contentView::contentView(QObject* parent): QObject(parent)
 {
     model=new QStandardItemModel(this);
     stack=new QStackedWidget();
@@ -12,19 +13,19 @@ core::contentView::contentView(QObject* parent): QObject(parent)
     _toolBar->setAutoFillBackground(true);
     _toolBar->setFixedHeight(25);
 
-    connect(core::contList,SIGNAL(contentAdded(core::abstractContent*) ),this,SLOT(contentAdded(core::abstractContent* ) ) );
-    connect(core::contList,SIGNAL(contentChanged(core::abstractContent*)),this,SLOT(contentActivated(core::abstractContent*)) );
-    connect(core::contList,SIGNAL(contentRemoved(core::abstractContent*)),this,SLOT(contentRemoved(core::abstractContent*)) );
+//     connect(core::contentsPrivate::contList,SIGNAL(contentAdded(core::contentsPrivate::abstractContent*) ),this,SLOT(contentAdded(core::contentsPrivate::abstractContent* ) ) );
+//     connect(core::contentsPrivate::contList,SIGNAL(contentChanged(core::contentsPrivate::abstractContent*)),this,SLOT(contentActivated(core::contentsPrivate::abstractContent*)) );
+//     connect(core::contentsPrivate::contList,SIGNAL(contentRemoved(core::contentsPrivate::abstractContent*)),this,SLOT(contentRemoved(core::contentsPrivate::abstractContent*)) );
 }
 
-core::contentView::~contentView()
+core::contentsPrivate::contentView::~contentView()
 {
 //     delete stack;
 //     delete _toolBar;
 }
 
 
-QFrame* core::contentView::mainView() const
+QFrame* core::contentsPrivate::contentView::mainView() const
 {
 //     QFrame *f=new QFrame();
 //     QVBoxLayout *layout=new QVBoxLayout(f);
@@ -35,7 +36,7 @@ QFrame* core::contentView::mainView() const
 }
 
 
-void core::contentView::activateContFromIndex(const QModelIndex& in)
+void core::contentsPrivate::contentView::activateContFromIndex(const QModelIndex& in)
 {
     if(!in.isValid() )
     {
@@ -47,7 +48,7 @@ void core::contentView::activateContFromIndex(const QModelIndex& in)
 
     if(view->isExpanded(in) )
     {
-	   view->collapse(in);
+        view->collapse(in);
     }
     else
     {
@@ -61,15 +62,13 @@ void core::contentView::activateContFromIndex(const QModelIndex& in)
     }
 
     contList->setCurrentContent(cont,r);
-
 }
 
-void core::contentView::contentActivated(core::abstractContent* content)
+void core::contentsPrivate::contentView::contentActivated(core::abstractContent* content,core::abstractContent *pre)
 {
-    abstractContent *pre=contList->previousContent();
     if(pre!=0 &&  pre->toolBar!=0)
     {
-	contList->previousContent()->toolBarAction->setVisible(false);
+	pre->toolBarAction->setVisible(false);
     }
     if(content->toolBar!=0 )
     {
@@ -83,7 +82,7 @@ void core::contentView::contentActivated(core::abstractContent* content)
     stack->setCurrentWidget(content);
 }
 
-void core::contentView::contentAdded(core::abstractContent* content)
+void core::contentsPrivate::contentView::contentAdded(core::abstractContent* content)
 {
     stack->addWidget(content);
     model->appendRow( content->item() );
@@ -106,7 +105,7 @@ void core::contentView::contentAdded(core::abstractContent* content)
     }
 }
 
-core::abstractContent* core::contentView::contentFromIndex(const QModelIndex& in) const
+core::abstractContent* core::contentsPrivate::contentView::contentFromIndex(const QModelIndex& in) const
 {
     QModelIndex i=in;
     while(i.parent().isValid())
@@ -116,7 +115,7 @@ core::abstractContent* core::contentView::contentFromIndex(const QModelIndex& in
     return contList->contentFromPos(in.row());
 }
 
-void core::contentView::contentRemoved(core::abstractContent* content)
+void core::contentsPrivate::contentView::contentRemoved(core::abstractContent* content)
 {
     model->removeRow(content->item()->row(),QModelIndex());
     stack->removeWidget(content);
@@ -130,5 +129,8 @@ void core::contentView::contentRemoved(core::abstractContent* content)
 
 namespace core
 {
-  contentView *contView;
-};
+namespace contentsPrivate
+{
+    contentView *contView;
+}
+}

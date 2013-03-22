@@ -46,7 +46,6 @@ class artistModel :public QStringListModel
 	
     private:
 
-        QSize size;
         QSize itemSize;
         QPixmap artistPic;
 

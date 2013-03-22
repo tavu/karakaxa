@@ -1,36 +1,38 @@
 #include"contentList.h"
+#include"contentView.h"
 #include"../status/playerStatus.h"
-core::contentList::contentList(QObject* parent): QObject(parent),current(0),previous(0)
+core::contentsPrivate::contentList::contentList(): QObject(),current(0)
 {
 
 }
 
-void core::contentList::setCurrentContent(core::abstractContent* p,int submenuPos)
+void core::contentsPrivate::contentList::setCurrentContent(core::abstractContent* p,int submenuPos)
 {
     if(!contents.contains(p) )
     {
 	status->addError(tr("Could not change content") );
+        return ;
     }
     
-    setCurrentContentP(p,submenuPos);    
-    history.addHistory(p);
+    setCurrentContentP(p,submenuPos);
+    history.addHistory(p);    
 }
 
-void core::contentList::setCurrentContentP(core::abstractContent* p,int n)
+void core::contentsPrivate::contentList::setCurrentContentP(core::abstractContent* p,int n)
 {
     if(current!=0)
     {
-       current->hiden();;
+       current->hiden();
     }
+    abstractContent *prev=current;
     
-    previous=current;
     current=p;
-    p->activated(n);        
-    emit contentChanged(current);    
+    p->activated(n);
+    contView->contentActivated(current,prev);
 }
 
 
-void core::contentList::addContent(core::abstractContent* c)
+void core::contentsPrivate::contentList::addContent(core::abstractContent* c)
 {    
     uniqueContent *uc=dynamic_cast<uniqueContent*>(c);
     if(uc!=0)
@@ -43,18 +45,18 @@ void core::contentList::addContent(core::abstractContent* c)
     }
     
     contents.append(c);
-    
-    emit contentAdded(c) ;    
+    contView->contentAdded(c);
+//     emit contentAdded(c) ;    
     c->loaded();
 }
 
-void core::contentList::removeContent(core::abstractContent* p)
+void core::contentsPrivate::contentList::removeContent(core::abstractContent* p)
 {
     int pos=contents.indexOf(p);
     removeContent(pos);
 }
 
-void core::contentList::removeContent(int pos)
+void core::contentsPrivate::contentList::removeContent(int pos)
 {
     if(pos<0||pos>=contents.size() )
     {
@@ -62,8 +64,7 @@ void core::contentList::removeContent(int pos)
     }        
     
     abstractContent *p=contents[pos];
-    p->_isLoaded=false;
-    p->unloaded();
+    p->unloadContent();
     contents.removeAt(pos);        
   
     uniqueContent *uc=dynamic_cast<uniqueContent*>(p);
@@ -74,21 +75,16 @@ void core::contentList::removeContent(int pos)
     
     history.removeAll(p);
     
-    if(previous==p)
-    {
-        previous=0;
-    }
     if(currentContent()==p)
     {
         back();
     }
-    
-    emit contentRemoved(p);
-    
-    p->deleteLater();;  
+    contView->contentRemoved(p);
+//     emit contentRemoved(p);
+    p->deleteLater();
 }
 
-void core::contentList::clear()
+void core::contentsPrivate::contentList::clear()
 {
     foreach(abstractContent *p,contents)
     {        
@@ -101,7 +97,7 @@ void core::contentList::clear()
 
 
 
-bool core::contentList::back()
+bool core::contentsPrivate::contentList::back()
 {
     content_history h=history.back();
     if(h.p==0)
@@ -113,7 +109,7 @@ bool core::contentList::back()
     return true;    
 }
 
-bool core::contentList::forward()
+bool core::contentsPrivate::contentList::forward()
 {
     return false;
 }
@@ -121,5 +117,10 @@ bool core::contentList::forward()
 
 namespace core
 {
-     contentList *contList;
+
+namespace contentsPrivate
+{
+    contentList *contList;
+}
+
 }

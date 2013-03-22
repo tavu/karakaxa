@@ -14,10 +14,12 @@ library::library(QWidget *parent)
     stack=new QStackedWidget(this);
 
     artistV=new QListView(this);
+
     artistM=new artistModel(this);    
     artistV->setModel(artistM);    
     artistV->setItemDelegate(new artistDelegate() );
-    
+        artistV->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+    artistV->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
     albumTrV=new albumTrack(this);    
 
     stack->addWidget(artistV);
@@ -74,6 +76,8 @@ QString library::name() const
 void library::toolBarInit()
 {
     toolBar=new KToolBar(this);
+    QWidget *spacer=new QWidget(this);
+    spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     searchLine =new views::delayLineEdit(this);
     searchLine->setClearButtonShown(true);
     searchLine->setClickMessage("Search");
@@ -90,7 +94,8 @@ void library::toolBarInit()
     toolBar->addAction( forwardAction );
 
     connect( forwardAction, SIGNAL( triggered( bool) ), this, SLOT( goToAlbum() ) );
-
+    
+    toolBar->addWidget(spacer);
     toolBar->addWidget(searchLine);
 
 //     connect(searchLine,SIGNAL(editingFinished () ),this,SLOT(search() ) );

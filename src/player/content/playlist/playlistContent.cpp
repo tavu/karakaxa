@@ -4,6 +4,7 @@
 #include"sortProxyModel.h"
 #include<QFile>
 #include<queries/fileQueryGrt.h>
+#include<QApplication>
 #define XMLFILE QString("playlists.xml")
 
 using namespace core;
@@ -29,7 +30,7 @@ playlistContent::playlistContent(QWidget *parent)
     treeV->setPlayOnDoubleCl(false);
     
     trackV=new views::treeView(this);
-    trackV->setRatingColumn(RATING);
+//     trackV->setRatingColumn(RATING);
     trackV->setEditTriggers(QAbstractItemView::SelectedClicked);
     trackV->setNotHide(TITLE);
     trackV->setFrameShape(QFrame::StyledPanel);
@@ -317,7 +318,14 @@ void playlistContent::activationSlot(QModelIndex in)
     {
         if(trackProxy!=0)
         {
-            plState=trackV->header()->saveState();
+            if(trackProxy->sourceModel()==plModel )
+            {
+                plState=trackV->header()->saveState();
+            }
+            else
+            {
+                smpState=trackV->header()->saveState();
+            }
             delete trackProxy;
         }
         smplaylistItem  *i= static_cast<smplaylistItem*>(item);
@@ -340,15 +348,21 @@ void playlistContent::activationSlot(QModelIndex in)
     {
         if(trackProxy!=0)
         {
-            smpState=trackV->header()->saveState();
+            if(trackProxy->sourceModel()==smpModel )
+            {
+                smpState=trackV->header()->saveState();
+            }
+            else
+            {
+                plState=trackV->header()->saveState();
+            }
             delete trackProxy;
         }
         
         trackProxy=new QSortFilterProxyModel(this);
         trackProxy->setDynamicSortFilter(false);
         trackProxy->setFilterKeyColumn(-1);
-        trackProxy->setFilterCaseSensitivity(Qt::CaseInsensitive);
-        trackProxy->setSourceModel(smpModel);
+        trackProxy->setFilterCaseSensitivity(Qt::CaseInsensitive);        
         trackProxy->setSourceModel(plModel);
 
         trackV->setSortingEnabled(false);
@@ -485,8 +499,6 @@ void playlistContent::writeSettings()
     group.writeEntry( "smartPLState", QVariant(smpState));
     group.writeEntry( "playlistState", QVariant(plState));
     group.config()->sync();
-    
-    
 }
 
 standardItem* playlistContent::head( standardItem *item)

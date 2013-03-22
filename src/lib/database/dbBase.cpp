@@ -4,6 +4,7 @@
 
 #include<status/playerStatus.h>
 #include"database.h"
+#include<QDebug>
 void database::dbBase::cleanUp()
 {
     clearArtist();
@@ -22,7 +23,7 @@ void database::dbBase::clearArtist()
 
      if (!q.exec() )
      {
-        core::status->addErrorP("setting albumArt error "+q.lastError().text() );
+        core::status->addErrorP(q.lastError().text() );
      }
 }
 
@@ -71,5 +72,113 @@ void database::dbBase::closeDb()
 {
 	db()->closeDatabase(databs);
 }
+
+QVariant database::dbBase::getId(QVariant var,const QString &table)
+{
+    QSqlQuery q(databs);    
+    
+    QString s("select id from %1 where name =?");
+    s=s.arg(table);
+    qDebug()<<s;
+    QString name=var.toString();
+    name=name.simplified();
+    if(name.isEmpty() )
+    {
+        name=QString(" ");
+    }
+    
+    var=QVariant(name);
+    
+    q.prepare(s);
+    q.addBindValue(var);
+    if(!q.exec() )
+    {
+        return QVariant();
+    }
+    
+    if(q.first() )      
+    {
+        return q.value(0);
+    }
+        
+    QString s2("insert into %1 (name) values (? )");    
+    s2=s2.arg(table);
+
+    q.prepare(s2);
+    q.addBindValue(var);
+        
+    if(!q.exec() )      
+    {   
+        qDebug()<<q.lastError().text();
+        return QVariant();
+    }    
+    
+    q.prepare(s );
+    q.addBindValue(var);
+    
+    if(!q.exec() || !q.first() )
+    {
+        qDebug()<<q.lastError().text();
+        return QVariant();
+    }    
+
+    return q.value(0);    
+}
+
+QVariant database::dbBase::getAlbumId(QVariant album,int artistId,const QString &table)
+{
+    QSqlQuery q(databs);
+    QString name=album.toString();
+    name=name.simplified();
+    if(name.isEmpty() )
+    {
+        name=QString(" ");
+    }
+    album=QVariant(name);
+    
+    q.prepare("select id from " + table + " where name =? AND artist=?" );
+    q.addBindValue(album);
+    q.addBindValue(artistId);
+    
+    if(!q.exec() )
+    {
+        qDebug()<<q.lastError().text();
+        return QVariant();
+    }
+    
+    if(q.next() )
+    {
+        return q.value(0);
+    }
+    
+    q.prepare("insert into " + table + " (name,artist) values (?,?);");
+    q.addBindValue(album);
+    q.addBindValue(artistId );   
+
+    if(!q.exec() )
+    {
+        qDebug()<<q.lastError().text();
+        return QVariant();
+    }    
+    
+    q.prepare("select id from " + table + " where name =? AND artist=?" );
+    q.addBindValue(album);
+    q.addBindValue(artistId);
+     
+    if(!q.exec() )
+    {
+        qDebug()<<q.lastError().text();
+        return QVariant();
+    }
+    
+    if(!q.next() )
+    {
+        qDebug()<<"database error at the insertion of album";
+        return QVariant();
+    }
+
+    return q.value(0);
+}
+
 
 QMutex database::dbBase::mutex;

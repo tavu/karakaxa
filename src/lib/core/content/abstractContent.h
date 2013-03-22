@@ -12,17 +12,19 @@
 
 namespace core
 {
-
-class contentView;
-class contentList;
+namespace contentsPrivate
+{
+    class contentView;
+    class contentList;
+}
 
 class abstractContent :public QWidget
 {    
     Q_OBJECT
     
 //     friend class core::contentHandler;
-      friend class core::contentView;
-      friend class core::contentList;
+      friend class core::contentsPrivate::contentView;
+      friend class core::contentsPrivate::contentList;
 
     public:
         abstractContent(QWidget *parent=0);
@@ -72,19 +74,19 @@ class abstractContent :public QWidget
         virtual void hiden();
 
         //this function is called after the content have been activated.
+        // the int n is the possition of the submenu of the content.
         virtual void activated(const int n);
 
-        void saveToHistory();
-
-        private:
-        QStandardItem *_item;
-        void updateContent(QStandardItem*);
+    private:
+        QStandardItem *_item;        
         QLinkedList<QWidget *> widgets;
-        QStandardItem* item();
-        void unloadContent();
-        void loadContent();
         bool _isLoaded;
         QAction *toolBarAction;
+        
+        void updateContent(QStandardItem*);
+        QStandardItem* item();
+        void unloadContent();
+        void loadContent();        
 };
 
 
