@@ -19,7 +19,7 @@ INCLUDE(${QT_USE_FILE})
 
 INCLUDE_DIRECTORIES(/usr/include/Qt)
 
-set ( LIB_CPP main.cpp qsql_mysql.cpp)
+set ( LIB_CPP qsql_mysql.cpp)
 set (LIB_HDRS qsql_mysql.h  qsql_mysql_private.h  embeddedMysqlCreator.h)
 
 
