@@ -1,0 +1,17 @@
+/usr/share/kde4/apps/karakaxa/icons/repeat-playlist.png
+/usr/share/kde4/apps/karakaxa/icons/music.png
+/usr/share/kde4/apps/karakaxa/icons/comment.png
+/usr/share/kde4/apps/karakaxa/icons/show-playing-track.png
+/usr/share/kde4/apps/karakaxa/icons/lead-artist.png
+/usr/share/kde4/apps/karakaxa/icons/playlist_empty.png
+/usr/share/kde4/apps/karakaxa/icons/duplicate4.png
+/usr/share/kde4/apps/karakaxa/icons/track.png
+/usr/share/kde4/apps/karakaxa/icons/album.png
+/usr/share/kde4/apps/karakaxa/icons/clock.png
+/usr/share/kde4/apps/karakaxa/icons/star.png
+/usr/share/kde4/apps/karakaxa/icons/not-repeat-playlist.png
+/usr/share/kde4/apps/karakaxa/icons/artist.png
+/usr/share/kde4/apps/karakaxa/icons/genre.png
+/usr/share/kde4/apps/karakaxa/sql/create.txt
+/usr/local/lib/libkarakaxa.so
+/usr/local/bin/karakaxa

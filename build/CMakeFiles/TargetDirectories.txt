@@ -1,0 +1,4 @@
+/home/tavu/karakaxa-new-disign/build/src/embeddedMysql/CMakeFiles/embeddedMysql.dir
+/home/tavu/karakaxa-new-disign/build/src/lib/CMakeFiles/karakaxa.dir
+/home/tavu/karakaxa-new-disign/build/src/player/CMakeFiles/karakaxa_exec.dir
+/home/tavu/karakaxa-new-disign/build/src/lastFm/CMakeFiles/karakaxa_lfm.dir

@@ -22,6 +22,7 @@
 
 #include"nplaylistModel.h"
 #include"nplaylistDelegate.h"
+#include "playingWidget.h"
 
 #include"../content/library/library.h"
 #include"../content/folder/folder.h"
@@ -48,10 +49,8 @@ mainWindow::mainWindow()
     database::init();
     views::init();
 
-    setIconSize(ICONZISE);
     setWindowIcon(decor->logo() );
-           
-    infoInit();
+
     conTreeInit();
     conViewInit();    
     nplViewInit();    
@@ -60,15 +59,13 @@ mainWindow::mainWindow()
     createTrayIcon();
     
     
-    setStatusBar(new views::statusBar(this) );    
-
-    connect( core::engine() ,SIGNAL(stateChanged ( Phonon::State) ),this, SLOT( stateChanged ( Phonon::State) ) );
+    setStatusBar(new views::statusBar(this) );
     
     defaultContent();
     readSettings();
-
     
     npList()->loadSavedPlaylist();
+//     menuBar ()->hide();
 }
 
 mainWindow::~mainWindow()
@@ -76,42 +73,21 @@ mainWindow::~mainWindow()
       writeSettings();
 }
 
-inline void mainWindow::infoInit()
-{
-    info=new playingInfo(this);
-    info->setFixedHeight(100);
-    
-    infoDock=new QDockWidget(this);
-    infoDock->setWidget(info);
-
-    infoDock->setPalette(views::decor->palette() );
-
-    info->setPalette(views::decor->palette());
-    
-    infoDock->setWindowTitle(tr("playing track information") );
-    infoDock->setObjectName("playingTrackInfo");    
-    infoDock->setAutoFillBackground(true);
-
-    addDockWidget ( Qt::LeftDockWidgetArea, infoDock,Qt::Horizontal);    
-}
-
 void mainWindow::conViewInit()
 {
     QFrame *f =new QFrame(this);
     QWidget *conView=contentHdl->view();
-    conView->setPalette(views::decor->palette());
-    f->setAutoFillBackground(true);
-    f->setPalette(views::decor->palette());
     
     QVBoxLayout *l=new QVBoxLayout(f);
     l->addWidget(core::contentHdl->toolBar() );
     l->addWidget(conView);
     l->setContentsMargins(0,0,0,0);
-    
-    f->setFrameStyle(QFrame::StyledPanel);
-    f->setFrameShadow(QFrame::Raised);
-                   
-    conView->setAutoFillBackground(true);
+    conView->setAutoFillBackground(false);
+    f->setObjectName("mainFrame");
+//     f->setFrameShape(QFrame::Panel);
+//     f->setFrameShadow(QFrame::Plain);
+//     f->setStyleSheet("#mainFrame { border:1px solid gray; border-radius: 4px; }");
+//     f->setStyleSheet("#mainFrame { border-width: 1px;border-style: solid;border-color: gray; border-radius: 4px; }");
     setCentralWidget(f); 
 }
 
@@ -128,10 +104,11 @@ void mainWindow::conTreeInit()
     conTreeDock->setObjectName("contentTree");
 
     conTree->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding );
-    QPalette pal= decor->palette();
-    pal.setColor(QPalette::Base,pal.color(QPalette::Window) );
-    conTree->setPalette(pal);
-    conTreeDock->setPalette(pal); 
+    conTree->setStyleSheet("QAbstractItemView {background-color: transparent;icon-size: 20px;} QTreeView::item{height: 30px;}");
+//     QPalette pal= decor->palette();
+//     pal.setColor(QPalette::Base,pal.color(QPalette::Window) );
+   // conTree->setPalette(pal);
+    //conTreeDock->setPalette(pal); 
         
     core::contentHdl->setView(conTree);
         
@@ -149,20 +126,10 @@ void mainWindow::nplViewInit()
     nplView =new nplaylistView();
     nowPlayListM=new nplModel(this);
     nplView->setModel(nowPlayListM);
-    nplView->setDragDropMode(QAbstractItemView::DragDrop);
-    nplView->setAcceptDrops(true);
-    nplView->setHeaderHidden(true);
-    for(int i=1;i<FRAME_NUM;i++)
-    {
-         nplView->setColumnHidden(i,true);
-    }
-   
-    nplView->setItemDelegate(new nplDelegate(this) );    
-
-    nplView->setFrameShadow(QFrame::Raised);
-    nplView->header()->setStretchLastSection(true);
-    nplView->header()->setDefaultSectionSize(35);
-    nplView->header()->setResizeMode(QHeaderView::Fixed);    
+    nplView->initMinimalView();
+    nplView->setStyleSheet("QAbstractItemView {background-color: transparent} QTreeView::item{height: 20px;}");
+    nplView->setFrameStyle(QFrame::NoFrame);
+//     nplView->setFrameShadow(QFrame::Raised);;    
     
     QColor c=decor->palette().color(QPalette::Window);    
     QString s=("QHeaderView::section {background-color: rgb(%1,%2,%3); }");
@@ -170,9 +137,9 @@ void mainWindow::nplViewInit()
     
     QPalette pal=decor->palette();
     pal.setColor(QPalette::Base,pal.color(QPalette::Window) );
-    nplView->setPalette(pal);
+   // nplView->setPalette(pal);
         
-    nplView->header()->setStyleSheet(s);
+//     nplView->header()->setStyleSheet(s);
 
 
 
@@ -182,9 +149,9 @@ void mainWindow::nplViewInit()
     t->setIconSize(QSize(25,25) );    
 
 
-    t->addAction( views::menus->clearPlaylist() );    
-    t->addAction( views::menus->repeatPlaylist() );
-    t->addAction( views::menus->sufflePlaylist() );
+    t->addAction( views::menus()->clearPlaylist() );    
+    t->addAction( views::menus()->repeatPlaylist() );
+    t->addAction( views::menus()->sufflePlaylist() );
     t->addSeparator();
     t->addAction( nplView->goToCurrent() );
 
@@ -192,62 +159,48 @@ void mainWindow::nplViewInit()
     l->addWidget(nplView);
     l->addWidget(t);
 
-    l->setContentsMargins(2,10,2,0);
+//     l->setContentsMargins(2,10,2,0);
 
     nplViewDock=new QDockWidget(this);
     nplViewDock->setWindowTitle("Playlist");
     nplViewDock->setObjectName("Playlist");
     nplViewDock->setWidget(w);
     
-    nplViewDock->setPalette(pal);
-    nplViewDock->setAutoFillBackground(true);
-    nplView->header()->setPalette(pal);
+    //nplViewDock->setPalette(pal);
+    nplViewDock->setAutoFillBackground(false);
+   // nplView->header()->setPalette(pal);
     addDockWidget ( Qt::RightDockWidgetArea, nplViewDock, Qt::Vertical );
 
 }
 
 void mainWindow::toolBarInit()
 {      
-    toolBar=new QToolBar(this);
-    
-//     info->setFixedWidth(160);  
+    toolBar=new QToolBar(this);      
     toolBar->setIconSize(ICONZISE);
+//     toolBar->setFixedHeight(60);
+  
+   playingWidget *plw=new playingWidget(this);
     
-        
-    
-    previousAction = new QAction(  views::decor->previous() ,"play previous", this );
-    toolBar ->addAction( previousAction );
-    connect(previousAction,SIGNAL(triggered( bool)),engine(),SLOT(previous() ) );
+    toolBar->addWidget(plw);
+//     addToolBar ( Qt::TopToolBarArea,toolBar);
 
-    playAction = new QAction(  views::decor->play(),"play-pause", this );
-    toolBar->addAction( playAction );
-    connect(playAction,SIGNAL(triggered( bool)),engine(),SLOT(playPause() ) );
-
-    nextAction = new QAction(  views::decor->next(),"play next", this );
-    toolBar->addAction( nextAction );
-    connect(nextAction,SIGNAL(triggered( bool)),engine(),SLOT(next() ) );
-   
-    views::sliderWidget *slider=new views::sliderWidget(this);
-    
-    toolBar->addWidget(slider);
-    
-                
-    volumeB=new views::volumeBar(this);
-    volumeB->setFixedWidth(150);
-    toolBar->addWidget(volumeB);
-           
-   
-    
-    
-    addToolBar ( Qt::TopToolBarArea,toolBar);
-
-    toolBar->setAutoFillBackground(false);
+    toolBar->setAutoFillBackground(true);
             
 //     toolBar->setFixedHeight(110);
 
     toolBar->setObjectName("buttonsToolBar");
+    
+    QPalette pal=toolBar->palette();
+    QColor c=pal.color(QPalette::Base);  
+    c=c.darker(150);
+    pal.setColor(QPalette::Base,c);
+//     toolBar->setPalette(c); 
 
-
+    infoDock=new QDockWidget(this);
+    infoDock->setWindowTitle("info");
+    infoDock->setObjectName("info");
+    infoDock->setWidget(toolBar);
+    addDockWidget ( Qt::RightDockWidgetArea, infoDock, Qt::Vertical );
 }
 
 
@@ -280,22 +233,12 @@ void mainWindow::unlockDock()
     delete w;
 //     nplViewDock->setTitleBarWidget(new QWidget(nplViewDock));
 
-    infoDock->setFeatures(features);
+  infoDock->setFeatures(features);
     w=infoDock->titleBarWidget();
     infoDock->setTitleBarWidget(0);
     delete w;
     
     toolBar->setMovable(true);    
-}
-
-
-
-void mainWindow::stateChanged(Phonon::State state)
-{
-    if (state==Phonon::ErrorState|| state==Phonon::PausedState )
-        playAction->setIcon(decor->play() );
-    else
-        playAction->setIcon(decor->pause() );
 }
 
 void mainWindow::defaultContent()
@@ -366,13 +309,13 @@ void mainWindow::createTrayIcon()
     trayIcon=new QSystemTrayIcon(decor->logo(),this);
     QMenu *trayIconMenu = new QMenu(this);
 
-    trayIconMenu->addAction(volumeB->action());
+    trayIconMenu->addAction(menus()->volume());
     trayIconMenu->addSeparator();
-    trayIconMenu->addAction(previousAction);    
-    trayIconMenu->addAction(playAction);    
-    trayIconMenu->addAction(nextAction);    
+    trayIconMenu->addAction(menus()->previous());    
+    trayIconMenu->addAction(menus()->playPause());    
+    trayIconMenu->addAction(menus()->next());    
     trayIconMenu->addSeparator();    
-    trayIconMenu->addAction(quitAction);
+    trayIconMenu->addAction(menus()->quit());
          
     trayIcon = new QSystemTrayIcon(this);
     trayIcon->setContextMenu(trayIconMenu);
@@ -397,22 +340,16 @@ void mainWindow::iconActivated(QSystemTrayIcon::ActivationReason reason)
 
 void mainWindow::createMenus()
 {
-    playerMenu=menuBar()->addMenu(tr("&Karakaxa"));
+    QMenu* playerMenu=menuBar()->addMenu(tr("&Karakaxa"));
 
-    quitAction = new QAction(KIcon("application-exit"), tr("&Quit"), this);
-    
-    connect(quitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
-    
-
-    playerMenu->addAction(previousAction);    
-    playerMenu->addAction(playAction);    
-    playerMenu->addAction(nextAction);    
-    playerMenu->addAction(volumeB->action());
+    playerMenu->addAction(menus()->previous());    
+    playerMenu->addAction(menus()->playPause());    
+    playerMenu->addAction(menus()->next() );    
+    playerMenu->addAction(menus()->volume() );
     playerMenu->addSeparator();    
-    playerMenu->addAction(quitAction);
+    playerMenu->addAction(menus()->quit());   
     
-    
-    viewMenu=menuBar()->addMenu(tr("&View"));    
+    QMenu* viewMenu=menuBar()->addMenu(tr("&View"));    
     
     lockLayout=new QAction(tr("&lock layout"),viewMenu);
     lockLayout->setCheckable(true);
@@ -428,12 +365,3 @@ void mainWindow::createMenus()
     helpMenu->action( KHelpMenu::menuHelpContents )->setVisible( false );    
     menuBar()->addMenu(s_helpMenu);
 }
-
-// void mainWindow::keyPressEvent(QKeyEvent* event)
-// {
-//     if(event->key()==Qt::Key_Space)
-//     {
-// 	   engine->playPause();
-//     }
-//     QWidget::keyPressEvent(event);
-// }

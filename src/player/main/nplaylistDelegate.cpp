@@ -79,11 +79,11 @@ void nplDelegate::paint ( QPainter * painter, const QStyleOptionViewItem & optio
 void nplDelegate::drawContent(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {    
     painter->save();
-    QPixmap pix=views::decor->tagIcon(-1).pixmap(40,40);    
-    qApp->style()->drawItemPixmap(painter,option.rect,Qt::AlignLeft|Qt::AlignVCenter,pix);
+//     QPixmap pix=views::decor->tagIcon(-1).pixmap(40,40);    
+//     qApp->style()->drawItemPixmap(painter,option.rect,Qt::AlignLeft|Qt::AlignVCenter,pix);
     QRect r=option.rect;
-    r.setX(r.x()+40);
-    r.setWidth(r.width()-3);
+    r.setX(r.x()+2);
+//     r.setWidth(r.width()-3);
     QRect up=r;
     QRect down=r;
     

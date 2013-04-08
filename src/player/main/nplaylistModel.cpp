@@ -41,6 +41,7 @@ bool nplModel::dropMimeData ( const QMimeData *data, Qt::DropAction action, int 
     return true;
 }
 
+
 /*
 void nplModel::reorder(int r)
 {

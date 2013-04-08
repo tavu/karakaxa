@@ -9,9 +9,6 @@
 #include<QVBoxLayout>
 #include<QSystemTrayIcon>
 
-// #include"nowPlaylistWidget.h"
-// #include"sound/sound.h"
-// #include"../mainWidget.h"
 #include <QDockWidget>
 #include<core.h>
 #include <KMainWindow>
@@ -48,24 +45,13 @@ class mainWindow :public KMainWindow
 
         nplModel *nowPlayListM;
 
-        //for the toolBar
-        QAction *playAction;
-        QAction *nextAction;
-        QAction *previousAction;
-        views::volumeBar *volumeB;
-        Phonon::SeekSlider *slider;
-
-        QLabel *timeLabel;
-        QLabel *progressLabel;
-
         //for the menu bar
-        QMenu *playerMenu;
+      /*  QMenu *playerMenu;
         QMenu *settingsMenu;
         QMenu *helpMenu;
         QMenu *viewMenu;
-
+*/
         QAction *lockLayout;
-        QAction *quitAction;
 
 
         //fuctions
@@ -74,7 +60,6 @@ class mainWindow :public KMainWindow
         inline void conTreeInit();
         inline void conViewInit();
         inline void defaultContent();
-        inline void infoInit();
         inline void createTrayIcon();
         inline void createMenus();
 
@@ -90,7 +75,6 @@ class mainWindow :public KMainWindow
 
         
     public slots:
-        void stateChanged(Phonon::State state);
         void iconActivated(QSystemTrayIcon::ActivationReason reason);
         void QuitSlot()
         {

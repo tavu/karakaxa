@@ -6,21 +6,16 @@
 
 scrolText::scrolText(QString s,QWidget *parent)
     :QWidget(parent),
-    _text(s),
     empyText(true)
 {
-    _text=_text.simplified();
+    setText(s);
     
-    if(_text.isEmpty())
-    {
-        _text=tr("Unknown");
-    }
-    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
 }
 scrolText::scrolText(QWidget *parent)
         :QWidget(parent)
 {
-    _text=tr("Unknown");    
+   setText(QString());
 }
 
 void scrolText::setText(QString s)
@@ -36,6 +31,11 @@ void scrolText::setText(QString s)
     {
         empyText=false;
     }
+    hint=fontMetrics().size( Qt::TextSingleLine,_text);
+    //give some extra space
+    
+    hint.setWidth(hint.width()+3);
+    updateGeometry ();
     update();
 }
 
@@ -47,7 +47,6 @@ inline QString scrolText::text()
 void scrolText::paintEvent(QPaintEvent *event)
 {
     QPainter painter(this);
-    painter.setFont (font());
     
     if(empyText)
     {
@@ -56,13 +55,13 @@ void scrolText::paintEvent(QPaintEvent *event)
 
     QRect r=rect();
     r.setWidth(r.width()-3);
-    QString elideText=fontMetrics().elidedText(_text,Qt::ElideRight,rect().width() );
+    QString elideText=fontMetrics().elidedText(_text,Qt::ElideRight,r.width() );
     painter.drawText(r,Qt::AlignLeft|Qt::AlignVCenter|Qt::TextSingleLine|Qt::TextIncludeTrailingSpaces,elideText);
 }
 
 QSize scrolText::sizeHint() const
 {
-    return QSize(100,10);
+    return hint;
 }
 
 void scrolText::setBold(bool b)
@@ -70,4 +69,9 @@ void scrolText::setBold(bool b)
     QFont f=font();
     f.setBold(b);
     setFont(f);
+}
+
+bool scrolText::isBold()
+{
+    return font().bold();
 }

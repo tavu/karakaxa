@@ -22,7 +22,6 @@ class nplModel :public views::playlistModel
         }
         bool dropMimeData (const QMimeData * data, Qt::DropAction action, int row, int column, const QModelIndex &parent);
 
-
 //         void clearReorder();
 //         void setReorder(set<int> &l);
 //         void reorder(int r,const std::set<int> &rows);

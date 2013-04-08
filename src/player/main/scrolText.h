@@ -14,10 +14,12 @@ public:
 
     QSize sizeHint() const;
     void setBold(bool);
+    inline bool isBold();
+    
 private:
     QString _text;
     void paintEvent(QPaintEvent *event);
-    QSize single;
+    QSize hint;
     bool empyText;
     
 public slots:

@@ -48,8 +48,8 @@ nowPlaylistContent::nowPlaylistContent(QWidget* parent): abstractContent(parent)
      layout->setContentsMargins(10,0,10,0);
      
       toolBar=new KToolBar(this);      
-      toolBar->addAction(views::menus->sufflePlaylist() );
-      toolBar->addAction(views::menus->clearPlaylist() );
+      toolBar->addAction(views::menus()->sufflePlaylist() );
+      toolBar->addAction(views::menus()->clearPlaylist() );
       toolBar->addAction(view->removeAction() );
       toolBar->setToolButtonStyle(Qt::ToolButtonIconOnly);
 }

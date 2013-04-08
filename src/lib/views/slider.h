@@ -12,7 +12,7 @@ namespace views
     {
         Q_OBJECT
         public:
-            explicit Slider( Qt::Orientation, uint max = 0, QWidget* parent = 0 );
+            Slider( Qt::Orientation, uint max = 0, QWidget* parent = 0 );
 
             virtual void setValue( int );
 
