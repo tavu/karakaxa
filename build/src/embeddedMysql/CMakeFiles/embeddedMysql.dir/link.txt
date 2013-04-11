@@ -1,2 +1,0 @@
-/usr/bin/ar cr libembeddedMysql.a  CMakeFiles/embeddedMysql.dir/qsql_mysql.cpp.o CMakeFiles/embeddedMysql.dir/moc_qsql_mysql.cxx.o CMakeFiles/embeddedMysql.dir/moc_qsql_mysql_private.cxx.o CMakeFiles/embeddedMysql.dir/moc_embeddedMysqlCreator.cxx.o
-/usr/bin/ranlib libembeddedMysql.a
