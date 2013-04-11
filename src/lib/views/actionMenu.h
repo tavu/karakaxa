@@ -71,7 +71,7 @@ class actionMenu :public QObject
         
     private slots:
         void repeatPlaylistSlot(bool repeat);
-        void stateChanged(Phonon::State state);
+        void stateChanged();
         void volumeC(qreal v);
 };
 

@@ -56,6 +56,12 @@ bool core::soundEngine::play(int n)
     return true;
 }
 
+bool core::soundEngine::isPlaying()
+{
+    return mediaObject->state() != Phonon::PausedState && mediaObject->state() != Phonon::ErrorState;
+}
+
+
 bool core::soundEngine::next()
 {
     //mutex.lock();
@@ -153,7 +159,7 @@ void core::soundEngine::mediaStateChanged ( Phonon::State newstate, Phonon::Stat
 void core::soundEngine::playPause()
 {
 
-    if (mediaObject->state() ==Phonon::PausedState||mediaObject->state() ==Phonon::ErrorState)
+    if (!isPlaying() )
     {
         play();
     }

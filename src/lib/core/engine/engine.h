@@ -47,6 +47,9 @@ class soundEngine :public QObject
         {
             return engine;
         }
+        
+        bool isPlaying();
+        
     private:
         soundEngine(QObject *parent=0);
         

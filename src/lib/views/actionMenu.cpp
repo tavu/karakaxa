@@ -18,6 +18,7 @@ views::actionMenu::actionMenu()
 
     playPauseA = new QAction(  views::decor->play(),"play-pause", this );
     connect(playPauseA,SIGNAL(triggered( bool)),core::engine(),SLOT(playPause() ) );
+    connect(core::engine(),SIGNAL(stateChanged(Phonon::State)),this,SLOT(stateChanged() ) );
     
     volumeAction = new QAction(  decor->volumeMedium(),tr("mute"), this );    
     connect(volumeAction,SIGNAL(triggered( bool)),core::engine(),SLOT(muteToggle() ) );
@@ -56,12 +57,16 @@ void views::actionMenu::repeatPlaylistSlot(bool repeat)
     }
 }
 
-void views::actionMenu::stateChanged(Phonon::State state)
+void views::actionMenu::stateChanged()
 {
-    if (state==Phonon::ErrorState|| state==Phonon::PausedState )
-        playPauseA->setIcon(decor->play() );
-    else
+    if (core::engine()->isPlaying() )
+    {
         playPauseA->setIcon(decor->pause() ); 
+    }
+    else
+    {   
+        playPauseA->setIcon(decor->play() );
+    }
 }
 
 void views::actionMenu::volumeC(qreal v)
