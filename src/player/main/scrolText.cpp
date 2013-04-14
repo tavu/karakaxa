@@ -6,40 +6,45 @@
 
 scrolText::scrolText(QString s,QWidget *parent)
     :QWidget(parent),
-    empyText(true)
+    _opacity(1)
 {
     setText(s);
     
     setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
 }
 scrolText::scrolText(QWidget *parent)
-        :QWidget(parent)
+        :QWidget(parent),
+        _opacity(1)
 {
    setText(QString());
 }
 
 void scrolText::setText(QString s)
 {
-    s=s.simplified();
     _text=s;
-    if(_text.isEmpty())
-    {
-        _text=tr("Unknown");
-        empyText=true;
-    }
-    else
-    {
-        empyText=false;
-    }
-    hint=fontMetrics().size( Qt::TextSingleLine,_text);
+    int w=fontMetrics().size( Qt::TextSingleLine,_text).width() + 3;
+    int h=fontMetrics().height();
     //give some extra space
-    
-    hint.setWidth(hint.width()+3);
+    hint.setWidth(w);
+    hint.setHeight(h);
     updateGeometry ();
     update();
 }
 
-inline QString scrolText::text()
+void scrolText::setTextSize(int s)
+{
+    QFont f=font();
+    f.setPixelSize(s);
+    setFont(f);
+}
+
+int scrolText::textSize()
+{
+    return font().pixelSize();
+}
+
+
+QString scrolText::text()
 {
     return _text;
 }
@@ -47,11 +52,7 @@ inline QString scrolText::text()
 void scrolText::paintEvent(QPaintEvent *event)
 {
     QPainter painter(this);
-    
-    if(empyText)
-    {
-        painter.setOpacity(0.5);
-    }
+    painter.setOpacity(_opacity);
 
     QRect r=rect();
     r.setWidth(r.width()-3);

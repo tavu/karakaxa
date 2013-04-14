@@ -50,7 +50,6 @@ mainWindow::mainWindow()
     views::init();
 
     setWindowIcon(decor->logo() );
-
     conTreeInit();
     conViewInit();    
     nplViewInit();    
@@ -65,7 +64,7 @@ mainWindow::mainWindow()
     readSettings();
     
     npList()->loadSavedPlaylist();
-//     menuBar ()->hide();
+    menuBar ()->hide();
 }
 
 mainWindow::~mainWindow()
@@ -175,9 +174,8 @@ void mainWindow::nplViewInit()
 
 void mainWindow::toolBarInit()
 {      
-    toolBar=new QToolBar(this);      
-    toolBar->setIconSize(ICONZISE);
-//     toolBar->setFixedHeight(60);
+    toolBar=new QToolBar(this);         
+
   
    playingWidget *plw=new playingWidget(this);
     

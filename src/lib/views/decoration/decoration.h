@@ -13,109 +13,84 @@ namespace views
 {
 
 class decoration
-{      
-    public:
-        decoration();
+{
+public:
+    decoration();
 
-        static KIcon icon(const QString s);
+    static KIcon icon(const QString s);
 
-        inline QPalette palette()
-        {
-            return pal;
-        }
+    QPalette palette()
+    {
+        return pal;
+    }
 
-        inline QPixmap albumPic()
-        {
-            return QPixmap(albumIcon );
-        }
+    QPixmap albumPic()
+    {
+        return QPixmap(albumIcon );
+    }
 
-        inline KIcon artist()
-        {
-            return KIcon(artistIcon );
-        }
+    KIcon next();
 
-        inline KIcon next()
-        {
-            return nextIcon;
-        }
-        inline KIcon previous()
-        {
-            return previousIcon;
-        }
-        inline KIcon pause()
-        {
-            return pauseIcon;
-        }
-        inline KIcon play()
-        {
-            return playIcon;
-        }
-        inline KIcon muted()
-        {
-            return KIcon("audio-volume-muted");
-        }
-        inline KIcon volumeHigh()
-        {
-            return KIcon("audio-volume-high");
-        }
-        inline KIcon volumeMedium()
-        {
-            return KIcon("audio-volume-medium");
-        }
-        inline KIcon volumeLow()
-        {
-            return KIcon("audio-volume-low");
-        }
+    KIcon previous();
 
-        KIcon playListIcon()
-        {
-            return KIcon("audio-x-generic");
-        }
+    KIcon pause();
 
-        KIcon tagIcon(int t);
+    KIcon play();
 
-        KIcon logo()
-        {
-            return playerIcon;
-        }
+    KIcon muted();
 
-        inline void initPalete();
+    KIcon volumeHigh();
+
+    KIcon volumeMedium();
+
+    KIcon volumeLow();
 
 
-        QPixmap cover(const QString &path);
+    KIcon playListIcon();
 
-        inline QSize coverSize()
-        {
+
+    KIcon tagIcon(int t);
+
+    KIcon logo();
+
+
+    void initPalete();
+
+
+    QPixmap cover(const QString &path);
+
+    QSize coverSize()
+    {
         //scaling the pixmap is very slow.
         //that's why we scaled the images to pixSize before we save them to the cache
         //that makes the cache unapropriate if u want images larger than pixsize.
-            return pixSize;
-        }
-        void init();
+        return pixSize;
+    }
+    void init();
 
-        static QPixmap decorationPixmap(const QStyleOptionViewItem &option, const QModelIndex &index);
-        static QPixmap toPixmap(const QStyleOptionViewItem &option, const QIcon &icon,const QModelIndex &index);
-    private:
-        QPalette pal;
+    static QPixmap decorationPixmap(const QStyleOptionViewItem &option, const QModelIndex &index);
+    static QPixmap toPixmap(const QStyleOptionViewItem &option, const QIcon &icon,const QModelIndex &index);
+private:
+    QPalette pal;
 
-        //icons
-        QString albumIcon;
-        QString artistIcon;
+    //icons
+    QString albumIcon;
+    QString artistIcon;
 
-        KIcon nextIcon;
-        KIcon previousIcon;
-        KIcon pauseIcon;
-        KIcon playIcon;
+    KIcon nextIcon;
+    KIcon previousIcon;
+    KIcon pauseIcon;
+    KIcon playIcon;
 
-        KIcon playerIcon;
-        KIcon icons[audioFiles::FRAME_NUM];
-        KIcon defaultIcon;
+    KIcon playerIcon;
+    KIcon icons[audioFiles::FRAME_NUM];
+    KIcon defaultIcon;
 
-        QSize pixSize;
+    QSize pixSize;
 };
 
-    extern decoration *decor;
-    
+extern decoration *decor;
+
 };//namespace
 #endif
 

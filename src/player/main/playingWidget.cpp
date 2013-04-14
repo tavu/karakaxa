@@ -6,70 +6,75 @@
 #include<decoration/decoration.h>
 #include<nowPlayList/nplaylist.h>
 #include"playingCover.h"
+#include<actionMenu.h>
+#include<QToolButton>
 
 playingWidget::playingWidget(QWidget* parent) :QWidget(parent)
 {
     using namespace views;
     using namespace core;
     
-    cover=new playingCover(this);
-    slider=new views::sliderWidget(this);
+    cover=new coverWidget(this);
+    cover->setHeight(65);
+    
+    slider=new views::sliderWidget(true,this);
+    slider->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    
     rating=new views::ratingWidget(this);
+    rating->setFixedHeight(17);
+    rating->setFixedWidth(125);
+    rating->hide();
+    
     titleL=new scrolText(this);
     titleL->setBold(true);
+    titleL->setTextSize(12);
+    
     infoL=new scrolText(this);
-    toolBar=new QToolBar(this);
+    infoL->setTextSize(12);
+    
     volumeB=new views::volumeBar(this);    
-        
-    volumeB->setMaximumWidth(150);  
-    
-    slider->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    cover->setHeight(60);
-    
-    QAction *previousAction = new QAction(  views::decor->previous() ,"play previous", this );
-    toolBar ->addAction( previousAction );
-    connect(previousAction,SIGNAL(triggered( bool)),engine(),SLOT(previous() ) );
-
-    toolBar->addWidget(slider);
+    volumeB->setFixedWidth(150);
+            
+    QToolButton *play=new QToolButton(this);
+    play->setDefaultAction(views::menus()->playPause() );
+    play->setToolButtonStyle(Qt::ToolButtonIconOnly);
+    play->setIconSize(QSize(25,25) );
+    play->setAutoRaise(true);
    
-    QAction *nextAction = new QAction(  views::decor->next(),"play next", this );
-    toolBar->addAction( nextAction );
-    connect(nextAction,SIGNAL(triggered( bool)),engine(),SLOT(next() ) );
+    QToolButton *next=new QToolButton(this);
+    next->setDefaultAction(views::menus()->next());
+    next->setAutoRaise(true);
+    next->setToolButtonStyle(Qt::ToolButtonIconOnly);
+    next->setIconSize(QSize(25,25));
     
-    rating->setFixedHeight(15);
-//     rating->setFixedWidth(50);
+    QToolButton *prev=new QToolButton(this);
+    prev->setDefaultAction(views::menus()->previous());
+    prev->setToolButtonStyle(Qt::ToolButtonIconOnly);
+    prev->setAutoRaise(true);
+    prev->setIconSize(QSize(25,25));
     
-    QGridLayout *mainLayout=new QGridLayout(this);
-    QGridLayout *gridL=new QGridLayout();        
+    QGridLayout *mainLayout=new QGridLayout(this);    
+    QHBoxLayout *hl=new QHBoxLayout();        
 
     QWidget* spacer = new QWidget(this);
     spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    
-    gridL->setAlignment(Qt::AlignTop|Qt::AlignLeft);
-    gridL->setContentsMargins(10,0,0,0);
-    gridL->setSpacing(0);
-    
-    gridL->addWidget(titleL,0,0,Qt::AlignHCenter|Qt::AlignLeft);    
-    gridL->addWidget(infoL,0,1,Qt::AlignHCenter|Qt::AlignLeft);
-    gridL->addWidget(rating,0,2,Qt::AlignHCenter|Qt::AlignLeft);
-    gridL->addWidget(spacer,0,3);
-    gridL->addWidget(volumeB,0,4,Qt::AlignHCenter|Qt::AlignRight);    
 
-    mainLayout->setContentsMargins(0,2,0,0);
-    mainLayout->setSpacing(0);
+    hl->setContentsMargins(0,0,0,0);
+    hl->addWidget(titleL);
+    hl->addWidget(rating);
+    hl->addWidget(infoL);
+    hl->addWidget(spacer);
+    hl->addWidget(volumeB);
+    
+    mainLayout->setSpacing(5);
+    mainLayout->setContentsMargins(0,0,0,0);
     mainLayout->addWidget(cover,0,0,2,1);
-    mainLayout->addWidget(toolBar,0,1);
-    mainLayout->addLayout(gridL,1,1);
+    mainLayout->addWidget(prev,0,1,Qt::AlignHCenter);
+    mainLayout->addWidget(slider,0,2);
+    mainLayout->addWidget(next,0,3);
+    mainLayout->addWidget(play,1,1,Qt::AlignHCenter);
+    mainLayout->addLayout(hl,1,2,1,3);    
     
-    
-
-   
-    
-//     toolBar->addWidget(slider);
-    
-                
-  
-        
     connect(engine(),SIGNAL(trackChanged(QString) ),this,SLOT(updateInfo()) );
     connect(rating,SIGNAL(ratingChanged(int) ),SLOT(setRating(int) ) );
 }
@@ -90,18 +95,36 @@ void playingWidget::getInfo()
 {   
     if (track.isNull())
     {
-//         core::status->addErrorP("playingInfo: can't get informarion file is null");
+        titleL->setText(" ");
+        infoL->setText(" ");
+        rating->hide();
         return;
     }
-    QString title =track->tag(TITLE).toString()+" - ";
+    
+    QString title =track->tag(TITLE).toString()+"   - ";
     titleL->setText(title);
+    
     QString info=track->tag(ALBUM).toString() +" - "+track->tag(ARTIST).toString();
-    infoL->setText(info);
+    if(info.isEmpty() )
+    {
+        infoL->setText(" ");
+    }
+    else
+    {
+        infoL->setText(info);
+    }
     
     cover->setCover(track->cover() );    
-    rating->setRating(track->tag(RATING).toInt());
-    
-    
+    QVariant ratingValue=track->tag(RATING);
+    if(ratingValue.isNull())
+    {
+        rating->hide();
+    }
+    else
+    {
+        rating->setRating(track->tag(RATING).toInt());
+        rating->show();
+    }
 }
 
 void playingWidget::setRating(int n)

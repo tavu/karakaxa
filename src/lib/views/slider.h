@@ -64,8 +64,16 @@ namespace views
     {
         Q_OBJECT
         public:
-            sliderWidget(QWidget *parent=0);
-
+            sliderWidget(bool showLabels=true,QWidget *parent=0);
+            QLabel* timePassed()
+            {
+                return left;
+            }
+            
+            QLabel* timeRemaining()
+            {
+                return right;
+            }
         private slots:
             void totalTimeChanged(qint64 time);
             void updateTime(int);

@@ -22,10 +22,10 @@ class playingWidget :public QWidget
         views::ratingWidget *rating;        
         scrolText *titleL;
         scrolText *infoL;
-        QToolBar *toolBar;
         views::volumeBar *volumeB;
         
         core::nplPointer track;        
+                
     private slots:
         void updateInfo();
         void setRating(int n);
