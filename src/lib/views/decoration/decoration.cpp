@@ -9,31 +9,19 @@
 using namespace audioFiles;
 
 views::decoration::decoration()
-//         :albumIcon("data/album.png"),
-//         artistIcon("data/artist.png"),
-    :previousIcon( "media-skip-backward" ),
-     playIcon( "media-playback-start" ),
-     nextIcon( "media-skip-forward" ),
-     pauseIcon( "media-playback-pause" ),
-     pixSize(170,150)
+     :pixSize(170,150)
 {
-    artistIcon=KGlobal::dirs()->findResource("data",QString("karakaxa/icons/artist.png") );
     icons[ARTIST]=icon("artist");
-
     icons[LEAD_ARTIST]=icon("lead-artist");
-
-    albumIcon=KGlobal::dirs()->findResource("data",QString("karakaxa/icons/album.png") );
     icons[ALBUM]=icon("album");
-
     icons[RATING]=KIcon("rating");
     icons[COMMENT]=icon("comment");
     icons[GENRE]=icon("genre");
     icons[TRACK]=icon("track");
     icons[LENGTH]=icon("clock");
     defaultIcon=icon("music");
-    playerIcon=icon("karakaxa");
 
-    playIcon=icon("play3");
+    albumIcon=KGlobal::dirs()->findResource("data",QString("karakaxa/icons/album.png") );
     initPalete();
 }
 
@@ -174,7 +162,7 @@ void views::decoration::initPalete()
 }
  KIcon views::decoration::play()
 {
-    return icon("play4");
+    return icon("play");
 }
  KIcon views::decoration::muted()
 {
@@ -200,8 +188,14 @@ KIcon views::decoration::playListIcon()
 
 KIcon views::decoration::logo()
 {
-    return playerIcon;
+    return icon("karakaxa");
 }
+
+QPixmap views::decoration::albumPic()
+{
+    return QPixmap(albumIcon);
+}
+
 
 namespace views
 {

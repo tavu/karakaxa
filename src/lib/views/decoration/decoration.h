@@ -6,8 +6,7 @@
 #include <QPixmapCache>
 #include<QStyleOptionViewItem>
 #include<QModelIndex>
-// #include"../../files/tagsTable.h"
-#include"../../files/tagsTable.h"
+#include"tagsTable.h"
 
 namespace views
 {
@@ -24,10 +23,7 @@ public:
         return pal;
     }
 
-    QPixmap albumPic()
-    {
-        return QPixmap(albumIcon );
-    }
+    QPixmap albumPic();
 
     KIcon next();
 
@@ -73,20 +69,11 @@ public:
 private:
     QPalette pal;
 
-    //icons
-    QString albumIcon;
-    QString artistIcon;
-
-    KIcon nextIcon;
-    KIcon previousIcon;
-    KIcon pauseIcon;
-    KIcon playIcon;
-
-    KIcon playerIcon;
     KIcon icons[audioFiles::FRAME_NUM];
     KIcon defaultIcon;
 
     QSize pixSize;
+    QString albumIcon;
 };
 
 extern decoration *decor;
