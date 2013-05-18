@@ -1,6 +1,7 @@
 #include"fileCacheFactory.h"
 
 #include"fileCache.h"
+#include<QDebug>
 
 audioFiles::fileCache* audioFiles::fileCacheFactory::getFileCache(QString path)
 {

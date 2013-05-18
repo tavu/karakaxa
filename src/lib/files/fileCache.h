@@ -8,10 +8,10 @@
 #include<QReadWriteLock>
 #include<QLinkedList>
 
-
+#include"tagList.h"
 
 #include"fileTags.h"
-#include<filesToDb/fileToDb.h>
+#include<Basic/filesToDb.h>
 namespace database
 {
 class fileToDb;
@@ -54,7 +54,7 @@ class fileCache :public QObject
 
         QList<tagChanges> savingEnd ( );
 
-        bool       exist() ;
+        bool exist() ;
 
     private:
         fileCache ( QString path );
@@ -65,7 +65,8 @@ class fileCache :public QObject
         QString _path;
 
         fileTags *file;
-        database::fileToDb fdb;
+//         database::fileToDb fdb;
+        Basic::filesToDb *fdb;
 
         QMutex loadMutex;
 //         QMutex readMutex;
@@ -74,7 +75,8 @@ class fileCache :public QObject
 
     signals:
         void changed ( audioFiles::tagChangesL );
-        void removed();
+//         void removed();
+        void doesExist(bool);
 //      void moved();
 
 

@@ -30,20 +30,21 @@ class dbBase :public QObject
 		
         void closeDb();
         
-        QVariant getId(QVariant var,const QString &table);
-        /*variables: 
-            album:the name of the album
-            artist:the id of the artist
-            table:the name of the database table of the albums
-        */
-        QVariant getAlbumId(QVariant album,int artistId,const QString &table);
+        //returns the new appropriate id from the table acording the value of var;
+        //it is possible to make some changes to value(as simplified the string)
+        //after return the Qvarian var contains the actual value of that field of the table
         
+        QVariant getId(QVariant &var,const QString &table,bool *inserted=0);
 
+        QVariant getAlbumId(QVariant &album,int artistId,const QString &table,bool *inserted=0);
+        
         void            cleanUp();
         void            clearArtist();
         void            clearAlbum();
         void            clearGenre();
         void            clearComposer();
+        
+//         static trackRecord* fromSqlRecord(const QSqlRecord &r);
         
     protected:
         QSqlDatabase    databs;

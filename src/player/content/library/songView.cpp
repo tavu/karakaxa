@@ -53,7 +53,7 @@ void songView::fileEdit()
     
     foreach(QModelIndex i,list)
     {
-        if (i.column()==TITLE)
+        if (i.column()==Basic::TITLE)
         {
 	    QUrl u=model()->data(i,URL_ROLE).toUrl();
 	    if(!u.isEmpty() )

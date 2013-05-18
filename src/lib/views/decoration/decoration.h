@@ -6,8 +6,9 @@
 #include <QPixmapCache>
 #include<QStyleOptionViewItem>
 #include<QModelIndex>
+#include <Basic/tagsTable.h>
 // #include"../../files/tagsTable.h"
-#include"../../files/tagsTable.h"
+
 
 namespace views
 {
@@ -108,7 +109,7 @@ class decoration
         KIcon playIcon;
 
         KIcon playerIcon;
-        KIcon icons[audioFiles::FRAME_NUM];
+        KIcon icons[Basic::FRAME_NUM];
         KIcon defaultIcon;
 
         QSize pixSize;

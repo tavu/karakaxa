@@ -11,7 +11,7 @@ artistModel::artistModel(QObject *parent)
         _needUpdate(true)
 {
     itemSize.setHeight(30);
-    artistPic=views::decor->tagIcon(ARTIST).pixmap(30,30);
+    artistPic=views::decor->tagIcon(Basic::ARTIST).pixmap(30,30);
     artistQ=new database::artistQueryGrt(this);
 }
 
@@ -23,7 +23,7 @@ QVariant artistModel::data(const QModelIndex &index, int role) const
     {
         QVariant value = QStringListModel::data(index, role);
 
-        return views::pretyTag(value,ARTIST);
+        return views::pretyTag(value,Basic::ARTIST);
     }
     if (role==Qt::DecorationRole)
     {

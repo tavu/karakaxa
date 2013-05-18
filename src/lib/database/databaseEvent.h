@@ -22,13 +22,16 @@ enum dbEvents
     PL_REM,         //some playlists are removed from the library
     NEW_LF,         //a new folder has be inserted to the library
     LF_REM,         //a folder has removed from the library
-    NEW_CONN,        //we connected to a new database
-    ANY             //anything else
+    NEW_CONN,       //we connected to a new database
+    TAG_INSERT,     //a tag has been removed
+    TAG_REMOVED,    //a new tag has beeninserted
+    TAG_ALTERED,      //a tag has been alter for example a album change its image
+    MULTI_EVENTS,    //the event contains a list with multiple events
+    ANY             //anything else  
 };
 
 class dbEvent :public QObject
-{
-    Q_OBJECT
+{    
     public:
         dbEvent(int t) :QObject()
         {
@@ -47,6 +50,8 @@ class dbEvent :public QObject
     private:
         int _type;
 };
+
+// class multiEvents
 
 class dbEventAF :public dbEvent
 {    

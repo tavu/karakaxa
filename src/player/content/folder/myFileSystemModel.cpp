@@ -133,7 +133,7 @@ bool myFileSystemModel::dropMimeData(const QMimeData* data, Qt::DropAction actio
 int myFileSystemModel::columnCount( const QModelIndex & parent ) const
 {
 
-    return KDirModel::columnCount(parent)+FRAME_NUM;
+    return KDirModel::columnCount(parent)+Basic::FRAME_NUM;
 }
 
 QVariant myFileSystemModel::data(const QModelIndex &index, int role) const
@@ -197,7 +197,7 @@ QVariant myFileSystemModel::headerData ( int section, Qt::Orientation orientatio
 
     if (role ==Qt::DisplayRole)
     {
-        return views::tagName( (tagsEnum)(section-DIRCOLUMN) );
+        return views::tagName( section-DIRCOLUMN);
     }
     return QVariant();
 }
@@ -232,7 +232,7 @@ Qt::ItemFlags myFileSystemModel::flags ( const QModelIndex & index ) const
     }
 
     int tag=index.column()-DIRCOLUMN;
-    if(tag<0||tag==audioFiles::COUNTER||tag==audioFiles::LENGTH||tag==audioFiles::BITRATE||tag==audioFiles::RATING)
+    if(tag<0||tag==Basic::COUNTER||tag==Basic::LENGTH||tag==Basic::BITRATE||tag==Basic::RATING)
     {
         return f;
     }

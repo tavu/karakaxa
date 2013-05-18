@@ -11,7 +11,7 @@ QString database::tagQueryGrt::queryString() const
 
     if (s.isEmpty() )
     {
-		qDebug()<<"wrong tag";
+        qDebug()<<"wrong tag";
         return QString();
     }
     ret=ret.append(s).append(" from trackView" );
@@ -70,7 +70,7 @@ void database::tagQueryGrt::dbEvents(database::dbEventP e)
 bool database::tagQueryGrt::select()
 {
     list.clear();
-	resultsList.clear();
+    resultsList.clear();
     QString s=queryString();
 
     if (s.isEmpty() )

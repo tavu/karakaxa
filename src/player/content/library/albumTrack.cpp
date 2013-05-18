@@ -10,8 +10,10 @@
 #include<KConfigGroup>
 #include<queries/matchQuery.h>
 #include<queries/queryGeneration.h>
+#include<Basic/tagsTable.h>
 
 using namespace core;
+using namespace Basic;
 
 albumTrack::albumTrack(QWidget *parent)
         :QWidget(parent),

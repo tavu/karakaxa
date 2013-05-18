@@ -1,6 +1,7 @@
 #include"playlistModel.h"
 #include<views.h>
 #include<core.h>
+#include<Basic/tagsTable.h>
 views::playlistModel::playlistModel(QObject *parent)
     :QAbstractListModel(parent),
     pl(0),
@@ -45,7 +46,7 @@ int views::playlistModel::rowCount ( const QModelIndex & parent ) const
 int views::playlistModel::columnCount ( const QModelIndex & parent ) const
 {
     Q_UNUSED(parent)
-    return FRAME_NUM;
+    return Basic::FRAME_NUM;
 }
 
 QModelIndex views::playlistModel::parent(const QModelIndex& index) const
@@ -86,7 +87,7 @@ QVariant views::playlistModel::data(const QModelIndex & index, int role ) const
     if( role == Qt::DisplayRole || role == Qt::EditRole)
     {
         QVariant var=p->tag(index.column());
-        return pretyTag(var,(tagsEnum)index.column() );
+        return pretyTag(var,index.column() );
     }
     else if(role==URL_ROLE)
     {
@@ -122,7 +123,7 @@ bool views::playlistModel::setData(const QModelIndex& index, const QVariant& val
        audioFile file(f->path() );
        file.setTag(index.column(),value);
 
-       if(file.error()==OK)
+       if(file.error()==Basic::OK)
        {
           return true;
        }
@@ -191,7 +192,7 @@ Qt::ItemFlags views::playlistModel::flags(const QModelIndex &index) const
     {
         return Qt::NoItemFlags;
     }
-    if (index.column()==BITRATE ||index.column()==LENGTH || index.column()==COUNTER || p->type()==NPLSTREAM )
+    if (index.column()==Basic::BITRATE ||index.column()==Basic::LENGTH || index.column()==Basic::COUNTER || p->type()==NPLSTREAM )
     {
          return ret & ~Qt::ItemIsEditable;
     }

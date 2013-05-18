@@ -12,7 +12,7 @@ class actionMenu :public QObject
     Q_OBJECT
     public:
         actionMenu();
-
+        
         QAction* clearPlaylist()
         {
             return clearPlaylistA;
@@ -30,7 +30,11 @@ class actionMenu :public QObject
 
         QAction* repeatPlaylist();
 	
-    private:
+//         void init();
+        
+//         static actionMenu* instance();
+        
+    private:        
         QAction *clearPlaylistA;
         QAction *sufflePlaylistA;
         QAction *repeatPlaylistA;
@@ -38,7 +42,10 @@ class actionMenu :public QObject
         QAction *playPauseA;
         QAction *nextA;
         QAction *previousA;
-
+        
+//         static void clear();
+//         static actionMenu* _instance;
+        
     private slots:
         void repeatPlaylistSlot(bool repeat);
 };

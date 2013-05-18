@@ -187,7 +187,7 @@ QSqlDatabase database::databaseConection::getDatabase()
 {
     mutex.lock();
 
-    if ( QThread::currentThread() ==core::mainThr() )
+    if ( QThread::currentThread() == qApp->thread()  )
     {
         if ( !dBase.isOpen() )
         {
@@ -236,7 +236,7 @@ QSqlDatabase database::databaseConection::getDatabase()
 
 void database::databaseConection::closeDatabase()
 {
-    if ( QThread::currentThread() ==core::mainThr() )
+    if ( QThread::currentThread() == qApp->thread()  )
     {
         return ;
     }

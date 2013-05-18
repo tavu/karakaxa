@@ -3,12 +3,13 @@
 #include<QDirIterator>
 #include<QDebug>
 #include"nplFile.h"
-#include"../core.h"
 #include <QHBoxLayout>
 #include <QProgressBar>
 #include"nplStream.h"
 #include"playlist/filePlaylist.h"
 #include<QtAlgorithms>
+#include<Basic/tagsTable.h>
+#include<Basic/status.h>
 
 nplTread::nplTread()
         :QThread(),
@@ -98,7 +99,7 @@ void nplTread::addPlaylist(const QUrl& url)
     filePlaylist *pl=getPlaylist(url.toLocalFile());
     if(pl==0)
     {
-	   status->addError(tr("Can't load playlist") );
+	   Basic::msg()->error(tr("Can't load playlist") );
 	   return;
     }
     
@@ -196,8 +197,8 @@ void nplTread::addDirectory(const QUrl &url)
 bool nplTread::trackLessThan(nplPointer a,nplPointer b)
 {
     int trackA,trackB;
-    trackA=a->tag(TRACK).toInt();
-    trackB=b->tag(TRACK).toInt();
+    trackA=a->tag(Basic::TRACK).toInt();
+    trackB=b->tag(Basic::TRACK).toInt();
     
     return trackA<trackB;
 }

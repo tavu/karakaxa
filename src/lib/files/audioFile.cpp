@@ -11,7 +11,9 @@
 #include"audioFilesSelf.h"
 #include"fileCacheFactory.h"
 
-// using namespace player;
+#include<Basic/tagsTable.h>
+
+using namespace Basic;
 
 
 
@@ -25,41 +27,37 @@ const short int audioFiles::audioFile::DEFAULTF=SELECT|ONDATAB|ONCACHE|LOAD_FILE
 audioFiles::audioFile::audioFile()
         :QObject(),
         fileSize(0),
-        cache(0),
-        _exist(false)
+        cache(0)
 {    
 }
 
 audioFiles::audioFile::audioFile(QUrl u)
         :QObject(),
-        fileSize(0),
-        _exist(true)
+        fileSize(0)
 {
     cache=fileCacheFactory::getFileCache(u.toLocalFile());
     connect(cache,SIGNAL(changed(audioFiles::tagChangesL) ),this,SLOT(emitChanged(audioFiles::tagChangesL) ),Qt::QueuedConnection );
-    connect(cache,SIGNAL(removed()),this,SLOT(invalidSlot() ),Qt::QueuedConnection );
+    connect(cache,SIGNAL(doesExist(bool)),this,SLOT(invalidSlot(bool) ),Qt::QueuedConnection );
 }
 
 
 
 audioFiles::audioFile::audioFile(const QString url)
         :QObject(),
-        fileSize(0),
-        _exist(true)
+        fileSize(0)
 {
     cache=fileCacheFactory::getFileCache(url);    
     connect(cache,SIGNAL(changed(audioFiles::tagChangesL) ),this,SLOT(emitChanged(audioFiles::tagChangesL) ),Qt::QueuedConnection );
-    connect(cache,SIGNAL(removed()),this,SLOT(invalidSlot() ),Qt::QueuedConnection );
+    connect(cache,SIGNAL(doesExist(bool)),this,SLOT(invalidSlot(bool) ),Qt::QueuedConnection );
 }
 
 audioFiles::audioFile::audioFile(QSqlRecord r, bool force)
     :QObject(),
-     fileSize(0),
-     _exist(true)
+     fileSize(0)
 {
     cache=fileCacheFactory::getFileCache(r.value(PATH+2).toString() );
     connect(cache,SIGNAL(changed(audioFiles::tagChangesL) ),this,SLOT(emitChanged(audioFiles::tagChangesL) ),Qt::QueuedConnection );
-    connect(cache,SIGNAL(removed()),this,SLOT(invalidSlot() ),Qt::QueuedConnection );
+    connect(cache,SIGNAL(doesExist(bool)),this,SLOT(invalidSlot(bool) ),Qt::QueuedConnection );
     cache->setRecord(r,force);    
 }
 
@@ -71,13 +69,20 @@ audioFiles::audioFile::audioFile(const audioFile &f)
      {
         cache=fileCacheFactory::getFileCache(f.path() );
         connect(cache,SIGNAL(changed(audioFiles::tagChangesL) ),this,SLOT(emitChanged(audioFiles::tagChangesL) ),Qt::QueuedConnection );
-        connect(cache,SIGNAL(removed()),this,SLOT(invalidSlot() ),Qt::QueuedConnection );
+        connect(cache,SIGNAL(doesExist(bool)),this,SLOT(invalidSlot(bool) ),Qt::QueuedConnection );
      }
-     _exist=f._exist;
+
      changes.append(f.changes);
      fileSize=f.fileSize;
 }
 
+void audioFiles::audioFile::invalidSlot(bool b)
+{
+    if(!b)
+    {
+        emit invalided();
+    }
+}
 
 
 audioFiles::audioFile::~audioFile()
@@ -94,7 +99,7 @@ bool audioFiles::audioFile::isValid() const
 		return false;
 	}			
 
-	if(!_exist)
+	if(!cache->exist())
 	{
 		err=NULL_FILE;
 		return false;
@@ -104,20 +109,11 @@ bool audioFiles::audioFile::isValid() const
 	return true;
 }
 
+
+//deprecated
 bool audioFiles::audioFile::exist(bool force)
 {
-	if(cache==0)
-	{
-		err=INVALID_FILE;
-		return false;
-	}
-	
-	if(force)
-	{
-		_exist=cache->exist();
-	}
-	err=OK;
-	return _exist;
+	return isValid();
 }
 
 QVariant audioFiles::audioFile::tag(int t, const short int f) const
@@ -147,47 +143,81 @@ QVariant audioFiles::audioFile::tag(int t, const short int f) const
         return ret;
     }
 
-    if(t>=FRAME_NUM)
+    if(t<0 || t>=FRAME_NUM)
     {
         err=UNOWN;
         stat=-1;
         return ret;
     }    
+
     if (t==PATH)
     {
-        stat=-1;
+        stat=PATH;
+        err=OK;
         return path();
     }
-    
-    
+        
     if (f & ONDATAB)
     {
 	   ret=cache->tagFromDb(t, err);
 	   stat=ONDATAB;
+           
+           if(err==OK)
+           {
+                if(t!=TITLE || !ret.toString().isEmpty()|| !(f & TITLEFP))
+                {
+                    return ret;
+                }
+           }
     }
-    if ( err!=OK  && (f & ONCACHE) )
+    
+    if ( f & ONCACHE )
     {	      
         stat=ONCACHE;
-        ret=cache->tagFromFile((tagsEnum) t, err);
+        ret=cache->tagFromFile(t, err);
+            
+        if(err==OK)
+        {
+            if(t!=TITLE || !ret.toString().isEmpty()|| !(f & TITLEFP))
+            {
+                return ret;
+            }
+        }
     }
-    if ( err!=OK && (f & SELECT) )
+
+    if ( f & SELECT)
     {
         err=cache->select();
         stat=SELECT;	
         ret=cache->tagFromDb(t, err);
+        if(err==OK)
+        {
+            if(t!=TITLE || !ret.toString().isEmpty()|| !(f & TITLEFP))
+            {
+                return ret;
+            }
+        }
     }
-    if ( err!=OK && (f & LOAD_FILE) )
+    
+    if (f & LOAD_FILE)
     {
         cache->loadTags();
         ret=cache->tagFromFile(t, err);
-        stat=ONCACHE;
+        stat=LOAD_FILE;
+        
+        if(t!=TITLE || !ret.toString().isEmpty() || !(f & TITLEFP))
+        {
+            return ret;
+        }
     }
     
     if (t==TITLE && ret.toString().isEmpty() && (f & TITLEFP) )
-    {
-        stat= TITLEFP;
-        ret=core::titleFromPath(path());
-    }
+        {
+                stat= TITLEFP;
+                return core::titleFromPath(path());
+        }
+    
+
 
     return ret;        
 }
@@ -250,7 +280,7 @@ void audioFiles::audioFile::setTags(QList<int> tags,QList<QVariant> values)
     }
     
     cache->select(true);
-    cache->loadTags();
+//     cache->loadTags();
     cache->prepareToSave();
     
     for(int i=0;i<tags.size();i++ )
@@ -349,7 +379,7 @@ void audioFiles::audioFile::load(const short int f)
 	 err=cache->select();
 	 if(err==OK)
 	 {
-		return ;
+            return ;
 	 }
     }
     

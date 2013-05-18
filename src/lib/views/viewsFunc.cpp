@@ -1,5 +1,5 @@
 #include"viewsFunc.h"
-#include"../files/tagsTable.h"
+#include<Basic/tagsTable.h>
 #include<QDebug>
 #include"actionMenu.h"
 
@@ -48,7 +48,7 @@ QString views::prettySize(int n)
 
 QVariant views::pretyTag(QVariant var, int t)
 {
-    using namespace audioFiles;
+    using namespace Basic;
     
     if (t==LENGTH )
     {
@@ -81,7 +81,7 @@ QVariant views::pretyTag(QVariant var, int t)
 
 QString views::tagName(int t)
 {
-    using namespace audioFiles;
+    using namespace Basic;
     switch (t)
     {
 	case ALBUM:

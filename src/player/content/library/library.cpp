@@ -10,7 +10,7 @@ using namespace core;
 library::library(QWidget *parent)
         :abstractContent(parent)
 {
-    addSubmenu(QString(tr("Artist")),views::decor->tagIcon(ARTIST) );
+    addSubmenu(QString(tr("Artist")),views::decor->tagIcon(Basic::ARTIST) );
     stack=new QStackedWidget(this);
 
     artistV=new QListView(this);
@@ -37,7 +37,7 @@ library::library(QWidget *parent)
 
     setLayout(layout);
 
-    searchTagL<<ARTIST<<ALBUM<<TITLE<<LEAD_ARTIST;           
+    searchTagL<<Basic::ARTIST<<Basic::ALBUM<<Basic::TITLE<<Basic::LEAD_ARTIST;           
     
     connect(artistV,SIGNAL(activated ( const QModelIndex) ),this ,SLOT( artistActivated(const QModelIndex&) ) );
 
@@ -109,7 +109,7 @@ void library::search(const QString & text)
     database::matchQuery searchQ(database::OR);
     if(!text.isEmpty() )
     {
-	   QLinkedList<tagsEnum>::iterator i=searchTagL.begin();
+	   QLinkedList<int>::iterator i=searchTagL.begin();
 		    
 	   for(i=searchTagL.begin();i!=searchTagL.end();i++)
 	   {

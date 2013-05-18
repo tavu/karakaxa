@@ -2,7 +2,9 @@
 #include<QFont>
 #include<core.h>
 #include<views.h>
+#include<Basic/tagsTable.h>
 using namespace core;
+using namespace Basic;
 creatorItem::creatorItem(creatorItem* parent, creatorItem::Type t)
         :QTreeWidgetItem(parent,t),
         QObject(),

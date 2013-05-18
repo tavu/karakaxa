@@ -1,0 +1,2 @@
+/usr/bin/ar cr libkarakaxa_lfm.a  CMakeFiles/karakaxa_lfm.dir/lastFmFunc.cpp.o CMakeFiles/karakaxa_lfm.dir/lfmCover.cpp.o CMakeFiles/karakaxa_lfm.dir/searchAlbum.cpp.o CMakeFiles/karakaxa_lfm.dir/moc_searchAlbum.cxx.o CMakeFiles/karakaxa_lfm.dir/moc_imageSize.cxx.o CMakeFiles/karakaxa_lfm.dir/moc_lfmCover.cxx.o CMakeFiles/karakaxa_lfm.dir/moc_lastFmFunc.cxx.o
+/usr/bin/ranlib libkarakaxa_lfm.a

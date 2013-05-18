@@ -1,5 +1,5 @@
 #include"audioFilesSelf.h"
-#include"tagsTable.h"
+#include"audioFile.h"
 
 void audioFiles::init()
 {

@@ -1,6 +1,7 @@
 #ifndef TRACK_RECORD_H 
 #define TRACK_RECORD_H
 #include<QString>
+#include<QSqlRecord>
 namespace database
 {
 
@@ -33,7 +34,7 @@ struct albumArtistRecord
     int artistId;
     QString artistFoto;
 };
-
+trackRecord* fileRecordFromSql(const QSqlRecord& r);
 };
 
 #endif

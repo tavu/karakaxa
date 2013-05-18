@@ -22,7 +22,7 @@ class nowPlaylistContent :public core::abstractContent
 	{
 	    view->setModel(m);
 	  
-	    for(int i=1;i<FRAME_NUM;i++)
+	    for(int i=1;i<Basic::FRAME_NUM;i++)
 	    {
 		view->setColumnHidden(i,true);
 	    }

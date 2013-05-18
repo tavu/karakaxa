@@ -40,7 +40,7 @@ class library :public core::abstractContent
         views::delayLineEdit   *searchLine;
 
 
-        QLinkedList<tagsEnum> searchTagL;
+        QLinkedList<int> searchTagL;
 
         database::matchQuery *searchQ;
 

@@ -2,7 +2,7 @@
 #include <qthread.h>
 #include"../func.h"
 #include<QThread>
-#include<QCoreApplication>
+#include<QApplication>
 
 void core::playlist::insert(int pos, core::nplPointer p)
 {
@@ -14,11 +14,7 @@ void core::playlist::insert(int pos, core::nplPointer p)
 void core::playlist::insert(int pos, nplList l)
 {
     QEvent *e=new insertEv(pos,l);
-    if(QThread::currentThread()==core::mainThr() )
-    {
-        QCoreApplication::sendEvent(this,e);
-    }
-    else
+    if(QThread::currentThread()==qApp->thread() )
     {
         QCoreApplication::postEvent(this,e);
     }
@@ -33,7 +29,7 @@ void core::playlist::remove(int pos,int num)
 {
     QEvent *e=new removeEv(pos,num);
 
-    if(QThread::currentThread()==core::mainThr() )
+    if(QThread::currentThread()==qApp->thread()  )
     {
         QCoreApplication::sendEvent(this,e);
     }
@@ -51,7 +47,7 @@ void core::playlist::move(int pos,int dest)
 void core::playlist::move(int pos, int num,int dest)
 {
     QEvent *e=new moveEv(pos,num,dest);
-    if(QThread::currentThread()==core::mainThr() )
+    if(QThread::currentThread()==qApp->thread()  )
     {
         QCoreApplication::sendEvent(this,e);
     }
@@ -65,7 +61,7 @@ void core::playlist::move(int pos, int num,int dest)
 void core::playlist::clear()
 {
     QEvent *e=new clearEv();
-    if(QThread::currentThread()==core::mainThr() )
+    if(QThread::currentThread()==qApp->thread()  )
     {
         QCoreApplication::sendEvent(this,e);
     }
@@ -79,7 +75,7 @@ void core::playlist::clear()
 void core::playlist::shuffle()
 {
     QEvent *e=new shuffleEv();
-    if(QThread::currentThread()==core::mainThr() )
+    if(QThread::currentThread()==qApp->thread()  )
     {
         QCoreApplication::sendEvent(this,e);
     }

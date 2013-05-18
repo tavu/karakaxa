@@ -1,9 +1,11 @@
 #include"fileTags.h"
 #include<QDebug>
-#include"tagsTable.h"
+#include<Basic/tagsTable.h>
 #include"audioFiles.h"
 #include<stdlib.h>
-// using namespace player;
+
+using namespace Basic;
+
 audioFiles::fileTags::fileTags(QString url)
         :file(url.toLocal8Bit().constData() ),
         path(url),

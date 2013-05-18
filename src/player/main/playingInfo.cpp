@@ -13,6 +13,7 @@
 
 using namespace core;
 using namespace views;
+using namespace Basic;
 
 playingInfo::playingInfo(QWidget *parent)
         :QFrame(parent)
@@ -161,7 +162,7 @@ void playingInfo::setRating(int n)
     {
 	return;
     }
-    if(f->setTag(RATING,n) )
+    if(f->setTag(Basic::RATING,n) )
     {
 	stars->setRating(n);
     }    

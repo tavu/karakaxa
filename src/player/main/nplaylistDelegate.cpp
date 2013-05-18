@@ -101,7 +101,7 @@ void nplDelegate::drawContent(QPainter* painter, const QStyleOptionViewItem& opt
         return ;
     }
     
-    int track=p->tag(TRACK).toInt();
+    int track=p->tag(Basic::TRACK).toInt();
     
     if(track!=0)
     {
@@ -115,7 +115,7 @@ void nplDelegate::drawContent(QPainter* painter, const QStyleOptionViewItem& opt
     QFont f=option.font;
     f.setBold(true);
     painter->setFont(f);
-    QString s=p->tag(TITLE).toString();
+    QString s=p->tag(Basic::TITLE).toString();
     s=s.simplified();
     drawDisplay(painter,option,up,s);    
     

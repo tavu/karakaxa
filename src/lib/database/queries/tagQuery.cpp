@@ -4,7 +4,7 @@
 
 #include"../dbFunc.h"
 #include<QDebug>
-
+#include<Basic/tagsTable.h>
 database::tagQuery::tagQuery(QObject *parent)
         :abstractQuery(parent),
         valid(false)
@@ -32,7 +32,7 @@ database::tagQuery::tagQuery(database::tagQuery* t, QObject* parent)
 
 void database::tagQuery::init(int t, equal e, QVariant var, bool n)
 {
-    using namespace audioFiles;
+    using namespace Basic;
     
     tag=t;
     eq=e;
@@ -52,7 +52,7 @@ void database::tagQuery::init(int t, equal e, QVariant var, bool n)
         var.toInt(&k);
         if (!k)
         {
-			qDebug()<<"variable "<<var<<" can not be converted to an int";
+            qDebug()<<"variable "<<var<<" can not be converted to an int";
             valid=false;
             return ;
         }

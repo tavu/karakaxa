@@ -2,7 +2,6 @@
 #define AUDIOFILESFUNC_H
 // #include "fileCache.h"
 #include<QVariant>
-#include"tagsTable.h"
 #include<QLinkedList>
 
 

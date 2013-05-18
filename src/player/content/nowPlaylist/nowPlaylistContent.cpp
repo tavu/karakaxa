@@ -11,7 +11,7 @@ nowPlaylistContent::nowPlaylistContent(QWidget* parent): abstractContent(parent)
      
 //      view->setDragDropMode(QAbstractItemView::InternalMove);
      
-     for(int i=1;i<FRAME_NUM;i++)
+     for(int i=1;i<Basic::FRAME_NUM;i++)
      {
         view->setColumnHidden(i,true);
      }

@@ -72,7 +72,7 @@ bool database::filesQueryGrt::doSelect()
 				map.insert(f.path(),f);
 				QVariant var;
 				var.setValue(f);
-				audioFiles::tagInfo t(audioFiles::FILES,var);
+				audioFiles::tagInfo t(Basic::FILES,var);
 				resultsList<<t;
 			}
 			ret=true;

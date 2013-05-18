@@ -1,11 +1,12 @@
 #include"nplStream.h"
 #include<QObject>
 #include <Phonon/MediaObject>
-// #include<player.h>
-#include"../core.h"
-#include"../files/audioFile.h"
-
+#include<files/audioFile.h>
+#include<Basic/tagsTable.h>
+#include<Basic/func.h>
+#include<core/engine/engine.h>
 using namespace audioFiles;
+using namespace Basic;
 
 core::nplStream::nplStream(QString s)
         :nplTrack(),
@@ -18,7 +19,7 @@ core::nplStream::nplStream(QString s)
 
     url=KUrl(s);
 
-    if (! core::isStream(url) )
+    if (! isStream(url) )
     {
         ok=false;
         return ;

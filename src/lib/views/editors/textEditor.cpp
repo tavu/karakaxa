@@ -5,6 +5,7 @@
 #include"../ratingWidget/ratingWidget.h"
 #include<QLineEdit>
 #include<database.h>
+#include<Basic/tagsTable.h>
 
 #define CHAR_LIMIT 3
 
@@ -12,7 +13,7 @@ views::textEditor::textEditor(int tag,QWidget *parent)
   :QLineEdit(parent),
   comp(0)
 {
-   if(tag==audioFiles::TITLE)
+   if(tag==Basic::TITLE)
    {
         return ;
    }
@@ -32,8 +33,8 @@ views::textEditor::textEditor(int tag,QWidget *parent)
 }
 
 QWidget* views::getEditor(int tag,QWidget *parent)
-{
-    using namespace audioFiles;
+{    
+    using namespace Basic;
     switch (tag)
     {
        case ALBUM:

@@ -23,7 +23,7 @@ class libraryContent :public core::abstractContent
 			model=new views::tagItemModel(this);			
 			view->setModel(model);
 			view->setRootIsDecorated (true );
-			view->setRatingColumn(audioFiles::RATING);
+			view->setRatingColumn(Basic::RATING);
 			
 // 			QModelIndex m=model->index(1,0);
 // 			qDebug()<<"fetch "<<model->canFetchMore(m);

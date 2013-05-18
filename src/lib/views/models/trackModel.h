@@ -5,8 +5,8 @@
 #include<queries/queryGeneration.h>
 #include<queries/fileQueryGrt.h>
 
-#include"../../core/standardModel/standardModel.h"
-#include"../../files/audioFiles.h"
+#include<core/standardModel/standardModel.h>
+#include<files/audioFiles.h>
 #include"../views.h"
 
 namespace views
@@ -19,7 +19,7 @@ class trackItem :public standardItem
         trackItem(audioFiles::audioFile f);
         virtual int columnCount() const
         {
-            return audioFiles::FRAME_NUM;
+            return Basic::FRAME_NUM;
         }
 
         virtual bool setData (const QVariant &value,int column, int role );
@@ -48,7 +48,7 @@ class trackModelItem :public standardItem
 
         virtual int columnCount() const
         {
-            return audioFiles::FRAME_NUM;
+            return Basic::FRAME_NUM;
         }
 
         virtual QVariant headerData ( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const;

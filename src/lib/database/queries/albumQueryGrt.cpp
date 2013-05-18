@@ -44,7 +44,7 @@ bool database::albumQueryGrt::select()
             a.cover=quer.record().value(3).toString();
             list.append(a );
 			
-			audioFiles::tagInfo t(audioFiles::ALBUM,quer.record().value(1));
+			audioFiles::tagInfo t(Basic::ALBUM,quer.record().value(1));
 			t.setProperty("id",quer.record().value(0));
 			t.setProperty("artist",quer.record().value(2));
 			t.setProperty("cover",quer.record().value(3));
@@ -93,6 +93,7 @@ QString database::albumQueryGrt::queryString() const
 
 void database::albumQueryGrt::dbEvents(database::dbEventP e)
 {
+    using namespace Basic;
     using namespace audioFiles;
     if(needUpdate() )
     {

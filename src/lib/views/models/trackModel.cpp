@@ -20,7 +20,7 @@ void views::trackItem::changed(audioFiles::tagChangesL c)
     }
     else
     {
-        standardItem::dataChanged(0,FRAME_NUM-1);
+        standardItem::dataChanged(0,Basic::FRAME_NUM-1);
     }
 }
 
@@ -55,7 +55,7 @@ bool views::trackItem::setData(const QVariant& value, int column, int role)
     if(role==Qt::DisplayRole ||role==Qt::EditRole )
     {
         file.setTag(column,value);
-        if(file.error()==OK)
+        if(file.error()==Basic::OK)
         {
     // 	    dataChanged(column,column);
             return true;
@@ -76,16 +76,16 @@ QVariant views::trackModelItem::headerData(int section, Qt::Orientation orientat
 {
     if(role==Qt::DisplayRole)
     {
-        if (section==TRACK)
+        if (section==Basic::TRACK)
         {
             return QVariant(QString("#") );
         }
-        return QVariant(tagName( (tagsEnum)section) );
+        return QVariant(tagName( section) );
     }
 
     if(role==Qt::EditRole)
     {
-        return QVariant(tagName( (tagsEnum)section) );
+        return QVariant(tagName(section) );
     }
 
     if(role==Qt::DecorationRole)

@@ -10,6 +10,7 @@
 #include<QApplication>
 #include"../status/playerStatus.h"
 #include"../config/config.h"
+#include <Basic/tagsTable.h>
 
 
 // using namespace core;
@@ -41,7 +42,7 @@ void core::nplaylist::updateLengthInsert(int row, int num)
 {
     for(int i=0;i<num;i++)
     {
-        totalLength+=trackList[row+i]->tag(LENGTH).toInt();
+        totalLength+=trackList[row+i]->tag(Basic::LENGTH).toInt();
     }
 }
 
@@ -49,7 +50,7 @@ void core::nplaylist::updateLengthRemove(int row, int num)
 {
     for(int i=0;i<num;i++)
     {
-        totalLength-=trackList[row+i]->tag(LENGTH).toInt();
+        totalLength-=trackList[row+i]->tag(Basic::LENGTH).toInt();
     }
 }
 

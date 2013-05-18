@@ -9,9 +9,9 @@
 #include<status/playerStatus.h>
 
 #include"database.h"
-
+#include<Basic/tagsTable.h>
 // using namespace core;
-using namespace audioFiles;
+using namespace Basic;
 // using namespace std;
 
 
@@ -29,6 +29,7 @@ database::libraryImporter::libraryImporter(QObject *parent)
 
 database::albumEntry database::libraryImporter::import(const QString &url)
 {
+    using namespace audioFiles;
     albumEntry al;
     if(!database.isOpen() )
     {
@@ -52,8 +53,10 @@ database::albumEntry database::libraryImporter::import(const QString &url)
         var[i]=f.tag(i,audioFile::ONCACHE|audioFile::TITLEFP|audioFile::LOAD_FILE);	
         if(f.error()==NS_TAG)
         {
-            var[i]=f.tag((tagsEnum)i,audioFile::ONDATAB|audioFile::SELECT);
+            qDebug()<<"ns tag "<<i;
+            var[i]=f.tag(i,audioFile::ONDATAB|audioFile::SELECT);
         }
+        qDebug()<<var[i];
     }
     
     if(!var[LEAD_ARTIST].toString().simplified().isEmpty() )
@@ -73,7 +76,7 @@ database::albumEntry database::libraryImporter::importToDb(QVariant var[],QVaria
     QSqlQuery q(database);
     albumEntry al;
     al.name=var[ALBUM].toString();
-    al.artist=var[FRAME_NUM].toString();
+//     al.artist=var[FRAME_NUM].toString();
 
     var[ARTIST]=getId(var[ARTIST],artistTable);
     var[LEAD_ARTIST]=getId(var[LEAD_ARTIST],artistTable);
@@ -229,7 +232,7 @@ QVariant database::libraryImporter::getAlbumId(QVariant album,QVariant artist)
     
     if(q.next() )
     {
-        qDebug()<<"AL "<<q.value(0);
+//         qDebug()<<"AL "<<q.value(0);
         return q.value(0);
     }
     

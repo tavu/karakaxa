@@ -2,7 +2,8 @@
 #include<QDebug>
 // #include<player.h>
 #include"../core.h"
-#include"../../files/fileTags.h"
+#include <Basic/tagsTable.h>
+
 using namespace audioFiles;
 core::nplFile::nplFile(QString s)
         :nplTrack()
@@ -40,8 +41,8 @@ core::nplTrack* core::nplFile::clone()
 
 void core::nplFile::play()
 {
-    int c=file->tag(COUNTER).toInt();
-    file->setTag(COUNTER,QVariant(c+1) );
+    int c=file->tag(Basic::COUNTER).toInt();
+    file->setTag(Basic::COUNTER,QVariant(c+1) );
 }
 
 QVariant core::nplFile::artist()
@@ -60,7 +61,7 @@ core::nplFile::~nplFile()
 int core::nplFile::length()
 {
     if(file==0)	return 0;
-    return file->tag(LENGTH).toInt();
+    return file->tag(Basic::LENGTH).toInt();
 }
 
 QString core::nplFile::path()
@@ -72,7 +73,7 @@ QString core::nplFile::path()
 QString core::nplFile::title()
 {
     if(file==0)	return QString();
-    return file->tag(TITLE,_loadFlag).toString();
+    return file->tag(Basic::TITLE,_loadFlag).toString();
 }
 
 int core::nplFile::type()

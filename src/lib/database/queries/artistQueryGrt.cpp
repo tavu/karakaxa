@@ -37,7 +37,7 @@ bool database::artistQueryGrt::select()
         while ( quer.next() )
         {
             list.append(quer.record().value(0).toString() );
-			audioFiles::tagInfo t=audioFiles::tagInfo(audioFiles::ALBUM_ARTIST,quer.record().value(0) );
+			audioFiles::tagInfo t=audioFiles::tagInfo(Basic::ALBUM_ARTIST,quer.record().value(0) );
 			t.setProperty("id",quer.record().value(1));
 			resultsList<<t;
         }
@@ -58,7 +58,7 @@ void database::artistQueryGrt::dbEvents(database::dbEventP e)
         {
             foreach(tagChanges c,f.tagChanged() )
             {
-                if(c.tag == ARTIST || c.tag == LEAD_ARTIST )
+                if(c.tag == Basic::ARTIST || c.tag == Basic::LEAD_ARTIST )
                 {
                     setNeedUpdate();
                     return ;

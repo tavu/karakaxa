@@ -1,5 +1,5 @@
 #include"tagItemModel.h"
-#include<tagsTable.h>
+#include<Basic/tagsTable.h>
 #include<QDebug>
 #include<KUrl>
 
@@ -9,7 +9,7 @@
 
 views::tagItemModel::tagItemModel(QObject *parent) :QAbstractItemModel(parent)
 {
-	_tags<<audioFiles::ALBUM_ARTIST<<audioFiles::ALBUM<<audioFiles::FILES;
+	_tags<<Basic::ALBUM_ARTIST<<Basic::ALBUM<<Basic::FILES;
 	head=new tagItem();
 	head->populate(_tags[0]);
         connect(head,SIGNAL(needUpdate(int)),this,SLOT(updateData(int)));
@@ -33,14 +33,14 @@ int views::tagItemModel::columnCount ( const QModelIndex & parent  ) const
 {
 	if(!parent.isValid() )
 	{
-		return  audioFiles::FRAME_NUM;
+		return  Basic::FRAME_NUM;
 	}
 	
 	tagItem* item=itemFromIndex(parent);
  	int type=nextItemType(item);
-	if(type==audioFiles::FILES)
+	if(type==Basic::FILES)
 	{
-		return audioFiles::FRAME_NUM;
+		return Basic::FRAME_NUM;
 	}
 	
 // 	return audioFiles::FRAME_NUM;
@@ -56,7 +56,7 @@ QVariant views::tagItemModel::data ( const QModelIndex & index, int role ) const
 // 		return QVariant();
 // 	}
 		
-	if(item->type()==audioFiles::FILES)
+	if(item->type()==Basic::FILES)
 	{
 		audioFiles::audioFile f=qvariant_cast <audioFiles::audioFile>(item->data() );
 		return fileData(f,index.column(),role);
@@ -95,7 +95,7 @@ QVariant views::tagItemModel::data ( const QModelIndex & index, int role ) const
 	}
 	if(role==SPAND_ROLE)
 	{
-		if(nextItemType(item)==audioFiles::FILES )
+		if(nextItemType(item)==Basic::FILES )
 		{
 			return QVariant(false);
 		}
@@ -134,7 +134,7 @@ QVariant views::tagItemModel::headerData(int section, Qt::Orientation orientatio
 {
     if(role==Qt::DisplayRole)
     {
-        if (section==audioFiles::TRACK)
+        if (section==Basic::TRACK)
         {
             return QVariant(QString("#") );
         }
@@ -171,9 +171,9 @@ QModelIndex views::tagItemModel::index ( int row, int column, const QModelIndex 
 		return QModelIndex();
 	}
 	
-	if(type==audioFiles::FILES)
+	if(type==Basic::FILES)
 	{
-		if(column>=audioFiles::FRAME_NUM)
+		if(column>=Basic::FRAME_NUM)
 		{
 			return QModelIndex();
 		}

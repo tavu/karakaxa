@@ -8,10 +8,12 @@
 #include<QSqlError>
 #include<QSqlRecord>
 #include"audioFilesFunc.h"
-#include"tagsTable.h"
+#include"tagList.h"
 #include<QUrl>
 namespace audioFiles
 {
+// 
+
 class fileCache;
 class audioFile :public QObject
 {
@@ -98,10 +100,8 @@ class audioFile :public QObject
         QString albumArt;
         mutable bool recFlag;
         int fileSize;
-        
-        mutable fileCache *cache;
 
-        bool _exist;
+        mutable fileCache *cache;
 
     protected slots:
         void emitChanged ( audioFiles::tagChangesL l )
@@ -109,11 +109,7 @@ class audioFile :public QObject
             emit changed ( l );
         }
 
-        void invalidSlot()
-        {
-            _exist=false;
-            emit invalided();
-        }
+        void invalidSlot ( bool );
 
     signals:
         void changed ( audioFiles::tagChangesL );

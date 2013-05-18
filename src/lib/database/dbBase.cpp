@@ -7,8 +7,8 @@
 #include<QDebug>
 void database::dbBase::cleanUp()
 {
-    clearArtist();
     clearAlbum();
+    clearArtist();
     clearGenre();
     clearComposer();
 
@@ -19,7 +19,7 @@ void database::dbBase::clearArtist()
 {
      QSqlQuery q(databs );
 
-     q.prepare("delete from artists where artists.id not in (select tracks.lead_artist from tracks) and artists.id not in (select tracks.artist from tracks)");
+     q.prepare("delete from artists where artists.id not in (select tracks.lead_artist from tracks) and artists.id not in (select tracks.artist from tracks) and artists.id not in (select albums.artist from albums)");
 
      if (!q.exec() )
      {
@@ -73,13 +73,15 @@ void database::dbBase::closeDb()
 	db()->closeDatabase(databs);
 }
 
-QVariant database::dbBase::getId(QVariant var,const QString &table)
+QVariant database::dbBase::getId(QVariant &var,const QString &table, bool *inserted)
 {
     QSqlQuery q(databs);    
-    
+    if(inserted!=0)
+    {
+        *inserted=false;
+    }
     QString s("select id from %1 where name =?");
     s=s.arg(table);
-    qDebug()<<s;
     QString name=var.toString();
     name=name.simplified();
     if(name.isEmpty() )
@@ -100,32 +102,44 @@ QVariant database::dbBase::getId(QVariant var,const QString &table)
     {
         return q.value(0);
     }
+    q.finish();
         
     QString s2("insert into %1 (name) values (? )");    
     s2=s2.arg(table);
-
-    q.prepare(s2);
-    q.addBindValue(var);
-        
-    if(!q.exec() )      
-    {   
-        qDebug()<<q.lastError().text();
-        return QVariant();
-    }    
     
-    q.prepare(s );
-    q.addBindValue(var);
+    QVariant id=q.lastInsertId();
+    q.finish();
     
-    if(!q.exec() || !q.first() )
+    if(!id.isValid() )
     {
-        qDebug()<<q.lastError().text();
-        return QVariant();
-    }    
-
+        q.prepare(s2);
+        q.addBindValue(var);
+            
+        if(!q.exec() )      
+        {   
+            qDebug()<<q.lastError().text();
+            return QVariant();
+        }    
+        q.finish();
+        q.prepare(s );
+        q.addBindValue(var);
+        
+        if(!q.exec() || !q.first() )
+        {
+            qDebug()<<q.lastError().text();
+            return QVariant();
+        }
+        id=q.value(0);
+    }
+    
+    if(inserted!=0)
+    {
+        *inserted=true;
+    }
     return q.value(0);    
 }
 
-QVariant database::dbBase::getAlbumId(QVariant album,int artistId,const QString &table)
+QVariant database::dbBase::getAlbumId(QVariant &album,int artistId,const QString &table, bool *b)
 {
     QSqlQuery q(databs);
     QString name=album.toString();

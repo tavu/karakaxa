@@ -1,5 +1,6 @@
 #include"nplTrack.h"
 #include"../../files/fileTags.h"
+#include"Basic/tagsTable.h"
 //nplClasses
 #include"nplTrack.h"
 #include"nplFile.h"
@@ -19,7 +20,7 @@ core::nplTrack::~nplTrack()
 
 QVariant core::nplTrack::artist()
 {
-    return tag(ARTIST);
+    return tag(Basic::ARTIST);
 }
 
 core::nplPointer core::nplTrack::getNplTrack(const QString url)
@@ -47,7 +48,7 @@ core::nplPointer core::nplTrack::getNplTrack(const QUrl url)
 
 QVariant core::nplTrack::tag(int t)
 {
-    if(t==TITLE)
+    if(t==Basic::TITLE)
     {
         return QVariant(title() );
     }

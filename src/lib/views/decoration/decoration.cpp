@@ -5,8 +5,9 @@
 #include<QDebug>
 #include<QApplication>
 #include<KColorScheme>
+#include<Basic/tagsTable.h>
 
-using namespace audioFiles;
+using namespace Basic;
 
 views::decoration::decoration()
 //         :albumIcon("data/album.png"),
@@ -66,11 +67,11 @@ KIcon views::decoration::icon(const QString s)
 
 KIcon views::decoration::tagIcon(int t)
 {
-    if(t==audioFiles::ALBUM_ARTIST)
+    if(t==ALBUM_ARTIST)
     {
-        return icons[audioFiles::ARTIST];
+        return icons[ARTIST];
     }
-    if(t>=audioFiles::FRAME_NUM||t<0)
+    if(t>=FRAME_NUM||t<0)
     {
 	return defaultIcon;
     }

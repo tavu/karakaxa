@@ -6,10 +6,11 @@
 #include<tables.h>
 
 #include<core.h>
-
+#include<Basic/tagsTable.h>
 
 // using namespace player;
 using namespace core;
+using namespace Basic;
 
 database::fileToDb::fileToDb(QString path) :dbBase(),_record(0),_albumArtist(0)
 {
@@ -419,52 +420,14 @@ int database::fileToDb::setGenre (const QString &s)
 
 int database::fileToDb::setLeadArtist (const QString &s)
 {
-    QSqlQuery q(databs);    
 
-    QString leadArtist=s.simplified();
-    QVariant leadArtistId=getId(leadArtist,artistTable);
-    
-    if(leadArtistId.isNull() )
-    {
-        return DBERR;
-    }
-
-    q.prepare( "update tracks SET lead_artist=? where path=?");
-    q.addBindValue(leadArtistId);
-    q.addBindValue(_path);
-
-    if (!q.exec() )
-    {
-        qDebug()<<"Can't update album lead artist:"<<q.lastError().text();
-        return DBERR;
-    }
-    
-    _record->leadArtist=leadArtist;
-    
-    if (!leadArtist.isEmpty() )
-    {
-        setAlbumArtist(leadArtistId.toInt());
-    }
-    else
-    {
-        setAlbumArtist(_record->artist);
-    }
-       
-    clearArtist();
 
     return OK;
 }
 
 int database::fileToDb::setAlbumArtist(const QString &s)
 {    
-    QString artist=s;
-    QVariant id=getId(s,artistTable);
-    if( !id.isValid() )
-    {
-        return DBERR;
-    }
-    return setAlbumArtist(id.toInt());
-    
+ return DBERR;    
 }
 
 int database::fileToDb::setAlbumArtist (int id )
@@ -583,27 +546,6 @@ database::albumArtistRecord *database::fileToDb::albumArtistFromRecord ( const Q
 
 int database::fileToDb::setComposer (const QString &s)
 {
-    QString composer=s.simplified();
-    QVariant id=getId(composer,composerTable);
-    if( !id.isValid() )
-    {
-        return DBERR;
-    }
-            
-    QSqlQuery q(databs);
-
-    q.prepare( "update tracks SET composer=? where path=?");
-    q.addBindValue(id);
-    q.addBindValue(_path );
-
-    if (!q.exec() )
-    {
-        qDebug()<< q.lastError().text();
-        return DBERR;
-    }
-
-    _record->composer=composer;
-    clearComposer();
 
     return OK;
 }
@@ -611,39 +553,14 @@ int database::fileToDb::setComposer (const QString &s)
 
 int database::fileToDb::setTitle(const QString &s)
 {
-    QSqlQuery q(databs);
 
-    QString title=s.simplified();
-    q.prepare( "update tracks SET title=? where path=?");
-    q.addBindValue(title);
-    q.addBindValue(_path );
-
-    if (!q.exec() )
-    {
-        qDebug()<<"probably file not exist in library";
-        return NOTINDB;
-    }
-    
-    _record->title=title;
     
     return OK;
 }
 
 int database::fileToDb::setComment (const QString &s)
 {
-    QSqlQuery q(databs );
-    QString comment=s.simplified();
-    q.prepare( "update tracks SET comment=? where path=?");
-    q.addBindValue(comment);
-    q.addBindValue(_path );
 
-    if (!q.exec() )
-    {
-        qDebug()<<"probably file not exist in library";
-        return NOTINDB;
-    }
-    
-    _record->comment=comment;
     return OK;
 }
 

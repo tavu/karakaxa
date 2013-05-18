@@ -1,7 +1,6 @@
 #include"func.h"
 #include<QFile>
 #include<QTextCodec>
-#include"../files/tagsTable.h"
 #include<kmimetype.h>
 #include"core.h"
 #include <kapplication.h>
@@ -125,10 +124,7 @@ void core::init()
       QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
       QTextCodec::setCodecForTr(QTextCodec::codecForName ("UTF-8"));
         
-//       nplaylist *l=const_cast<nplaylist*>(npList);
       qInstallMsgHandler(karakaxaMsg);
-      mainThr();
-      
       
       qRegisterMetaType<audioFiles::audioFile>("audioFile");
       qRegisterMetaType<QVector<audioFiles::audioFile> >("QVector<audioFiles::audioFile>");
@@ -147,16 +143,13 @@ void core::init()
       
       flag=false;            
     }
-//       engine.init();
 }
 
 void core::cleanUp()
 {
-//     contentHdl->clear();
     delete status;    
     nplaylist::cleanUp();
     soundEngine::cleanUp();
-//     delete db;
     delete config;
     delete contentHdl;
     
@@ -168,12 +161,6 @@ int core::getRandomN(int min,int max)
     return  qrand()/ (RAND_MAX + 1.0) * (max + 1 - min) + min ;
 }
 
-QThread* core::mainThr()
-{
-    static QThread *t=QThread::currentThread();
-    
-    return t;
-}
 
 void core::karakaxaMsg(QtMsgType type, const char *msg)
 {
@@ -194,13 +181,6 @@ void core::karakaxaMsg(QtMsgType type, const char *msg)
 			fprintf(stderr, "Fatal: %s\n", msg);
 			abort();
      }
-}
-
-QWidget* core::spacerWidget(QWidget* parent)
-{
-    QWidget* spacer = new QWidget(parent);
-    spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-	return spacer;
 }
 
 bool core::removeDir(const QString &dirName)

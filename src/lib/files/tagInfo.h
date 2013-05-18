@@ -2,8 +2,8 @@
 #define TAGINFO_H
 
 #include<QObject>
-#include"tagsTable.h"
-
+#include<Basic/tagsTable.h>
+#include<QVariant>
 namespace audioFiles
 {
 /*
@@ -11,13 +11,14 @@ namespace audioFiles
  * The attributes of the tag can be added to QObject properties such as the id of the album etc
  */
 
+
 class tagInfo :public QObject
 {
 	Q_OBJECT
 	public:
 		tagInfo()
 		{
-			_type=INVALID;
+			_type=Basic::INVALID;
 		}
 		
 		tagInfo(int type,QVariant data,QObject *parent=0) :QObject(parent)

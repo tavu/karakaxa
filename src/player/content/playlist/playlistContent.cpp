@@ -32,7 +32,7 @@ playlistContent::playlistContent(QWidget *parent)
     trackV=new views::treeView(this);
 //     trackV->setRatingColumn(RATING);
     trackV->setEditTriggers(QAbstractItemView::SelectedClicked);
-    trackV->setNotHide(TITLE);
+    trackV->setNotHide(Basic::TITLE);
     trackV->setFrameShape(QFrame::StyledPanel);
     trackV->setAcceptDrops(true);
     trackV->setDragDropMode(QAbstractItemView::DragDrop);

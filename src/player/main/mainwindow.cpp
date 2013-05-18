@@ -152,7 +152,7 @@ void mainWindow::nplViewInit()
     nplView->setDragDropMode(QAbstractItemView::DragDrop);
     nplView->setAcceptDrops(true);
     nplView->setHeaderHidden(true);
-    for(int i=1;i<FRAME_NUM;i++)
+    for(int i=1;i<Basic::FRAME_NUM;i++)
     {
          nplView->setColumnHidden(i,true);
     }

@@ -5,7 +5,6 @@
 #include <textidentificationframe.h>
 #include <fileref.h>
 
-#include "tagsTable.h"
 
 #include <textidentificationframe.h>
 #include <mpegfile.h>
@@ -55,8 +54,8 @@ public:
     virtual bool 		setArtists (const QStringList &l);
     virtual QStringList 	artists () const ;
 
-    virtual QVariant		tag(tagsEnum t) const;
-    virtual bool		setTag(tagsEnum t,const QVariant &var);
+    virtual QVariant		tag(int t) const;
+    virtual bool		setTag(int t,const QVariant &var);
     virtual int			originalRating() const;
     virtual bool		setOriginalRating(const unsigned int &num);
 };//class

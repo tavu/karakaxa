@@ -107,7 +107,7 @@ folderContent::folderContent(QWidget *parent)
     folProxy->setFilterCaseSensitivity(Qt::CaseInsensitive);
     folView->setModel(folProxy);
     folView->setNotHide(0);
-    folView->setRatingColumn(DIRCOLUMN+RATING);
+    folView->setRatingColumn(DIRCOLUMN+Basic::RATING);
     folView->setSortingEnabled(true);
 
 
@@ -118,8 +118,8 @@ folderContent::folderContent(QWidget *parent)
     plProxy->setFilterCaseSensitivity(Qt::CaseInsensitive);
     plProxy->setFilterKeyColumn(-1);
     plView->setModel(plProxy);
-    plView->setNotHide(TITLE);
-    plView->setRatingColumn(RATING);
+    plView->setNotHide(Basic::TITLE);
+    plView->setRatingColumn(Basic::RATING);
 
 
     stacked=new QStackedWidget(this);

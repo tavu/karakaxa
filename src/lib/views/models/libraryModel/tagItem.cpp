@@ -9,19 +9,19 @@
 #include"../../decoration/decoration.h"
 views::tagItem::tagItem(audioFiles::tagInfo tag,QObject *parent): QObject(parent),_tag(tag),_customFilter(0)
 {
-    _tags.resize(audioFiles::INVALID);
+    _tags.resize(Basic::INVALID);
     connect(database::db(),SIGNAL( newEvent(database::dbEventP)),this,SLOT(dbEvents(database::dbEventP)) );
 }
 
 views::tagItem::tagItem(const views::tagItem &other): QObject(other.parent()),_tag(other._tag),_customFilter(0)
 {
-    _tags.resize(audioFiles::INVALID);
+    _tags.resize(Basic::INVALID);
     connect(database::db(),SIGNAL( newEvent(database::dbEventP)),this,SLOT(dbEvents(database::dbEventP)) );
 }
 
 views::tagItem::tagItem(QObject *parent): QObject(parent),_customFilter(0)
 {
-    _tags.resize(audioFiles::INVALID);
+    _tags.resize(Basic::INVALID);
     connect(database::db(),SIGNAL( newEvent(database::dbEventP)),this,SLOT(dbEvents(database::dbEventP)) );
 }
 
@@ -43,12 +43,12 @@ database::abstractQuery* views::tagItem::filter()
         parentQ=parent->filter();
     }
 
-    if(type() == audioFiles::FILES)
+    if(type() == Basic::FILES)
     {
         return 0;
     }
 
-    if(type()==audioFiles::INVALID && parentQ==0 && _customFilter==0)
+    if(type()==Basic::INVALID && parentQ==0 && _customFilter==0)
     {
         return 0;
     }
@@ -58,12 +58,12 @@ database::abstractQuery* views::tagItem::filter()
     {
         match->append(parentQ);
     }
-    if(type()!=audioFiles::INVALID )
+    if(type()!=Basic::INVALID )
     {
         database::abstractQuery *q;
-        if(type()==audioFiles::ALBUM_ARTIST )
+        if(type()==Basic::ALBUM_ARTIST )
         {
-            q=new database::tagQuery( audioFiles::ALBUM_ARTIST,database::EQUAL,_tag.property("id") );
+            q=new database::tagQuery( Basic::ALBUM_ARTIST,database::EQUAL,_tag.property("id") );
         }
         else
         {
@@ -81,7 +81,7 @@ database::abstractQuery* views::tagItem::filter()
 
 bool views::tagItem::populate(int type,bool force)
 {
-    if(type<0||type>audioFiles::FILES)
+    if(type<0||type>Basic::FILES)
     {
         qDebug()<<"invalid type:"<<type;
         return false;
@@ -98,7 +98,7 @@ bool views::tagItem::populate(int type,bool force)
 
 bool views::tagItem::doPopulate(int type)
 {
-    if(type<0||type>audioFiles::FILES)
+    if(type<0||type>Basic::FILES)
     {
         qDebug()<<"invalid type:"<<type;
         return false;
@@ -106,15 +106,15 @@ bool views::tagItem::doPopulate(int type)
 
     database::queryGrt *qGrt;
 
-    if(type==audioFiles::ALBUM)
+    if(type==Basic::ALBUM)
     {
         qGrt=new database::albumQueryGrt();
     }
-    else if(type==audioFiles::ALBUM_ARTIST)
+    else if(type==Basic::ALBUM_ARTIST)
     {
         qGrt=new database::artistQueryGrt();
     }
-    else if(type==audioFiles::FILES)
+    else if(type==Basic::FILES)
     {
         qGrt=new database::filesQueryGrt();
     }
@@ -157,7 +157,7 @@ void views::tagItem::appendItem(audioFiles::tagInfo& tag,int type)
 
 int views::tagItem::size(int type)
 {
-    if(type<0||type>=audioFiles::INVALID )
+    if(type<0||type>=Basic::INVALID )
     {
         return 0;
     }
@@ -186,7 +186,7 @@ QVariant views::tagItem::icon()
 
 views::tagItem* views::tagItem::itemAt(int type, int row)
 {
-    if(type<0||type>=audioFiles::INVALID ||row<0)
+    if(type<0||type>=Basic::INVALID ||row<0)
     {
         return 0;
     }
@@ -226,7 +226,7 @@ void views::tagItem::dbEvents(database::dbEventP e)
             //if the filter that has beeb used for the selection match any of the files we mark all the vectors as dirty
             if(q!=0 && q->match(f) )
             {
-                for(int i=0; i<audioFiles::INVALID; i++)
+                for(int i=0; i<Basic::INVALID; i++)
                 {
                     setNeedUpdate(i);
                 }
@@ -252,13 +252,13 @@ void views::tagItem::setNeedUpdate(int t)
         emit needUpdate(t);
     }
     
-    if(t==audioFiles::ARTIST ||t==audioFiles::LEAD_ARTIST)
+    if(t==Basic::ARTIST ||t==Basic::LEAD_ARTIST)
     {
-	if(_tags[audioFiles::ALBUM_ARTIST].isSelected && !_tags[audioFiles::ALBUM_ARTIST].isDirty)
+	if(_tags[Basic::ALBUM_ARTIST].isSelected && !_tags[Basic::ALBUM_ARTIST].isDirty)
 	{
-	    _tags[audioFiles::ALBUM_ARTIST].isDirty=true;
+	    _tags[Basic::ALBUM_ARTIST].isDirty=true;
 	    qDebug()<<"dirty";
-	    emit needUpdate(audioFiles::ALBUM_ARTIST);
+	    emit needUpdate(Basic::ALBUM_ARTIST);
 	}
     }
 }

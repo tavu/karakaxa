@@ -1,9 +1,9 @@
 #include"abstractQuery.h"
 #include<audioFiles.h>
-
+#include<Basic/tagsTable.h>
 QString database::abstractQuery::tagToSql(int t)
 {
-    using namespace audioFiles;
+    using namespace Basic;
 
     switch (t)
     {

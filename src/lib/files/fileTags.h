@@ -1,9 +1,6 @@
 #ifndef TAGS_H
 #define TAGS_H
 
-#include "tagsTable.h"
-// #include"audioFiles.h"
-
 #include <fileref.h>
 #include <mpegfile.h>
 #include <tag.h>
@@ -94,12 +91,6 @@ class fileTags
             return err;
         }
 
-
-// 	static const int NULLFILE;
-// 	static const int INVALIDF;
-// 	static const int WRONGFT;
-// 	static const int NSTAG;
-// 	static const int OK;
 };//class
 };//player
 #endif
