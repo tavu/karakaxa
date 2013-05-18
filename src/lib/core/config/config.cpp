@@ -3,6 +3,7 @@
 // #include<KGlobal>
 #include<kstandarddirs.h>
 #include<KSharedConfig>
+#include <KMenuBar>
 
 core::PlayerConfigure::PlayerConfigure()
 {
@@ -14,6 +15,24 @@ core::PlayerConfigure::PlayerConfigure()
 //     supportedImageFiles<<"BMP"<<"GIF"<<"JPG"<<"JPEG"<<"PNG"<<"PBM"<<"PGM"<<"PPM"<<"TIFF"<<"XBM"<<"XPM";
 }
 
+core::PlayerConfigure::~PlayerConfigure()
+{
+    KSharedConfigPtr config=core::config->configFile();
+    KConfigGroup group( config, "Config" );
+    group.writeEntry("menuBarShown", QVariant(_isMenuBarShown ) );
+    group.config()->sync();
+}
+
+
+void core::PlayerConfigure::readSetings()
+{
+    KSharedConfigPtr config=core::config->configFile();
+    KConfigGroup group( config, "Config" );
+    bool b=group.readEntry("menuBarShown",false );
+    showMenuBar(b);
+}
+
+
 QStringList core::PlayerConfigure::files()
 {
     return  Phonon::BackendCapabilities::availableMimeTypes().filter( "audio/", Qt::CaseInsensitive );
@@ -24,6 +43,20 @@ QStringList core::PlayerConfigure::playListFiles()
     QStringList l;
     return l<<QString("m3u");
 }
+
+void core::PlayerConfigure::showMenuBar(bool b)
+{
+    _isMenuBarShown=b;
+    if(b)
+    {
+        mainWin->menuBar()->show();
+    }
+    else
+    {
+        mainWin->menuBar()->hide();
+    }
+}
+
 
 QStringList core::PlayerConfigure::imagefiles()
 {

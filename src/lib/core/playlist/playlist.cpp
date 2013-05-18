@@ -14,7 +14,12 @@ void core::playlist::insert(int pos, core::nplPointer p)
 void core::playlist::insert(int pos, nplList l)
 {
     QEvent *e=new insertEv(pos,l);
-    if(QThread::currentThread()==qApp->thread() )
+    if(QThread::currentThread()==qApp->thread() )     
+    {
+        QCoreApplication::sendEvent(this,e);
+        delete e;
+    }
+    else
     {
         QCoreApplication::postEvent(this,e);
     }

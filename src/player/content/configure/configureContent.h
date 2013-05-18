@@ -28,12 +28,13 @@ class configureContent :public core::abstractContent
         QFileDialog         *fDialog;
         QListView           *listV;
         QStringListModel    *model;
-        QStringList      sList;
+        QStringList          sList;
         QGroupBox           *groupB;
 
         QPushButton         *scanB;
         QPushButton         *updateB;
         QCheckBox           *rememberPl;
+        QCheckBox           *showMenuBar;
         QPushButton         *addFolder;
         QPushButton         *removeFolder;
 
@@ -46,5 +47,6 @@ class configureContent :public core::abstractContent
         void removeLibraryFolder();
         void rememberPlSlot ( int );
         void scanButtonActivate ( database::dbJobP );
+        void menuBarSlot(int);
 };
 #endif

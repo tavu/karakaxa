@@ -60,6 +60,9 @@ mainWindow::mainWindow()
     
     setStatusBar(new views::statusBar(this) );
     
+    config->setMainWindow(this);
+    config->readSetings();
+    
     defaultContent();
     readSettings();
     
@@ -301,7 +304,7 @@ void mainWindow::readSettings()
 
     if(lockLayout->isChecked() )
     {
-	   lockDock();
+        lockDock();
     }
 }
 

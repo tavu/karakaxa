@@ -73,7 +73,6 @@ class mainWindow :public KMainWindow
         void closeEvent(QCloseEvent *event);
     // 	void keyPressEvent ( QKeyEvent * event );
 
-        
     public slots:
         void iconActivated(QSystemTrayIcon::ActivationReason reason);
         void QuitSlot()

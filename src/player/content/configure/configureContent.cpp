@@ -27,20 +27,47 @@ configureContent::configureContent ( QWidget *parent )
     QVBoxLayout *layout = new QVBoxLayout();
     libconfInit();
 
-    rememberPl=new QCheckBox ( "remember playlist on exit",this );
+    rememberPl=new QCheckBox ( tr("remember playlist on exit"),this );
     rememberPl->setChecked ( npList()->rememberPlaylist() );
+    showMenuBar=new QCheckBox(tr("Show menu bar"),this );
+    
     layout->addWidget ( l );
     layout->addWidget ( groupB );
     layout->addWidget ( rememberPl );
+    layout->addWidget ( showMenuBar );
     layout->addStretch();
 
     layout->setContentsMargins ( 10,10,10,10 );
     setLayout ( layout );
 
+    if(config->menuBarShown())
+    {
+        showMenuBar->setCheckState(Qt::Checked);
+    }
+    else
+    {
+        showMenuBar->setCheckState(Qt::Unchecked);
+    }
+    
+    
     connect ( rememberPl,SIGNAL ( stateChanged ( int ) ),this,SLOT ( rememberPlSlot ( int ) ) );
+    connect ( showMenuBar,SIGNAL ( stateChanged ( int ) ),this,SLOT ( menuBarSlot ( int ) ) );
     connect ( db(),SIGNAL ( newJob ( database::dbJobP ) ),this,SLOT ( scanButtonActivate ( database::dbJobP ) ) );
+   
 }
 
+void configureContent::menuBarSlot(int state)
+{
+    config->showMenuBar(true);
+    if ( state==Qt::Checked )
+    {
+        config->showMenuBar(true);
+    }
+    else
+    {
+        config->showMenuBar(false);
+    }
+}
 void configureContent::scanButtonActivate ( database::dbJobP job )
 {
     if ( job.isNull() )

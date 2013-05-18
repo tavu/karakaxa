@@ -366,7 +366,7 @@ void views::treeView::play(const QModelIndex &index)
     {
         core::status->addError(tr("Some media could not be inserted to playlist") );
     }
-
+    
     core::engine()->play(row );
 }
 
