@@ -13,7 +13,6 @@ class nplaylistView :public views::treeView
     public:
 
 	   nplaylistView(QWidget *parent=0);
-// 	   void performDrag();
 	   Qt::DropActions supportedDropActions () const;
 	   int sizeHintForColumn(int column) const;
 	   
@@ -23,14 +22,15 @@ class nplaylistView :public views::treeView
 	   }
 
 	   QAction *goToCurrent();
-	   
+	   void initMinimalView();
     private:
 	   QAction *_removeAction;
 	   QAction *duplicateAction;
 
-
 	   void contextMenuEvent(QContextMenuEvent *e);
 	   QMenu* createMenu();
+           
+           
 
     protected:
        void mouseDoubleClickEvent(QMouseEvent* event);

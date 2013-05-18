@@ -3,7 +3,6 @@
 // #include"../coreNamespace.h"
 // #include"nplClass.h"
 #include<QString>
-
 #include<QSharedPointer>
 #include<QDebug>
 #include<QUrl>

@@ -20,16 +20,6 @@ class ratingWidget :public QWidget
             update();
         }
 
-//         void setValue(const QVariant& v)
-//         {
-//             setRating(v.toInt() );            
-//         }
-//         
-//         QVariant value()
-//         {
-//             return QVariant(rating() );
-//         }
-
         int rating()
         {
             return _rating;
@@ -50,6 +40,9 @@ class ratingWidget :public QWidget
             update();
         }
       
+        void setBlack(bool b);
+        
+        bool isBlack();
       
   protected:
       virtual void mouseMoveEvent ( QMouseEvent * e )  ;
@@ -62,6 +55,7 @@ class ratingWidget :public QWidget
       int hoverRating;
       int pixSize;
       KRatingPainter ratingPainter;
+      bool _black;
 
   signals:
     void ratingChanged(int);

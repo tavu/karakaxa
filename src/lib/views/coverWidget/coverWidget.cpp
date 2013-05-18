@@ -5,52 +5,34 @@
 #define DEFAULT "data/album.png"
 #include"../decoration/decoration.h"
 views::coverWidget::coverWidget(QString s ,QWidget * parent, Qt::WindowFlags f  )
-        :QFrame(parent,f),
-        fixedSize(150,170)
+        :QFrame(parent,f)
 {
 
-//     label=new QLabel(this);
-    setCover(s);
-//     QVBoxLayout *l=new QVBoxLayout(this);
-//     l->addWidget(label);
-//     l->addStretch();
-//     l->setContentsMargins(0,0,0,0);
-//     setLayout(l);
-  
+//     setSizePolicy(QSizePolicy::Maximum);
+    setCover(s);  
 }
 
 views::coverWidget::coverWidget(QWidget * parent, Qt::WindowFlags f  )
-        :QFrame(parent,f),
-        fixedSize(150,170)
+        :QFrame(parent,f)
 {
-//     label=new QLabel(this);
-    setCover();
-//     QVBoxLayout *l=new QVBoxLayout(this);
-//     l->addWidget(label);
-//     l->addStretch();
-//     setLayout(l);
+
+//     setSizePolicy(QSizePolicy::Maximum);
+    setCover(QString());  
 }
 
 void views::coverWidget::setSize(QSize s)
 {
-//     fixedSize=s;
-    if (pic.isNull() )
-    {
-        return ;
-    }
-
-    picSize.setHeight(s.height()-2);
-    picSize.setWidth(s.width()-2);
-    
-    
-    picScaled=pic.scaled(picSize,Qt::IgnoreAspectRatio,Qt::SmoothTransformation);    
-    setFixedSize(s);
+    setSize(s.width(),s.height() );
 }
 
 void views::coverWidget::setSize(int w,int h)
 {
-    QSize s(w,h);
-    setSize(s);
+    if (!pic.isNull() )
+    {
+   
+        picScaled=pic.scaled(w-2,h-2,Qt::IgnoreAspectRatio,Qt::SmoothTransformation);    
+    }
+    setFixedSize(w,h);
 }
 
 void views::coverWidget::paintEvent(QPaintEvent *e)
@@ -59,7 +41,7 @@ void views::coverWidget::paintEvent(QPaintEvent *e)
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing, true);
 
-    QRect r=QRect(rect().topLeft(),picSize);
+    QRect r=QRect(rect().topLeft(),picScaled.size());
     
     QRect shadowR=r;
     QPoint p=r.topLeft();    
@@ -76,35 +58,31 @@ void views::coverWidget::paintEvent(QPaintEvent *e)
     painter.drawPixmap(r, picScaled);
 }
 
-QSize views::coverWidget::size()
-{
-    return fixedSize;
-}
-
 void views::coverWidget::setCover(QString s)
 {
 
     if (s.isEmpty() )
     {
         pic=views::decor->albumPic();
+        art=QString();
     }
     else
     {
         pic.load(s);
+        art=s;
         if (pic.isNull() )
         {
             pic=views::decor->albumPic();
-
-            if (pic.isNull() )
-            {
-                return ;
-            }
+            art=QString();
         }
-        art=s;
+        
     }
 
-    picScaled=pic.scaled(picSize,Qt::IgnoreAspectRatio,Qt::SmoothTransformation);
-    repaint();
+    if(!pic.isNull() )
+    {
+        picScaled=pic.scaled(width()-2,height()-2,Qt::IgnoreAspectRatio,Qt::SmoothTransformation);
+        update();
+    }
 }
 
 QString views::coverWidget::cover()
@@ -112,8 +90,17 @@ QString views::coverWidget::cover()
     return art;
 }
 
-QSize	views::coverWidget::sizeHint () const
+QSize views::coverWidget::sizeHint () const
 {
-    return QFrame::sizeHint();
-//     return fixedSize;
+    return QSize(originalWidth,originalHeight);
 }
+
+void views::coverWidget::setHeight(int h)
+{        
+    picScaled=pic.scaledToHeight(h-2,Qt::SmoothTransformation);
+    setFixedHeight(h);
+    setFixedWidth(picScaled.width()+2);
+}
+
+const int views::coverWidget::originalWidth=156;
+const int views::coverWidget::originalHeight=137;

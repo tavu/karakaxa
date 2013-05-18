@@ -149,15 +149,13 @@ QString views::tagName(int t)
 
 void views::init()
 {
-   
     decor = new decoration; 
-    menus = new actionMenu;
 }
 
 void views::cleanUp()
 {
     delete decor;
-    delete menus;
+    delete actionMenu::_instance;
 }
 
 

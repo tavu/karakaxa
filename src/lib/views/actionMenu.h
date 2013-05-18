@@ -3,16 +3,19 @@
 
 #include"decoration/decoration.h"
 #include<QAction>
-
+#include <KToolBar>
+#include<viewsFunc.h>
+#include<engine/engine.h>
 namespace views
 {
 
 class actionMenu :public QObject
 {
     Q_OBJECT
+    friend void cleanUp();
     public:
-        actionMenu();
         
+
         QAction* clearPlaylist()
         {
             return clearPlaylistA;
@@ -23,18 +26,34 @@ class actionMenu :public QObject
             return sufflePlaylistA;
         }
 
-        QAction* nextSong()
+        QAction* next()
         {
             return nextA;
         }
+        
+        QAction* previous()
+        {
+            return previousA;
+        }
+        
+        QAction* playPause()
+        {
+            return playPauseA;
+        }
 
+        QAction* volume()
+        {
+            return volumeAction;
+        }
+        QAction* quit()
+        {
+            return quitAction;
+        }
+        
         QAction* repeatPlaylist();
 	
-//         void init();
-        
-//         static actionMenu* instance();
-        
-    private:        
+        static actionMenu* instance();
+    private:
         QAction *clearPlaylistA;
         QAction *sufflePlaylistA;
         QAction *repeatPlaylistA;
@@ -43,13 +62,24 @@ class actionMenu :public QObject
         QAction *nextA;
         QAction *previousA;
         
-//         static void clear();
-//         static actionMenu* _instance;
+        QAction *volumeAction;
+        
+        QAction *quitAction;
+        
+        static actionMenu *_instance;        
+        actionMenu();
+        
         
     private slots:
         void repeatPlaylistSlot(bool repeat);
+        void stateChanged();
+        void volumeC(qreal v);
 };
 
-extern actionMenu *menus;
+inline actionMenu* menus()
+{
+    return actionMenu::instance();
+}
+
 };
 #endif

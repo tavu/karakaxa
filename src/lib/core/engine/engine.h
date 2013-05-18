@@ -35,6 +35,7 @@ class soundEngine :public QObject
             audioOutput->setVolume(n);
         }
 
+
         static void init()
         {
             if(engine==0)
@@ -46,6 +47,9 @@ class soundEngine :public QObject
         {
             return engine;
         }
+        
+        bool isPlaying();
+        
     private:
         soundEngine(QObject *parent=0);
         

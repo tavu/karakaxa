@@ -17,7 +17,7 @@ nplaylistView::nplaylistView(QWidget *parent)
         :views::treeView(parent)
 {
     setRootIsDecorated(false);
-    setAlternatingRowColors(true);
+    setAlternatingRowColors(false);
     setDragDropMode( QAbstractItemView::DragDrop );
     setDragDropOverwriteMode(false);
     setSelectionMode(QAbstractItemView::ExtendedSelection);
@@ -25,11 +25,28 @@ nplaylistView::nplaylistView(QWidget *parent)
     setDropIndicatorShown(true);
     setDragEnabled( true );
     setEditTriggers(QAbstractItemView::NoEditTriggers);
-
+    setAcceptDrops(true);
+    
+    initMinimalView();
+    
     _removeAction=new QAction(KIcon("list-remove"),tr("&Remove track"),this);
     connect(_removeAction,SIGNAL(triggered( bool)),this,SLOT(remove() ) );
     connect( engine() ,SIGNAL(trackChanged ( QString) ),viewport(), SLOT(update()) );
 }
+
+void nplaylistView::initMinimalView()
+{
+    setHeaderHidden(true);
+    for(int i=1;i<FRAME_NUM;i++)
+    {
+        setColumnHidden(i,true);
+    }
+    setItemDelegate(new nplDelegate(this) );
+    header()->setStretchLastSection(true);
+//     header()->setDefaultSectionSize(35);
+    header()->setResizeMode(QHeaderView::Fixed);
+}
+
 
 void nplaylistView::mouseDoubleClickEvent(QMouseEvent* event)
 {

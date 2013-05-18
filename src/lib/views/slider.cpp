@@ -5,7 +5,7 @@
 #include <Phonon/MediaObject>
 #include<QMouseEvent>
 
-views::sliderWidget::sliderWidget(QWidget* parent): QWidget(parent)
+views::sliderWidget::sliderWidget(bool showLabels,QWidget* parent): QWidget(parent)
 {
     slider=new Slider(Qt::Horizontal,0,this);
     connect(slider,SIGNAL(sliderReleased(int)),this,SLOT(seek(int)) );
@@ -23,9 +23,20 @@ views::sliderWidget::sliderWidget(QWidget* parent): QWidget(parent)
     connect(core::engine(),SIGNAL(trackChanged(QString)),this,SLOT(trackChanged()));
     
     QHBoxLayout *layout=new QHBoxLayout(this);
-    layout->addWidget(left);
-    layout->addWidget(slider);
-    layout->addWidget(right);    
+    layout->setContentsMargins(0,0,0,0);
+//     layout->setContentsMargins(0,0,0,0);
+    if(showLabels)
+    {
+        layout->addWidget(left);
+        layout->addWidget(slider);
+        layout->addWidget(right);    
+    }
+    else
+    {
+        layout->addWidget(slider);
+        left->hide();
+        right->hide();
+    }
 }
 
 void views::sliderWidget::trackChanged()
