@@ -115,9 +115,9 @@ void playingWidget::getInfo()
         return;
     }
     
-    QString title =track->tag(TITLE).toString().simplified();
-    QString album=track->tag(ALBUM).toString().simplified();
-    QString artist=track->tag(ARTIST).toString().simplified();
+    QString title =track->tag(Basic::TITLE).toString().simplified();
+    QString album=track->tag(Basic::ALBUM).toString().simplified();
+    QString artist=track->tag(Basic::ARTIST).toString().simplified();
     QString info;
     if(album.isEmpty() )
     {
@@ -143,14 +143,14 @@ void playingWidget::getInfo()
     titleL->setText(title);
     infoL->setText(info);
     cover->setCover(track->cover() );    
-    QVariant ratingValue=track->tag(RATING);
+    QVariant ratingValue=track->tag(Basic::RATING);
     if(ratingValue.isNull())
     {
         rating->hide();
     }
     else
     {
-        rating->setRating(track->tag(RATING).toInt());
+        rating->setRating(track->tag(Basic::RATING).toInt());
         rating->show();
     }
 }
@@ -167,7 +167,7 @@ void playingWidget::setRating(int n)
     {
         return;
     }
-    if(f->setTag(RATING,n) )
+    if(f->setTag(Basic::RATING,n) )
     {
         rating->setRating(n);
     }    

@@ -37,13 +37,12 @@ nplaylistView::nplaylistView(QWidget *parent)
 void nplaylistView::initMinimalView()
 {
     setHeaderHidden(true);
-    for(int i=1;i<FRAME_NUM;i++)
+    for(int i=1;i<Basic::FRAME_NUM;i++)
     {
         setColumnHidden(i,true);
     }
     setItemDelegate(new nplDelegate(this) );
     header()->setStretchLastSection(true);
-//     header()->setDefaultSectionSize(35);
     header()->setResizeMode(QHeaderView::Fixed);
 }
 

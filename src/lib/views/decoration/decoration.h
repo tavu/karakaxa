@@ -24,11 +24,8 @@ class decoration
         return pal;
     }
 
-        inline QPixmap albumPic()
-        {
-            return QPixmap(albumIcon );
-        }
-
+    QPixmap albumPic();
+    
     KIcon next();
 
     KIcon previous();
@@ -74,21 +71,16 @@ class decoration
 private:
     QPalette pal;
 
-    KIcon icons[audioFiles::FRAME_NUM];
-    KIcon defaultIcon;
-
     QSize pixSize;
     QString albumIcon;
 };
 
 extern decoration *decor;
 
-        QSize pixSize;
-};
-
-    extern decoration *decor;
-    
+        
 };//namespace
+
+    
 #endif
 
 

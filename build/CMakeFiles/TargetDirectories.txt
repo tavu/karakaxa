@@ -1,3 +1,0 @@
-/home/tavu/karakaxa.new/build/src/lib/CMakeFiles/karakaxa.dir
-/home/tavu/karakaxa.new/build/src/player/CMakeFiles/karakaxa_exec.dir
-/home/tavu/karakaxa.new/build/src/lastFm/CMakeFiles/karakaxa_lfm.dir

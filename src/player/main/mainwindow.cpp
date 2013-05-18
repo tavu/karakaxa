@@ -64,7 +64,7 @@ mainWindow::mainWindow()
     readSettings();
     
     npList()->loadSavedPlaylist();
-    menuBar ()->hide();
+//     menuBar ()->hide();
     
     QVariant v= QVariant::fromValue((void *) npList());
     qDebug()<<v.canConvert<void*>();
