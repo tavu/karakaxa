@@ -41,6 +41,7 @@ public:
 
     KIcon volumeLow();
 
+    KIcon rating(bool black=false);
 
     KIcon playListIcon();
 
@@ -59,7 +60,7 @@ public:
     {
         //scaling the pixmap is very slow.
         //that's why we scaled the images to pixSize before we save them to the cache
-        //that makes the cache unapropriate if u want images larger than pixsize.
+        //that makes the cache inapropriate if u want images larger than pixsize.
         return pixSize;
     }
     void init();

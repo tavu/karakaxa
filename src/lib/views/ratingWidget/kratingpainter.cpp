@@ -36,6 +36,7 @@ class KRatingPainter::Private
 	      bHalfSteps(true),
 	      alignment(Qt::AlignLeft),
 	      direction(Qt::LeftToRight),
+	      effect(KIconEffect::ToGray),
 	      spacing(0) {
 	}
 
@@ -49,6 +50,7 @@ class KRatingPainter::Private
 	Qt::LayoutDirection direction;
 	QPixmap customPixmap;
 	int spacing;
+        KIconEffect::Effects effect;
 };
 
 
@@ -197,7 +199,7 @@ void KRatingPainter::paint( QPainter* painter, const QRect& rect, int rating, in
     int maxHSizeOnePix = ( rect.width() - (numUsedStars-1)*usedSpacing ) / numUsedStars;
     QPixmap ratingPix = d->getPixmap( qMin( rect.height(), maxHSizeOnePix ) );
 
-    QPixmap disabledRatingPix = KIconEffect().apply( ratingPix, KIconEffect::ToGray, 1.0, QColor(), false );
+    QPixmap disabledRatingPix = KIconEffect().apply( ratingPix, d->effect, 1.0, QColor(), false );
     QPixmap hoverPix;
 
     // if we are disabled we become gray and more transparent
@@ -214,8 +216,9 @@ void KRatingPainter::paint( QPainter* painter, const QRect& rect, int rating, in
     if ( hoverRating > 0 && rating != hoverRating && d->isEnabled ) {
         numHoverStars = d->bHalfSteps ? hoverRating/2 : hoverRating;
         halfHover = d->bHalfSteps && hoverRating%2;
-        hoverPix = KIconEffect().apply( ratingPix, KIconEffect::ToGray, 0.5, QColor(), false );
+        hoverPix = KIconEffect().apply( ratingPix, d->effect, 0.5, QColor(), false );
     }
+    ratingPix= KIconEffect().apply( ratingPix, KIconEffect::Colorize, 0.5, QColor(0,0,0), false );
 
     if ( d->alignment & Qt::AlignJustify ) {
         int w = rect.width();
@@ -354,4 +357,15 @@ int KRatingPainter::getRatingFromPosition( const QRect& rect, Qt::Alignment alig
     rp.setAlignment( align );
     rp.setLayoutDirection( direction );
     return rp.ratingFromPosition( rect, pos );
+}
+
+void KRatingPainter::setEffect(KIconEffect::Effects f)
+{
+    d->effect=f;
+}
+
+
+KIconEffect::Effects KRatingPainter::effect()
+{
+    return d->effect;
 }

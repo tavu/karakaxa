@@ -24,7 +24,7 @@
 #define KRATINGPAINTER_H
 
 #include <QtCore/Qt>
-
+#include <kiconeffect.h>
 class QIcon;
 class QPixmap;
 class QPainter;
@@ -60,6 +60,9 @@ public:
      */
     ~KRatingPainter();
 
+    void setEffect(KIconEffect::Effects f);
+    
+    KIconEffect::Effects effect();
     /**
      * The maximum rating, i.e. how many stars are drawn
      * in total.

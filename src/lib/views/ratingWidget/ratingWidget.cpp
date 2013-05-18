@@ -1,10 +1,11 @@
 #include"ratingWidget.h"
+#include <decoration/decoration.h>
 #include<kicon.h>
 #include<kiconeffect.h>
 #include<QPainter>
 #include<QMouseEvent>
 #include"../../files/audioFiles.h"
-
+#include<QDebug>
 /*
     Most of this code is from amarok.
 */
@@ -13,24 +14,47 @@ views::ratingWidget::ratingWidget(QWidget *parent)
     :QWidget(parent),
     _rating(0),
     hoverRating(-1),
-    pixSize(20)
+    pixSize(20),
+    _black(true)
 {
-    ratingPainter.setAlignment( Qt::AlignLeft);
+    ratingPainter.setAlignment( Qt::AlignLeft);    
     setMouseTracking(true);
+    setBlack(true);
+//     ratingPainter.setIcon( decor->rating() );
 }
+
+bool views::ratingWidget::isBlack()
+{
+    return _black;
+}
+
+void views::ratingWidget::setBlack(bool b)
+{    
+    _black=b;
+    ratingPainter.setIcon(decor->rating(b) );
+    if(b)
+    {
+        ratingPainter.setEffect(KIconEffect::ToGamma);
+    }
+    else
+    {
+        ratingPainter.setEffect(KIconEffect::ToGray);
+    }
+    update();
+}
+
+
 
 void views::ratingWidget::paintEvent(QPaintEvent *event)
 {
     Q_UNUSED(event);
     QPainter painter(this);
 
-    if( true )
-    {
-        ratingPainter.setEnabled( true );
+//         ratingPainter.setEnabled( true );
+        
         QRect rect( contentsRect().topLeft().x(), contentsRect().topLeft().y(),
                     contentsRect().width(), contentsRect().height() );
         ratingPainter.paint( &painter, rect, _rating, hoverRating );
-    }
 }
 
 QSize views::ratingWidget::sizeHint() const

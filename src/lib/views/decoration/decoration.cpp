@@ -11,18 +11,34 @@ using namespace audioFiles;
 views::decoration::decoration()
      :pixSize(170,150)
 {
-    icons[ARTIST]=icon("artist");
-    icons[LEAD_ARTIST]=icon("lead-artist");
-    icons[ALBUM]=icon("album");
-    icons[RATING]=KIcon("rating");
-    icons[COMMENT]=icon("comment");
-    icons[GENRE]=icon("genre");
-    icons[TRACK]=icon("track");
-    icons[LENGTH]=icon("clock");
-    defaultIcon=icon("music");
-
     albumIcon=KGlobal::dirs()->findResource("data",QString("karakaxa/icons/album.png") );
-    initPalete();
+//     initPalete();
+}
+
+KIcon views::decoration::tagIcon(int t)
+{
+    switch (t)
+    {
+        case ARTIST:
+        case ALBUM_ARTIST:
+            return icon("artist");
+        case LEAD_ARTIST:
+            return icon("lead-artist");
+        case ALBUM:
+            return icon("album");
+        case RATING:
+            return KIcon("rating");
+        case COMMENT:    
+            return KIcon("comment");
+        case GENRE:
+            return icon("genre");
+        case TRACK:
+            return icon("track");
+        case LENGTH:
+            return icon("clock");
+         default:
+            return icon("music");
+      }
 }
 
 KIcon views::decoration::icon(const QString s)
@@ -38,28 +54,6 @@ KIcon views::decoration::icon(const QString s)
 
     return KIcon(iconPath);
 }
-
-
-KIcon views::decoration::tagIcon(int t)
-{
-    if(t==audioFiles::ALBUM_ARTIST)
-    {
-        return icons[audioFiles::ARTIST];
-    }
-    if(t>=audioFiles::FRAME_NUM||t<0)
-    {
-        return defaultIcon;
-    }
-    KIcon i=icons[t];
-    if(i.isNull() )
-    {
-        return defaultIcon;
-    }
-    return i;
-}
-
-
-
 
 void views::decoration::init()
 {
@@ -166,19 +160,19 @@ void views::decoration::initPalete()
 }
  KIcon views::decoration::muted()
 {
-    return KIcon("audio-volume-muted");
+    return icon("audio-volume-muted");
 }
  KIcon views::decoration::volumeHigh()
 {
-    return KIcon("audio-volume-high");
+    return icon("audio-volume-high");
 }
  KIcon views::decoration::volumeMedium()
 {
-    return KIcon("audio-volume-medium");
+    return icon("audio-volume-medium");
 }
  KIcon views::decoration::volumeLow()
 {
-    return KIcon("audio-volume-low");
+    return icon("audio-volume-low");
 }
 
 KIcon views::decoration::playListIcon()
@@ -194,6 +188,18 @@ KIcon views::decoration::logo()
 QPixmap views::decoration::albumPic()
 {
     return QPixmap(albumIcon);
+}
+
+KIcon views::decoration::rating(bool black)
+{
+    if(black)
+    {
+        return icon("rating-black");
+    }
+    else
+    {
+        return KIcon("rating");
+    }
 }
 
 

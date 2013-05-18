@@ -12,4 +12,4 @@
 .*
 *.bak
 *.kdev4
-build/
+build/*
