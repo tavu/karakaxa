@@ -90,7 +90,7 @@ QVariant views::trackModelItem::headerData(int section, Qt::Orientation orientat
 
     if(role==Qt::DecorationRole)
     {
-        return QVariant(decor->tagIcon( section) );
+        return QVariant( );
     }
 
     return standardItem::headerData(section,orientation,role);

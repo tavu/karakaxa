@@ -28,6 +28,8 @@ views::treeViewHeader::treeViewHeader(QTreeView *parent)
     setProperty("highlight",QVariant(-1));        
          
     setStyleSheet("QHeaderView::section {background-color: transparent; }" );
+    //setStyleSheet("QHeaderView {background-color: transparent;border: 1px solid #6c6c6c; }" );
+    
 }
 
 void views::treeViewHeader::createMenu()
@@ -120,14 +122,6 @@ QSize views::treeViewHeader::sizeHint () const
     return QSize(25,25);
 }
 
-
-// int views::treeViewHeader::sectionSizeHint(int column)
-// {
-//      if(column==0)	return 30;
-//
-//      return 0;
-// }
-
 void views::treeViewHeader::setNotHide(int num)
 {
     notHid=num;
@@ -143,10 +137,14 @@ views::treeViewHeader::~treeViewHeader()
   delete lines;
 }
 
-void views::treeViewHeader::paintSection( QPainter * painter, const QRect & rect, int logicalIndex ) const
+void views::treeViewHeader::paintSection( QPainter * painter, const QRect & r, int logicalIndex ) const
 {    
+//     QHeaderView::paintSection(painter,rect,logicalIndex);
+//     return ;
     painter->save();
     
+    QRect rect(r);
+    rect.setWidth(r.width()-2);
     painter->fillRect(rect,QBrush( palette().window().color() ) );
     
     
@@ -191,6 +189,9 @@ void views::treeViewHeader::paintSection( QPainter * painter, const QRect & rect
     painter->restore();   
 
     painter->save();
+    QFont f=painter->font();
+    f.setBold(true);
+    painter->setFont(f);
     QHeaderView::paintSection(painter,rect,logicalIndex);
     painter->restore();
 }

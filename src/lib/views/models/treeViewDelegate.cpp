@@ -25,28 +25,27 @@ Q_DECLARE_METATYPE(QModelIndexList)
 
 views::treeViewDelegate::treeViewDelegate(QAbstractItemView *parent)
     :QStyledItemDelegate(parent) ,
-    ITEM_HEIGH(18)
-//     FONT_SIZE(11)
+     ITEM_HEIGH(18)
 {
-//     font.setPointSize(FONT_SIZE);            
+
 }
 
 void views::treeViewDelegate::paint ( QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index ) const
 {
     painter->save();
     painter->setRenderHint(QPainter::Antialiasing, true);
-     
-	painter->setOpacity(0.8);
+
+    painter->setOpacity(0.8);
     QPen pen;
-    pen.setWidth(2);
-    pen.setColor(option.palette.window().color() );
-    painter->setPen(pen);		
-	painter->drawLine(option.rect.topRight(),option.rect.bottomRight());	
-   
-	painter->restore();
-    
-	painter->save();
-    
+    pen.setWidth(1);
+    pen.setColor(option.palette.window().color());
+    painter->setPen(pen);
+    painter->drawLine(option.rect.topRight(),option.rect.bottomRight());
+
+    painter->restore();
+
+    painter->save();
+
 //     painter->setFont(font);
 
     QApplication::style()->drawPrimitive( QStyle::PE_PanelItemViewItem, &option, painter );
@@ -63,7 +62,7 @@ void views::treeViewDelegate::paint ( QPainter * painter, const QStyleOptionView
         return ;
     }
 
-    
+
     QRect r=option.rect;
     r.setWidth(r.width()-4);
     r.setX(r.x()+2);
@@ -76,10 +75,10 @@ void views::treeViewDelegate::paint ( QPainter * painter, const QStyleOptionView
         r.setWidth(r.width()-pic.width());
         r.setX(r.x()+pic.width());
     }
-    
+
     QVariant var=index.data(Qt::DisplayRole);
     if(!var.isNull() )
-    {	   
+    {
         QString text = option.fontMetrics.elidedText(var.toString(),Qt::ElideRight,r.width() );
 
         if( index.flags() & !Qt::ItemIsEnabled || index.data(DISABLE_ROLE).toBool() || index.data(OPACITY_ROLE).toBool() )
@@ -88,7 +87,7 @@ void views::treeViewDelegate::paint ( QPainter * painter, const QStyleOptionView
         }
         else
         {
-			painter->setOpacity(1);
+            painter->setOpacity(1);
         }
         painter->drawText( r,Qt::AlignLeft|Qt::AlignVCenter, text);
     }
@@ -97,7 +96,7 @@ void views::treeViewDelegate::paint ( QPainter * painter, const QStyleOptionView
 
 
 QWidget* views::treeViewDelegate::createEditor(QWidget *parent,const QStyleOptionViewItem &option,const QModelIndex &index) const
-{    
+{
     bool b;
     int tag=index.data(TAG_ROLE).toInt(&b);
 
@@ -114,21 +113,21 @@ QWidget* views::treeViewDelegate::createEditor(QWidget *parent,const QStyleOptio
     //TODO take the signal name by the QMetaObject
     connect(w,SIGNAL(ratingChanged(int) ),this, SLOT(commitEditor()));
 
-    return w;    
+    return w;
 }
 
 void views::treeViewDelegate::setEditorData(QWidget *editor,const QModelIndex &index) const
 {
-     QStyledItemDelegate::setEditorData(editor,index);
+    QStyledItemDelegate::setEditorData(editor,index);
 }
 
 QSize views::treeViewDelegate::sizeHint ( const QStyleOptionViewItem & option, const QModelIndex & index ) const
-{       
+{
     QSize ret=index.data(Qt::SizeHintRole).toSize();
 
-    if(ret.isEmpty() )	 
+    if(ret.isEmpty() )
         return QSize(option.rect.width(),ITEM_HEIGH);
-    
+
     return ret;
 }
 
@@ -143,12 +142,12 @@ void views::treeViewDelegate::setItemHeigh(int k)
 }
 
 void views::treeViewDelegate::setModelData(QWidget *editor,QAbstractItemModel *model,const QModelIndex &index) const
-{    
+{
     QModelIndexList list=qvariant_cast<QModelIndexList>(property("modelList") );
-    
+
     if(list.isEmpty() )
     {
-        QStyledItemDelegate::setModelData(editor,model,index); 
+        QStyledItemDelegate::setModelData(editor,model,index);
         return ;
     }
 
@@ -157,7 +156,7 @@ void views::treeViewDelegate::setModelData(QWidget *editor,QAbstractItemModel *m
 
     if(!b)
     {
-        QStyledItemDelegate::setModelData(editor,model,index); 
+        QStyledItemDelegate::setModelData(editor,model,index);
         return ;
     }
 
@@ -195,8 +194,8 @@ void views::treeViewDelegate::setModelData(QWidget *editor,QAbstractItemModel *m
 
 void views::treeViewDelegate::commitEditor()
 {
-     QWidget *editor = qobject_cast<QWidget *>(sender());
-     emit commitData(editor);
+    QWidget *editor = qobject_cast<QWidget *>(sender());
+    emit commitData(editor);
 }
 
 
@@ -204,7 +203,7 @@ void views::treeViewDelegate::updateEditorGeometry(QWidget *editor,const QStyleO
 {
     QStyledItemDelegate::updateEditorGeometry(editor,option,index);
 //     return ;
-    QSize s=sizeHint(option,index);      
+    QSize s=sizeHint(option,index);
     QRect r=option.rect;
     r.setSize(s);
     editor->setFixedSize(s);

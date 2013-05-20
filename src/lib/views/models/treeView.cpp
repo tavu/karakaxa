@@ -28,8 +28,10 @@ views::treeView::treeView(QWidget *parent,QString name)
 {
     setHeader(new treeViewHeader(this));
     setUniformRowHeights(true);
-    setAlternatingRowColors(true);
-
+    setAlternatingRowColors(false);
+//     setFrameShape(QFrame::Box);
+    setFrameShadow(QFrame::Plain);
+    
     delegate=new treeViewDelegate(this);
     setItemDelegate(delegate);
 
