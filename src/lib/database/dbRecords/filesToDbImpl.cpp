@@ -61,6 +61,7 @@ QVariant database::filesToDbImpl::tag ( int t )
 
 int database::filesToDbImpl::setTag ( int t, QVariant& value )
 {    
+    qDebug()<<"set TAg";
     if(!track->hasEntry(t) )
     {
         _error=Basic::UNOWN;        
@@ -82,7 +83,7 @@ int database::filesToDbImpl::setTag ( int t, QVariant& value )
             track->clearNewValue();
             return _error;
         }
-        else if(leadArt.toString().isEmpty() )
+        else if(leadArt.toString().trimmed().isEmpty() )
         {
             track->changeEntry( ALBUM_ARTIST,value );
         }
@@ -94,10 +95,7 @@ int database::filesToDbImpl::setTag ( int t, QVariant& value )
 int database::filesToDbImpl::select()
 {
     databs=db()->getDatabase();
-    if (!databs.isOpen())
-    {
-        _error= DBERR;
-    }  
+ 
     track->setDatabase(databs);
     _error=track->select();
     db()->closeDatabase(databs);
@@ -155,9 +153,22 @@ int database::filesToDbImpl::prepareToSave()
     {
         _error=Basic::DBERR;
     }  
-    track->setDatabase(databs);
+    else
+    {
+        track->setDatabase(databs);
+    }
     lock();
     _error= track->select();
+     
+    if(_error==Basic::OK)
+    {
+        _inDb=Basic::OK;
+    }
+    else if(_error==Basic::NOTINDB)
+    {
+        _inDb=Basic::NOTINDB;
+    }
+    
     return _error;
 }
 

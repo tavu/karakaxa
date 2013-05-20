@@ -278,9 +278,7 @@ void audioFiles::audioFile::setTags(QList<int> tags,QList<QVariant> values)
         err=UNOWN;
         return ;
     }
-    
-    cache->select(true);
-//     cache->loadTags();
+
     cache->prepareToSave();
     
     for(int i=0;i<tags.size();i++ )
@@ -362,7 +360,6 @@ void audioFiles::audioFile::save()
     changes=cache->savingEnd();    
     audioFile f(*this);
     self()->emitChanged(f);
-//     core::db->updateSig(f);        
 }
 
 void audioFiles::audioFile::load(const short int f)
