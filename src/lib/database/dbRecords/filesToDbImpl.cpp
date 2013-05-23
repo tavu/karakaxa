@@ -61,7 +61,7 @@ QVariant database::filesToDbImpl::tag ( int t )
 
 int database::filesToDbImpl::setTag ( int t, QVariant& value )
 {    
-    qDebug()<<"set TAg";
+    qDebug()<<"set TAg "<<t;
     if(!track->hasEntry(t) )
     {
         _error=Basic::UNOWN;        

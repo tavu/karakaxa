@@ -46,7 +46,7 @@ void database::dbPrivate::trackViewRecord::changeEntry ( int t, QVariant& v )
         {
             if(track->hasEntry(t) )
             {
-                track->changeEntry(0,v);
+                track->changeEntry(t,v);
             }
         }
     }
