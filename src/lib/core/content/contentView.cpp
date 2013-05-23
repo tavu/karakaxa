@@ -45,15 +45,16 @@ void core::contentsPrivate::contentView::activateContFromIndex(const QModelIndex
 
     view->setCurrentIndex(in);
     abstractContent *cont=contentFromIndex(in);
-
-    if(view->isExpanded(in) )
+    
+    if(contList->currentContent() == cont && view->isExpanded(in) )
     {
         view->collapse(in);
     }
     else
     {
-	   view->expand(in);
+        view->expand(in);    
     }
+
 
     int r=-1;
     if(in.parent().isValid() )
