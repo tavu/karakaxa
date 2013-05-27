@@ -83,24 +83,29 @@ int audioFiles::fileCache::select ( bool force )
     return ret;
 }
 
-QString audioFiles::fileCache::coverPath()
+QString audioFiles::fileCache::coverPath(int &err)
 {
-    return fdb->albumArt();
+    return fdb->albumArt().toString();
 }
 
 QString audioFiles::fileCache::findCoverPath ( int &err )
 {
+    QVariant ret=fdb->albumArt();
+    if(!ret.isNull())
+    {
+        return ret.toString();
+    }
+    
     loadMutex.lock();
-    QString ret=fdb->albumArt ();
     err=fdb->error();
     if ( err==NOT_SELECTED )
     {
-        fdb->select();
-        QString ret=fdb->albumArt ();
+        fdb->fetchAlbumArt();
+        ret=fdb->albumArt();
         err=fdb->error();
     }
     loadMutex.unlock();
-    return ret;
+    return ret.toString();
 }
 
 

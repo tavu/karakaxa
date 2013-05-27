@@ -17,7 +17,9 @@ class filesToDb
         virtual bool isSelected()=0;
         //get the path of the cover of the album
         //null string if error;
-        virtual QString albumArt()=0;
+        virtual QVariant albumArt()=0;
+        
+        virtual int fetchAlbumArt()=0;
         
         //get the tag of the file
         //null QVariant on any error

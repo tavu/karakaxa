@@ -39,7 +39,7 @@ class fileCache :public QObject
         int       select ( bool force=false );
         QVariant  tagFromFile ( int t, int &err );
         QVariant  tagFromDb ( int t, int &err );
-        QString   coverPath();
+        QString   coverPath(int &err);
         QString   findCoverPath ( int &err );
 
         int       albumId ( int &err );

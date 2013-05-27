@@ -1,6 +1,6 @@
 #ifndef AUDIOFILE
 #define AUDIOFILE
-#include"fileTags.h"
+
 #include<QSqlDatabase>
 #include<QMutex>
 #include <QHash>
@@ -104,10 +104,7 @@ class audioFile :public QObject
         mutable fileCache *cache;
 
     protected slots:
-        void emitChanged ( audioFiles::tagChangesL l )
-        {
-            emit changed ( l );
-        }
+        void emitChanged ( audioFiles::tagChangesL l );
 
         void invalidSlot ( bool );
 

@@ -314,12 +314,9 @@ QString audioFiles::audioFile::cover()
         err=INVALID_FILE;
         return QString();
     }
-    QString ret=cache->coverPath();
-    if(ret.isEmpty() )
-    {
-        ret=cache->findCoverPath(err);
-    }
-    return ret;
+    cache->findCoverPath(err);
+    QString s=cache->coverPath(err);
+    return s;
 }
 
 int audioFiles::audioFile::size()

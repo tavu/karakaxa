@@ -138,7 +138,7 @@ QString views::tagName(int t)
 	}
 	case COUNTER:
 	{
-	    return QString(QObject::tr("Played counter") );
+	    return QString(QObject::tr("Times played") );
 	}
 	default:
 	{

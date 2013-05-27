@@ -20,24 +20,38 @@ database::filesToDbImpl::filesToDbImpl ( int id,QObject *parent) :filesToDb(),db
 }
 
 
-QString database::filesToDbImpl::albumArt()
+QVariant database::filesToDbImpl::albumArt()
 {
     if(_inDb==NOTINDB)
     {
         _error=NOTINDB;
-        return QString();
+        return QVariant();
     }
     
     dbPrivate::baseRecord *br=track->getAlbumRecord();
     
-    if(!br->hasData(Basic::IMAGE) )
+    if(br->hasData(Basic::IMAGE) )
     {
         _error=OK;
-        return br->getValue(Basic::IMAGE).toString();
+        return br->getValue(Basic::IMAGE);
     }
     _error=Basic::NOT_SELECTED;
-    return QString();
+    return QVariant();
 }
+
+int database::filesToDbImpl::fetchAlbumArt()
+{
+    if(_inDb==NOTINDB)
+    {
+        _error=NOTINDB;
+        return NOTINDB;
+    }
+
+    dbPrivate::baseRecord *br=track->getAlbumRecord();
+    return br->select();
+}
+
+
 
 
 QVariant database::filesToDbImpl::tag ( int t )

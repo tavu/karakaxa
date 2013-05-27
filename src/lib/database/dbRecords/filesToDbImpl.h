@@ -18,7 +18,9 @@ class filesToDbImpl :public Basic::filesToDb , public dbBase
         
         //get the path of the cover of the album
         //null string if error;
-        QString albumArt();
+        QVariant albumArt();
+        
+        int fetchAlbumArt();
         
         bool isSelected();
         
