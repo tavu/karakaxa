@@ -2,16 +2,16 @@
 #include<QtDebug>
 #include<QFileInfoList>
 #include<QDir>
-// #include<player.h>
-// #include"fileToDb.h"
 #include"mp3Tags.h"
-#include"../core/func.h"
+#include<Basic/func.h>
 #define TRV_HIDE 1
 #include"fileCache.h"
 #include"audioFilesSelf.h"
 #include"fileCacheFactory.h"
 
 #include<Basic/tagsTable.h>
+
+#include<QApplication>
 
 using namespace Basic;
 
@@ -214,7 +214,7 @@ QVariant audioFiles::audioFile::tag(int t, const short int f) const
     if (t==TITLE && ret.toString().isEmpty() && (f & TITLEFP) )
         {
                 stat= TITLEFP;
-                return core::titleFromPath(path());
+                return Basic::titleFromPath(path());
         }
     
 
@@ -431,7 +431,7 @@ QString audioFiles::audioFile::folder()
 	return QString();
     }
     
-    return core::folder(path() );
+    return Basic::folder(path() );
 }
 
 QString audioFiles::audioFile::format()
@@ -442,7 +442,7 @@ QString audioFiles::audioFile::format()
 	return QString();
     }
       
-    return core::format(path() );
+    return Basic::format(path() );
 }
 
 bool audioFiles::audioFile::inDataBase(bool force)
@@ -461,6 +461,11 @@ bool audioFiles::audioFile::inDataBase(bool force)
     }
     
     return false;
+}
+
+void audioFiles::audioFile::emitChanged(audioFiles::tagChangesL l)
+{
+    emit changed ( l );
 }
 
 

@@ -5,6 +5,7 @@
 #include<Basic/tagsTable.h>
 #include<Basic/func.h>
 #include<core/engine/engine.h>
+#include<QStringList>
 using namespace audioFiles;
 using namespace Basic;
 
