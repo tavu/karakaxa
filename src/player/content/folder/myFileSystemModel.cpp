@@ -4,6 +4,7 @@
 #include <kio/copyjob.h>
 #include"playlist/filePlaylist.h"
 #define DIRCOLUMN 7
+#include<Basic/func.h>
 using namespace core;
 myFileSystemModel::myFileSystemModel(QWidget *parent)
         :KDirModel(parent)
@@ -29,53 +30,6 @@ void myFileSystemModel::updateLibrary()
 
 bool myFileSystemModel::dropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column, const QModelIndex& parent)
 {
-    /*
-    KUrl dest;
-    QMenu menu(static_cast<QWidget*>(QObject::parent() ) );
-    QAction *copyA=new QAction(KIcon("edit-copy"),tr("Copy here"),&menu);
-    QAction *moveA=new QAction(KIcon("go-jump"),tr("move here"),&menu);
-
-    menu.addAction(copyA);
-    menu.addAction(moveA);
-    QAction *a=menu.exec(QCursor::pos());
-
-    if(a==0)
-    {
-        return false;
-    }
-
-    if(parent.isValid() )
-    {
-        dest=itemForIndex(parent).url();
-    }
-    else
-    {
-        dest=dirLister()->url();
-    }
-
-    if(!data->hasUrls() )
-    {
-        return false;
-    }
-
-    KUrl::List urls;
-
-    foreach(QUrl u,data->urls())
-    {
-        urls.append(KUrl(u) );
-    }
-
-    if(a==copyA)
-    {
-        KIO::copy(urls,dest );
-    }
-    else
-    {
-        KIO::move(urls,dest );
-    }
-
-    return true;
-    */
 
     if(!data->hasUrls() || action==Qt::IgnoreAction )
     {
@@ -92,9 +46,9 @@ bool myFileSystemModel::dropMimeData(const QMimeData* data, Qt::DropAction actio
         dest=dirLister()->url();
     }
 
-    if(core::isPlaylist(dest.toLocalFile() ) )
+    if(Basic::isPlaylist(dest.toLocalFile() ) )
     {
-        nplList list;
+        core::nplList list;
         foreach(QUrl u,data->urls())
         {
             nplPointer p=core::nplTrack::getNplTrack(u);
@@ -109,7 +63,8 @@ bool myFileSystemModel::dropMimeData(const QMimeData* data, Qt::DropAction actio
         pl->save();
         return true;
     }
-
+    //TODO support drop action
+#if 0
     KUrl::List urls;
 
     foreach(QUrl u,data->urls())
@@ -127,6 +82,7 @@ bool myFileSystemModel::dropMimeData(const QMimeData* data, Qt::DropAction actio
     }
 
     return true;
+#endif
 }
 
 
@@ -207,7 +163,7 @@ void myFileSystemModel::insert(const KFileItemList &items)
     QLinkedList<audioFiles::audioFile> l;
     foreach(KFileItem item , items)
     {
-	   if( core::isAudio(item.url().toLocalFile() )  )
+        if( core::isAudio(item.url().toLocalFile() )  )
         {
             l<<audioFiles::audioFile( item.url().toLocalFile() );
         }
@@ -227,6 +183,7 @@ Qt::ItemFlags myFileSystemModel::flags ( const QModelIndex & index ) const
     static Qt::ItemFlags f= Qt::ItemIsEnabled | Qt::ItemIsSelectable |Qt::ItemIsDragEnabled;
 
     if(!index.isValid() || itemForIndex(index).isDir()||core::isPlaylist( url(index.row()).toLocalFile() ) )
+    if(!index.isValid() ||Basic::isPlaylist( url(index.row()).toLocalFile() ) )    
     {
         return f|Qt::ItemIsDropEnabled;
     }

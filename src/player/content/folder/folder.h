@@ -34,20 +34,15 @@ class folderContent :public core::abstractContent
         {
             writeSettings();
         }
-        const QList<QString> getChildren();
 
         QString name() const;
 
-        QIcon icon() const
-        {
-            return KIcon("folder-sound");
-        }
+        QIcon icon() const;
 
     private:
         void                loaded();
         void                unloaded();
         void                readSettings();
-
 
         void                goToPl(KUrl url);
         void                goToFolder(KUrl url);
@@ -60,23 +55,34 @@ class folderContent :public core::abstractContent
         KFilePlacesModel    *navigatorModel;
         KLineEdit           *searchLine;
 
-        QStackedWidget      *stacked;
         myFileSystemModel   *folderM;
-        folderProxyModel    *folProxy;
         views::filePlaylistModel *plModel;
-        QSortFilterProxyModel  *plProxy;
-        views::treeView     *plView;
-        views::treeView     *folView;
+        folderProxyModel    *proxyM;        
+        views::treeView     *view;
 
         //actions
         QAction             *upAction;
         QAction             *backAction;
         QAction             *forwardAction;
         QAction             *newPlAction;
+        
+        QByteArray          plState;
+        QByteArray          folderState;
 
     //functions
         inline void toolBarInit();
         inline void layoutInit();
+        
+        
+        inline bool inPl()
+        {
+            return proxyM->sourceModel()==plModel;
+        }
+        
+        inline bool inFolder()
+        {
+            return proxyM->sourceModel()==folderM;
+        }
 
     public slots:
         void cd(KUrl);

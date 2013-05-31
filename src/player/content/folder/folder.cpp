@@ -18,121 +18,42 @@
 
 using namespace core;
 // #define DIRECTORYM "inode/directory"
+
+QIcon folderContent::icon() const
+{
+    return views::decor->icon("folder-sound");
+}
+
+
+
 folderContent::folderContent(QWidget *parent)
         :abstractContent(parent),plModel(0)
-{
-    /*
-    navigatorModel = new KFilePlacesModel(this);
-    navigator = new KUrlNavigator(navigatorModel,KUrl( QDir::home().path() ),this);
-
-    model = new myFileSystemModel(this);
-    proxyM=0;
-
-    view=new views::treeView(this);
-    view->setDragDropMode(QAbstractItemView::DragDrop);
-
-    toolBar=new KToolBar(this);
-    toolBar->setToolButtonStyle( Qt::ToolButtonIconOnly );
-
-    toolBar->setFixedHeight(25);
-
-    folderToolBar=new KToolBar(this);
-    folderToolBar->setToolButtonStyle( Qt::ToolButtonIconOnly );
-
-    backAction = new QAction( KIcon( "go-previous" ),"go back", this );
-    toolBar->addAction( backAction );
-    connect( backAction, SIGNAL( triggered( bool) ), this, SLOT( back() ) );
-
-
-    forwardAction = new QAction( KIcon( "go-next" ),"go forward", this );
-    toolBar->addAction( forwardAction );
-    connect( forwardAction, SIGNAL( triggered( bool) ), this, SLOT( forward() ) );
-
-    upAction = new QAction( KIcon( "go-up" ),"go up", this );
-    toolBar->addAction( upAction );
-    connect( upAction, SIGNAL( triggered( bool) ), this, SLOT( up() ) );
-
-    folderToolBarAction = toolBar->addWidget(folderToolBar);
-
-    QFrame *fr=new QFrame(folderToolBar);
-    fr->setFrameStyle(QFrame::VLine|QFrame::Raised);
-    folderToolBar->addWidget(fr);
-
-    newPlAction = new QAction(views::decor->playListIcon(),"create new playlist", this );
-    folderToolBar->addAction( newPlAction );
-    connect( newPlAction, SIGNAL( triggered( bool) ), this, SLOT( newPl() ) );
-
-    QWidget* spacer = new QWidget(this);
-    spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    toolBar->addWidget(spacer);
-
-    searchLine =new KLineEdit(this);
-    searchLine->setClearButtonShown(true);
-    searchLine->setClickMessage(tr("filter"));
-    searchLine->setFixedWidth(300);
-    searchLine->setVisible(true);
-    toolBar->addWidget(searchLine);
-
-
-
-    QVBoxLayout *layout = new QVBoxLayout();
-
-    QFrame *f=new QFrame(this);
-    f->setFrameShape(QFrame::HLine);
-    layout->addWidget(f);
-    layout->addWidget(navigator);
-
-    layout->addWidget(view);
-
-    setLayout(layout);
-
-    connect(view,SIGNAL(clicked ( const QModelIndex) ),this,SLOT(setDir(const QModelIndex) ) );
-
-    readSettings();
-
-    connect(navigator,SIGNAL(urlChanged (KUrl) ),this,SLOT(showUrl(KUrl) ) );
-    connect(qApp,SIGNAL(aboutToQuit() ),this,SLOT(writeSettings() ) );
-    connect(view,SIGNAL(showContextMenu(QModelIndex,QModelIndexList) ),this,SLOT(showContexMenuSlot(QModelIndex, QModelIndexList) ) );
-
-    */
-
+{    
     navigatorModel = new KFilePlacesModel(this);
     navigator = new KUrlNavigator(navigatorModel,KUrl( QDir::home().path() ),this);
     connect(navigator,SIGNAL(urlChanged (KUrl) ),this,SLOT(showUrl(KUrl) ) );
 
-    folView=new folderView(this,"folderView");
+    view=new folderView(this);
     folderM= new myFileSystemModel(this);
-    folProxy=new folderProxyModel(this);
-    folProxy->setSourceModel(folderM);
-    folProxy->setFilterCaseSensitivity(Qt::CaseInsensitive);
-    folView->setModel(folProxy);
-    folView->setNotHide(0);
-    folView->setRatingColumn(DIRCOLUMN+Basic::RATING);
-    folView->setSortingEnabled(true);
-
-
-    plView=new views::treeView(this,"playlistFolderView");
+    proxyM=new folderProxyModel(this);
+    proxyM->setSourceModel(folderM);
+    proxyM->setFilterCaseSensitivity(Qt::CaseInsensitive);
+    
+    view->setModel(proxyM);
+    view->setSortingEnabled(true);
+/*
+    view->setModel(proxyM);
+    view->setNotHide(0);
+    view->setRatingColumn(DIRCOLUMN+Basic::RATING);
+    view->setSortingEnabled(true);
+*/
     plModel=new views::filePlaylistModel(this);
-    plProxy=new QSortFilterProxyModel(this);
-    plProxy->setSourceModel(plModel);
-    plProxy->setFilterCaseSensitivity(Qt::CaseInsensitive);
-    plProxy->setFilterKeyColumn(-1);
-    plView->setModel(plProxy);
-    plView->setNotHide(Basic::TITLE);
-    plView->setRatingColumn(Basic::RATING);
-
-
-    stacked=new QStackedWidget(this);
-    stacked->addWidget(plView);
-    stacked->addWidget(folView);
-
-    connect(folView,SIGNAL(clicked ( const QModelIndex) ),this,SLOT(setDir(const QModelIndex) ) );
-    connect(folView,SIGNAL(showContextMenu(QModelIndex,QModelIndexList) ),this,SLOT(folMenu(QModelIndex,QModelIndexList)) );
-
-    connect(plView,SIGNAL(showContextMenu(QModelIndex,QModelIndexList) ),this,SLOT(plMenu(QModelIndex,QModelIndexList)) );
 
     toolBarInit();
-    layoutInit();
+    layoutInit();    
+    connect(view,SIGNAL(clicked ( const QModelIndex) ),this,SLOT(setDir(const QModelIndex) ) );
+    connect(view,SIGNAL(showContextMenu(QModelIndex,QModelIndexList) ),this,SLOT(folMenu(QModelIndex,QModelIndexList)) );
+    connect(searchLine,SIGNAL(textChanged ( const QString & )  ),proxyM,SLOT(setFilterFixedString(QString) ) );
     readSettings();
 }
 
@@ -141,8 +62,6 @@ void folderContent::toolBarInit()
 {
     toolBar=new KToolBar(this);
     toolBar->setToolButtonStyle( Qt::ToolButtonIconOnly );
-
-//     toolBar->setFixedHeight(25);
 
     folderToolBar=new KToolBar(this);
     folderToolBar->setToolButtonStyle( Qt::ToolButtonIconOnly );
@@ -190,18 +109,11 @@ void folderContent::layoutInit()
     layout->addWidget(f);
     layout->addWidget(navigator);
 
-    layout->addWidget(stacked);
+    layout->addWidget(view);
 
     setLayout(layout);
 }
 
-
-
-const QList<QString> folderContent::getChildren()
-{
-    QList<QString> l;
-    return l;
-}
 
 QString folderContent::name() const
 {
@@ -215,6 +127,11 @@ void folderContent::cleanup()
 
 void folderContent::setDir(const QModelIndex index)
 {
+    if(inPl())
+    {
+        return ;
+    }
+    
     Qt::KeyboardModifiers m=QApplication::keyboardModifiers();
 
     if(m & Qt::ShiftModifier || m & Qt::ControlModifier )
@@ -222,7 +139,7 @@ void folderContent::setDir(const QModelIndex index)
         return;
     }
 
-    QModelIndex i=folProxy->mapToSource(index);
+    QModelIndex i=proxyM->mapToSource(index);
 
     KFileItem item = folderM->itemForIndex(i);
     if (item.isDir() || core::isPlaylist(item.url().toLocalFile() ))
@@ -246,30 +163,40 @@ void folderContent::showUrl(KUrl url)
 
 void folderContent::goToFolder(KUrl url)
 {
-//     searchLine->clear();
-    if(stacked->currentWidget()!=folView)
+    if(inPl())
     {
+        view->setRatingColumn(DIRCOLUMN+Basic::RATING);
+        proxyM->setSourceModel(folderM);
         folderToolBarAction->setVisible(true);
-        stacked->setCurrentWidget(folView);
+        view->setNotHide(0);   
+        plState=view->header()->saveState();
+        if(!view->header()->restoreState(folderState) )
+        {
+            qDebug()<<"PLD";
+        }
+//         view->setSortingEnabled(true);
     }
 
-    disconnect(searchLine);
-    connect(searchLine,SIGNAL(textChanged ( const QString & )  ),folProxy,SLOT(setFilterFixedString(QString) ) );
+//     disconnect(searchLine);    
     folderM->dirLister()->openUrl(url);
 }
 
 
 void folderContent::goToPl(KUrl url)
 {
-    if(stacked->currentWidget()!=plView)
+    if(inFolder())
     {
-        folderToolBarAction->setVisible(false);
-        stacked->setCurrentWidget(plView);
-        plModel->setPlPath(url.toLocalFile());
+        view->setRatingColumn(Basic::RATING);
+        proxyM->setSourceModel(plModel);        
+        view->setNotHide(Basic::TITLE);
+        folderToolBarAction->setVisible(false); 
+        folderState=view->header()->saveState();
+        if(!view->header()->restoreState(plState) )
+        {
+            qDebug()<<"PLD";
+        }
     }
-
-    disconnect(searchLine);
-    connect(searchLine,SIGNAL(textChanged ( const QString & )  ),plProxy,SLOT(setFilterFixedString(QString) ) );
+    plModel->setPlPath(url.toLocalFile());
 }
 
 
@@ -380,13 +307,13 @@ void folderContent::folMenu(QModelIndex index, QModelIndexList list)
 
     menu->addAction(editA);
     m->setShow(false);
-    QList<QUrl>urls=folView->getUrls(list);
+    QList<QUrl>urls=view->getUrls(list);
     core::contentHdl->contextMenu(menu,KUrl(u),urls );
 
     QAction *a=menu->exec( QCursor::pos() );
     if( a==editA )
     {
-         folView->edit( folView->currentIndex() );
+         view->edit( view->currentIndex() );
     }
 
     m->setShow(true);
@@ -397,6 +324,11 @@ void folderContent::folMenu(QModelIndex index, QModelIndexList list)
 void folderContent::plMenu(QModelIndex index, QModelIndexList list)
 {
     if(!index.isValid() )
+    {
+        return ;
+    }
+    
+    if(!inPl())
     {
         return ;
     }
@@ -422,22 +354,22 @@ void folderContent::plMenu(QModelIndex index, QModelIndexList list)
     menu->addAction(editA);
     m->setShow(false);
 
-    QList<QUrl>urls=plView->getUrls(list);
+    QList<QUrl>urls=view->getUrls(list);
     core::contentHdl->contextMenu(menu,KUrl(u),urls );
 
     QAction *a=menu->exec( QCursor::pos() );
     if( a==editA )
     {
-         plView->edit( plView->currentIndex() );
+         view->edit( view->currentIndex() );
     }
     else if(a==removeA && a!=0)
     {
         std::set<int> rowL;
         foreach(QModelIndex in,list)
         {
-            if(in.column()==plView->notHide())
+            if(in.column()==view->notHide())
             {
-                QModelIndex index=plProxy->mapToSource(in);
+                QModelIndex index=proxyM->mapToSource(in);
                 rowL.insert(index.row() );
             }
         }
@@ -537,8 +469,17 @@ void folderContent::writeSettings()
     KSharedConfigPtr config=core::config->configFile();
     KConfigGroup group( config, "folderContent" );
     group.writeEntry("dir", QVariant( navigator->url() ) );
-//     group.writeEntry( "playlistMState", QVariant(playlistMState));
-//     group.writeEntry( "folderModelState", QVariant(folderModelState));
+    if(inPl())
+    {
+        group.writeEntry( "plState", QVariant(view->header()->saveState()));
+        group.writeEntry( "folderState", QVariant(folderState));
+    }
+    else
+    {
+        group.writeEntry( "folderState", QVariant(view->header()->saveState()));
+        group.writeEntry( "plState", QVariant(folderState));
+        
+    }
     group.config()->sync();
 }
 
@@ -547,8 +488,10 @@ void folderContent::readSettings()
     KSharedConfigPtr config=core::config->configFile();
     KConfigGroup group( config, "folderContent");
     KUrl url=group.readEntry("dir",KUrl() );
-//     playlistMState=group.readEntry( "playlistMState", QByteArray() ) ;
-//     folderModelState=group.readEntry( "folderModelState", QByteArray() );
+    
+    plState=group.readEntry( "plState", view->header()->saveState() ) ;
+    folderState=group.readEntry( "folderState", view->header()->saveState() ) ;
+    view->header()->restoreState(folderState);
 
     if(!url.isEmpty() )
     {

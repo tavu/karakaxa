@@ -81,16 +81,16 @@ void library::toolBarInit()
     searchLine =new views::delayLineEdit(this);
     searchLine->setClearButtonShown(true);
     searchLine->setClickMessage("Search");
-    searchLine->setPalette(palette() );
+//     searchLine->setPalette(palette() );
     toolBar->setToolButtonStyle( Qt::ToolButtonIconOnly );
 
-    backAction = new QAction( KIcon( "go-previous" ),"go back", this );
+    backAction = new QAction( views::decor->icon( "go-previous" ),"go back", this );
     toolBar->addAction( backAction );
 
     connect( backAction, SIGNAL( triggered( bool) ), this, SLOT( goToArtist() ) );
 
 
-    forwardAction = new QAction( KIcon( "go-next" ),"go forward", this );
+    forwardAction = new QAction( views::decor->icon( "go-next" ),"go forward", this );
     toolBar->addAction( forwardAction );
 
     connect( forwardAction, SIGNAL( triggered( bool) ), this, SLOT( goToAlbum() ) );

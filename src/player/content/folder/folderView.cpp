@@ -6,6 +6,7 @@
 
 void folderView::dropEvent(QDropEvent* event)
 {
+#if 0
     if(model()==0 || !event->mimeData()->hasUrls())
     {
         return;
@@ -74,5 +75,7 @@ void folderView::dropEvent(QDropEvent* event)
     }
 
     model()->dropMimeData(event->mimeData(),action,row,column,index);
+#endif
+    treeView::dropEvent(event) ;
 }
 

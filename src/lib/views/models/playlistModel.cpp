@@ -143,10 +143,6 @@ QVariant views::playlistModel::headerData ( int section, Qt::Orientation orienta
     {
         return tagName(section);
     }
-    if(role==Qt::DecorationRole)
-    {
-        return decor->tagIcon(section);
-    }
 
     return QVariant();
 }
