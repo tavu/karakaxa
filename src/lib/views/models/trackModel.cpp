@@ -27,23 +27,25 @@ void views::trackItem::changed(audioFiles::tagChangesL c)
 
 QVariant views::trackItem::data(int column, int role) const
 {
-    if(!file.isValid())
-    {
-        return QVariant();
-    }
-
     if(role==Qt::DisplayRole || role==Qt::ToolTipRole || role==Qt::EditRole)
     {
 	   return views::pretyTag(file.tag(column),column );
     }
+    
     if(role==URL_ROLE)
     {
         KUrl u( file.path() );
         return QVariant(u);
     }
+    
     if(role == TAG_ROLE )
     {
         return QVariant(column);
+    }
+    
+    if(role==DISABLE_ROLE)
+    {
+        return QVariant(!file.isValid());
     }
 
 
