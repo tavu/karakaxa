@@ -1,6 +1,6 @@
 #include"albumQueryGrt.h"
 
-#include<status/playerStatus.h>
+#include<Basic/status.h>
 
 #include"./dbFunc.h"
 #include<audioFiles.h>
@@ -24,8 +24,8 @@ bool database::albumQueryGrt::select()
 
         if (!quer.exec(s) )
         {
-            core::status->addErrorP(quer.lastError().text() );
-            core::status->addError("executing query error");
+            Basic::msg()->logErr(quer.lastError().text() );
+            Basic::msg()->error("executing query error");
             db()->closeDatabase(dBase);
             return false;
         }

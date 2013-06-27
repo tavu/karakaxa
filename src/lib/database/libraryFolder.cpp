@@ -1,6 +1,6 @@
 #include"libraryFolder.h"
 #include"database.h"
-#include<status/playerStatus.h>
+#include<Basic/status.h>
 #include "dbFunc.h"
 #include"databaseEvent.h"
 #include <QDir>
@@ -76,7 +76,7 @@ bool database::libraryFolder::addLibraryFolder(const QString &s)
     if(onDb(newU) )
     {
         db()->closeDatabase(databs);
-        core::status->addInfo(tr("Some library folders have been merged") );
+        Basic::msg()->info(tr("Some library folders have been merged") );
         return false;
     }
 
@@ -246,7 +246,7 @@ bool database::libraryFolder::addPlaylist(const QString& path)
 
         if(!ret)
         {
-            core::status->addErrorP(q.lastError().text() );
+            Basic::msg()->logErr(q.lastError().text() );
         }
     }
 

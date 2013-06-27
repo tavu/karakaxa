@@ -32,11 +32,11 @@ core::nplPointer core::nplTrack::getNplTrack(const QUrl url)
 {
     nplTrack *ret=0;
 
-    if (core::isStream(url.toString()) )
+    if (Basic::isStream(url.toString()) )
     {
         ret=new nplStream(url.toString());
     }
-    if(isAudio(url.toString()) )
+    if(Basic::isAudio(url.toString()) )
     {
         ret=new nplFile(url.toLocalFile() );
     }

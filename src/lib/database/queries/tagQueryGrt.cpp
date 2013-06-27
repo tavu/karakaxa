@@ -1,7 +1,7 @@
 #include"tagQueryGrt.h"
 #include"abstractQuery.h"
 
-#include<status/playerStatus.h>
+#include<Basic/status.h>
 #include<audioFiles.h>
 
 QString database::tagQueryGrt::queryString() const
@@ -92,8 +92,8 @@ bool database::tagQueryGrt::select()
 
         if (!quer.exec(s) )
         {
-            core::status->addErrorP(quer.lastError().text() );
-            core::status->addError("executing query error");            
+            Basic::msg()->logErr(quer.lastError().text() );
+            Basic::msg()->error("executing query error");            
             ret=false;
         }
         else

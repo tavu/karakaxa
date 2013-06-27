@@ -2,7 +2,7 @@
 #include<QSqlQuery>
 #include<QSqlError>
 
-#include<status/playerStatus.h>
+#include<Basic/status.h>
 #include"database.h"
 #include<QDebug>
 void database::dbBase::cleanUp()
@@ -23,7 +23,7 @@ void database::dbBase::clearArtist()
 
      if (!q.exec() )
      {
-        core::status->addErrorP(q.lastError().text() );
+        Basic::msg()->logErr(q.lastError().text() );
      }
 }
 
@@ -35,7 +35,7 @@ void database::dbBase::clearAlbum()
 
      if (!q.exec() )
      {
-        core::status->addErrorP("setting albumArt error "+q.lastError().text() );
+        Basic::msg()->logErr("setting albumArt error "+q.lastError().text() );
      }
 }
 
@@ -47,7 +47,7 @@ void database::dbBase::clearGenre()
 
      if (!q.exec() )
      {
-       core::status->addErrorP("setting albumArt error "+q.lastError().text() );
+       Basic::msg()->logErr("setting albumArt error "+q.lastError().text() );
      }
 }
 
@@ -59,7 +59,7 @@ void database::dbBase::clearComposer()
 
      if (!q.exec() )
      {
-        core::status->addErrorP("setting albumArt error "+q.lastError().text() );
+        Basic::msg()->logErr("setting albumArt error "+q.lastError().text() );
      }
 }
 

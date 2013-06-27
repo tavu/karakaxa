@@ -1,6 +1,6 @@
 #include"contentList.h"
 #include"contentView.h"
-#include"../status/playerStatus.h"
+#include<Basic/status.h>
 core::contentsPrivate::contentList::contentList(): QObject(),current(0)
 {
 
@@ -10,7 +10,7 @@ void core::contentsPrivate::contentList::setCurrentContent(core::abstractContent
 {
     if(!contents.contains(p) )
     {
-	status->addError(tr("Could not change content") );
+	Basic::msg()->error(tr("Could not change content") );
         return ;
     }
     

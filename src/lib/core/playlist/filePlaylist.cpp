@@ -3,11 +3,12 @@
 #include"../func.h"
 #include "nowPlayList/nplaylist.h"
 #include<libraryFolder.h>
-#include"../status/playerStatus.h"
+#include<Basic/status.h>
+#include<Basic/func.h>
 core::filePlaylist* core::getPlaylist(const QString &url)
 {
     filePlaylist *ret=0;
-    QString tmp=core::format(url);
+    QString tmp=Basic::format(url);
     if (QString::compare("m3u",tmp,Qt::CaseInsensitive)==0)
     {
         ret=new m3uPlaylist(url);
@@ -18,7 +19,7 @@ core::filePlaylist* core::getPlaylist(const QString &url)
 
 QString core::filePlaylist::toFullPath(const QString &s) const
 {
-    if (core::isStream(s) )
+    if (Basic::isStream(s) )
     {
         return QString(s);
     }
@@ -29,7 +30,7 @@ QString core::filePlaylist::toFullPath(const QString &s) const
     }
     QString ret(s);
 
-    return ret.prepend(folder(path() )+'/' );
+    return ret.prepend(Basic::folder(path() )+'/' );
 }
 
 bool core::filePlaylist::create()

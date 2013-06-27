@@ -5,6 +5,8 @@
 #include<QFile>
 #include<queries/fileQueryGrt.h>
 #include<QApplication>
+#include<Basic/status.h>
+
 #define XMLFILE QString("playlists.xml")
 
 using namespace core;
@@ -254,7 +256,7 @@ void playlistContent::createSmpSlot()
     
     if(newItem==0)
     {
-        status->addError(tr("Can't create empty smart playlist") );
+        Basic::msg()->error(tr("Can't create empty smart playlist") );
         return;
     }
     
@@ -490,8 +492,8 @@ void playlistContent::writeSettings()
     }
     else
     {
-        core::status->addError(tr("Unable to save the playlist"));
-        core::status->addErrorP(tr("Unable to save the playlist"));
+        Basic::msg()->error(tr("Unable to save the playlist"));
+        Basic::msg()->logErr(tr("Unable to save the playlist"));
     }
 
     KSharedConfigPtr config=core::config->configFile();

@@ -5,6 +5,8 @@
 #include"playlist/filePlaylist.h"
 #define DIRCOLUMN 7
 #include<Basic/func.h>
+
+
 using namespace core;
 myFileSystemModel::myFileSystemModel(QWidget *parent)
         :KDirModel(parent)
@@ -63,6 +65,7 @@ bool myFileSystemModel::dropMimeData(const QMimeData* data, Qt::DropAction actio
         pl->save();
         return true;
     }
+    return false;
     //TODO support drop action
 #if 0
     KUrl::List urls;
@@ -163,7 +166,7 @@ void myFileSystemModel::insert(const KFileItemList &items)
     QLinkedList<audioFiles::audioFile> l;
     foreach(KFileItem item , items)
     {
-        if( core::isAudio(item.url().toLocalFile() )  )
+        if( Basic::isAudio(item.url().toLocalFile() )  )
         {
             l<<audioFiles::audioFile( item.url().toLocalFile() );
         }
@@ -182,7 +185,7 @@ Qt::ItemFlags myFileSystemModel::flags ( const QModelIndex & index ) const
 {
     static Qt::ItemFlags f= Qt::ItemIsEnabled | Qt::ItemIsSelectable |Qt::ItemIsDragEnabled;
 
-    if(!index.isValid() || itemForIndex(index).isDir()||core::isPlaylist( url(index.row()).toLocalFile() ) )
+    if(!index.isValid() || itemForIndex(index).isDir()||Basic::isPlaylist( url(index.row()).toLocalFile() ) )
     if(!index.isValid() ||Basic::isPlaylist( url(index.row()).toLocalFile() ) )    
     {
         return f|Qt::ItemIsDropEnabled;

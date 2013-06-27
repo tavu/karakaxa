@@ -4,8 +4,8 @@
 #include<QDomNodeList>
 
 #include<lastfm/ws.h>
-#include<status/playerStatus.h>
 #include"lastFmFunc.h"
+#include <Basic/status.h>
 bool lastFm::searchAlbum::canFetchMore()
 {
 	if(totalResults<0 || totalResults>itemsNum)
@@ -59,7 +59,7 @@ void lastFm::searchAlbum::answer()
 	}
 	catch (lastfm::ws::ParseError& e)
     {
-        core::status->addError(tr("Last fm error on album search") );
+        Basic::msg()->error(tr("Last fm error on album search") );
 		return ;
     }
 	
@@ -74,7 +74,7 @@ void lastFm::searchAlbum::answer()
 	}
 	else
 	{
-		core::status->addError(tr("error downoading some covers") );
+		Basic::msg()->error(tr("error downoading some covers") );
 		return ;
 	}
 	

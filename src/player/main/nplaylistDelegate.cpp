@@ -2,7 +2,7 @@
 #include<QPainter>
 #include<QApplication>
 #include<QPolygonF>
-// #include<player.h>
+
 #include<KIcon>
 #include<nowPlayList/nplaylist.h>
 #include<views.h>
@@ -10,10 +10,12 @@
 
 #include<qdrawutil.h>
 #include<QApplication>
-using namespace core;
+#include<Basic/status.h>
 
 #define FONT_SIZE 10
 #define ITEM_SIZE 10
+
+using namespace core;
 
 nplDelegate::nplDelegate(QObject *parent)
         :QStyledItemDelegate(parent)
@@ -96,7 +98,7 @@ void nplDelegate::drawContent(QPainter* painter, const QStyleOptionViewItem& opt
     nplPointer p=npList()->getTrack(index.row() );
     if(p.isNull() )
     {
-        core::status->addErrorP("nplDelegate:nplPointer is null");
+        Basic::msg()->logErr("nplDelegate:nplPointer is null");
         painter->restore();
         return ;
     }

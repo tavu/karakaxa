@@ -1,5 +1,5 @@
 #include"engine.h"
-#include"../status/playerStatus.h"
+#include<Basic/status.h>
 #include"../nowPlayList/nplaylist.h"
 // #include"../core.cpp"
 using namespace Phonon;
@@ -147,7 +147,7 @@ void core::soundEngine::mediaStateChanged ( Phonon::State newstate, Phonon::Stat
         {
     // 	    next();
         }
-        status->addError("playing error");
+        Basic::msg()->error(tr("playing error") );
     }
     if(newstate==Phonon::PlayingState)
     {

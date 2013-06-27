@@ -20,7 +20,7 @@
 #include <KToolBar>
 #include<KIcon>
 #include"nplaylistView.h"
-#include"playingInfo.h"
+
 #include"nplaylistModel.h"
 class mainWindow :public KMainWindow
 {
@@ -37,7 +37,7 @@ class mainWindow :public KMainWindow
         nplaylistView 	*nplView;
         contentTree 	*conTree;
         QStackedWidget 	*conView;
-        playingInfo	*info;
+
 
         QDockWidget 	*conTreeDock;
         QDockWidget 	*conViewDock;

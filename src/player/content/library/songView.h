@@ -8,7 +8,6 @@ class songView :public views::treeView
     Q_OBJECT
     public:
 	songView(QWidget *parent=0,QString name=QString("LibraryView"));
-
     private:
 	void contextMenuEvent(QContextMenuEvent *e);
 	QMenu *menu;

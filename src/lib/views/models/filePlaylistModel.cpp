@@ -1,6 +1,6 @@
 #include"filePlaylistModel.h"
 #include"../../core/nowPlayList/nplFile.h"
-#include"../../core/status/playerStatus.h"
+#include<Basic/status.h>
 #include<QObject>
 views::filePlaylistModel::filePlaylistModel(QObject *parent)
     :playlistModel(parent)
@@ -61,7 +61,7 @@ void views::filePlaylistModel::playlistThr::run()
          nplPointer p=pl->item(row+i);
          if(p.isNull() )
          {
-             status->addError(QObject::tr("Some media coud not be shown"));
+             Basic::msg()->error(QObject::tr("Some media coud not be shown"));
          }
          else if( p->type()==NPLAUDIOFILE)
          {

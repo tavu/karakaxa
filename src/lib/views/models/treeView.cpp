@@ -10,6 +10,7 @@
 #include"../decoration/decoration.h"
 #include"treeViewDelegate.h"
 #include"urlRole.h"
+#include <Basic/status.h>
 #include <decoration/decoration.h>
 #include<QMetaProperty>
 // class editTrack;
@@ -366,7 +367,7 @@ void views::treeView::play(const QModelIndex &index)
 
     if(list.size() != model()->rowCount(index.parent() ) )
     {
-        core::status->addError(tr("Some media could not be inserted to playlist") );
+        Basic::msg()->error(tr("Some media could not be inserted to playlist") );
     }
     
     core::engine()->play(row );

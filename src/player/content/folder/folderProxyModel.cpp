@@ -2,26 +2,28 @@
 #include<core.h>
 #include<QUrl>
 #include<views.h>
-#define DIRCOLUMN 7
+#include<Basic/func.h>
+
+
 bool folderProxyModel::filterAcceptsRow ( int row, const QModelIndex &parent ) const
 {
     QModelIndex index=sourceModel()->index(row, 0, parent);
     QUrl u=index.data(URL_ROLE).toUrl();
     QString path=u.toString();
 
-    if(core::isAudio(path) )
+    if(Basic::isAudio(path) )
     {
         return QSortFilterProxyModel::filterAcceptsRow(row,parent);
     }
-    if(core::isPlaylist(path) )
+    if(Basic::isPlaylist(path) )
     {
         return QSortFilterProxyModel::filterAcceptsRow(row,parent);
     }
-    if( core::isDirectory(path) )
+    if( Basic::isDirectory(path) )
     {
         return QSortFilterProxyModel::filterAcceptsRow(row,parent);
     }
-    if(core::isStream(path) )
+    if(Basic::isStream(path) )
     {
         return QSortFilterProxyModel::filterAcceptsRow(row,parent);
     }
@@ -42,20 +44,20 @@ bool folderProxyModel::lessThan ( const QModelIndex & left, const QModelIndex & 
 
     int r=0,l=0;
 
-    if(core::isDirectory(pathL) )
+    if(Basic::isDirectory(pathL) )
     {
         l=2;
     }
-    else if(core::isPlaylist(pathL) )
+    else if(Basic::isPlaylist(pathL) )
     {
         l=1;
     }
 
-    if(core::isDirectory(pathR) )
+    if(Basic::isDirectory(pathR) )
     {
         r=2;
     }
-    else if(core::isPlaylist(pathR) )
+    else if(Basic::isPlaylist(pathR) )
     {
         r=1;
     }

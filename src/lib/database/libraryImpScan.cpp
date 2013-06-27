@@ -3,7 +3,7 @@
 #include<QSqlQuery>
 #include<QSqlError>
 
-#include <status/playerStatus.h>
+#include<Basic/status.h>
 
 
 void database::libraryImpScan::createTmpTable()
@@ -31,7 +31,7 @@ database::libraryImpScan::libraryImpScan(QObject* parent)
 
 void database::libraryImpScan::save()
 {
-    core::status->addInfoP("Saving new data");
+    Basic::msg()->logInfo("Saving new data");
 
     QSqlQuery q(database);
 
@@ -44,51 +44,51 @@ void database::libraryImpScan::save()
 
     if(!q.exec("INSERT INTO artists select * from artistsTmp") )
     {
-        core::status->addErrorP(q.lastError().text() );
+        Basic::msg()->logErr(q.lastError().text() );
     }
     if(!q.exec("INSERT INTO genres select * from genresTmp") )
     {
-        core::status->addErrorP(q.lastError().text() );
+        Basic::msg()->logErr(q.lastError().text() );
     }
     if(!q.exec("INSERT INTO albums select * from albumsTmp") )
     {
-        core::status->addErrorP(q.lastError().text() );
+        Basic::msg()->logErr(q.lastError().text() );
     }
     if(!q.exec("INSERT INTO composers select * from composersTmp") )
     {
-        core::status->addErrorP(q.lastError().text() );
+        Basic::msg()->logErr(q.lastError().text() );
     }
     if(!q.exec("INSERT INTO tracks select * from tracksTmp"))
     {
-        core::status->addErrorP(q.lastError().text() );
+        Basic::msg()->logErr(q.lastError().text() );
     }
     if(!q.exec("INSERT INTO playlists select * from playlistsTmp") )
     {
-        core::status->addErrorP(q.lastError().text() );
+        Basic::msg()->logErr(q.lastError().text() );
     }
 
     if(!q.exec("drop table artistsTmp") )
     {
-        core::status->addErrorP(q.lastError().text() );
+        Basic::msg()->logErr(q.lastError().text() );
     }
     if(!q.exec("drop table genresTmp") )
     {
-        core::status->addErrorP(q.lastError().text() );
+        Basic::msg()->logErr(q.lastError().text() );
     }
     if(!q.exec("drop table albumsTmp") )
     {
-        core::status->addErrorP(q.lastError().text() );
+        Basic::msg()->logErr(q.lastError().text() );
     }
     if(!q.exec("drop table composersTmp") )
     {
-        core::status->addErrorP(q.lastError().text() );
+        Basic::msg()->logErr(q.lastError().text() );
     }
     if(!q.exec("drop table tracksTmp") )
     {
-        core::status->addErrorP(q.lastError().text() );
+        Basic::msg()->logErr(q.lastError().text() );
     }
     if(!q.exec("drop table playlistsTmp") )
     {
-        core::status->addErrorP(q.lastError().text() );
+        Basic::msg()->logErr(q.lastError().text() );
     }
 }

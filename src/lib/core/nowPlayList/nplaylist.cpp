@@ -8,7 +8,6 @@
 // #include<KMimeType>
 // #include"../../random.cpp"
 #include<QApplication>
-#include"../status/playerStatus.h"
 #include"../config/config.h"
 #include <Basic/tagsTable.h>
 
@@ -31,7 +30,7 @@ core::nplaylist::nplaylist()
 
 }
 
-void nplaylist::clearEvent(playlist::clearEv* event)
+void core::nplaylist::clearEvent(playlist::clearEv* event)
 {
     totalLength=0;
     core::playlist::clearEvent(event);
@@ -61,7 +60,7 @@ core::nplaylist::~nplaylist()
     prepareToQuit();
 }
 
-void nplaylist::setRememberPlaylist(bool b)
+void core::nplaylist::setRememberPlaylist(bool b)
 {
     rememberPl=b;
     KSharedConfigPtr config=core::config->configFile();
@@ -101,7 +100,7 @@ void core::nplaylist::loadSavedPlaylist()
     }
 }
 
-nplPointer core::nplaylist::getPlayingTrack() const
+core::nplPointer core::nplaylist::getPlayingTrack() const
 {
     return playing;
 }
@@ -271,7 +270,7 @@ QStringList core::nplaylist::getList() const
 {
     QStringList list;
 
-    foreach(nplPointer t,trackList)
+    foreach(core::nplPointer t,trackList)
     {
         list<<t->path();
     }

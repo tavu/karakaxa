@@ -5,8 +5,10 @@
 #include<QUrl>
 #include"nplaylist.h"
 #include<QProgressBar>
-//this class have the porpose of finding the file info and appending the now playlist
-using namespace core;
+
+namespace core
+{
+    
 class nplTread :public  QThread//, public QObject
 {
     Q_OBJECT
@@ -48,5 +50,7 @@ class nplTread :public  QThread//, public QObject
 // 	void added(int);
 
 };
+
+}
 
 #endif

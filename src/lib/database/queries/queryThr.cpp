@@ -1,5 +1,5 @@
 #include"queryThr.h"
-#include"../../core/status/playerStatus.h"
+#include<Basic/status.h>
 #include"queryGeneration.h"
 #include"../database.h"
 
@@ -14,8 +14,8 @@ void database::queryThr::run()
 
         if(!quer.exec(g->queryString() ) )
         {
-            core::status->addErrorP(quer.lastError().text() );
-            core::status->addError("executing query error");
+            Basic::msg()->logErr(quer.lastError().text() );
+            Basic::msg()->error("executing query error");
             db()->closeDatabase(dBase);
             return ;
         }

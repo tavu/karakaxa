@@ -145,7 +145,7 @@ class folderContextMenu :public core::abstractMenu
     private slots:
         void cd()
         {
-            f->cd(core::folder(url().toLocalFile()) );
+            f->cd(Basic::folder(url().toLocalFile()) );
             core::contentHdl->setCurrentContent(f);
         }
 

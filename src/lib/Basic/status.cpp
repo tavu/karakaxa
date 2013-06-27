@@ -35,6 +35,16 @@ void Basic::status::init()
     }
 }
 
+void Basic::status::cleanUp()
+{
+    if(_instance!=0)
+    {
+        delete _instance;
+    }
+    _instance=0;
+}
+
+
 Basic::status* Basic::status::instance()
 {
     return _instance;

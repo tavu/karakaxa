@@ -10,8 +10,9 @@
 #include<QtAlgorithms>
 #include<Basic/tagsTable.h>
 #include<Basic/status.h>
+#include<Basic/func.h>
 
-nplTread::nplTread()
+core::nplTread::nplTread()
         :QThread(),
         canceled(false),
         size(10)
@@ -23,18 +24,18 @@ nplTread::nplTread()
 //     connect(&npList(),SIGNAL(cancelThreads()),this ,SLOT(cancel() ),Qt::QueuedConnection );
 }
 
-void nplTread::cancel()
+void core::nplTread::cancel()
 {
     canceled=true;
 }
 
 
-nplTread::~nplTread()
+core::nplTread::~nplTread()
 {
     qDebug()<<"quit";
 }
 
-void nplTread::run()
+void core::nplTread::run()
 {
     foreach(QUrl url, urlList)
     {
@@ -63,7 +64,7 @@ void nplTread::run()
     cleanUp();
 }
 
-void nplTread::cleanUp()
+void core::nplTread::cleanUp()
 {
     if(!list.isEmpty() )
     {
@@ -71,9 +72,9 @@ void nplTread::cleanUp()
     }
 }
 
-void nplTread::addMedia(const QUrl &url)
+void core::nplTread::addMedia(const QUrl &url)
 {
-    if (core::isDirectory(url.toLocalFile()) )
+    if (Basic::isDirectory(url.toLocalFile()) )
     {
         if(list.size()>0)
         {
@@ -83,18 +84,18 @@ void nplTread::addMedia(const QUrl &url)
         }
         addDirectory(url);
     }
-    else if(core::isPlaylist(url.toLocalFile()) )
+    else if(Basic::isPlaylist(url.toLocalFile()) )
     {
         addPlaylist(url);
     }
-    else if(core::isAudio(url.toLocalFile()) || core::isStream(url) )
+    else if(Basic::isAudio(url.toLocalFile()) || Basic::isStream(url) )
     {
         addSingleFile(url);
     }
 }
 
 
-void nplTread::addPlaylist(const QUrl& url)
+void core::nplTread::addPlaylist(const QUrl& url)
 {
     filePlaylist *pl=getPlaylist(url.toLocalFile());
     if(pl==0)
@@ -111,14 +112,14 @@ void nplTread::addPlaylist(const QUrl& url)
     delete pl;
 }
 
-void nplTread::addSingleFile(const QUrl& url)
+void core::nplTread::addSingleFile(const QUrl& url)
 {
     nplPointer tr=core::nplTrack::getNplTrack(url);
     addSingleFile(tr);
 }
 
 
-void nplTread::addSingleFile(nplPointer tr)
+void core::nplTread::addSingleFile(nplPointer tr)
 {
     if(!tr.isNull() )
     {
@@ -141,22 +142,22 @@ void nplTread::addSingleFile(nplPointer tr)
 
 
 
-void nplTread::setUrls(QList <QUrl> l)
+void core::nplTread::setUrls(QList <QUrl> l)
 {
     urlList=l;
 }
 
-void nplTread::setStringL(QStringList l)
+void core::nplTread::setStringL(QStringList l)
 {
     sList=l;
 }
 
-void nplTread::setPos(int num)
+void core::nplTread::setPos(int num)
 {
     pos=num;
 }
 
-void nplTread::addDirectory(const QUrl &url)
+void core::nplTread::addDirectory(const QUrl &url)
 {
     QLinkedList<QString> dirs;    
     {
@@ -167,7 +168,7 @@ void nplTread::addDirectory(const QUrl &url)
 	   
 	   for (int i=0;i<infoList.size() && !canceled ;i++)
 	   {
-		  if(core::isAudio(infoList.at(i).absoluteFilePath() ) )
+		  if(Basic::isAudio(infoList.at(i).absoluteFilePath() ) )
 		  {
 			 nplPointer tr=core::nplTrack::getNplTrack(infoList.at(i).absoluteFilePath() );
 			 if(!tr.isNull() )
@@ -177,7 +178,7 @@ void nplTread::addDirectory(const QUrl &url)
 				file.load();
 			 }
 		  }
-		  else if(core::isDirectory(infoList.at(i).absoluteFilePath()) )	 
+		  else if(Basic::isDirectory(infoList.at(i).absoluteFilePath()) )	 
 		  {
 			 dirs<<infoList.at(i).absoluteFilePath();
 		  }
@@ -194,7 +195,7 @@ void nplTread::addDirectory(const QUrl &url)
 	}
 }
 
-bool nplTread::trackLessThan(nplPointer a,nplPointer b)
+bool core::nplTread::trackLessThan(nplPointer a,nplPointer b)
 {
     int trackA,trackB;
     trackA=a->tag(Basic::TRACK).toInt();

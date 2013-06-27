@@ -1,6 +1,7 @@
 #include"m3uPlaylist.h"
 #include<QTextStream>
 #include"../core.h"
+#include <Basic/status.h>
 #include<QTextStream>
 #include<QCoreApplication>
 using namespace audioFiles;
@@ -13,7 +14,7 @@ bool core::m3uPlaylist::load()
 {
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text) )
     {
-        status->addErrorP("can not open file "+path() );
+        Basic::msg()->logErr("can not open file "+path() );
         err=FILENOTFOUND;
         return false;
     }
@@ -58,13 +59,13 @@ bool core::m3uPlaylist::save()
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text) )
     {
         err=FILENOTFOUND;
-        status->addErrorP("file does not exist");
+        Basic::msg()->logErr("file does not exist");
         return false;
     }
 
     QTextStream t( &file );
     t<<"#EXTM3U"<<endl;
-    QString f=core::folder(_path);
+    QString f=Basic::folder(_path);
     if(!f.endsWith('/') )
     {
         f.append('/');

@@ -2,7 +2,7 @@
 
 #include<QDebug>
 #include<audioFile.h>
-#include<status/playerStatus.h>
+
 
 #include"database.h"
 #include"dbFunc.h"

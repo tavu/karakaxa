@@ -70,7 +70,7 @@ class editTrackMenu :public core::abstractMenu
       
       bool canShow()
       {
-		if(core::isAudio(url().toLocalFile() ) )
+		if(Basic::isAudio(url().toLocalFile() ) )
 		{
 		    return true;
 		}

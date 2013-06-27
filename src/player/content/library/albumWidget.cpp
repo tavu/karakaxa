@@ -69,7 +69,6 @@ QSize albumWidget::sizeHint () const
 
 void albumWidget::resizeEvent(QResizeEvent* event)
 {    
-    QSize viewS=viewport()->rect().size();
     QSize s=viewport()->rect().size();;
 
     s.setHeight(s.height());

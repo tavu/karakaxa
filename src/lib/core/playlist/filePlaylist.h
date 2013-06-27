@@ -40,7 +40,7 @@ class filePlaylist :public playlist
             {
                 return false;
             }
-            _path=folder(_path)+name;
+            _path=Basic::folder(_path)+name;
             file.setFileName(_path);
             return true;
         }

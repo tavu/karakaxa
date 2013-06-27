@@ -153,6 +153,12 @@ void Basic::karakaxaMsg(QtMsgType type, const char *msg)
      }
 }
 
+void Basic::cleanUp()
+{
+    status::cleanUp();
+}
+
+
 bool Basic::removeDir(const QString &dirName)
 {
     bool result = true;

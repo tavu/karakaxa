@@ -142,7 +142,7 @@ void folderContent::setDir(const QModelIndex index)
     QModelIndex i=proxyM->mapToSource(index);
 
     KFileItem item = folderM->itemForIndex(i);
-    if (item.isDir() || core::isPlaylist(item.url().toLocalFile() ))
+    if (item.isDir() || Basic::isPlaylist(item.url().toLocalFile() ))
     {
         navigator->setUrl( item.url() );
     }
@@ -151,7 +151,7 @@ void folderContent::setDir(const QModelIndex index)
 void folderContent::showUrl(KUrl url)
 {
     searchLine->clear();
-    if(core::isPlaylist(url.toLocalFile()) )
+    if(Basic::isPlaylist(url.toLocalFile()) )
     {
         goToPl(url);
     }
@@ -191,10 +191,7 @@ void folderContent::goToPl(KUrl url)
         view->setNotHide(Basic::TITLE);
         folderToolBarAction->setVisible(false); 
         folderState=view->header()->saveState();
-        if(!view->header()->restoreState(plState) )
-        {
-            qDebug()<<"PLD";
-        }
+        view->header()->restoreState(plState);
     }
     plModel->setPlPath(url.toLocalFile());
 }
@@ -272,12 +269,12 @@ void folderContent::newPl()
         core::filePlaylist *pl=getPlaylist(s);
         if(pl->exist() )
         {
-            core::status->addError(tr("file already exist") );
+            Basic::msg()->error(tr("file already exist") );
             return ;
         }
         if(!pl->create() )
         {
-            core::status->addError(tr("error creating playlist file") );
+            Basic::msg()->error(tr("error creating playlist file") );
         }
         delete pl;
     }
@@ -431,7 +428,7 @@ void folderContent::showContexMenuSlot(QModelIndex index, QModelIndexList list)
     menu->addAction(editA);
     m->setShow(false);
     QList<QUrl>urls=view->getUrls(list);
-    core::contentHdl->contextMenu(menu,KUrl(u),urls );
+    Basic::contentHdl->contextMenu(menu,KUrl(u),urls );
 
     QAction *a=menu->exec( QCursor::pos() );
     if( a==editA )

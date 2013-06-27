@@ -120,7 +120,7 @@ playlistItem::playlistItem(const QString &p)
   :standardItem(),
   path(p)  
 {
-    name=core::titleFromPath(p);
+    name=Basic::titleFromPath(p);
 }
 
 int playlistItem::type() const

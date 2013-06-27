@@ -6,7 +6,7 @@
 #include<QSqlError>
 
 #include<audioFiles.h>
-#include<status/playerStatus.h>
+#include<Basic/status.h>
 
 #include"database.h"
 #include<Basic/tagsTable.h>
@@ -22,7 +22,7 @@ database::libraryImporter::libraryImporter(QObject *parent)
 
     if (!database.isOpen() )
     {
-        core::status->addErrorP("Database Error: "+database.lastError().text() );
+        Basic::msg()->logErr("Database Error: "+database.lastError().text() );
         return;
     }
 }
@@ -33,10 +33,10 @@ database::albumEntry database::libraryImporter::import(const QString &url)
     albumEntry al;
     if(!database.isOpen() )
     {
-	   core::status->addErrorP("Database is closed trying to reopen" );
+	   Basic::msg()->logErr("Database is closed trying to reopen" );
 	   if(!database.open() )
 	   {
-          core::status->addErrorP("Can't open database" );
+          Basic::msg()->logErr("Can't open database" );
 		  return al;
 	   }
     }
@@ -109,10 +109,10 @@ bool database::libraryImporter::importPl(const QString &path )
 {     
     if(!database.isOpen() )
     {
-	   core::status->addErrorP("Database is closed trying to reopen" ); 
+	   Basic::msg()->logErr("Database is closed trying to reopen" ); 
 	   if(!database.open() )
 	   {
-		  core::status->addErrorP("Can't open database" );
+		  Basic::msg()->logErr("Can't open database" );
 		  return false;
 	   }
     } 

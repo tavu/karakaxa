@@ -11,7 +11,7 @@
 
 #include<func.h>
 #include<config/config.h>
-#include<status/playerStatus.h>
+#include<Basic/status.h>
 #include<audioFiles.h>
 
 #include"database.h"
@@ -112,8 +112,8 @@ bool database::databaseConection::createConnection()
 
     if ( !dBase.open() )
     {
-        core::status->addError ( QObject::tr ( "Can not connect to database" ) );
-        core::status->addErrorP ( "Database Error"+dBase.lastError().text() );
+        Basic::msg()->error( QObject::tr ( "Can not connect to database" ) );
+        Basic::msg()->logErr( "Database Error"+dBase.lastError().text() );
         return false;
     }
 
@@ -164,8 +164,8 @@ void database::databaseConection::setUpDb()
 
             if ( !q.exec ( queryTxt ) )
             {
-                core::status->addError ( QObject::tr ( "Could not set up database" ) );
-                core::status->addErrorP ( q.lastError().text() );
+                Basic::msg()->error( QObject::tr ( "Could not set up database" ) );
+                Basic::msg()->logErr( q.lastError().text() );
                 q.finish();
                 return ;
             }
@@ -177,8 +177,8 @@ void database::databaseConection::setUpDb()
 
         if ( !q.exec() )
         {
-            core::status->addError ( QObject::tr ( "Could not set up database" ) );
-            core::status->addErrorP ( q.lastError().text() );
+            Basic::msg()->error( QObject::tr ( "Could not set up database" ) );
+            Basic::msg()->logErr( q.lastError().text() );
         }
     }
 }
@@ -191,7 +191,7 @@ QSqlDatabase database::databaseConection::getDatabase()
     {
         if ( !dBase.isOpen() )
         {
-            core::status->addErrorP ( "database is closed: "+dBase.lastError().text() );
+            Basic::msg()->logErr( "database is closed: "+dBase.lastError().text() );
             createConnection();
         }
 
@@ -224,7 +224,7 @@ QSqlDatabase database::databaseConection::getDatabase()
         {
             if ( !newDb.open() )
             {
-                core::status->addErrorP ( "database error: "+dBase.lastError().text() );
+                Basic::msg()->logErr( "database error: "+dBase.lastError().text() );
             }
         }
 
@@ -248,7 +248,7 @@ void database::databaseConection::closeDatabase()
 
     if ( dbE==0 )
     {
-        core::status->addErrorP ( "Can't close a non exist database connection" );
+        Basic::msg()->logErr( "Can't close a non exist database connection" );
     }
     else
     {
@@ -283,7 +283,7 @@ void database::databaseConection::closeDatabase ( QSqlDatabase &dbase )
 
     if ( dbE==0 )
     {
-        core::status->addErrorP ( "Can't close a non exist database connection" );
+        Basic::msg()->logErr( "Can't close a non exist database connection" );
     }
     else
     {

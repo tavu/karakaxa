@@ -98,7 +98,7 @@ void database::rescanJob::save()
 
 void database::rescanJob::findItemN(KUrl dir)
 {
-    if(core::isAudio(dir.toLocalFile()) )
+    if(Basic::isAudio(dir.toLocalFile()) )
     {
         itemNumber++;
     }
@@ -130,14 +130,14 @@ bool database::rescanJob::scanFolder(KUrl url)
              //importer = 0;
              return true;
         }
-        if(core::isPlaylist(infoList.at(i).absoluteFilePath() ) )
+        if(Basic::isPlaylist(infoList.at(i).absoluteFilePath() ) )
         {
             if(! importer->importPl(infoList.at(i).absoluteFilePath() ) )
             {
                errors<<infoList.at(i).absoluteFilePath();
             }
         }
-        else if(core::isAudio(infoList.at(i).absoluteFilePath() ) )
+        else if(Basic::isAudio(infoList.at(i).absoluteFilePath() ) )
         {
             albumEntry al=importer->import(infoList.at(i).absoluteFilePath());
 
@@ -157,11 +157,11 @@ bool database::rescanJob::scanFolder(KUrl url)
                emit imported(filesImported);
             }
         }
-        else if(core::isImage(infoList.at(i).absoluteFilePath() ) )
+        else if(Basic::isImage(infoList.at(i).absoluteFilePath() ) )
         {
             images<<infoList.at(i).absoluteFilePath();
         }
-        else if(core::isDirectory(infoList.at(i).absoluteFilePath()) )
+        else if(Basic::isDirectory(infoList.at(i).absoluteFilePath()) )
         {
             dirs<<KUrl(infoList.at(i).absoluteFilePath() );
         }

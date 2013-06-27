@@ -3,13 +3,13 @@
 #include"audioFiles.h"
 #include"mp3Tags.h"
 #include"audioFile.h"
-#include<core.h>
+#include<Basic/func.h>
 #include"fileCache.h"
 audioFiles::fileTags* audioFiles::getFileTags(const QString path)
 {
     fileTags *ret;
 
-    QString f=core::format(path);
+    QString f=Basic::format(path);
     if (QString::compare(QString("mp3"),f, Qt::CaseInsensitive )==0)
     {
         ret=new mp3Tags(path);
@@ -25,7 +25,7 @@ int audioFiles::coverMark(const QString &al, const QString &cov)
 {
     QString album=al.toUpper();
 
-    QString cover=core::titleFromPath(cov);
+    QString cover=Basic::titleFromPath(cov);
 
     if(album==cover)
     {
@@ -46,7 +46,7 @@ int audioFiles::bestCover( const QLinkedList<QString> &covers,QString album,QStr
     album=album.toUpper();
     foreach(QString c,covers)
     {
-       QString s=core::titleFromPath(c);
+       QString s=Basic::titleFromPath(c);
        s=s.toUpper();
 
        if(s==album)

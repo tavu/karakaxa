@@ -5,7 +5,6 @@
 #include<engine/engine.h>
 #include<decoration/decoration.h>
 #include<nowPlayList/nplaylist.h>
-#include"playingCover.h"
 #include<actionMenu.h>
 #include<QToolButton>
 #include<QApplication>

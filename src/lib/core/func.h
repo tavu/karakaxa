@@ -6,27 +6,10 @@
 #include<QUrl>
 #include <QSizePolicy>
 #include<QWidget>
-
+#include<Basic/func.h>
 namespace core
 {
-
-QString         folder(QString path) ;
-QString 	titleFromPath(const QString &path);
-bool            isStream(const QString s);
-bool            isStream(const QUrl url);
-bool 		isDirectory(const QString &url);
-bool		isPlaylist(const QString &url);
-bool            isAudio(const QString &url);
-bool		isImage(const QString &url);
-bool            removeDir(const QString &dirName);
-QString         format(QString path);
-void 	    	init();
-void            cleanUp();
-bool            exists(const QString &url);
-
-int             getRandomN(int min,int max);
-void            karakaxaMsg(QtMsgType type, const char *msg);
-
+void init();
 template <class RandomAccessIterator>
 void randomShuffle ( RandomAccessIterator first, int size )
 {
@@ -34,7 +17,7 @@ void randomShuffle ( RandomAccessIterator first, int size )
     it=first;
     for(int i=0; i<size; i++)
     {
-        int r=getRandomN(0,size-1);
+        int r=Basic::getRandomN(0,size-1);
         tmp=first+r;
         qSwap(*it,*tmp );
         it++;

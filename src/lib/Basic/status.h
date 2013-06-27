@@ -11,6 +11,7 @@ class status :public QObject
     Q_OBJECT
     public:
         static void init();
+        static void cleanUp();
         static status* instance();
         
         status();

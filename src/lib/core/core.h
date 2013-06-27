@@ -9,7 +9,6 @@
 #include"nowPlayList/nplClass.h"
 #include"nowPlayList/nplTrack.h"
 
-#include"status/playerStatus.h"
 
 #include<QDebug>
 #include"func.h"
