@@ -1,8 +1,8 @@
 #include"statusBar.h"
 #include<QDebug>
-#include"../../core/status/playerStatus.h"
-#include"../../core/nowPlayList/nplaylist.h"
-#include"../viewsFunc.h"
+#include"core/nowPlayList/nplaylist.h"
+#include"views/viewsFunc.h"
+#include"Basic/status.h"
 
 #define W_WIDTH 200
 #define W_TIME  3000
@@ -22,8 +22,8 @@ views::statusBar::statusBar(QWidget *parent)
     addPermanentWidget(f);
     addPermanentWidget(label);
 
-    connect(status,SIGNAL(errorMessage(const QString &) ),this,SLOT(showMessage(const QString &) ) );
-    connect(status,SIGNAL(infoMessage(const QString &) ),this,SLOT(showMessage(const QString &) ) );
+    connect(Basic::msg(),SIGNAL(errorMessage(const QString &) ),this,SLOT(showMessage(const QString &) ) );
+    connect(Basic::msg(),SIGNAL(infoMessage(const QString &) ),this,SLOT(showMessage(const QString &) ) );
     connect(npList(),SIGNAL(tracksInserted(int,int)),this,SLOT(setTrackTime() ));
     connect(npList(),SIGNAL(tracksRemoved(int,int)),this,SLOT(setTrackTime() ) );
     connect(npList(),SIGNAL(cleared() ),this,SLOT(setTrackTime() ) );

@@ -18,7 +18,8 @@
 
 #include<core.h>
 #include<views.h>
-#include<dbFunc.h>
+#include<database/dbFunc.h>
+#include<Basic/func.h>
 
 #include"nplaylistModel.h"
 #include"nplaylistDelegate.h"
@@ -44,6 +45,7 @@ using namespace core;
 mainWindow::mainWindow()
         :KMainWindow()
 {
+    Basic::init();
     audioFiles::init();
     core::init();
     database::init();
@@ -67,10 +69,7 @@ mainWindow::mainWindow()
     readSettings();
     
     npList()->loadSavedPlaylist();
-//     menuBar ()->hide();
-    
-    QVariant v= QVariant::fromValue((void *) npList());
-    qDebug()<<v.canConvert<void*>();
+
 }
 
 mainWindow::~mainWindow()

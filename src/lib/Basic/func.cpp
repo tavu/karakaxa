@@ -11,6 +11,7 @@
 #include<QDir>
 
 #include"configure.h"
+#include "status.h"
 
 
 QString Basic::titleFromPath(const QString &path)
@@ -120,6 +121,7 @@ void Basic::init()
       QTextCodec::setCodecForTr(QTextCodec::codecForName ("UTF-8"));
         
       qInstallMsgHandler(karakaxaMsg);
+      status::init();
       
       flag=false;            
     }

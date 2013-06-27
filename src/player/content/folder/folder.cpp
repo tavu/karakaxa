@@ -14,8 +14,8 @@
 #include<QComboBox>
 #include<libraryFolder.h>
 #include "folderView.h"
-
-
+#include<QDir>
+#include<Basic/status.h>
 using namespace core;
 // #define DIRECTORYM "inode/directory"
 
@@ -204,7 +204,15 @@ void folderContent::goToPl(KUrl url)
 
 void folderContent::cd(KUrl url)
 {
-    navigator->setUrl( url );
+    QDir d(url.toLocalFile());
+    if(d.exists() )
+    {
+        navigator->setUrl( url );
+    }
+    else
+    {
+        Basic::msg()->error(QObject::tr("The url does not exist") );
+    }
 }
 
 void folderContent::up()
@@ -495,7 +503,7 @@ void folderContent::readSettings()
 
     if(!url.isEmpty() )
     {
-        navigator->setUrl(url );
+        cd(url);
     }
     showUrl(navigator->url());
 }
