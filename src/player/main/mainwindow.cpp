@@ -131,13 +131,11 @@ void mainWindow::nplViewInit()
     nowPlayListM=new nplModel(this);
     nplView->setModel(nowPlayListM);
     nplView->initMinimalView();
-    nplView->setStyleSheet("QAbstractItemView {background-color: transparent} QTreeView::item{height: 20px;}");
-    nplView->setFrameStyle(QFrame::NoFrame);
-//     nplView->setFrameShadow(QFrame::Raised);;    
     
-    QColor c=decor->palette().color(QPalette::Window);    
-    QString s=("QHeaderView::section {background-color: rgb(%1,%2,%3); }");
-    s=s.arg(QString::number(c.red() ),QString::number( c.green() ),QString::number( c.blue() ) );
+    QColor c=nplView->palette().color(QPalette::Window);
+    nplView->setStyleSheet(nplStyle.arg(c.darker().name() ) );
+    nplView->setFrameStyle(QFrame::NoFrame);
+
     
     QPalette pal=decor->palette();
     pal.setColor(QPalette::Base,pal.color(QPalette::Window) );
@@ -368,3 +366,28 @@ void mainWindow::createMenus()
     helpMenu->action( KHelpMenu::menuHelpContents )->setVisible( false );    
     menuBar()->addMenu(s_helpMenu);
 }
+
+const QString mainWindow::nplStyle="\
+QAbstractItemView { \
+    background-color: transparent \
+} \
+QTreeView::item { \
+    height: 20px;\
+} \
+QScrollBar {\
+     border: 0px;\
+     background: transparent;\
+}\
+QScrollBar:vertical {\
+     width: 7px;\
+     margin: 5px 0px 0px 0px;\
+}\
+QScrollBar::handle {\
+     background: %1;\
+}\
+QScrollBar::add-line  {\
+    width: 0px;\
+}\
+QScrollBar::sub-line  {\
+    width: 0px;\
+}";

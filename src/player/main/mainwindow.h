@@ -29,6 +29,7 @@ class mainWindow :public KMainWindow
 	mainWindow();
 	~mainWindow();
 	
+        static const QString nplStyle;
     private:
 	
         QSystemTrayIcon	*trayIcon;
