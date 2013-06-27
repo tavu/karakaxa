@@ -33,10 +33,10 @@ class myFileSystemModel :public KDirModel
 
         bool dropMimeData ( const QMimeData * data, Qt::DropAction action, int row, int column, const QModelIndex & parent );
 
-
         Qt::ItemFlags flags ( const QModelIndex & index ) const;
         KUrl url( int row) const;
-
+        QModelIndex parent ( const QModelIndex & index ) const;
+        bool hasChildren ( const QModelIndex & parent = QModelIndex() ) const;
     private:	
         KDirLister *dirL;
         loadInfoThr thr;
@@ -50,3 +50,4 @@ class myFileSystemModel :public KDirModel
         void updated();	
 };
 #endif
+

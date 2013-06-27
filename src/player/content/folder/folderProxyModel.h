@@ -16,11 +16,8 @@ class folderProxyModel :public QSortFilterProxyModel
             QSortFilterProxyModel::setSourceModel(m);
             reset();
         }
-        inline void a()
-        {
-//             qDebug()<<"AA";
-        }
-virtual void sort ( int column, Qt::SortOrder order = Qt::AscendingOrder );
+
+        virtual void sort ( int column, Qt::SortOrder order = Qt::AscendingOrder );
 
     protected:
         bool filterAcceptsRow ( int source_row, const QModelIndex & source_parent ) const;

@@ -204,3 +204,16 @@ KUrl myFileSystemModel::url( int row) const
     return  itemForIndex(i).url();
 
 }
+
+QModelIndex myFileSystemModel::parent ( const QModelIndex & ) const
+{
+    return QModelIndex();
+}
+
+bool myFileSystemModel::hasChildren(const QModelIndex& parent) const
+{
+    if(!parent.isValid())
+        return true;
+    
+    return false;
+}
