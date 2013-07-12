@@ -36,7 +36,7 @@ folderContent::folderContent(QWidget *parent)
     view=new folderView(this);
     folderM= new myFileSystemModel(this);
     proxyM=new folderProxyModel(this);
-    proxyM->setSourceModel(folderM);
+//     proxyM->setSourceModel(folderM);
     proxyM->setFilterCaseSensitivity(Qt::CaseInsensitive);
     
     view->setModel(proxyM);
@@ -153,55 +153,63 @@ void folderContent::showUrl(KUrl url)
     searchLine->clear();
     if(Basic::isPlaylist(url.toLocalFile()) )
     {
-        goToPl(url);
+        if( !inPl() )
+        {
+            saveState();
+            goToPl(url);            
+        }
+         plModel->setPlPath(url.toLocalFile());
     }
     else
     {
-        goToFolder(url);
+        if( !inFolder() )
+        {
+            saveState();
+            goToFolder(url);
+        }
+        folderM->dirLister()->openUrl(url);
     }
+    
 }
 
 void folderContent::goToFolder(KUrl url)
 {
-    if(inPl())
-    {
         view->setRatingColumn(DIRCOLUMN+Basic::RATING);
         proxyM->setSourceModel(folderM);
         folderToolBarAction->setVisible(true);
         view->setNotHide(0);   
-        plState=view->header()->saveState();
-        if(!view->header()->restoreState(folderState) )
-        {
-            qDebug()<<"PLD";
-        }
-//         view->setSortingEnabled(true);
-    }
-
-//     disconnect(searchLine);    
-    folderM->dirLister()->openUrl(url);
+        view->header()->restoreState(folderState);
 }
 
 
 void folderContent::goToPl(KUrl url)
 {
-    if(inFolder())
-    {
+
         view->setRatingColumn(Basic::RATING);
         proxyM->setSourceModel(plModel);        
         view->setNotHide(Basic::TITLE);
         folderToolBarAction->setVisible(false); 
-        folderState=view->header()->saveState();
         view->header()->restoreState(plState);
-    }
-    plModel->setPlPath(url.toLocalFile());
+   
 }
 
+void folderContent::saveState()
+{
+    if(inPl())
+    {
+        plState=view->header()->saveState();
+    }
+    else if(inFolder() )
+    {
+        folderState=view->header()->saveState();
+    }
+}
 
 
 
 void folderContent::cd(KUrl url)
 {
-    QDir d(url.toLocalFile());
+    QFile d(url.toLocalFile());
     if(d.exists() )
     {
         navigator->setUrl( url );

@@ -68,6 +68,8 @@ class folderContent :public core::abstractContent
         
         QByteArray          plState;
         QByteArray          folderState;
+        
+        void saveState();
 
     //functions
         inline void toolBarInit();
