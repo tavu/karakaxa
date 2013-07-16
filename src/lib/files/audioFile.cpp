@@ -71,6 +71,11 @@ audioFiles::audioFile::audioFile(const audioFile &f)
         connect(cache,SIGNAL(changed(audioFiles::tagChangesL) ),this,SLOT(emitChanged(audioFiles::tagChangesL) ),Qt::QueuedConnection );
         connect(cache,SIGNAL(doesExist(bool)),this,SLOT(invalidSlot(bool) ),Qt::QueuedConnection );
      }
+     else
+     {
+         cache=0;
+     }
+         
 
      changes.append(f.changes);
      fileSize=f.fileSize;
@@ -87,7 +92,10 @@ void audioFiles::audioFile::invalidSlot(bool b)
 
 audioFiles::audioFile::~audioFile()
 {
-    fileCacheFactory::releaseFileCache(cache);
+    if(cache!=0)
+    {
+        fileCacheFactory::releaseFileCache(cache);
+    }
 }
 
 bool audioFiles::audioFile::isValid() const

@@ -46,7 +46,7 @@ QString views::prettySize(int n)
 }
 
 
-QVariant views::pretyTag(QVariant var, int t)
+QVariant views::pretyTag(QVariant var,const int t)
 {
     using namespace Basic;
     

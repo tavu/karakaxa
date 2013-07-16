@@ -63,13 +63,13 @@ QString database::abstractQuery::tagToSql(int t)
         {
             return QString("trackView.count ");
         }
-        case ALBUM_ID:
+//         case ALBUM_ID:
+//         {
+//             return QString("album_id ");
+//         }
+        case ALBUM_ARTIST:
         {
-            return QString("album_id ");
-        }
-		case ALBUM_ARTIST:
-        {
-            return QString("trackView.artist_id ");
+            return QString("trackView.albumArtist ");
         }
     }
     return QString();

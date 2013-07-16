@@ -27,6 +27,7 @@ enum tagsEnum
     FILES,
     INVALID,
     IMAGE,
+    ARTIST_IMAGE,
     LYRICS,
     ALBUM_ARTIST_ID,
 };

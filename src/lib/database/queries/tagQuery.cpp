@@ -46,7 +46,7 @@ void database::tagQuery::init(int t, equal e, QVariant var, bool n)
     QString val=var.toString();
 
     //var should be an int;
-    if (t==YEAR||t==TRACK||t==LENGTH||t==RATING||t==COUNTER||t==BITRATE || t==ALBUM_ID || t==ALBUM_ARTIST)
+    if (t==YEAR||t==TRACK||t==LENGTH||t==RATING||t==COUNTER||t==BITRATE )
     {
         bool k;
         var.toInt(&k);

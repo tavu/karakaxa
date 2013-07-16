@@ -4,7 +4,7 @@
 #include<QSpinBox>
 #include"../ratingWidget/ratingWidget.h"
 #include<QLineEdit>
-#include<database.h>
+#include<database/queries/provider/queryProvider.h>
 #include<Basic/tagsTable.h>
 
 #define CHAR_LIMIT 3
@@ -18,16 +18,29 @@ views::textEditor::textEditor(int tag,QWidget *parent)
         return ;
    }
    
-   q=new database::tagQueryGrt(this);
-   q->setTag(tag);
-   q->select();
+//    q=new database::tagQueryGrt(this);
+//    q->setTag(tag);
+//    q->select();
    
    comp=new QCompleter(this);	
    comp->setCaseSensitivity(Qt::CaseInsensitive);	   
    comp->setCompletionColumn(0);
    
-   completerM.setStringList(q->result() );   
-	   
+    
+   int t;
+   if(tag==Basic::ALBUM_ARTIST||tag==Basic::LEAD_ARTIST)
+   {
+       t=Basic::ARTIST;
+   }
+   else
+   {
+       t=tag;
+   }
+   
+   database::queryProvider pr(t);
+   pr.select();
+   completerM.setStringList(pr.resultsStr() );
+   
    comp->setModel(&completerM);
    setCompleter(comp);
 }

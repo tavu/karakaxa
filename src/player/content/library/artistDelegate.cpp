@@ -2,6 +2,8 @@
 #include<QApplication>
 #include<QPainter>
 #include<views.h>
+
+#define SIZE 30
 artistDelegate::artistDelegate(QObject* parent)
     :QStyledItemDelegate(parent)
 {
@@ -37,3 +39,10 @@ void artistDelegate::drawDisplay(QPainter* painter, const QStyleOptionViewItem& 
     painter->drawText( rect,Qt::AlignLeft|Qt::AlignVCenter|Qt::TextWordWrap, text);
     painter->restore();
 }
+
+QSize artistDelegate::sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const
+{
+    return QSize(SIZE,SIZE);
+}
+
+

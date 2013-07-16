@@ -24,16 +24,8 @@
 #include"nplaylistModel.h"
 #include"nplaylistDelegate.h"
 #include "playingWidget.h"
-
-#include"../content/library/library.h"
-#include"../content/folder/folder.h"
-#include"../content/playlist/playlistContent.h"
-#include"../content/configure/configureContent.h"
-#include"../content/edit/editTrackContent.h"
-#include"../content/nowPlaylist/nowPlaylistContent.h"
-
-// #include<coverWidget/coverDownloaderWidget.h>
-#include"../content/newLibrary/libraryContent.h"
+#include "defaultContent.h"
+#include<files/audioFilesSelf.h>
 
 #define ICONZISE QSize(35,35)
 
@@ -65,7 +57,8 @@ mainWindow::mainWindow()
     config->setMainWindow(this);
     config->readSetings();
     
-    defaultContent();
+    loadDefault();
+//     defaultContent();
     readSettings();
     
     npList()->loadSavedPlaylist();
@@ -241,12 +234,12 @@ void mainWindow::unlockDock()
     
     toolBar->setMovable(true);    
 }
-
+/*
 void mainWindow::defaultContent()
 {
-      library *l=new library();      
+//       library *l=new library();      
       folderContent *f=new folderContent();
-      playlistContent *pl=new playlistContent();
+//       playlistContent *pl=new playlistContent();
       configureContent *c=new configureContent();
       nowPlaylistContent *n=new nowPlaylistContent();
       
@@ -254,15 +247,15 @@ void mainWindow::defaultContent()
 	  
       n->setModel(nowPlayListM);
       
-      contentHdl->addContent(l);
+//       contentHdl->addContent(l);
       contentHdl->addContent(f);
-      contentHdl->addContent(pl);
+//       contentHdl->addContent(pl);
       contentHdl->addContent(n);      
       contentHdl->addContent(c);
 	  
 //       contentHdl->addContent(nl);
 
-      contentHdl->setCurrentContent(l);
+//       contentHdl->setCurrentContent(l);
       
       editTrackMenu *m=new editTrackMenu();
       contentHdl->addMenu(m);
@@ -270,7 +263,7 @@ void mainWindow::defaultContent()
 // 	  coverDownloaderWidget *w=new coverDownloaderWidget(this);
 // 	  contentHdl->addWidget(w);
 }
-
+*/
 void mainWindow::closeEvent(QCloseEvent *event)
 {    
     hide();	

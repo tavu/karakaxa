@@ -92,29 +92,25 @@ create table tracks(
 )default charset=utf8 collate=utf8_general_ci ENGINE=myisam;
 
 
-CREATE view leadArtists as select name ,id from artists;
-
-
-CREATE VIEW artist_album(artist,album,image,id,artist_id,artist_image) AS
+CREATE VIEW albumArtist(artist,album,image,id,artist_id,artistImage) AS
 	select 
 		artists.name,
 		albums.name,
 		albums.image,
 		albums.id ,
 		artists.id,
-		artists.image as artist_image
+		artists.image
 	from albums
 	inner join artists on artists.id=albums.artist;
  
 CREATE VIEW trackView 	AS
      select
-	  albums.artist 	as artist_id	,
-	  albums.id			as album_id		,
 	  tracknumber	 					,
 	  title								,
 	  albums.name		as album		,
+          album_artist.name     as albumArtist                ,
 	  artists.name		as artist		,
-	  leadArtists.name	as leadArtist	,
+	  lead.name	as leadArtist	,
 	  comment 							,
 	  genres.name   	as genre		,
 	  composers.name 	as composer		,
@@ -125,10 +121,9 @@ CREATE VIEW trackView 	AS
 	  path								,
 	  count					
 	  
-     from tracks,artists,albums,genres,composers,leadArtists
-	  where  tracks.lead_artist=leadArtists.id
-		 AND tracks.artist=artists.id
-		 AND tracks.album=albums.id 
-		 AND tracks.genre=genres.id 
-		 AND tracks.composer=composers.id;
-
+    from tracks INNER JOIN artists on tracks.artist=artists.id
+                INNER JOIN genres on tracks.genre=genres.id
+                INNER JOIN composers on tracks.composer=composers.id
+                INNER JOIN artists as lead on tracks.lead_artist=lead.id
+                INNER JOIN albums on tracks.album=albums.id
+                INNER JOIN artists as album_artist on albums.artist=album_artist.id

@@ -65,12 +65,14 @@ QVariant database::dbPrivate::trackViewRecord::getValue ( int t) const
         case GENRE:
         case COMPOSER:
         {
+            return QVariant();
             baseRecord *br=track->getRelated(t);
             ret= br->getValue(0);
             break;
         }   
         case ALBUM_ARTIST:
         {
+            return QVariant();
             dbPrivate::baseRecord *br=track->getRelated(ALBUM);
             br=br->getRelated(ALBUM_ARTIST);
             ret= br->getValue(0);

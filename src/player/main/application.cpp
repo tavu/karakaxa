@@ -6,6 +6,7 @@
 #include<core.h>
 #include<views.h>
 #include<dbFunc.h>
+#include<files/audioFiles.h>
 
 karakaxa::karakaxa(int argc, char *argv[])
 #ifdef DEBUG

@@ -4,6 +4,7 @@
 #include<QObject>
 #include<Basic/tagsTable.h>
 #include<QVariant>
+#include<QMap>
 namespace audioFiles
 {
 /*
@@ -12,48 +13,38 @@ namespace audioFiles
  */
 
 
-class tagInfo :public QObject
+class tagInfo
 {
-	Q_OBJECT
 	public:
 		tagInfo()
 		{
 			_type=Basic::INVALID;
 		}
 		
-		tagInfo(int type,QVariant data,QObject *parent=0) :QObject(parent)
+		tagInfo(const tagInfo &t ) :_type(t._type),_data(t._data),map(t.map)
+                {                        
+                }
+		
+		tagInfo(int type,QVariant data,QObject *parent=0)
 		{
 			_type=type;
 			_data=data;
 		}
 		
-		tagInfo(const tagInfo &other) :QObject( other.parent() )
-		{
-			_data=other._data;
-			_type=other._type;
- 			foreach(const QByteArray &prop, other.dynamicPropertyNames() )
- 			{
- 				setProperty( prop.constData(), other.property( prop.constData() ) ); 
- 			}
-		}
+		tagInfo* operator=(const tagInfo &t)
+                {
+                    _type=t._type;
+                    _data=t._data;
+                    map=QMap<int,QVariant>(t.map);
+                    return this;
+                }
 		
-		int type()
+		int type() const
 		{
 			return _type;
 		}
-		
-		void operator= (tagInfo other)
-		{
-			_data=other._data;
-			_type=other._type;
-			 
-			foreach(const QByteArray &prop, other.dynamicPropertyNames() )
- 			{
- 				setProperty( prop.constData(), other.property( prop.constData() ) ); 
- 			}
-		}
-		
-		QVariant data()
+
+		QVariant data() const
 		{
 			return _data;
 		}
@@ -63,9 +54,20 @@ class tagInfo :public QObject
 			_data=d;
 		}
 		
+		QVariant property(int t) const
+                {
+                    return map.value(t);
+                }
+                
+                void setProperty(int t,QVariant v)
+                {
+                    map.insert(t,v);
+                }
+		
 	protected:
 		QVariant _data;
 		int _type;
+                QMap<int,QVariant> map;
 };
 // Q_DECLARE_METATYPE(tagInfo);
 }

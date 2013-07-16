@@ -4,17 +4,18 @@
 #include<QPushButton>
 
 #include<QStackedWidget>
+#include <QListView>
 #include<KToolBar>
 #include<KLineEdit>
 #include<KIcon>
 #include<core.h>
 
-#include"artistWidget.h"
-#include"artistModel.h"
-#include"albumTrack.h"
 #include<QLinkedList>
 #include<queries/matchQuery.h>
 #include<delayLineEdit.h>
+#include<views/models/treeView.h>
+#include <models/libraryModel/tagItemHead.h>
+#include<core/standardModel/standardModel.h>
 class library :public core::abstractContent
 {
     Q_OBJECT
@@ -29,16 +30,19 @@ class library :public core::abstractContent
         }
 
     private:
-
-        QListView   *artistV;
-        artistModel     *artistM;
-        albumTrack      *albumTrV;
         QStackedWidget *stack;
-
+        views::treeView *view;
+        QListView       *artistV;
+        
         QAction     *backAction;
         QAction     *forwardAction;
+        
         views::delayLineEdit   *searchLine;
-
+        
+        standardModel *artistM;
+        standardModel *albumTrackM;
+        views::tagItemHead *albumH;
+        views::tagItemHead *artistH;
 
         QLinkedList<int> searchTagL;
 
@@ -47,16 +51,15 @@ class library :public core::abstractContent
         //functions
         void inline toolBarInit();
         void activated(const int n);
+        
+        inline bool onArtist();
+        inline bool onAlbum();
 
     public slots:
-        void artistActivated(const QModelIndex& index);
+        void search(const QString& text);
+        void artistActivated(const QModelIndex &index );
         void goToArtist();
         void goToAlbum();
-
-        void dbChanged();
-        void checkNeedUpdates();
-        void search(const QString& text);
-
 
 };
 

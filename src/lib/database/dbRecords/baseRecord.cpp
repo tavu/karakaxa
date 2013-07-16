@@ -204,7 +204,9 @@ int database::dbPrivate::baseRecord::doUpdate()
     queryS.remove(queryS.size()-1,1);
     queryS.append(" where id=?");
 
+#ifdef QUERY_DEBUG
     qDebug()<<"query "<<queryS;
+#endif
     QSqlQuery q(databs);
     q.prepare(queryS);
 
@@ -258,8 +260,9 @@ int database::dbPrivate::baseRecord::doInsert()
     values.remove(values.size()-1,1);
     
     queryS.append(") "+values +")");    
-
+#ifdef QUERY_DEBUG
     qDebug()<<"query "<<queryS;
+#endif
     QSqlQuery q(databs);
     q.prepare(queryS);
 
@@ -330,8 +333,9 @@ int database::dbPrivate::baseRecord::selectFromId()
     clearError();
     QString queryS=selectStr();
     queryS.append(" WHERE id=?");
-    
+#ifdef QUERY_DEBUG
     qDebug()<<"SELECT "<<queryS;
+#endif
     QSqlQuery q(databs);
     q.prepare(queryS);
     q.addBindValue(_id);
@@ -366,8 +370,9 @@ int database::dbPrivate::baseRecord::selectFromUnique()
     //remove last AND
     queryS.resize(queryS.size()-5);
     
-             
+#ifdef QUERY_DEBUG
     qDebug()<<"SELECT "<<queryS;
+#endif    
     QSqlQuery q(databs);
     q.prepare(queryS);
     

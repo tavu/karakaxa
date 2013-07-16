@@ -212,7 +212,7 @@ bool standardItem::hasChildren() const
     {
 	return true;
     }
-    return false;    
+    return canFetchMore();    
 }
 
 bool standardItem::save()
@@ -521,12 +521,12 @@ void standardItem::insert(int row, standardItem *item)
     {
 	return ;
     }
-        	
     children.insert(row,item);
     
     item->_row=row;
     item->_model=_model;
     item->_parent=this;    
+    item->setParent(this);
 }
 
 standardModel* standardItem::model() const

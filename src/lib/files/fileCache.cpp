@@ -192,7 +192,6 @@ void audioFiles::fileCache::setTag ( int t, QVariant var, int& err )
     qDebug() <<"in db "<<fdb->inDb();
     if(fdb->inDb()==Basic::OK && fdb->error()==Basic::OK)
     {
-        qDebug() <<"oiibnjb";
         err=fdb->setTag ( t,var );
         if ( err!=OK )
         {

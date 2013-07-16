@@ -103,8 +103,10 @@ bool database::databaseConection::createConnection()
     dBase.setUserName ( group.readEntry ( "user",QString() ) );
     dBase.setPassword ( group.readEntry ( "pass",QString() ) );
 
+    qDebug()<<dBase.databaseName()<<" "<<dBase.userName()<<" "<<dBase.password();
     if ( dBase.databaseName().isEmpty() )
     {
+        
         return false;
     }
 

@@ -9,7 +9,7 @@
 #include <QStringListModel>
 #include<database.h>
 #include<queries/tagQuery.h>
-#include<queries/tagQueryGrt.h>
+// #include<queries/tagQueryGrt.h>
 
 namespace views
 {
@@ -24,8 +24,8 @@ class textEditor :public QLineEdit
         
     private:
       
-        database::tagQueryGrt  *q;
-        database::tagQuery tagQ;
+//         database::tagQueryGrt  *q;
+//         database::tagQuery tagQ;
 
         QCompleter *comp;
 

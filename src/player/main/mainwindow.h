@@ -60,7 +60,6 @@ class mainWindow :public KMainWindow
         inline void nplViewInit();
         inline void conTreeInit();
         inline void conViewInit();
-        inline void defaultContent();
         inline void createTrayIcon();
         inline void createMenus();
 
