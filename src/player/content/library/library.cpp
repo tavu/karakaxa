@@ -9,6 +9,7 @@
 #include"artistDelegate.h"
 #include<views/models/urlRole.h>
 #include<views/models/libraryModel/tagItem.h>
+#include"albumDelegate.h"
 using namespace core;
 
 library::library(QWidget *parent)
@@ -31,27 +32,43 @@ library::library(QWidget *parent)
     artistH->fetchMore();
     artistM->setHeadItem(artistH);
     artistV->setModel(artistM);
-    stack->addWidget(artistV);
+    stack->addWidget(artistV);    
     
     view=new views::treeView(this);
-    view->setRootIsDecorated(true);
+    view->setHeaderHidden(true);
+    view->setItemDelegate(new albumDelegate(this) );
+
+//     view->setFrameShadow(QFrame::Plain);
+//     view->setStyleSheet("QAbstractItemView {background-color: transparent; }");
+    
+    view->setUniformRowHeights(false);
     albumTrackM=new standardModel(this);
     albumTrackM->setProperty(SPAN_PROP,true);
     view->setModel(albumTrackM);
+    view->setSelectionBehavior(QAbstractItemView::SelectRows);
     albumH=new views::tagItemHead(this);
     albumTrackM->setHeadItem(albumH);
     albumH->addTag(Basic::ALBUM);
     albumH->addTag(Basic::FILES);
     stack->addWidget(view);
+    artistL=new QLabel(this);
+    artistL->setText(tr("Artist") );
+    QFont f=artistL->font();
+    f.setBold(true);
+    artistL->setFont(f);
+//     artistL->setPixmap(views::decor->tagIcon(Basic::ARTIST).pixmap(QIcon::Normal) );
     
+    layout->addWidget(artistL);
     
-    layout->addWidget(toolBar);
     layout->addWidget(stack);
     setLayout(layout);
 
     searchTagL<<Basic::ARTIST<<Basic::ALBUM<<Basic::TITLE<<Basic::LEAD_ARTIST;   
     
     connect(artistV,SIGNAL(activated ( const QModelIndex) ),this ,SLOT( artistActivated(const QModelIndex&) ) );
+    
+    connect(albumH,SIGNAL(updateNeeded() ),this,SLOT(albumUpdate() ) );
+    connect(artistH,SIGNAL(updateNeeded() ),this,SLOT(artistUpdate()) );
 }
 
 library::~library()
@@ -61,6 +78,18 @@ library::~library()
 
 void library::activated(const int n)
 {    
+    if (n==0)
+    {
+        goToArtist();
+    }    
+    else if(onArtist() )
+    {
+        artistH->updateIfDirty();
+    }
+    else if(onAlbum() )
+    {
+        albumH->updateIfDirty();
+    }  
 }
 
 QString library::name() const
@@ -75,7 +104,8 @@ void library::artistActivated(const QModelIndex &index )
     {
         return ;
     }
-    
+    artistName=index.data(Qt::DisplayRole).toString();
+    artistL->setText(artistName);
     standardItem *i=artistM->itemFromIndex(index);
     database::abstractQuery *q=static_cast<const views::tagItem*>(i)->selector()->filter();
     
@@ -112,8 +142,7 @@ void library::toolBarInit()
 }
 
 void library::search(const QString & text)
-{    
-    qDebug()<<"SEr";
+{        
     if(text.isEmpty() )
     {
         artistH->setCustomFilter(0);
@@ -142,12 +171,16 @@ void library::search(const QString & text)
 
 void library::goToArtist()
 {
+    artistL->setText(tr("Artist") );
     stack->setCurrentWidget(artistV);
+    artistH->updateIfDirty();
 }
 
 void library::goToAlbum()
 {
-    stack->setCurrentWidget(view);
+    artistL->setText(artistName);
+    stack->setCurrentWidget(view);    
+    albumH->updateIfDirty();
 }
 
 bool library::onAlbum()
@@ -158,4 +191,20 @@ bool library::onAlbum()
 bool library::onArtist()
 {
     return stack->currentWidget()==artistV;
+}
+
+void library::albumUpdate()
+{
+    if(view->isVisible())
+    {
+        albumH->update();
+    }
+}
+
+void library::artistUpdate()
+{
+    if(artistV->isVisible())
+    {
+        artistH->update();
+    }
 }

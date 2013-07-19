@@ -72,6 +72,27 @@ database::abstractQuery* views::tagSelector::filter() const
     return match;
 }
 
+bool views::tagSelector::isDirty(int t) const
+{    
+    if(!_tags.contains(t))
+    {
+        return true;
+    }
+    
+    return _tags[t]->isDirty;
+}
+
+void views::tagSelector::setDirty(int t)
+{    
+    if(!_tags.contains(t))
+    {
+        return ;
+    }
+    
+    _tags[t]->isDirty=true;
+}
+
+
 bool views::tagSelector::populate(int type,bool force)
 {
     if(type<0||type>Basic::FILES)

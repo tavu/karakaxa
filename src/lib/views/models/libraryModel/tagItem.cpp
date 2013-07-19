@@ -2,6 +2,7 @@
 #include "tagItemHead.h"
 #include<Basic/tagsTable.h>
 #include "trackItem.h"
+#include "headerItem.h"
 
 views::tagItem::tagItem(tagSelector *s) :standardItem(),_ts(s)
 {
@@ -40,8 +41,7 @@ void views::tagItem::fetchMore()
     if(rowCount()!=0)
     {
         return ;
-    }
-    qDebug()<<"FETCH";
+    }    
     int t=nextData();
     if(t==Basic::INVALID)
     {
@@ -73,12 +73,18 @@ QVariant views::tagItem::data(int column, int role) const
     
     if(role==Qt::DisplayRole)
     {
-        return _ts->data();
+        return views::pretyTag(_ts->data(),_ts->type() );
     }
     
     if(role==Qt::DecorationRole)
     {
-        return _ts->icon();
+        QString s=_ts->data(Basic::IMAGE).toString();
+        
+        if(!s.isEmpty())
+        {
+            return QPixmap(s);
+        }
+        return views::decor->tagIcon(_ts->type());
     }
     return QVariant();
 }
@@ -126,6 +132,11 @@ void views::tagItem::appendData(int t)
     {
         qDebug()<<"tag selecto has no data of tag "<<t;
         return ;
+    }
+    
+    if(t==Basic::FILES )
+    {
+        l<<new headerItem();
     }
     
     for(int i=0;i<v->size();i++)

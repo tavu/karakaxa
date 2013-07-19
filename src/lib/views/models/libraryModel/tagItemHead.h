@@ -41,9 +41,19 @@ class tagItemHead :public tagItem
             return _ts->customFilter();
         }
         
+        void updateIfDirty();
+        
     protected:
         virtual int nextData() const;
-        QList<int> _tagsL;
+        QList<int> _tagsL;                
+        inline void setNeedUpdate();
+        
+    protected slots:
+        void checkUpdate(database::dbEventP e);
+        
+    signals:
+        void updateNeeded(); 
+        
 };
 
 }

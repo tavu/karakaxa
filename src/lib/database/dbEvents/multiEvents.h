@@ -16,6 +16,7 @@ class multiEvents :public dbEvent
                 delete e;
             }
         }
+        
         void addEvent(dbEvent *e)
         {
             eventList.append(e);

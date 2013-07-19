@@ -65,6 +65,9 @@ class tagSelector :public QObject
             return _customFilter;
         }
         
+        bool isDirty(int t) const;
+        void setDirty(int t);
+        
         //returns an appropriate qvariant for Decoration role
         virtual QVariant icon();
 

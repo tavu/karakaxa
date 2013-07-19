@@ -5,6 +5,7 @@
 
 #include<QStackedWidget>
 #include <QListView>
+#include <QLabel>
 #include<KToolBar>
 #include<KLineEdit>
 #include<KIcon>
@@ -33,6 +34,7 @@ class library :public core::abstractContent
         QStackedWidget *stack;
         views::treeView *view;
         QListView       *artistV;
+        QLabel *artistL;
         
         QAction     *backAction;
         QAction     *forwardAction;
@@ -54,12 +56,17 @@ class library :public core::abstractContent
         
         inline bool onArtist();
         inline bool onAlbum();
+        
+        QString artistName;
 
     public slots:
         void search(const QString& text);
         void artistActivated(const QModelIndex &index );
         void goToArtist();
         void goToAlbum();
+        
+        void artistUpdate();
+        void albumUpdate();
 
 };
 

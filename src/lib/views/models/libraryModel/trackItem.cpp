@@ -33,7 +33,7 @@ void views::trackItem::changed(audioFiles::tagChangesL c)
 
 
 QVariant views::trackItem::data(int column, int role) const
-{
+{    
     if(role==Qt::DisplayRole || role==Qt::ToolTipRole || role==Qt::EditRole)
     {
         return views::pretyTag(file.tag(column),column );
