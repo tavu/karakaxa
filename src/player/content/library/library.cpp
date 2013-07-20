@@ -10,6 +10,7 @@
 #include<views/models/urlRole.h>
 #include<views/models/libraryModel/tagItem.h>
 #include"albumDelegate.h"
+#include "albumView.h"
 using namespace core;
 
 library::library(QWidget *parent)
@@ -34,18 +35,19 @@ library::library(QWidget *parent)
     artistV->setModel(artistM);
     stack->addWidget(artistV);    
     
-    view=new views::treeView(this);
-    view->setHeaderHidden(true);
+//     view=new views::treeView(this);
+    view= new albumView(this);
+//     view->setHeaderHidden(true);
     view->setItemDelegate(new albumDelegate(this) );
 
 //     view->setFrameShadow(QFrame::Plain);
 //     view->setStyleSheet("QAbstractItemView {background-color: transparent; }");
     
-    view->setUniformRowHeights(false);
+//     view->setUniformRowHeights(false);
     albumTrackM=new standardModel(this);
     albumTrackM->setProperty(SPAN_PROP,true);
     view->setModel(albumTrackM);
-    view->setSelectionBehavior(QAbstractItemView::SelectRows);
+//     view->setSelectionBehavior(QAbstractItemView::SelectRows);
     albumH=new views::tagItemHead(this);
     albumTrackM->setHeadItem(albumH);
     albumH->addTag(Basic::ALBUM);

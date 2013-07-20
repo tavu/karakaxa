@@ -345,6 +345,9 @@ int standardModel::columnCount(const QModelIndex &index ) const
         }
     }  
     
+    item=item->child(0);
+    if(item==0)
+        return 0;
     return item->columnCount();
 }
 

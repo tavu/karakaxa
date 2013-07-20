@@ -17,6 +17,7 @@
 #include<views/models/treeView.h>
 #include <models/libraryModel/tagItemHead.h>
 #include<core/standardModel/standardModel.h>
+#include "albumView.h"
 class library :public core::abstractContent
 {
     Q_OBJECT
@@ -32,7 +33,8 @@ class library :public core::abstractContent
 
     private:
         QStackedWidget *stack;
-        views::treeView *view;
+//         views::treeView *view;
+        albumView *view;
         QListView       *artistV;
         QLabel *artistL;
         
