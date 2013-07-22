@@ -22,7 +22,7 @@ class trackItem :public standardItem
         
         virtual int columnCount() const
         {
-            return Basic::FRAME_NUM;
+            return Basic::FRAME_NUM+1;
         }
 
         virtual bool setData (const QVariant &value,int column, int role );

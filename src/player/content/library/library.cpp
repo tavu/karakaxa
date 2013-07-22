@@ -9,7 +9,6 @@
 #include"artistDelegate.h"
 #include<views/models/urlRole.h>
 #include<views/models/libraryModel/tagItem.h>
-#include"albumDelegate.h"
 #include "albumView.h"
 using namespace core;
 
@@ -38,7 +37,7 @@ library::library(QWidget *parent)
 //     view=new views::treeView(this);
     view= new albumView(this);
 //     view->setHeaderHidden(true);
-    view->setItemDelegate(new albumDelegate(this) );
+//     view->setItemDelegate(new albumDelegate(this) );
 
 //     view->setFrameShadow(QFrame::Plain);
 //     view->setStyleSheet("QAbstractItemView {background-color: transparent; }");

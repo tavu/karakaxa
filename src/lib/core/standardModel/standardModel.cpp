@@ -190,7 +190,8 @@ QModelIndex standardModel::parent(const QModelIndex& index) const
 standardItem::standardItem()
   :QObject(),
   _model(0),
-  _parent(0)
+  _parent(0),
+  _childrenColumn(0)
 {
 
 }
@@ -307,6 +308,9 @@ QVariant standardItem::headerData(int section, Qt::Orientation orientation, int 
     {
         return QString::number(section);	
     }
+//     if (role == Qt::TextAlignmentRole)
+//       return QVariant(Qt::AlignLeft|Qt::AlignTop );
+
     return QVariant();
 }
 
@@ -335,20 +339,16 @@ bool standardModel::setData( const QModelIndex & index,const QVariant& value, in
 
 int standardModel::columnCount(const QModelIndex &index ) const
 {
-    standardItem *item=head;
     if(index.isValid() )
     {
-        item=itemFromIndex(index);
+        standardItem *item=itemFromIndex(index);
         if(item==0)
         {
             return 0;
         }
+       return item->_childrenColumn;
     }  
-    
-    item=item->child(0);
-    if(item==0)
-        return 0;
-    return item->columnCount();
+    return head->columnCount();
 }
 
 int standardModel::rowCount(const QModelIndex &index ) const
@@ -530,6 +530,11 @@ void standardItem::insert(int row, standardItem *item)
     item->_model=_model;
     item->_parent=this;    
     item->setParent(this);
+    
+    if(_childrenColumn<item->columnCount())
+    {
+        _childrenColumn=item->columnCount();
+    }
 }
 
 standardModel* standardItem::model() const

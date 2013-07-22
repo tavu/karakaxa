@@ -10,12 +10,12 @@
 // #include<QApplication>
 
 // #define notHid 1+treeV->getHideFirstsColumn()
-views::treeViewHeader::treeViewHeader(QTreeView *parent)
+views::treeViewHeader::treeViewHeader(QWidget *parent)
         :QHeaderView(Qt::Horizontal,parent),
         menu(0),
         notHid(0)
 {
-    treeV=parent;
+//     treeV=parent;
     setMovable(true);
 
     setStretchLastSection(true);
@@ -27,7 +27,7 @@ views::treeViewHeader::treeViewHeader(QTreeView *parent)
     
     setProperty("highlight",QVariant(-1));        
          
-    setStyleSheet("QHeaderView::section {background-color: transparent; }" );
+//     setStyleSheet("QHeaderView::section {background-color: transparent; }" );
     //setStyleSheet("QHeaderView {background-color: transparent;border: 1px solid #6c6c6c; }" );
     
 }
@@ -70,7 +70,8 @@ void views::treeViewHeader::mousePressEvent(QMouseEvent *e)
 
 void views::treeViewHeader::hideClickedColumn()
 {
-    treeV->setColumnHidden(columnClicked,true);
+    setSectionHidden(columnClicked,true);
+//     treeV->setColumnHidden(columnClicked,true);
 }
 
 void views::treeViewHeader::selectColumnW()
@@ -114,7 +115,7 @@ void views::treeViewHeader::selectColumnW()
 
 void views::treeViewHeader::toggleHideColumn(int i)
 {
-    treeV->setColumnHidden(i,!isSectionHidden(i) );
+    setSectionHidden(i,!isSectionHidden(i));
 }
 
 QSize views::treeViewHeader::sizeHint () const
@@ -139,8 +140,6 @@ views::treeViewHeader::~treeViewHeader()
 
 void views::treeViewHeader::paintSection( QPainter * painter, const QRect & r, int logicalIndex ) const
 {    
-//     QHeaderView::paintSection(painter,rect,logicalIndex);
-//     return ;
     painter->save();
     
     QRect rect(r);
@@ -171,7 +170,7 @@ void views::treeViewHeader::paintSection( QPainter * painter, const QRect & r, i
     
     QBrush b(grad);    
     painter->fillRect(rect,b);            
-    QPalette pal= static_cast<QWidget*>(parent())->palette();
+    QPalette pal=palette();
     QPen pen(pal.window().color() );
 
     pen.setWidth(2);

@@ -77,7 +77,7 @@ class standardItem :public QObject
       
       //pass this role to the data function to get the type
       static const int typeRole;
-      
+
     protected:
       void prealocateChildren(int n);
       int freeChildrenSpace()
@@ -115,6 +115,7 @@ class standardItem :public QObject
       
     private:
         int _row;
+        int _childrenColumn;
         standardItem *_parent;
       
 };

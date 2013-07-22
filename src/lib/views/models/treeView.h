@@ -9,7 +9,6 @@
 #include <QLinkedList>
 #include<QMenu>
 #include"treeViewDelegate.h"
-#include"treeViewHeader.h"
 #include <set>
 
 namespace views

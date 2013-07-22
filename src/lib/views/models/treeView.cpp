@@ -17,6 +17,8 @@
  #include <QToolTip>
 #include<QModelIndexList>
 #include <QPainter>
+#include"treeViewHeader.h"
+
 Q_DECLARE_METATYPE(QModelIndexList)
 
 views::treeView::~treeView()

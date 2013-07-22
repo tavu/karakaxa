@@ -2,6 +2,7 @@
 #define ALBUM_VIEW_H 
 
 #include <QAbstractItemView>
+#include "albumViewHeader.h"
 #include<QHash>
 #include<QSet>
 
@@ -16,8 +17,8 @@ class albumView :public QAbstractItemView
         
         void setModel(QAbstractItemModel *m);
         void    setExpanded ( const QModelIndex & index, bool expanded );
-        bool isExpanded(const QModelIndex & index);
-        
+        bool isExpanded(const QModelIndex & index) const;
+        QRect visualRect ( const QModelIndex & index ) const;
     protected:
         int horizontalOffset () const;
         int verticalOffset () const;
@@ -26,7 +27,7 @@ class albumView :public QAbstractItemView
         QModelIndex moveCursor ( CursorAction cursorAction, Qt::KeyboardModifiers modifiers );
         
         void setSelection ( const QRect & rect, QItemSelectionModel::SelectionFlags flags );
-        QRect visualRect ( const QModelIndex & index ) const;
+        
         QRegion visualRegionForSelection ( const QItemSelection & selection ) const;
                 
         void rowsAboutToBeRemoved(const QModelIndex &parent,int start, int end);
@@ -35,40 +36,54 @@ class albumView :public QAbstractItemView
         void resizeEvent(QResizeEvent *e);
         void scrollContentsBy(int dx, int dy);
         
+        void    mouseMoveEvent ( QMouseEvent * event );
+        void mousePressEvent(QMouseEvent *event);
+        
     private:
         void calculateRectsIfNecessary() const;
 
         
-        struct albumInfo
-        {
-            QRect rect;
-            bool isExpanded;
-        };
         mutable bool hashIsDirty;
-        mutable QHash<int,struct albumInfo> albumRects;
+        mutable QHash<int,QRect> albumRects;
         mutable QSet<int> expanded;
+        
         int albumOffset;
         int rowHeight;
         int albumMinHeight;
         int albumInfoHeight;
         int albumWidth;
         int space;
-        mutable QList<int> columnWidth;
+//         mutable QList<int> columnWidth;
         
-        
-        QRect itemRect(const QModelIndex &index) const;
-        QRect albumRect(const QModelIndex &index) const;
+        QRect itemsRect(int parentRow) const;        
+        QRect itemRect(const QModelIndex &index) const;        
+        QRect albumRect(const QModelIndex &index) const        ;
         QRect viewportRectForRow(QRect rect) const;
-        void calculateColumnRects(const QModelIndex &index) const;
+        
+        void paintHeader(QPainter *painter,QStyleOptionViewItem *opt,int logicalIndex);
+        
+//         void calculateColumnRects(const QModelIndex &index) const;
         
         void drawChildren(const QModelIndex &index,QPainter *p);
         void drawAlbumText(QPainter* painter,const QModelIndex & index ) const;
-        QRect albumTextRect(const QModelIndex &index)const;
+        QRect albumTextRect(const QModelIndex &index)const;        
+        
+        QStyleOptionViewItemV4 styleOptions(const QModelIndex &index) const;
+        QModelIndex hoverIndex;
+        
+        inline bool isAlbum(const QModelIndex &index) const;
+        inline void updateScrollBars() const;
+        
+        albumViewHeader *header;
         
     protected slots:
         void rowsInserted(const QModelIndex &parent, int start,int end);
         void currentChanged ( const QModelIndex & current, const QModelIndex & previous );
         void updateGeometries();
+        void resetSlot();
+        void acivateIndex(const QModelIndex &index);
+        void hideHeader();
+        void columnsUpdated();
 };
 
 #endif

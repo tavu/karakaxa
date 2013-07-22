@@ -9,10 +9,12 @@ class albumDelegate :public QStyledItemDelegate
         albumDelegate(QObject *parent=0);
         virtual QSize       sizeHint ( const QStyleOptionViewItem & option, const QModelIndex & index ) const;
         
-         protected:
+    public:
         void paint ( QPainter * painter, const QStyleOptionViewItem &option, const QModelIndex & index ) const;
         void drawDisplay(QPainter* painter, const QStyleOptionViewItem& option, QRect& rect,const QModelIndex & index ) const;
         void drawAlbumDisplay(QPainter* painter, const QStyleOptionViewItem& option, QRect& rect,  const QModelIndex & index ) const;
+        QWidget * createEditor ( QWidget * parent, const QStyleOptionViewItem & option, const QModelIndex & index ) const;
+        
 };
 
 #endif

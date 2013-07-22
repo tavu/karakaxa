@@ -3,6 +3,7 @@
 #include<QApplication>
 #include<views/decoration/decoration.h>
 #include<QPainter>
+#include <QHeaderView>
 #include<views/models/urlRole.h>
 
 #define ALBUM_SIZE 100
@@ -29,9 +30,37 @@ QSize albumDelegate::sizeHint(const QStyleOptionViewItem& option, const QModelIn
 void albumDelegate::paint ( QPainter * painter, const QStyleOptionViewItem &option, const QModelIndex & index ) const
 {    
     QRect r=option.rect;
+    
+    QApplication::style()->drawPrimitive( QStyle::PE_PanelItemViewItem, &option, painter );
+    QPixmap pic=views::decor->decorationPixmap(option,index);
+    if(!pic.isNull())
+    {
+        r.setX(r.x()+10);
+        r.setY(r.y()+10);
+        pic=pic.scaled(option.decorationSize, Qt::KeepAspectRatio,  Qt::SmoothTransformation);
+        QRect shadowR=r;
+        shadowR.setWidth(pic.width());
+        shadowR.setHeight(pic.height());
+        QPoint p=r.topLeft();
+        p.setX(p.x()+2);
+        p.setY(p.y()+2);
+        shadowR.moveTopLeft(p);
+        QPainterPath shadowPath;
+        shadowPath.addRoundedRect(shadowR,1,1);
+        
+        painter->setOpacity(0.5);    
+        painter->fillPath(shadowPath,Qt::black);
+
+        painter->setOpacity(1);
+        QApplication::style()->drawItemPixmap(painter,r,Qt::AlignLeft|Qt::AlignTop,pic ); 
+        r.setX(r.x()+pic.width()+10);
+    }
+    
+    /*
+    
     if(!index.parent().isValid() )
     {    
-//         QApplication::style()->drawPrimitive( QStyle::CE_ItemViewItem, &option, painter );
+        QApplication::style()->drawPrimitive( QStyle::PE_PanelItemViewItem, &option, painter );
         
         QPixmap pic=views::decor->decorationPixmap(option,index);
         
@@ -40,7 +69,7 @@ void albumDelegate::paint ( QPainter * painter, const QStyleOptionViewItem &opti
 //         r.setX(r.x()+10);
 //         r.setWidth(r.height() +10);   
         
-        pic=pic.scaled(r.size(), Qt::KeepAspectRatio,  Qt::SmoothTransformation);
+        pic=pic.scaled(option.decorationSize, Qt::KeepAspectRatio,  Qt::SmoothTransformation);
         QRect shadowR=r;
         shadowR.setWidth(pic.width());
         shadowR.setHeight(pic.height());
@@ -77,7 +106,8 @@ void albumDelegate::paint ( QPainter * painter, const QStyleOptionViewItem &opti
         r.setX(r.x()+2);
         painter->restore();
     }
-    
+    */
+
 
 //     QApplication::style()->drawPrimitive( QStyle::PE_PanelItemViewItem, &option, painter );
     
@@ -87,15 +117,16 @@ void albumDelegate::paint ( QPainter * painter, const QStyleOptionViewItem &opti
 void albumDelegate::drawDisplay(QPainter* painter, const QStyleOptionViewItem& option, QRect& rect,const QModelIndex &index) const
 {
     painter->save();
-    if(index.data(BOLD_ROLE).toBool())
-    {
-        QFont f=option.font;
-        f.setBold(true);
-        painter->setFont(f);
-    }
+//     if(index.data(BOLD_ROLE).toBool())
+//     {
+//         QFont f=option.font;
+//         f.setBold(true);
+//         painter->setFont(f);
+//     }
+    painter->setFont(option.font);
     rect.setWidth(rect.width()-10);
     QString text=index.data(Qt::DisplayRole).toString();
-    painter->drawText( rect,Qt::AlignLeft|Qt::AlignVCenter|Qt::ElideRight, text);
+    painter->drawText( rect,option.displayAlignment, text);
     painter->restore();
 }
 
@@ -113,6 +144,17 @@ void albumDelegate::drawAlbumDisplay(QPainter* painter, const QStyleOptionViewIt
         painter->setOpacity(0.5);
         text=tr("Uknown album");
     }
-    painter->drawText( rect,Qt::AlignLeft|Qt::AlignTop, text);
+    painter->drawText( rect,option.displayAlignment, text);
     painter->restore();
 }
+
+QWidget* albumDelegate::createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const
+{
+    QHeaderView *header=new QHeaderView(Qt::Horizontal,parent);
+    const QAbstractItemModel *m=index.model(); 
+    
+    //fuck const
+    header->setModel(const_cast<QAbstractItemModel*>(m) );
+    return header;
+}
+

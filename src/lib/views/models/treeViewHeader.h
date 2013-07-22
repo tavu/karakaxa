@@ -12,19 +12,18 @@ class treeViewHeader :public QHeaderView
 {
     Q_OBJECT
     public:
-	treeViewHeader(QTreeView *parent=0);
+	treeViewHeader(QWidget *parent=0);
 	~treeViewHeader();
 
 	void setNotHide(int n);
 	int notHide();
 	QSize sizeHint() const;
-
+        void paintSection ( QPainter * painter, const QRect & rect, int logicalIndex ) const;   
     protected:
 	QMenu *menu;
 	QAction *hide;
 	QAction *selectColumn;
 
-	QTreeView *treeV;
 
 	int notHid;
 	int columnClicked;
@@ -40,7 +39,7 @@ class treeViewHeader :public QHeaderView
 	void hideClickedColumn();
 	virtual void selectColumnW();
 	void toggleHideColumn(int);
-	virtual void paintSection ( QPainter * painter, const QRect & rect, int logicalIndex ) const;	
+	
 
 };//class
 
