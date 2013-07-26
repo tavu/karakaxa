@@ -172,7 +172,7 @@ QVariant audioFiles::audioFile::tag(int t, const short int f) const
            
            if(err==OK)
            {
-                if(t!=TITLE || !ret.toString().isEmpty()|| !(f & TITLEFP))
+                if(t!=TITLE || !ret.toString().isEmpty() || !(f & TITLEFP))
                 {
                     return ret;
                 }

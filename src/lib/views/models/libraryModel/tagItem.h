@@ -24,6 +24,7 @@ class tagItem :public standardItem
         {
             return _ts;
         }
+        virtual Qt::ItemFlags flags ( int column) const;
         
         
     protected:

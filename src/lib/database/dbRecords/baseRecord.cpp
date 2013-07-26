@@ -299,6 +299,7 @@ int database::dbPrivate::baseRecord::selectAll()
         baseRecord *b=getRelatedEntry(it.value() );
         if(b!=0)
         {
+            
             error =b->selectAll();
             if(error!=Basic::OK)
             {

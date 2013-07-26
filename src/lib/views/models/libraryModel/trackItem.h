@@ -28,12 +28,10 @@ class trackItem :public standardItem
         virtual bool setData (const QVariant &value,int column, int role );
         virtual QVariant data (int column, int role = Qt::UserRole + 1 ) const;
 
-        virtual Qt::ItemFlags flags ( int column) const
-        {
-            return standardItem::flags(column) |Qt::ItemIsEditable;
-        }
+        virtual Qt::ItemFlags flags ( int column) const;
         
         bool canFetchMore() const;
+        
 
     protected:
         audioFiles::audioFile file;

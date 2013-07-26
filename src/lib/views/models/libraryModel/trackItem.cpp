@@ -79,3 +79,7 @@ bool views::trackItem::canFetchMore() const
     return false;
 }
 
+Qt::ItemFlags views::trackItem::flags(int column) const
+{
+    return Qt::ItemIsEnabled | Qt::ItemIsSelectable |Qt::ItemIsDragEnabled |Qt::ItemIsEditable;
+}

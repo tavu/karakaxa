@@ -21,10 +21,10 @@
 #include<QMetaProperty>
 
 #include<QModelIndexList>
-Q_DECLARE_METATYPE(QModelIndexList)
+
 
 views::treeViewDelegate::treeViewDelegate(QAbstractItemView *parent)
-    :QStyledItemDelegate(parent) ,
+    :editorDelegate(parent) ,
      ITEM_HEIGH(18)
 {
 
@@ -94,33 +94,6 @@ void views::treeViewDelegate::paint ( QPainter * painter, const QStyleOptionView
     painter->restore();
 }
 
-
-QWidget* views::treeViewDelegate::createEditor(QWidget *parent,const QStyleOptionViewItem &option,const QModelIndex &index) const
-{
-    bool b;
-    int tag=index.data(TAG_ROLE).toInt(&b);
-
-    if(!b)
-    {
-        return QStyledItemDelegate::createEditor(parent,option,index);
-    }
-
-    QWidget *w = views::getEditor(tag,parent);
-    if(w!=0)
-    {
-        w->setProperty("tag",tag);
-    }
-    //TODO take the signal name by the QMetaObject
-    connect(w,SIGNAL(ratingChanged(int) ),this, SLOT(commitEditor()));
-
-    return w;
-}
-
-void views::treeViewDelegate::setEditorData(QWidget *editor,const QModelIndex &index) const
-{
-    QStyledItemDelegate::setEditorData(editor,index);
-}
-
 QSize views::treeViewDelegate::sizeHint ( const QStyleOptionViewItem & option, const QModelIndex & index ) const
 {
     QSize ret=index.data(Qt::SizeHintRole).toSize();
@@ -139,72 +112,4 @@ int views::treeViewDelegate::itemHeigh() const
 void views::treeViewDelegate::setItemHeigh(int k)
 {
     ITEM_HEIGH=k;
-}
-
-void views::treeViewDelegate::setModelData(QWidget *editor,QAbstractItemModel *model,const QModelIndex &index) const
-{
-    QModelIndexList list=qvariant_cast<QModelIndexList>(property("modelList") );
-
-    if(list.isEmpty() )
-    {
-        QStyledItemDelegate::setModelData(editor,model,index);
-        return ;
-    }
-
-    bool b;
-    int tag=index.data(TAG_ROLE).toInt(&b);
-
-    if(!b)
-    {
-        QStyledItemDelegate::setModelData(editor,model,index);
-        return ;
-    }
-
-    QList<audioFiles::audioFile> l;
-    int column=index.column();
-    foreach(QModelIndex i,list)
-    {
-        if (i.column()==column )
-        {
-            l<<audioFiles::audioFile(i.data(URL_ROLE).toUrl() );
-        }
-    }
-
-    //we dont need a new thread to edit just one item
-    if(l.size()==1)
-    {
-        QStyledItemDelegate::setModelData(editor,model,index);
-        return ;
-    }
-
-    database::editMultFiles::editFiles *thr=new database::editMultFiles::editFiles();
-    thr->setFiles(l);
-    thr->setTag(tag );
-
-    QByteArray n = editor->metaObject()->userProperty().name();
-
-    //QAbstractItemView *v
-    thr->setValue( editor->property(n) );
-    QAbstractItemView *view=static_cast<QAbstractItemView*>(parent() );
-    connect(thr,SIGNAL(finished()),view,SLOT(reset()));
-    thr->start();
-}
-
-
-
-void views::treeViewDelegate::commitEditor()
-{
-    QWidget *editor = qobject_cast<QWidget *>(sender());
-    emit commitData(editor);
-}
-
-
-void views::treeViewDelegate::updateEditorGeometry(QWidget *editor,const QStyleOptionViewItem &option, const QModelIndex &index ) const
-{
-    QStyledItemDelegate::updateEditorGeometry(editor,option,index);
-//     return ;
-    QSize s=sizeHint(option,index);
-    QRect r=option.rect;
-    r.setSize(s);
-    editor->setFixedSize(s);
 }

@@ -2,7 +2,7 @@
 cmake_minimum_required(VERSION 2.8)
 project(karakaxa)
 
-FIND_PACKAGE( Qt4 REQUIRED )
+# FIND_PACKAGE( Qt4 REQUIRED )
 
 INCLUDE("karakaxa.cmake")
 

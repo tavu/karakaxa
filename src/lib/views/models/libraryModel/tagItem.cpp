@@ -136,7 +136,7 @@ void views::tagItem::appendData(int t)
     
     if(t==Basic::FILES )
     {
-        l<<new headerItem();
+//         l<<new headerItem();
     }
     
     for(int i=0;i<v->size();i++)
@@ -167,4 +167,8 @@ standardItem* views::tagItem::newItemInstance(views::tagSelector* s)
     }
 }
 
+Qt::ItemFlags views::tagItem::flags(int column) const
+{
+    return standardItem::flags(column)& ~Qt::ItemIsEditable;
+}
 

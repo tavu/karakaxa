@@ -1,19 +1,17 @@
 #ifndef ALBUM_DELEGATE_H
 #define ALBUM_DELEGATE_H
 
-#include<QStyledItemDelegate>
+#include<views/models/editorDelegate.h>
 
-class albumDelegate :public QStyledItemDelegate
+class albumDelegate :public views::editorDelegate
 {
     public:
-        albumDelegate(QObject *parent=0);
-        virtual QSize       sizeHint ( const QStyleOptionViewItem & option, const QModelIndex & index ) const;
+        albumDelegate(QAbstractItemView *parent=0);        
         
-    public:
+    protected:
         void paint ( QPainter * painter, const QStyleOptionViewItem &option, const QModelIndex & index ) const;
-        void drawDisplay(QPainter* painter, const QStyleOptionViewItem& option, QRect& rect,const QModelIndex & index ) const;
-        void drawAlbumDisplay(QPainter* painter, const QStyleOptionViewItem& option, QRect& rect,  const QModelIndex & index ) const;
-        QWidget * createEditor ( QWidget * parent, const QStyleOptionViewItem & option, const QModelIndex & index ) const;
+        void drawDisplay(QPainter* painter, const QStyleOptionViewItem *option, QRect& rect,const QModelIndex & index ) const;
+        void updateEditorGeometry(QWidget *editor,const QStyleOptionViewItem &option, const QModelIndex &index ) const;
         
 };
 

@@ -6,7 +6,9 @@
 #include<QPaintEvent>
 #include <QHeaderView>
 #include"albumDelegate.h"
-
+#include<QApplication>
+#include<views/models/treeView.h>
+#include<views/decoration/decoration.h>
 #define DECOR_SIZE QSize(80,80)
 
 albumView::albumView(QWidget* parent): QAbstractItemView(parent)
@@ -16,23 +18,29 @@ albumView::albumView(QWidget* parent): QAbstractItemView(parent)
     albumWidth=80;
     albumMinHeight=100;
     albumInfoHeight=40;
+    space=10;
+    
+    hashIsDirty=false;
+    setMouseTracking(true);
+    setSelectionBehavior(QAbstractItemView::SelectRows);
+    header=new albumViewHeader(viewport() );
+    header->setVisible(false);
+    QRect r=viewportRectForRow(headerRect(-1));
+    header->setGeometry(r);
+    
+    setEditTriggers(QAbstractItemView::SelectedClicked);
+    
+    setSelectionMode(QAbstractItemView::ExtendedSelection);
+    setDragDropMode(QAbstractItemView::DragOnly);
+    verticalScrollBar()->setSingleStep(rowHeight);
+    horizontalScrollBar()->setSingleStep(50);
     
     setItemDelegate(new albumDelegate(this) );
     horizontalScrollBar()->setRange(0, 0);
     verticalScrollBar()->setRange(0, 0);
     setAutoFillBackground(true);
-    verticalScrollBar()->setPageStep(rowHeight);
-    space=10;
-    //the setModel function will set it to true
-    hashIsDirty=false;
-    setMouseTracking(true);
-    setSelectionBehavior(QAbstractItemView::SelectRows);
-    connect(this,SIGNAL(activated(QModelIndex)),this,SLOT(acivateIndex(QModelIndex)) );
-    header=new albumViewHeader(this );
-    header->setVisible(false);
-//     header->setResizeMode(QHeaderView::Fixed);
+    verticalScrollBar()->setPageStep(rowHeight*10);
     
-//     header->setStyleSheet("QAbstractItemView::item {background-color: transparent; }");
     
     connect(horizontalScrollBar(),SIGNAL(valueChanged(int)),this,SLOT(hideHeader()) );
     connect(verticalScrollBar(),SIGNAL(valueChanged(int)),this,SLOT(hideHeader()) );
@@ -41,12 +49,6 @@ albumView::albumView(QWidget* parent): QAbstractItemView(parent)
     connect(header,SIGNAL(sectionResized(int,int,int)),this,SLOT(columnsUpdated()) );
     connect(header,SIGNAL(sectionMoved(int,int,int)),this,SLOT(columnsUpdated()) );
 }
-
-void albumView::hideHeader()
-{
-    header->setVisible(false);
-}
-
 
 void albumView::setModel(QAbstractItemModel* m)
 {
@@ -76,7 +78,6 @@ int albumView::verticalOffset() const
 
 QModelIndex albumView::indexAt(const QPoint& _point) const
 {
-//     qDebug()<<"EDOO";
     if(model()==0)
         return QModelIndex();
     
@@ -101,18 +102,28 @@ QModelIndex albumView::indexAt(const QPoint& _point) const
     if(rect.isNull())
     {
         return QModelIndex(); 
-    }
+    }    
     
-    QRect r=itemsRect(i.key());
+    rect=itemsRect(i.key());
     QModelIndex parent=model()->index(i.key(),0);
 
-    if(!r.contains(point))
-        return parent;
+    if(!rect.contains(point))
+    {
+        rect=albumRect(parent);
+        if(rect.contains(point) )
+        {
+            return parent;
+        }
+        return QModelIndex();
+        
+    }
     
-    int height=point.ry() -r.topLeft().ry()  ;
+    int height=point.ry() -rect.topLeft().ry()  ;
     int itemRow=height/rowHeight ;
  
-    int k=header->logicalIndexAt(point);
+    QPoint p=header->mapFromParent(_point);
+//     QPoint p=header->mapFrom(viewport(),point);
+    int k=header->logicalIndexAt(p);
 
     return model()->index(itemRow,k,parent);
 }
@@ -134,7 +145,6 @@ QModelIndex albumView::moveCursor(QAbstractItemView::CursorAction cursorAction, 
 {
     QModelIndex index = currentIndex();
     
-//     if()
     return index;
     
 }
@@ -142,6 +152,7 @@ QModelIndex albumView::moveCursor(QAbstractItemView::CursorAction cursorAction, 
 void albumView::scrollTo(const QModelIndex& index, QAbstractItemView::ScrollHint hint)
 {
     return ;
+#if 0
     QRect viewRect = viewport()->rect();
     QRect itemRect = visualRect(index);
 
@@ -160,52 +171,53 @@ void albumView::scrollTo(const QModelIndex& index, QAbstractItemView::ScrollHint
                 qMin(itemRect.bottom() - viewRect.bottom(),
                      itemRect.top() - viewRect.top()));
     viewport()->update();
+    
+#endif
 }
 
 void albumView::setSelection(const QRect& rect, QItemSelectionModel::SelectionFlags flags)
 {
+    if (flags & QItemSelectionModel::Clear)
+            selectionModel()->clear();
+
     if(model()==0)
         return ;
-    
-    QRect rectangle = rect.translated(horizontalScrollBar()->value(),verticalScrollBar()->value()).normalized();
-    
-    calculateRectsIfNecessary();
-    
-    QHashIterator<int, QRect> i(albumRects);
-    
-    int firstRow = model()->rowCount();
-    int lastRow = -1;
-    
-    while (i.hasNext()) 
-    {
-        i.next();
-        if (i.value().intersects(rectangle)) 
-        {
-            firstRow = firstRow < i.key() ? firstRow : i.key();
-            lastRow = lastRow > i.key() ? lastRow : i.key();
-        }
-    }
-    
-    if (firstRow != model()->rowCount() && lastRow != -1) 
-    {
-        QItemSelection selection(
-                model()->index(firstRow, 0, rootIndex()),
-                model()->index(lastRow, 0, rootIndex()));
-        selectionModel()->select(selection, flags);
-    }
-    else 
-    {
-        QModelIndex invalid;
-        QItemSelection selection(invalid, invalid);
-        selectionModel()->select(selection, flags);
-    }
 
+    calculateRectsIfNecessary();
+    QPoint tl(qMin(rect.left(), rect.right()), qMin(rect.top(), rect.bottom()));
+    QPoint br(qMax(rect.left(), rect.right()), qMax(rect.top(), rect.bottom()));   
+    
+    QModelIndex topLeft = indexAt(tl);
+    QModelIndex bottomRight = indexAt(br);
+    
+    if(topLeft.parent()!=bottomRight.parent())
+        return ;
+    
+    
+//     if (!topLeft.isValid() || !bottomRight.isValid()) 
+//         return;
+    /*   
+    if(isAlbum(topLeft) && !isExpanded(topLeft) )
+    {
+        return ;
+    }*/
+    
+    QItemSelection selection(topLeft,bottomRight);
+    selectionModel()->select(selection, flags);
+    viewport()->update();
+    return ; 
 }
 
 
 QRegion albumView::visualRegionForSelection(const QItemSelection& selection) const
 {
-    return QRegion();
+    QRegion region;    
+    QModelIndexList l=selection.indexes();
+    foreach(QModelIndex index,l)
+    {
+        region+=visualRect(index);
+    }
+    return region;
 }
 
 
@@ -221,8 +233,8 @@ void albumView::calculateRectsIfNecessary() const
         if(expanded.contains(row))
         {
             QModelIndex index=model()->index(row,0);
-            int rowCount=model()->rowCount(index);
-            height=(rowCount)*rowHeight +albumInfoHeight;
+            int rowCount=model()->rowCount(index);            
+            height=(rowCount+2)*rowHeight +albumInfoHeight;//one extra row for the header
         
             if(height<albumMinHeight)
             {
@@ -253,7 +265,7 @@ void albumView::calculateRectsIfNecessary() const
     viewport()->update();
 }
 
-QRect albumView::visualRect(const QModelIndex& index) const
+QRect albumView::indexRect(const QModelIndex& index) const
 {
     QRect r;
     
@@ -274,9 +286,13 @@ QRect albumView::visualRect(const QModelIndex& index) const
     {
         r=itemRect(index);
     }
-
-    r=viewportRectForRow(r);
+    
     return r;
+}
+
+QRect albumView::visualRect(const QModelIndex& index) const
+{
+    return viewportRectForRow(indexRect(index) );   
 }
 
 
@@ -298,33 +314,88 @@ QRect albumView::itemsRect(int parentRow) const
     
     QRect r(albumRects[parentRow] );
     r.setX(r.x() + albumOffset+albumWidth);
-    r.setY(r.y()+albumInfoHeight);
+    r.setY(r.y()+albumInfoHeight + rowHeight);
     return r;
 }
+
+QRect albumView::headerRect(int row) const
+{    
+    if(row==-1)
+    {
+        QRect r;
+        r.setX(albumOffset + albumWidth);
+        r.setY(albumInfoHeight );
+        r.setHeight(rowHeight);
+        return r;
+    }
+    
+    QModelIndex parentIndex=model()->index(row,0);  
+    if(!isExpanded(parentIndex))
+        return QRect();
+
+    
+    QRect r(albumRects[row] );
+    r.setX(r.x() + albumOffset + albumWidth);
+    r.setY(r.y()+albumInfoHeight );
+    r.setHeight(rowHeight);
+    return r;
+}
+
 
 QRect albumView::itemRect(const QModelIndex& index) const
 {
     QRect r=itemsRect(index.parent().row() );
 
     int width=header->sectionSize(index.column());
-    r.setY(r.y()+index.row()*rowHeight);
+    r.setY(r.y()+(index.row())*rowHeight);
     r.setX(header->sectionViewportPosition(index.column()) +r.x() );
     r.setHeight(rowHeight);
     r.setWidth(width);
     
+    return itemRect(index.row(),index.column(),index.parent().row() );
+}
+
+QRect albumView::itemRect(int row, int column, int parentR) const
+{
+    QRect r=itemsRect(parentR );
+
+    int width=header->sectionSize(column);
+    r.setY(r.y()+row*rowHeight);
+    r.setX(header->sectionViewportPosition(column) +r.x() );
+    r.setHeight(rowHeight);
+    r.setWidth(width);
     return r;
+
 }
 
 QRect albumView::albumRect(const QModelIndex& index) const
 {
     QRect r=albumRects[index.row()];
+    if(!isExpanded(index) )
+    {
+        return r;
+    }
+    
+    r.setHeight(albumMinHeight);
+    r.setWidth(albumMinHeight);
     return r;
 }
 
 void albumView::rowsInserted(const QModelIndex &parent, int start,int end)
-{
+{    
     hashIsDirty = true; 
-    QAbstractItemView::rowsInserted(parent,start,end);
+//     return ;
+    QAbstractItemView::rowsInserted(parent,start,end);    
+    
+    if(isAlbum(parent))
+    {
+        calculateRectsIfNecessary();
+        for(int i=start;i<=end;i++)
+        {
+            QModelIndex index=model()->index(i,Basic::RATING,parent);
+            openPersistentEditor(index);
+        }
+    }
 }
 
 void albumView::rowsAboutToBeRemoved(const QModelIndex &parent,int start, int end)
@@ -337,21 +408,20 @@ void albumView::rowsAboutToBeRemoved(const QModelIndex &parent,int start, int en
 void albumView::paintEvent(QPaintEvent* e)
 {
     calculateRectsIfNecessary();
-    QPoint mousePoint=viewport()-> mapFromGlobal(QCursor::pos());
+    mousePoint=viewport()-> mapFromGlobal(QCursor::pos());
     hoverIndex=indexAt(mousePoint);
     
-
     QAbstractItemView::paintEvent(e);
+    
     QPainter painter(viewport());
     painter.setRenderHints(QPainter::Antialiasing|QPainter::TextAntialiasing);
-    QStyleOptionViewItemV4 option = QStyleOptionViewItemV4(viewOptions() );
     for (int row = 0; row < model()->rowCount(); ++row) 
     {
         QModelIndex index = model()->index(row, 0); 
         QStyleOptionViewItemV4 option = styleOptions(index);      
-        itemDelegate()->paint(&painter, option, index);
+//         itemDelegate()->paint(&painter, option, index);
+        drawAlbum(&painter,option,index);
         drawChildren(index,&painter);
-    
     }
 }
 
@@ -359,28 +429,132 @@ void albumView::drawChildren(const QModelIndex& index, QPainter* p)
 {
     if(!isExpanded(index))
         return ;
+
+        
+    if( !header->isVisible() || headerRow!=index.row() ||true)
+    {
+        for(int i=0;i<model()->columnCount(index); i++)
+        {
+            if(header->isSectionHidden(i))
+                continue; 
+                        
+            QRect r=itemRect(-1,i,index.row());
+            r=viewportRectForRow(r);
+            paintHeader(p,r,i);
+        }
+    }
+
+    QRect r=headerRect(index.row());
+    r=viewportRectForRow(r);
+
+    QStyleOptionFrameV3 option;
+    option.lineWidth=r.width();
+    option.midLineWidth=r.width();
+    option.state |= QStyle::State_Sunken;
+    r.setY(r.y()+r.height() );
+    option.rect=r;
+    option.frameShape=QFrame::HLine;
+    
+    style()->drawControl(QStyle::CE_ShapedFrame,&option,p);    
+    
+    
     for (int row = 0; row < model()->rowCount(index); ++row) 
     {
         for(int j=0;j<model()->columnCount(index); j++)
         {            
+            if(header->isSectionHidden(j))
+                continue;            
+            
             QModelIndex in=model()->index(row,j,index);
             QStyleOptionViewItemV4 option = styleOptions(in);
-            if(row==0)
-            {
-                if(!header->isVisible() || !header->underMouse() )
-                {
-                    p->save();
-//                     header->paintSection(p,option.rect,j);
-                     paintHeader(p,&option,j);
-                                        p->restore();
-                }
-            }
-            else
-            {
-                itemDelegate()->paint(p, option, in);            
-            }
+            itemDelegate()->paint(p ,option,in);
         }
     }
+}
+
+void albumView::drawAlbum(QPainter* painter, QStyleOptionViewItemV4& option, const QModelIndex& index) const
+{
+    painter->save();
+    if(option.state & QStyle::State_MouseOver )
+    {
+        style()->drawPrimitive( QStyle::PE_PanelItemViewItem, &option, painter );
+    }
+    
+    option.viewItemPosition = QStyleOptionViewItemV4::OnlyOne;
+    QRect r=option.rect;    
+    r.setX(r.x()+space);
+    r.setY(r.y()+space);    
+    QPixmap pic=views::decor->decorationPixmap(option,index);
+    pic=pic.scaled(option.decorationSize, Qt::KeepAspectRatio,  Qt::SmoothTransformation);
+    QRect shadowR=r;
+    shadowR.setWidth(pic.width());
+    shadowR.setHeight(pic.height());
+    QPoint p=r.topLeft();
+    p.setX(p.x()+2);
+    p.setY(p.y()+2);
+    shadowR.moveTopLeft(p);
+    QPainterPath shadowPath;
+    shadowPath.addRoundedRect(shadowR,1,1);
+        
+    painter->setOpacity(0.5);    
+    painter->fillPath(shadowPath,Qt::black);
+    painter->setOpacity(1);
+    style()->drawItemPixmap(painter,r,Qt::AlignLeft|Qt::AlignTop,pic ); 
+    r.setX(r.x()+pic.width()+space +2);
+
+    //draw text
+    QString text=index.data(Qt::DisplayRole).toString(); 
+    if(text.isEmpty())
+    {
+        text=tr("Unknown album");
+        painter->setOpacity(0.5);
+    }
+
+    painter->setFont(option.font);
+    painter->drawText( r,option.displayAlignment, text);
+
+    
+#if 0    
+    int w=option.fontMetrics.boundingRect(text).width();
+//     r.setWidth(w+space);
+    r.setHeight(rowHeight);
+
+    option.rect=r;
+//     option.rect.setX(r.x()-5);
+//     option.rect.setY(r.y()-5);
+    option.displayAlignment=Qt::AlignLeft|Qt::AlignTop;
+    option.decorationAlignment=Qt::AlignRight|Qt::AlignTop;
+    
+    
+    if(option.state & QStyle::State_Selected )
+    {
+//         style()->drawPrimitive( QStyle::PE_PanelItemViewItem, &option, painter );
+    }
+
+    
+    painter->setFont(option.font);
+    painter->drawText( r,option.displayAlignment, text);
+    
+    
+    r.setX(r.x()+w+20);   
+    r.setWidth(space);
+    option.rect=r;
+
+    painter->setOpacity(1);
+    if(isExpanded(index))
+        style()->drawPrimitive(QStyle::PE_IndicatorArrowDown,&option,painter);
+    else
+        style()->drawPrimitive(QStyle::PE_IndicatorArrowRight,&option,painter);
+        
+#endif    
+    painter->restore();    
+
+    
+}
+
+void albumView::hideHeader() //this is a slot
+{
+    header->setVisible(false);
 }
 
 void albumView::setExpanded(const QModelIndex& index, bool expanded)
@@ -389,9 +563,11 @@ void albumView::setExpanded(const QModelIndex& index, bool expanded)
         return ;
         
     if(!model()->hasChildren(index) )
+    {
         return ;
+    }
     
-    if( (isExpanded(index) && expanded ) || ( !isExpanded(index) && !expanded) )
+    if(isExpanded(index) == expanded )
         return ;
     
     hashIsDirty=true;
@@ -407,13 +583,13 @@ void albumView::setExpanded(const QModelIndex& index, bool expanded)
     {
         this->expanded.remove(index.row());
     }
-    calculateRectsIfNecessary();
+    updateGeometries();
 }
 
 void albumView::currentChanged(const QModelIndex& current, const QModelIndex& previous)
 {
     QAbstractItemView::currentChanged(current, previous);
-    viewport()->update();
+//     setExpanded(current,true);
     
 }
 
@@ -433,7 +609,8 @@ bool albumView::isExpanded(const QModelIndex& index) const
 void albumView::updateGeometries()
 {
     calculateRectsIfNecessary();
-    updateScrollBars();
+    QAbstractItemView::updateGeometries();
+//     updateScrollBars();
 }
 
 void albumView::resizeEvent(QResizeEvent *e)
@@ -445,98 +622,86 @@ void albumView::resizeEvent(QResizeEvent *e)
 
 void albumView::scrollContentsBy(int dx, int dy)
 {
-//     header->setVisible(false);
-    scrollDirtyRegion(10*dx, 5*dy);
-    viewport()->scroll(10*dx, 5*dy);
-}
-
-void albumView::drawAlbumText(QPainter* painter,const QModelIndex & index ) const
-{
-    painter->save();
-    QRect r=albumTextRect(index);
-    r=viewportRectForRow(r);
-    QFont f=font();
-    f.setBold(true);
-//     f.setPixelSize(15);
-    painter->setFont(f);
-    
-    QString text=index.data(Qt::DisplayRole).toString();
-    text=text.trimmed();
-    if(text.isEmpty())
-    {
-        painter->setOpacity(0.5);
-        text=tr("Uknown album");
-    }
-    painter->drawText( r,Qt::AlignLeft|Qt::AlignTop, text);
-    painter->restore();
-}
-
-QRect albumView::albumTextRect(const QModelIndex &index)const
-{        
-    calculateRectsIfNecessary();
-    QRect r=albumRects[index.row() ];    
-            
-    r.setX(albumOffset+albumWidth);
-    r.setHeight(rowHeight);
-    r.setWidth(viewport()->width());
-    return r;
+    scrollDirtyRegion(dx, dy);
+    viewport()->scroll(dx, dy);
 }
 
 QStyleOptionViewItemV4 albumView::styleOptions(const QModelIndex& index) const
 {
     QStyleOptionViewItemV4 opt = QStyleOptionViewItemV4(viewOptions() );
     
-    
-    if (selectionModel()->isSelected(index))
+    if(isAlbum(index))
+    {
+#if 0        
+        if (selectionModel()->isSelected(index))
+        {
             opt.state |= QStyle::State_Selected;
-     
-    QModelIndex parent=index.parent();
-    
-    int columns=model()->columnCount(parent);
-    if(columns==1)
-    {
+            opt.showDecorationSelected=true;
+        }
+#endif        
         opt.viewItemPosition = QStyleOptionViewItemV4::OnlyOne;
-    }
-    else if(index.column()==model()->columnCount(index.parent() )-1 )
-    {
-        opt.viewItemPosition = QStyleOptionViewItemV4::End;
-    }
-    else if(index.column()==0)
-    {
-        opt.viewItemPosition = QStyleOptionViewItemV4::Beginning;
+        opt.rect= viewportRectForRow(albumRects[index.row()] );
+//          opt.rect = visualRect(index);
+        if(hoverIndex==index  )
+        {
+            opt.state |= QStyle::State_MouseOver;
+        }
+
+        opt.displayAlignment=Qt::AlignLeft|Qt::AlignTop;
+        opt.decorationSize=DECOR_SIZE;
+        opt.font.setBold(true);
+            
     }
     else
     {
-        opt.viewItemPosition = QStyleOptionViewItemV4::Middle;
+        QModelIndex parent=index.parent();
+        int columns=header->count();
+        int pos=header->sectionPosition(index.column());
+        
+        if(columns==1)
+        {
+            opt.viewItemPosition = QStyleOptionViewItemV4::OnlyOne;
+        }
+        else if(pos==columns )
+        {
+            opt.viewItemPosition = QStyleOptionViewItemV4::End;
+        }
+        else if(pos==0)
+        {
+            opt.viewItemPosition = QStyleOptionViewItemV4::Beginning;
+        }
+        else
+        {
+            opt.viewItemPosition = QStyleOptionViewItemV4::Middle;
+        }
+        
+        opt.rect = visualRect(index);
+        
+        if (selectionModel()->isSelected(index))
+        {
+            opt.state |= QStyle::State_Selected;
+        }
+        else if(hoverIndex.isValid() && hoverIndex.row()==index.row() && hoverIndex.parent()==index.parent()  )
+        {
+            opt.state |= QStyle::State_MouseOver;
+        }
+        
+        if(indexWidget(index)!=0)
+            opt.features=QStyleOptionViewItemV2::None;
+        else
+            opt.features=QStyleOptionViewItemV2::HasDisplay;
+        
+        opt.displayAlignment=Qt::AlignLeft|Qt::AlignVCenter;        
     }
-    opt.rect = visualRect(index);
     
+
     //we use pseudo-inactive role at the model from DISABLE_ROLE at index.data
     //Thus all the indexes are active
     opt.state & QStyle::State_Active;    
     QPalette::ColorGroup cg=QPalette::Active;
     opt.palette.setCurrentColorGroup(cg);
-    
-    if(hoverIndex.isValid() && hoverIndex.row()==index.row() && hoverIndex.parent()==index.parent()  )
-        opt.state |= QStyle::State_MouseOver;
-     else
-        opt.state &= ~QStyle::State_MouseOver;
-    
-//     if(currentIndex()==index)
-//         opt.state |= QStyle::State_HasFocus;
-    
-//     opt.state |= QStyle::State_DownArrow;
-    opt.decorationSize=DECOR_SIZE;
-    
-    if(isAlbum(index) )
-    {
-        opt.displayAlignment=Qt::AlignLeft|Qt::AlignTop;
-        opt.font.setBold(true);
-    }
-    else
-    {
-        opt.displayAlignment=Qt::AlignLeft|Qt::AlignVCenter;
-    }
+
+    opt.fontMetrics=QFontMetrics(opt.font);
     
     return opt;
 }
@@ -548,48 +713,52 @@ void albumView::resetSlot()
     hashIsDirty=true;   
 }
 
+
 void albumView::mouseMoveEvent(QMouseEvent* event)
 {
     QAbstractItemView::mouseMoveEvent(event);
     
-    QModelIndex in=indexAt(event->pos());
-    
-    if(in.isValid() && in.parent().isValid() && in.row()==0 )
+    int i;    
+    for( i=0;i<model()->rowCount();i++)
     {
-        QRect r=itemsRect(in.parent().row());
-        r.setHeight(rowHeight);
+        QRect r=headerRect(i);
         r=viewportRectForRow(r);
-//         header->setGeometry(r );
-        header->move(r.topLeft());
-        header->resize(r.size());
-        header->setVisible(true);
+        if(r.contains(event->pos()) )
+        {
+            headerRow=i;
+            header->move(r.topLeft());
+            header->resize(r.size());
+            header->setVisible(true);
+            break;
+        }
     }
-    else
+    if(i==model()->rowCount() )
+    {
         header->setVisible(false);
-    
+    }
     viewport()->update();
+    return ;
 }
 
 void albumView::mousePressEvent(QMouseEvent *event)
-{
+{    
     QAbstractItemView::mousePressEvent(event);
-    setCurrentIndex(indexAt(event->pos()));
+//     setCurrentIndex(indexAt(event->pos()));
 }
 
 bool albumView::isAlbum(const QModelIndex& index) const
 {
+    if(!index.isValid())
+        return false;
+    
     return !index.parent().isValid();
-}
-
-void albumView::acivateIndex(const QModelIndex& index)
-{
-    setExpanded(index,!isExpanded(index));
 }
 
 void albumView::columnsUpdated()
 {
     hashIsDirty=true;
-    calculateRectsIfNecessary();
+//     calculateRectsIfNecessary();
+    updateGeometries ();
     updateScrollBars();
 }
 
@@ -599,32 +768,77 @@ void albumView::updateScrollBars() const
 //     verticalScrollBar()->setRange(0, qMax(0, prevHeight -viewport()->height() ) );
 }
 
-void albumView::paintHeader(QPainter *painter,QStyleOptionViewItem *opt, int logicalIndex)
+void albumView::paintHeader(QPainter *painter,QRect &rect, int logicalIndex)
 {
-//     QStyleOptionViewItemV4 opt = QStyleOptionViewItemV4(viewOptions() );    
-    
     painter->save();
-//     style()->drawPrimitive(QStyle::PE_IndicatorDockWidgetResizeHandle, opt, painter);
-    
+    rect.setX(rect.x()+2);
     QString text=model()->headerData(logicalIndex,Qt::Horizontal).toString();
     QFont f=painter->font();
     f.setBold(true);
     painter->setFont(f);
-    painter->drawText( opt->rect,Qt::AlignLeft|Qt::AlignTop, text);
-    painter->restore();
-//     style()->drawControl()
+    painter->drawText( rect,Qt::AlignLeft|Qt::AlignTop, text);
     
-//     painter->setOpacity(0.5);
-//     
-// //     rect.setY(rect.y() -2);
-//     QPen pen;
-//     pen.setWidth(2);
-//     pen.setColor(palette().window().color() );
-//     painter->setPen(pen);
-//     
-// //     painter->drawLine(rect.topRight(),rect.bottomRight());
-//     painter->drawLine(rect.bottomLeft(),rect.bottomRight());
 
-    
-//     painter->restore();
+    painter->restore();
 }
+
+
+void albumView::startDrag(Qt::DropActions supportedActions)
+{
+    QModelIndexList list=selectedIndexes();
+
+    QList<QUrl> urls=views::treeView:: getUrls(list);
+
+    if(urls.isEmpty() )
+    {
+        return ;
+    }
+
+    QMimeData *mimeData = new QMimeData;
+    mimeData->setUrls(urls);
+
+    QDrag *drag = new QDrag(this);
+    drag->setMimeData(mimeData);
+    drag->setPixmap(QPixmap(views::decor->tagIcon(-1).pixmap(48,48)) );
+
+    drag->exec(Qt::CopyAction|Qt::MoveAction);
+
+}
+
+void albumView::selectionChanged(const QItemSelection& selected, const QItemSelection& deselected)
+{
+    QAbstractItemView::selectionChanged(selected, deselected);    
+    return ;
+#if 0
+    QModelIndexList l=selectionModel()->selectedIndexes();
+    foreach(QModelIndex index,l)
+    {
+        if(isAlbum(index) )
+        {
+//             QModelIndex parent=topLeft;        
+            QModelIndex topLeft=model()->index(0,0,index);
+            QModelIndex bottomRight=model()->index(model()->rowCount(index)-1,model()->columnCount(index)-1,index);
+            QItemSelection selection(topLeft,bottomRight);        
+            selectionModel()->select(selection, QItemSelectionModel::Select);
+        }        
+    }
+    viewport()->update();
+#endif
+}
+
+void albumView::mouseReleaseEvent(QMouseEvent* event)
+{
+    QModelIndex current=currentIndex();
+    QAbstractItemView::mouseReleaseEvent(event);    
+//     return ;    
+    if(event->button()==Qt::LeftButton) 
+    {
+        QModelIndex index=indexAt(event->pos());
+        qDebug()<<index;
+        if(!current.isValid() || current==index )
+        {
+            setExpanded(index,!isExpanded(index));
+        }
+    }
+}
+

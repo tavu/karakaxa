@@ -27,7 +27,7 @@ views::treeViewHeader::treeViewHeader(QWidget *parent)
     
     setProperty("highlight",QVariant(-1));        
          
-//     setStyleSheet("QHeaderView::section {background-color: transparent; }" );
+    setStyleSheet("QHeaderView::section {background-color: transparent; }" );
     //setStyleSheet("QHeaderView {background-color: transparent;border: 1px solid #6c6c6c; }" );
     
 }
