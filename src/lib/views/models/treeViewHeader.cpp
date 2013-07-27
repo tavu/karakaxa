@@ -7,7 +7,7 @@
 #include <QCheckBox>
 #include<QButtonGroup>
 #include"../decoration/decoration.h"
-// #include<QApplication>
+#include<QDebug>
 
 // #define notHid 1+treeV->getHideFirstsColumn()
 views::treeViewHeader::treeViewHeader(QWidget *parent)
@@ -77,12 +77,15 @@ void views::treeViewHeader::hideClickedColumn()
 void views::treeViewHeader::selectColumnW()
 {
     QFrame *f=new QFrame(this);
+    
     int columnNum=model()->columnCount();
 
     QButtonGroup *Bgroup=new QButtonGroup(f);
     QVBoxLayout *layout = new QVBoxLayout(f);
     Bgroup->setExclusive (false);
 
+    qDebug()<<"COLUMNS "<<columnNum;
+    
     QString name;
     for (int i=0;i<columnNum;i++)
     {

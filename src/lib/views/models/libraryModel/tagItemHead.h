@@ -16,7 +16,7 @@ class tagItemHead :public tagItem
 
         virtual int columnCount() const
         {
-            return Basic::FRAME_NUM+1;
+            return Basic::FRAME_NUM;
         }
 
         void addTag(int t)

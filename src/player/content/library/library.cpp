@@ -35,7 +35,7 @@ library::library(QWidget *parent)
     stack->addWidget(artistV);    
     
 //     view=new views::treeView(this);
-    view= new albumView(this);
+    view= new albumView("albumViewLibrary",this);
 //     view->setHeaderHidden(true);
 //     view->setItemDelegate(new albumDelegate(this) );
 
@@ -46,7 +46,6 @@ library::library(QWidget *parent)
     albumTrackM=new standardModel(this);
     albumTrackM->setProperty(SPAN_PROP,true);
     view->setModel(albumTrackM);
-//     view->setSelectionBehavior(QAbstractItemView::SelectRows);
     albumH=new views::tagItemHead(this);
     albumTrackM->setHeadItem(albumH);
     albumH->addTag(Basic::ALBUM);
@@ -57,7 +56,6 @@ library::library(QWidget *parent)
     QFont f=artistL->font();
     f.setBold(true);
     artistL->setFont(f);
-//     artistL->setPixmap(views::decor->tagIcon(Basic::ARTIST).pixmap(QIcon::Normal) );
     
     layout->addWidget(artistL);
     
@@ -171,16 +169,16 @@ void library::search(const QString & text)
 }
 
 void library::goToArtist()
-{
-    artistL->setText(tr("Artist") );
+{    
     stack->setCurrentWidget(artistV);
+    artistL->setText(tr("Artist") );
     artistH->updateIfDirty();
 }
 
 void library::goToAlbum()
-{
-    artistL->setText(artistName);
+{    
     stack->setCurrentWidget(view);    
+    artistL->setText(artistName);
     albumH->updateIfDirty();
 }
 

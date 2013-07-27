@@ -8,14 +8,17 @@ QString database::selectionStr(int t)
     switch (t)
     {
         case ARTIST:
-        case LEAD_ARTIST:
-        case ALBUM_ARTIST:
+        case LEAD_ARTIST:        
         {
             return QString("artists.name,artists.image" );
         }        
         case ALBUM:
         {
             return QString("albumArtist.album,albumArtist.artist,albumArtist.image,albumArtist.artistImage " );
+        }
+        case ALBUM_ARTIST:
+        {
+            return QString("albumArtist.artist,albumArtist.artistImage " );
         }
         case TITLE:
         {
@@ -107,10 +110,10 @@ QString database::viewsNames(int t)
         }
         case ARTIST:
         case LEAD_ARTIST:
-        case ALBUM_ARTIST:
         {
             return QString("artists" );
         }
+        case ALBUM_ARTIST:
         case ALBUM:
         {
             return QString("albumArtist" );
@@ -143,13 +146,19 @@ audioFiles::tagInfo database::infoFromQuery(int t, const QSqlQuery& q)
         }
         case ARTIST:
         case LEAD_ARTIST:
-        case ALBUM_ARTIST:
         {
             audioFiles::tagInfo info(t,q.value(0) );
             info.setProperty(t,q.value(0));
             info.setProperty(IMAGE,q.value(1));
             return info;
         }        
+        case ALBUM_ARTIST:
+        {
+            audioFiles::tagInfo info(t,q.value(0) );
+            info.setProperty(ALBUM_ARTIST,q.value(0));
+            info.setProperty(ARTIST_IMAGE,q.value(1));
+            return info;
+        }
         case ALBUM:
         {
             audioFiles::tagInfo info(t,q.value(0) );
@@ -194,7 +203,7 @@ QString database::joins(int t)
         }
         case ALBUM_ARTIST:
         {
-            return QString(" INNER JOIN trackView ON trackView.albumArtist=artists.name ");
+            return QString(" INNER JOIN trackView ON trackView.albumArtist=albumArtist.artist ");
         }
         case LEAD_ARTIST:
         {

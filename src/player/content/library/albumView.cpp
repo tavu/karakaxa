@@ -9,9 +9,13 @@
 #include<QApplication>
 #include<views/models/treeView.h>
 #include<views/decoration/decoration.h>
+#include<views/models/urlRole.h>
+#include<core/nowPlayList/nplaylist.h>
+#include<core/engine/engine.h>
+
 #define DECOR_SIZE QSize(80,80)
 
-albumView::albumView(QWidget* parent): QAbstractItemView(parent)
+albumView::albumView(QString name,QWidget* parent): QAbstractItemView(parent)
 {
     rowHeight=20;
     albumOffset=20;
@@ -27,6 +31,7 @@ albumView::albumView(QWidget* parent): QAbstractItemView(parent)
     header->setVisible(false);
     QRect r=viewportRectForRow(headerRect(-1));
     header->setGeometry(r);
+    header->setNotHide(Basic::TITLE);
     
     setEditTriggers(QAbstractItemView::SelectedClicked);
     
@@ -48,7 +53,17 @@ albumView::albumView(QWidget* parent): QAbstractItemView(parent)
     connect(header,SIGNAL(geometriesChanged()),this,SLOT(columnsUpdated()) );
     connect(header,SIGNAL(sectionResized(int,int,int)),this,SLOT(columnsUpdated()) );
     connect(header,SIGNAL(sectionMoved(int,int,int)),this,SLOT(columnsUpdated()) );
+    connect(this,SIGNAL(doubleClicked(const QModelIndex&)),this,SLOT(doubleClickedSlot(const QModelIndex&)));
+    
+    setObjectName(name);    
 }
+
+albumView::~albumView()
+{
+    qDebug()<<"write";
+    writeSettings();
+}
+
 
 void albumView::setModel(QAbstractItemModel* m)
 {
@@ -62,6 +77,7 @@ void albumView::setModel(QAbstractItemModel* m)
     header->setModel(m);         
     header->setMovable(true);
 
+    readSettings();
     columnsUpdated();
 }
 
@@ -225,6 +241,9 @@ void albumView::calculateRectsIfNecessary() const
 {
     if (!hashIsDirty)
         return;
+    
+    if(model()==0)
+        return ;
     
     int prevHeight = -10;
     for (int row = 0; row < model()->rowCount(); ++row) 
@@ -726,8 +745,9 @@ void albumView::mouseMoveEvent(QMouseEvent* event)
         if(r.contains(event->pos()) )
         {
             headerRow=i;
-            header->move(r.topLeft());
-            header->resize(r.size());
+//             header->move(r.topLeft());
+//             header->resize(r.size());
+            header->setGeometry(r);
             header->setVisible(true);
             break;
         }
@@ -787,11 +807,16 @@ void albumView::startDrag(Qt::DropActions supportedActions)
 {
     QModelIndexList list=selectedIndexes();
 
-    QList<QUrl> urls=views::treeView:: getUrls(list);
+    QList<QUrl> urls;
+        
+    urls=views::treeView:: getUrls(list);
 
     if(urls.isEmpty() )
     {
-        return ;
+        foreach(QModelIndex index,list)
+        {
+            urls.append( urlsFromIndex(index) );
+        }
     }
 
     QMimeData *mimeData = new QMimeData;
@@ -840,5 +865,91 @@ void albumView::mouseReleaseEvent(QMouseEvent* event)
             setExpanded(index,!isExpanded(index));
         }
     }
+}
+
+QList<QUrl> albumView::urlsFromIndex(const QModelIndex& parent) const
+{
+    QList<QUrl> l;
+    
+    if(model()==0)
+        return l;
+    if(!model()->hasChildren(parent))
+    {
+        return l;
+    }
+    
+    if(model()->canFetchMore(parent) )
+        model()->fetchMore(parent);
+    
+    
+    for(int i=0;i<model()->rowCount(parent);i++)
+    {
+        QModelIndex in=model()->index(i,0,parent);
+        QUrl u=in.data(URL_ROLE).toUrl();
+
+        if(u.isValid() )
+        {
+            l.append(u);
+        }
+    }
+    return l;
+}
+
+void albumView::doubleClickedSlot(const QModelIndex &index)
+{
+    qDebug()<<"EDF";
+    int row=index.row();
+    QModelIndex parent;
+    if(!isAlbum(index))
+    {
+        parent=index.parent();
+        row=0;
+    }
+    
+    QList<QUrl> urls=urlsFromIndex(parent);
+    
+    core::nplList list;
+    foreach(QUrl u,urls)
+    {             
+        core::nplPointer t=core::nplTrack::getNplTrack(u);
+        list<<t;
+    }
+    
+    if(list.isEmpty() )
+    {
+        return ;
+    }
+    
+    core::npList()->clear();
+    core::npList()->insert(0,list);
+
+   
+    core::engine()->play(row );
+    
+}
+
+void albumView::writeSettings()
+{
+    if (objectName().isEmpty() )
+    {
+        return ;
+    }
+
+    qDebug()<<"WRITE";
+    KSharedConfigPtr config=core::config->configFile();
+    KConfigGroup group( config, objectName() );
+    group.writeEntry( "state", QVariant(header->saveState() ));
+    group.config()->sync();
+}
+
+void albumView::readSettings()
+{
+    if(objectName().isEmpty())
+        return ;
+    
+    KSharedConfigPtr config=core::config->configFile();
+    KConfigGroup group( config, objectName() );
+    bool b=header->restoreState(group.readEntry( "state", QByteArray() ) );
+        qDebug()<<"RESTORE FAILED "<<b;
 }
 

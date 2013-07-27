@@ -2,8 +2,8 @@
 #define ALBUM_VIEW_HEADER_H
 #include<views/models/treeViewHeader.h>
 
-class albumViewHeader ://public views::treeViewHeader
-                        public QHeaderView
+class albumViewHeader :public views::treeViewHeader
+                       
 {
     public:
         albumViewHeader(QWidget *parent=0);

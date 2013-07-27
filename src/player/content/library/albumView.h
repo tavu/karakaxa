@@ -11,7 +11,8 @@ class albumView :public QAbstractItemView
 {
     Q_OBJECT
     public:
-        albumView(QWidget *parent=0);
+        albumView(QString name=QString(),QWidget *parent=0);
+        ~albumView();
         void scrollTo ( const QModelIndex & index, ScrollHint hint = EnsureVisible);
         QModelIndex indexAt ( const QPoint & point ) const;
 
@@ -19,6 +20,8 @@ class albumView :public QAbstractItemView
         void    setExpanded ( const QModelIndex & index, bool expanded );
         bool isExpanded(const QModelIndex & index) const;
         QRect visualRect ( const QModelIndex & index ) const;
+        
+        QList<QUrl>  urlsFromIndex(const QModelIndex &index) const;
     protected:
         int horizontalOffset () const;
         int verticalOffset () const;
@@ -43,6 +46,9 @@ class albumView :public QAbstractItemView
         void    mouseMoveEvent ( QMouseEvent * event );
         void mousePressEvent(QMouseEvent *event);
         void mouseReleaseEvent ( QMouseEvent * event );
+        
+        void readSettings();
+        void writeSettings();
     private:
         void calculateRectsIfNecessary() const;
 
@@ -56,11 +62,6 @@ class albumView :public QAbstractItemView
         int albumInfoHeight;
         int albumWidth;
         int space;
-        QPoint startPos;
-    //         mutable QList<int> columnWidth;
-
-
-        QModelIndex indexAt(const QPoint& _point,QRect &r,bool &isHeader);
 
         QRect headerRect(int row) const;
         QRect itemsRect(int parentRow) const;
@@ -95,6 +96,7 @@ class albumView :public QAbstractItemView
         void columnsUpdated();
         void hideHeader();
         void selectionChanged ( const QItemSelection & selected, const QItemSelection & deselected );
+        void doubleClickedSlot ( const QModelIndex &index );
 };
 
 #endif

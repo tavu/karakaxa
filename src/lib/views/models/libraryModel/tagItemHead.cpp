@@ -106,7 +106,6 @@ void views::tagItemHead::checkUpdate(database::dbEventP e)
                 }
             }
         }
-        qDebug()<<"DB UP ";
     }
 }
 
