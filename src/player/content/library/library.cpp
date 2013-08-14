@@ -25,6 +25,14 @@ library::library(QWidget *parent)
 
 
     artistV=new QListView(this);
+    artistV->setViewMode(QListView::ListMode);
+//     artistV->setFlow(QListView::LeftToRight);
+    artistV->setResizeMode(QListView::Adjust);
+    artistV->setWrapping(true);
+    artistV->setUniformItemSizes(true);
+    artistV->setWordWrap(true);
+    artistV->setLayoutMode(QListView::Batched);
+//     artistV->setBatchSize(5);
     artistV->setItemDelegate(new artistDelegate(artistV) );    
     artistM=new standardModel(this);
     artistH=new views::tagItemHead(this);

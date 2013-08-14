@@ -36,22 +36,12 @@ int database::queryProvider::select(abstractQuery* q)
 
 int database::queryProvider::doSelect(abstractQuery* q)
 {    
-    QString selectStr=selectionStr(_type);            
-    QString table=viewsNames(_type);
-    if(table.isEmpty() || selectStr.isEmpty() )
-    {
-        qDebug()<<"table names error ";
-        qDebug()<<table;
-        qDebug()<<selectStr;
-        return Basic::UNOWN;
-    }
-    
-    QString qStr="SELECT DISTINCT "+selectStr+" FROM "+table;
-    
-    
+    QString selectStr=selectionStr(_type,q,table);
+    QString qStr=selectStr;
+    int ret;
     QSqlDatabase dBase=db()->getDatabase();            
     {
-        QSqlQuery quer(dBase );
+        QSqlQuery quer(dBase);
         
         if(q!=0) 
         {
@@ -60,32 +50,34 @@ int database::queryProvider::doSelect(abstractQuery* q)
                 qDebug()<<"not a valid query ";
                 return Basic::UNOWN;
             }
-            qStr.append(joins(_type) );
-            qStr.append( " where (" + q->text() + ")");
+            qStr.append( " where " + q->text(table) );
         }
         qDebug()<<qStr;
         if(!quer.exec( qStr ) )
         {    
             qDebug()<<quer.lastError().text();
             _lastError=quer.lastError();            
-            return Basic::DBERR;
+            ret=Basic::DBERR;
         }
-        
-        if(quer.size()>0 )
-        {            
-            resultsList.reserve(quer.size() );
-        }
-        
-        while ( quer.next() )
+        else
         {
-            audioFiles::tagInfo t=infoFromQuery(_type,quer);
-            resultsList<<t;
+            if(quer.size()>0 )
+            {            
+                resultsList.reserve(quer.size() );
+            }
+            
+            while ( quer.next() )
+            {
+                audioFiles::tagInfo t=infoFromQuery(_type,quer);
+                resultsList<<t;
+            }
         }
+        ret=Basic::OK;
     }
     
         
     db()->closeDatabase(dBase);
-    return Basic::OK;    
+    return ret;
 }
 
 QSqlError database::queryProvider::lastError()

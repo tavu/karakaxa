@@ -4,6 +4,7 @@
 #include<Basic/filesToDb.h>
 #include"trackViewRecord.h"
 #include"database/dbBase.h"
+#include<files/tagInfo.h>
 namespace database
 {
 
@@ -49,7 +50,7 @@ class filesToDbImpl :public Basic::filesToDb , public dbBase
         //return the last error
         int error();
         
-        int updateRecord(QSqlRecord &r);       
+        int updateRecord(audioFiles::tagInfo &info);       
         
     private:
         

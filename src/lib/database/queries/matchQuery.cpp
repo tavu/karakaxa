@@ -1,4 +1,5 @@
 #include"matchQuery.h"
+#include<QDebug>
 
 database::matchQuery::matchQuery(MATCH m,QObject *parent)
         :abstractQuery(parent),
@@ -51,7 +52,7 @@ bool database::matchQuery::isValid() const
 
     foreach(abstractQuery *q,queries)
     {
-		if(!q->isValid() )
+        if(!q->isValid() )
         {
             return false;
         }
@@ -72,15 +73,16 @@ void database::matchQuery::clear()
 
 bool database::matchQuery::append(abstractQuery *q)
 {
-	if(q==0)
-	{
-		return false;
-	}
+    if(q==0)
+    {
+        return false;
+    }
     queries.append(q);
     return true;
 }
 
-QString database::matchQuery::text() const
+
+QString database::matchQuery::text(QString table) const
 {
 
     QString m;
@@ -100,7 +102,7 @@ QString database::matchQuery::text() const
         return QString();
     }
 
-    q+=queries.at(0)->text();
+    q+=queries.at(0)->text(table);
     q+=+')';
     
     for (int i=1;i<queries.size();i++)
@@ -112,10 +114,25 @@ QString database::matchQuery::text() const
 
         q +=m;
         q += '(';
-        q += queries.at(i)->text();
+        q += queries.at(i)->text(table);
         q += ')';
     }
     return q;
 
+}
+
+QList< int > database::matchQuery::tags() const
+{
+    QList<int> tags;
+    foreach(abstractQuery *q,queries)
+    {
+        if(!q->isValid() )
+        {
+            return QList<int>();
+        }
+        tags.append(q->tags());
+    }
+    
+    return tags;
 }
 

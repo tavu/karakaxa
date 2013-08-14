@@ -28,13 +28,12 @@ class queryProvider
         QSqlError lastError();
         QString lastErrorStr();
         
-    private:
+    private:        
         QList<audioFiles::tagInfo> resultsList;
         QSqlError _lastError;
-        int doSelect(abstractQuery *p=0);
-        QString queryStr(abstractQuery *p);
-        
+        int doSelect(abstractQuery *p=0); 
         int _type;
+        QString table;
         
 };//queryProvider
 

@@ -109,14 +109,14 @@ QString audioFiles::fileCache::findCoverPath ( int &err )
 }
 
 
-void audioFiles::fileCache::setRecord ( QSqlRecord &r, bool force )
+void audioFiles::fileCache::setRecord (tagInfo &info, bool force )
 {
     loadMutex.lock();
 //     readMutex.lock();
 
     if ( !fdb->isSelected() || force )
     {
-        fdb->updateRecord ( r );
+        fdb->updateRecord ( info );
     }
 
 //     readMutex.unlock();

@@ -2,6 +2,7 @@
 #define FILES_DO_DB_ABS_H
 #include <qobject.h>
 #include<QSqlRecord>
+#include<files/tagInfo.h>
 namespace Basic
 {
     
@@ -48,7 +49,7 @@ class filesToDb
         //return the last error
         virtual int error()=0;
         
-        virtual int updateRecord(QSqlRecord &r)=0;
+        virtual int updateRecord(audioFiles::tagInfo &r)=0;
 };
 
 filesToDb* getFdb(QString path);

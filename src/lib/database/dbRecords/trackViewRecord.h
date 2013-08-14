@@ -32,15 +32,11 @@ class trackViewRecord :public abstractRecord
         virtual QString lastErrorStr();
         
         virtual bool isSelected() const;
-        
+        void setSelected(bool b);
         void clearNewValue();
         
         baseRecord* getAlbumRecord() const;
-        baseRecord* getTrackRecord() const;        
-        
-        int updateRecord(QSqlRecord &r);
-        static QString path(QSqlRecord &r);
-        
+        baseRecord* getTrackRecord() const;
         
     private:
         trackRecord *track;

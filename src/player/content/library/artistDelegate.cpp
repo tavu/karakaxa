@@ -3,7 +3,7 @@
 #include<QPainter>
 #include<views.h>
 
-#define SIZE 30
+#define SIZE 60
 artistDelegate::artistDelegate(QObject* parent)
     :QStyledItemDelegate(parent)
 {
@@ -42,7 +42,7 @@ void artistDelegate::drawDisplay(QPainter* painter, const QStyleOptionViewItem& 
 
 QSize artistDelegate::sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
-    return QSize(SIZE,SIZE);
+    return QSize(300,SIZE);
 }
 
 

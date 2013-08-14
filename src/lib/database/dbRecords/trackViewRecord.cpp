@@ -227,31 +227,7 @@ void database::dbPrivate::trackViewRecord::clearNewValue()
     track->clearNewValue();
 }
 
-QString database::dbPrivate::trackViewRecord::path ( QSqlRecord& r )
+void database::dbPrivate::trackViewRecord::setSelected(bool b)
 {
-    return r.value(Basic::PATH+2).toString();
-}
-
-int database::dbPrivate::trackViewRecord::updateRecord ( QSqlRecord& r )
-{
-    QString path=r.value(Basic::PATH+2).toString();
-    {
-        if(path.isEmpty())
-        {
-            return Basic::DBERR;
-        }
-    }
-    
-    track->clearData();
-    
-    setValue(Basic::ALBUM_ARTIST_ID,r.value(0) );
-    setValue(Basic::ALBUM_ID,r.value(1) );
-    
-    for(int i=0;i<Basic::FRAME_NUM;i++)
-    {
-        setValue(i,r.value(i+2));
-    }
-    _isSelected=true;
-    return Basic::OK;
-    
+    _isSelected=b;
 }

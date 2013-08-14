@@ -35,7 +35,7 @@ class fileCache :public QObject
         }
 
         int       loadTags ( bool force=false );
-        void      setRecord ( QSqlRecord &r, bool force=false );
+        void      setRecord ( tagInfo &info, bool force=false );
         int       select ( bool force=false );
         QVariant  tagFromFile ( int t, int &err );
         QVariant  tagFromDb ( int t, int &err );

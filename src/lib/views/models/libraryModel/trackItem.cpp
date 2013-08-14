@@ -14,7 +14,7 @@ views::trackItem::trackItem(audioFiles::audioFile f,QObject *parent)
 
 views::trackItem::trackItem(tagInfo t, QObject* parent) :standardItem()
 {
-    file=audioFiles::audioFile(t.property(Basic::PATH).toString() );
+    file=audioFiles::audioFile(t );
     connect(&file,SIGNAL(changed(audioFiles::tagChangesL)),this,SLOT(changed(audioFiles::tagChangesL)) );
 }
 

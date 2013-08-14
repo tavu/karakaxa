@@ -5,6 +5,8 @@
 #include"../dbFunc.h"
 #include<QDebug>
 #include<Basic/tagsTable.h>
+#include"provider/dbSelectionStrings.h"
+
 database::tagQuery::tagQuery(QObject *parent)
         :abstractQuery(parent),
         valid(false)
@@ -15,7 +17,12 @@ database::tagQuery::tagQuery(QObject *parent)
 database::tagQuery::tagQuery(int t,equal e,QVariant var,bool n,QObject *parent)
     :abstractQuery(parent)
 {
-    init(t,e,var,n);
+    tag=t;
+    eq=e;
+    value=var;
+    revert=n;
+    valid=true;
+
 }
 
 database::tagQuery::tagQuery(database::tagQuery* t, QObject* parent)
@@ -30,18 +37,14 @@ database::tagQuery::tagQuery(database::tagQuery* t, QObject* parent)
 }
 
 
-void database::tagQuery::init(int t, equal e, QVariant var, bool n)
+void database::tagQuery::init(int t, equal e, QVariant var, bool n) const
 {
     using namespace Basic;
-    
-    tag=t;
-    eq=e;
-    value=var;
-    revert=n;
 
-    q=QString ("%1 %2 %3");
+
+    q=QString ("%1 ");
     
-    QString tag=tagToSql(t);
+   // QString tag=tagFromSql(_table,t);
     QString like;
     QString val=var.toString();
 
@@ -103,9 +106,9 @@ void database::tagQuery::init(int t, equal e, QVariant var, bool n)
         val.prepend('\"');
     }
 
-    q=q.arg(tag);
-    q=q.arg(like);
-    q=q.arg(val);
+    //q=q.arg(tag);
+    q.append(like);
+    q.append(val);
 
     valid=true;
 }
@@ -130,7 +133,7 @@ bool database::tagQuery::match(const audioFiles::audioFile& f) const
 
 
 
-QString database::tagQuery::text() const
+QString database::tagQuery::text(QString table) const
 {
     QString s;
 
@@ -144,8 +147,16 @@ QString database::tagQuery::text() const
         s=QString("NOT ");
     }
 
+    init(tag,eq,value);
+    q=q.arg(tagFromSql(table,tag));
     s.append(q);
     return s;
 }
 
+QList< int > database::tagQuery::tags() const
+{
+    QList<int> tags;
+    tags.append(tag);
+    return tags;
+}
 

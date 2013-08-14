@@ -21,7 +21,7 @@ class tagInfo
 			_type=Basic::INVALID;
 		}
 		
-		tagInfo(const tagInfo &t ) :_type(t._type),_data(t._data),map(t.map)
+		tagInfo(const tagInfo &t ) :_type(t._type),_data(t._data),_map(t._map)
                 {                        
                 }
 		
@@ -35,7 +35,7 @@ class tagInfo
                 {
                     _type=t._type;
                     _data=t._data;
-                    map=QMap<int,QVariant>(t.map);
+                    _map=QMap<int,QVariant>(t._map);
                     return this;
                 }
 		
@@ -56,18 +56,23 @@ class tagInfo
 		
 		QVariant property(int t) const
                 {
-                    return map.value(t);
+                    return _map.value(t);
                 }
                 
                 void setProperty(int t,QVariant v)
                 {
-                    map.insert(t,v);
+                    _map.insert(t,v);
+                }
+                
+                const QMap<int,QVariant>& map()
+                {
+                    return _map;
                 }
 		
 	protected:
 		QVariant _data;
 		int _type;
-                QMap<int,QVariant> map;
+                QMap<int,QVariant> _map;
 };
 // Q_DECLARE_METATYPE(tagInfo);
 }

@@ -3,16 +3,21 @@
 #include <QString>
 #include <QSqlQuery>
 #include <tagInfo.h>
+#include <queries/abstractQuery.h>
 
 
 namespace database
 {
-    QString viewsNames(int);
-    QString selectionStr(int);
+    QString selectionColumns(QString ,int);
+    QString selectionStr(int tag,const abstractQuery *q,QString &table);
     
     audioFiles::tagInfo infoFromQuery(int t,const QSqlQuery &q);
     
-    QString joins(int t);
+    
+    QString tagFromSql(QString table,int tag);
+    
+    QString tagFromTrackView(int t);
+    QString tableName(int tag);
     
 }
 

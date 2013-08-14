@@ -40,17 +40,19 @@ namespace database
                 return new tagQuery(this);
             }
 
-            void init(int t,equal e,QVariant var,bool n=false);
+            void init(int t,equal e,QVariant var,bool n=false) const;
             bool match(const audioFiles::audioFile &f) const;
-            QString text() const;
+            QString text(QString table=QString() ) const;
+            
+            QList<int> tags() const;
 
         private:
-            bool valid;
+            mutable bool valid;
             int tag;
             equal eq;
             QVariant value;
             bool revert;
-            QString q;
+            mutable QString q;
     };
     
 }

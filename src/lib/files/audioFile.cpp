@@ -51,14 +51,14 @@ audioFiles::audioFile::audioFile(const QString url)
     connect(cache,SIGNAL(doesExist(bool)),this,SLOT(invalidSlot(bool) ),Qt::QueuedConnection );
 }
 
-audioFiles::audioFile::audioFile(QSqlRecord r, bool force)
+audioFiles::audioFile::audioFile(tagInfo &info, bool force)
     :QObject(),
      fileSize(0)
 {
-    cache=fileCacheFactory::getFileCache(r.value(PATH+2).toString() );
+    cache=fileCacheFactory::getFileCache(info.property(PATH).toString() );
     connect(cache,SIGNAL(changed(audioFiles::tagChangesL) ),this,SLOT(emitChanged(audioFiles::tagChangesL) ),Qt::QueuedConnection );
     connect(cache,SIGNAL(doesExist(bool)),this,SLOT(invalidSlot(bool) ),Qt::QueuedConnection );
-    cache->setRecord(r,force);    
+    cache->setRecord(info,force);    
 }
 
 
@@ -407,13 +407,13 @@ QString audioFiles::audioFile::path() const
 }
 
 
-void audioFiles::audioFile::setRecord(QSqlRecord r,bool force)
+void audioFiles::audioFile::setRecord(tagInfo &info,bool force)
 {
     if(cache==0)
     {
-        cache=fileCacheFactory::getFileCache(r.value(PATH+2).toString() );
+        cache=fileCacheFactory::getFileCache(info.property(PATH).toString() );
     }
-    cache->setRecord(r,force);
+    cache->setRecord(info,force);
 }
 
 audioFiles::audioFile* audioFiles::audioFile::operator=(const audioFile &f)

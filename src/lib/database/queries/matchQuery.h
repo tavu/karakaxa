@@ -29,7 +29,7 @@ namespace database
             }
 
             bool isValid() const;
-            QString text() const;
+            QString text(QString table=QString() ) const;
             bool append(abstractQuery *q);
 
             bool match(const audioFiles::audioFile &f) const;
@@ -39,6 +39,7 @@ namespace database
             }
 
             void clear();
+            QList<int> tags() const;
 
         private:
             MATCH matchType;

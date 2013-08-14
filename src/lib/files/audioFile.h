@@ -10,6 +10,7 @@
 #include"audioFilesFunc.h"
 #include"tagList.h"
 #include<QUrl>
+#include<tagInfo.h>
 namespace audioFiles
 {
 // 
@@ -35,7 +36,7 @@ class audioFile :public QObject
 
         audioFile ( const QString );
         audioFile ( const audioFiles::audioFile &f );
-        audioFile ( QSqlRecord r,bool force=false );
+        audioFile ( tagInfo &info,bool force=false );
 
         audioFile *operator= ( const audioFile &f );
 
@@ -83,7 +84,7 @@ class audioFile :public QObject
         bool isValid() const;
         bool exist ( bool force=false );
 
-        void setRecord ( QSqlRecord r,bool force=false );
+        void setRecord ( tagInfo &info,bool force=false );
         bool inDataBase ( bool force=false );
 
     private:

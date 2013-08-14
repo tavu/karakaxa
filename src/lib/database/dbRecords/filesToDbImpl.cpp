@@ -194,9 +194,26 @@ int database::filesToDbImpl::commit()
     return _error;
 }
 
-int database::filesToDbImpl::updateRecord ( QSqlRecord& r )
+int database::filesToDbImpl::updateRecord (audioFiles::tagInfo &info )
 {
-    return track->updateRecord(r);
+    using namespace Basic;
+    
+    if(info.type()!=FILES)
+        return DBERR;
+    
+   // track->setValue(TRACK,info.property(TRACK) );
+
+    track->clearNewValue();
+        
+    QMap<int,QVariant>::const_iterator it=info.map().constBegin();
+    
+    for(;it!=info.map().constEnd(); it++)
+    {
+        track->setValue(it.key(),it.value() );
+    }
+    track->setSelected(true);
+    
+    return OK;
 }
 
 bool database::filesToDbImpl::isSelected()

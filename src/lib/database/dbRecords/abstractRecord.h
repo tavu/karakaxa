@@ -44,6 +44,7 @@ class abstractRecord
         virtual QString lastErrorStr()=0;
         
         virtual bool isSelected() const = 0;
+        virtual void setSelected(bool b)  = 0;
         
 };//abstractRecord
 
