@@ -6,6 +6,8 @@
 #include<files/tagInfo.h>
 #include<QSqlError>
 #include <QStringList>
+#include<Qt>
+
 namespace database
 {
 
@@ -15,8 +17,9 @@ class queryProvider
         queryProvider(int type);
         
         //populates the resultsList
-        int select(abstractQuery *p=0);
-
+        int select(abstractQuery *p=0,QList<int> order=QList<int>(),Qt::SortOrder sortOrder = Qt::AscendingOrder );
+        int select(abstractQuery* q,int order,Qt::SortOrder sortOrder = Qt::AscendingOrder);
+ 
         QList<audioFiles::tagInfo> results();
         
         QStringList resultsStr();
@@ -31,7 +34,7 @@ class queryProvider
     private:        
         QList<audioFiles::tagInfo> resultsList;
         QSqlError _lastError;
-        int doSelect(abstractQuery *p=0); 
+        int doSelect(abstractQuery *p,QList<int> order,Qt::SortOrder sortOrder); 
         int _type;
         QString table;
         

@@ -26,15 +26,25 @@ QStringList database::queryProvider::resultsStr()
 }
 
 
-int database::queryProvider::select(abstractQuery* q)
+int database::queryProvider::select(abstractQuery* q,QList<int> order,Qt::SortOrder sortOrder )
 {
     resultsList.clear();
     _lastError=QSqlError();
-    return doSelect(q);
+    return doSelect(q,order,sortOrder);
     
 }
 
-int database::queryProvider::doSelect(abstractQuery* q)
+int database::queryProvider::select(abstractQuery* q,int order,Qt::SortOrder sortOrder )
+{
+    resultsList.clear();
+    _lastError=QSqlError();
+    QList<int>l;
+    l<<order;
+    return doSelect(q,l,sortOrder);
+    
+}
+
+int database::queryProvider::doSelect(abstractQuery* q,QList<int> order,Qt::SortOrder sortOrder)
 {    
     QString selectStr=selectionStr(_type,q,table);
     QString qStr=selectStr;
@@ -52,6 +62,26 @@ int database::queryProvider::doSelect(abstractQuery* q)
             }
             qStr.append( " where " + q->text(table) );
         }
+        
+        if(order.size()!=0)
+        {
+            foreach(int t,order)
+            {
+                qStr.append( " ORDER BY " + tagFromSql(table,t)  ) +"," ;
+            }
+            //remove las ','
+            qStr.remove(qStr.size()-1,0);
+            if(sortOrder==Qt::AscendingOrder)
+            {
+                qStr.append(" ASC ");
+            }
+            else
+            {
+                qStr.append(" DESC ");
+            }
+
+        }
+                
         qDebug()<<qStr;
         if(!quer.exec( qStr ) )
         {    

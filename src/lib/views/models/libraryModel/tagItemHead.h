@@ -33,12 +33,12 @@ class tagItemHead :public tagItem
         
         void setCustomFilter(database::abstractQuery* q)
         {
-            _ts->setCustomFilter(q);
+            _customFilter=q->clone();
         }
         
-        database::abstractQuery *custmFilter()
+        virtual database::abstractQuery* filter() const
         {
-            return _ts->customFilter();
+            return _customFilter;
         }
         
         void updateIfDirty();
@@ -47,9 +47,10 @@ class tagItemHead :public tagItem
         virtual int nextData() const;
         QList<int> _tagsL;                
         inline void setNeedUpdate();
+        database::abstractQuery *_customFilter;
         
     protected slots:
-        void checkUpdate(database::dbEventP e);
+         void checkUpdate(database::dbEventP e);
         
     signals:
         void updateNeeded(); 

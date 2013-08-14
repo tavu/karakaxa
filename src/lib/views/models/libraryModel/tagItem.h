@@ -11,7 +11,7 @@ class tagItem :public standardItem
 {
     Q_OBJECT
     public:
-        tagItem(tagSelector *s);
+        tagItem(audioFiles::tagInfo &info);
         tagItem();
         virtual ~tagItem();
         virtual bool canFetchMore () const;      
@@ -20,25 +20,25 @@ class tagItem :public standardItem
         virtual QVariant data (int column, int role = Qt::UserRole + 1 ) const ;
         virtual void update();
         
-        const tagSelector * selector() const
-        {
-            return _ts;
-        }
         virtual Qt::ItemFlags flags ( int column) const;
         
-        
+        virtual database::abstractQuery* filter() const;
+                
     protected:
-        tagSelector *_ts;
-        tagItem* head();
+//         tagSelector *_ts;
+        
+        audioFiles::tagInfo _info;
         
         inline tagItem* parentItem() const;
         
         virtual int nextData() const;
         
-        virtual void appendData(int);
+//         virtual void appendData(int);
         
-        standardItem* newItemInstance(tagSelector *s);
-        
+        standardItem* newItemInstance(audioFiles::tagInfo &info);
+        bool populate(int type);
+        bool _isDirty;
+        int _sort;
 };
 
     

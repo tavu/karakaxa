@@ -1,17 +1,17 @@
 #include"tagItemHead.h" 
 #include <viewsFunc.h>
 #include<database/database.h>
-views::tagItemHead::tagItemHead(QObject *parent)   :tagItem()
+views::tagItemHead::tagItemHead(QObject *parent)   :tagItem() ,_customFilter(0)
 {   
     setParent(parent);
-    _ts=new tagSelector(this);
     connect(database::db(),SIGNAL( newEvent(database::dbEventP)),this,SLOT(checkUpdate(database::dbEventP)) );    
 }
 
 views::tagItemHead::~tagItemHead()
 {
     clear();
-    delete _ts;
+    if(_customFilter!=0)
+        delete _customFilter;
 }
 
 
@@ -35,6 +35,8 @@ int views::tagItemHead::nextData() const
             
 }
 
+
+
 void views::tagItemHead::checkUpdate(database::dbEventP e)
 {
     //TODO fix this bulsheet and write a more efficienty update mechanism
@@ -43,14 +45,14 @@ void views::tagItemHead::checkUpdate(database::dbEventP e)
     using namespace audioFiles;
     using namespace database;
     
-    int type=nextData();
+//     int type=nextData();
     
-    if(!_ts->hasDataPopulated(type))
+    if(rowCount()==0)
     {
         return ;
     }
     
-    if(_ts->isDirty(type))
+    if(_isDirty )
     {
         return ;
     }
@@ -71,7 +73,7 @@ void views::tagItemHead::checkUpdate(database::dbEventP e)
 
         foreach(const audioFile &f, ev->files)
         {
-            if(custmFilter()!=0 && custmFilter()->match(f) )
+            if(_customFilter!=0 && _customFilter->match(f) )
             {
                 setNeedUpdate();
                 return ;
@@ -111,7 +113,7 @@ void views::tagItemHead::checkUpdate(database::dbEventP e)
 
 void views::tagItemHead::setNeedUpdate()
 {
-    _ts->setDirty( _tagsL[0] );
+    _isDirty=true;
     emit updateNeeded(); 
 }
 
@@ -121,8 +123,8 @@ void views::tagItemHead::updateIfDirty()
     {
         return ;
     }
-    if(_ts->isDirty(_tagsL[0]))
+    if(_isDirty)
     {
-        update();
+        populate(nextData());
     }
 }

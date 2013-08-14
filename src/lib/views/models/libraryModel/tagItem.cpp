@@ -3,14 +3,20 @@
 #include<Basic/tagsTable.h>
 #include "trackItem.h"
 #include "headerItem.h"
+#include<files/tagInfo.h>
+#include<database/queries/queryTypes.h>
+#include<database/queries/provider/queryProvider.h>
+#include<database/queries/matchQuery.h>
+#include<database/queries/tagQuery.h>
 
-views::tagItem::tagItem(tagSelector *s) :standardItem(),_ts(s)
+views::tagItem::tagItem(audioFiles::tagInfo &info) :standardItem(),_info(info)
 {
+    _sort=Basic::INVALID;
 }
 
-views::tagItem::tagItem() :standardItem(),_ts(0)
+views::tagItem::tagItem() :standardItem()
 {
-
+    _sort=Basic::INVALID;
 }
 
 views::tagItem::~tagItem()
@@ -48,14 +54,98 @@ void views::tagItem::fetchMore()
         return ;
     }
     
-    _ts->populate(t);
-    
-    appendData(t);
+    populate(t);
+//     
+//     appendData(t);
 }
 
-views::tagItem* views::tagItem::head()
+bool views::tagItem::populate(int type)
 {
-    return 0;
+    if(type<0||type>Basic::FILES)
+    {
+        qDebug()<<"invalid type:"<<type;
+        return false;
+    }
+    
+    database::queryProvider *pr=new database::queryProvider(type);
+    database::abstractQuery *f=filter();
+    /*
+    tagItem* parent=parentItem();
+    if(parent!=0)
+    {
+        f=parent->filter();
+    }
+    else
+    {
+        //this is the head item
+        f=filter();
+    }
+      */  
+    int sort;
+    if(_sort!=Basic::INVALID)
+    {
+        sort=_sort;
+    }
+    else if(type==Basic::FILES)
+    {
+        sort=Basic::TRACK;
+    }
+    else
+    {
+        sort=type;
+    }
+        
+    if(pr->select(f,sort) !=Basic::OK )
+    {
+        qDebug()<<"query data provider returned false";
+        qDebug()<<pr->lastErrorStr();
+        delete pr;
+        return false;
+    }
+        
+    QList<audioFiles::tagInfo> results=pr->results();    
+    QList<standardItem*>l;            
+        
+    foreach(audioFiles::tagInfo info,results)
+    {
+        l<<newItemInstance(info);
+    }
+
+    insertRows(0,l);
+    _isDirty=false;
+    return true;    
+}
+
+views::tagItem* views::tagItem::parentItem() const
+{
+    return dynamic_cast<tagItem*>(QObject::parent() );
+}
+
+
+database::abstractQuery* views::tagItem::filter() const
+{
+    tagItem *parent=parentItem();
+    
+    database::abstractQuery *parentQ=0;
+    if(parent!=0)
+    {
+        parentQ=parent->filter();
+        qDebug()<<"PARENT "<<parent->_info.type();
+    }
+    
+    database::matchQuery *match=new database::matchQuery(database::AND);
+    if(parentQ!=0)
+    {
+        match->append(parentQ);
+    }
+    
+    if(_info.type()!=Basic::INVALID && _info.type()!=Basic::FILES )
+    {
+        database::abstractQuery *q;
+        q=new database::tagQuery( _info.type(),database::EQUAL,_info.data() );
+        match->append(q);
+    }
+    return match;
 }
 
 
@@ -73,79 +163,32 @@ QVariant views::tagItem::data(int column, int role) const
     
     if(role==Qt::DisplayRole)
     {
-        return views::pretyTag(_ts->data(),_ts->type() );
+        return views::pretyTag(_info.data(),_info.type() );
     }
     
     if(role==Qt::DecorationRole)
     {
-        QString s=_ts->data(Basic::IMAGE).toString();
+        QString s=_info.property(Basic::IMAGE).toString();
         
         if(!s.isEmpty())
         {
             return QPixmap(s);
         }
-        return views::decor->tagIcon(_ts->type());
+        return views::decor->tagIcon(_info.type());
     }
     return QVariant();
 }
 
-views::tagItem* views::tagItem::parentItem() const
-{
-    return qobject_cast<tagItem*>(QObject::parent() );
-}
-
-
 int views::tagItem::nextData() const
 {
-    int depth=0;
-    const tagItem *i=this;
-
-    while(i->parentItem()!=0)
-    {
+    tagItemHead *head=static_cast<tagItemHead*>(headItem());
         
-        i=i->parentItem();
-        depth++;
-    }    
-    
-    const tagItemHead *h= dynamic_cast<const tagItemHead*>(i);
-    if(h==0)
-    {
-        return Basic::INVALID;
-    }
-    
-    if(h->tagList().size() <depth )
+    if(head->tagList().size() <= depth() +1 )
     {
         return Basic::INVALID;
     }
    
-    return h->tagList().value(depth);
-    
-    
-}
-
-void views::tagItem::appendData(int t)
-{
-    QList<standardItem*>l;
-    
-    QVector<views::tagSelector*>* v=_ts->tags(t);
-    if(v==0)
-    {
-        qDebug()<<"tag selecto has no data of tag "<<t;
-        return ;
-    }
-    
-    if(t==Basic::FILES )
-    {
-//         l<<new headerItem();
-    }
-    
-    for(int i=0;i<v->size();i++)
-    {
-        l<<newItemInstance(v->value(i));
-    }
-    
-    insertRows(0,l);
-    
+    return head->tagList().value(depth()+1 );
 }
 
 void views::tagItem::update()
@@ -155,15 +198,15 @@ void views::tagItem::update()
 }
 
 
-standardItem* views::tagItem::newItemInstance(views::tagSelector* s)
+standardItem* views::tagItem::newItemInstance(audioFiles::tagInfo &info)
 {
-    if(s->type()==Basic::FILES)
+    if(info.type()==Basic::FILES)
     {
-        return new trackItem(s->tag());
+        return new trackItem(info);
     }
     else
     {
-        return new tagItem(s);
+        return new tagItem(info);
     }
 }
 

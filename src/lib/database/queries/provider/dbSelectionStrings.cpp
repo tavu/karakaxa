@@ -218,7 +218,7 @@ QString database::selectionStr(int tag,const abstractQuery *q,QString &table)
     if(selCol.isEmpty())
         return QString();
     
-    QString ret="SELECT "+selCol+" FROM "+table;
+    QString ret="SELECT DISTINCT "+selCol+" FROM "+table;
     
     if(!join.isEmpty())
         ret+=join;

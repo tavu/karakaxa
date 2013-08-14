@@ -20,6 +20,7 @@ void standardModel::setHeadItem(standardItem* h)
     head=h;
     head->_row=0;    
     head->_model=this;
+    head->_depth=-1;
 
     emit headerDataChanged (Qt::Horizontal,0, columnCount()-1 );
     emit headerDataChanged (Qt::Vertical,0, columnCount()-1 );
@@ -530,6 +531,7 @@ void standardItem::insert(int row, standardItem *item)
     item->_model=_model;
     item->_parent=this;    
     item->setParent(this);
+    item->_depth=_depth+1;
     
     if(_childrenColumn<item->columnCount())
     {
@@ -635,6 +637,14 @@ Qt::ItemFlags standardModel::flags(const QModelIndex& index) const
         return item->flags(index.column() );
     }
     return Qt::NoItemFlags;
+}
+
+standardItem* standardItem::headItem() const
+{
+    if(_model==0)
+        return 0;
+    
+    return _model->headItem();
 }
 
 

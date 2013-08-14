@@ -18,7 +18,7 @@ class trackItem :public standardItem
     Q_OBJECT
     public:
         trackItem(audioFiles::audioFile f,QObject *parent=0);
-        trackItem(audioFiles::tagInfo,QObject *parent=0);
+        trackItem(audioFiles::tagInfo &,QObject *parent=0);
         
         virtual int columnCount() const
         {

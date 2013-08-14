@@ -114,7 +114,7 @@ void library::artistActivated(const QModelIndex &index )
     artistName=index.data(Qt::DisplayRole).toString();
     artistL->setText(artistName);
     standardItem *i=artistM->itemFromIndex(index);
-    database::abstractQuery *q=static_cast<const views::tagItem*>(i)->selector()->filter();
+    database::abstractQuery *q=static_cast<const views::tagItem*>(i)->filter();
     
     albumH->setCustomFilter(q);
     stack->setCurrentWidget(view);

@@ -18,6 +18,7 @@ class standardItem :public QObject
     public:      
       standardItem();
       
+      standardItem* headItem() const;
       //saves the state of this item including the state of each childre.
       //by default does nothing.
       virtual bool save();
@@ -46,6 +47,11 @@ class standardItem :public QObject
       virtual void clear();
       //return the row of the item
       int row() const;
+      
+      int depth() const
+      {
+          return _depth;
+      }
       
       //return the numbers of the columns
       virtual int columnCount() const=0;
@@ -78,6 +84,7 @@ class standardItem :public QObject
       //pass this role to the data function to get the type
       static const int typeRole;
 
+      
     protected:
       void prealocateChildren(int n);
       int freeChildrenSpace()
@@ -117,6 +124,7 @@ class standardItem :public QObject
         int _row;
         int _childrenColumn;
         standardItem *_parent;
+        int _depth;
       
 };
 
