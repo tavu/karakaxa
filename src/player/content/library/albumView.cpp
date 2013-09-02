@@ -45,14 +45,14 @@ albumView::albumView(QString name,QWidget* parent): QAbstractItemView(parent)
     setSelectionMode(QAbstractItemView::ExtendedSelection);
     setDragDropMode(QAbstractItemView::DragOnly);
     verticalScrollBar()->setSingleStep(rowHeight);
-    horizontalScrollBar()->setSingleStep(50);
+    horizontalScrollBar()->setSingleStep(500);
     
     setItemDelegate(new albumDelegate(this) );
     horizontalScrollBar()->setRange(0, 0);
     verticalScrollBar()->setRange(0, 0);
     setAutoFillBackground(true);
     verticalScrollBar()->setPageStep(rowHeight*10);
-    
+     horizontalScrollBar()->setPageStep(500);
     
     connect(horizontalScrollBar(),SIGNAL(valueChanged(int)),this,SLOT(hideHeader()) );
     connect(verticalScrollBar(),SIGNAL(valueChanged(int)),this,SLOT(hideHeader()) );
@@ -373,6 +373,7 @@ QRect albumView::headerRect(int row) const
         r.setX(albumOffset + albumWidth);
         r.setY(albumInfoHeight );
         r.setHeight(rowHeight);
+//         r.setWidth(viewport()->width());
         return r;
     }
     
@@ -385,6 +386,7 @@ QRect albumView::headerRect(int row) const
     r.setX(r.x() + albumOffset + albumWidth);
     r.setY(r.y()+albumInfoHeight );
     r.setHeight(rowHeight);
+//     r.setWidth(viewport()->width());
     return r;
 }
 
@@ -845,7 +847,7 @@ void albumView::columnsUpdated()
 
 void albumView::updateScrollBars() const
 {
-    horizontalScrollBar()->setRange(0, qMax(0, header->length()-viewport()->width() ) );
+     horizontalScrollBar()->setRange(0, qMax(0, header->length()-viewport()->width() ) );
 //     verticalScrollBar()->setRange(0, qMax(0, prevHeight -viewport()->height() ) );
 }
 

@@ -10,6 +10,7 @@ albumViewHeader::albumViewHeader(QWidget* parent) :views::treeViewHeader(parent)
      setSortIndicatorShown(true);
      setClickable(true);
      setSelectionMode(QAbstractItemView::NoSelection);
+     setStretchLastSection(false);
 //      setResizeMode(QHeaderView::Fixed);
 //      QString s=QString("QHeaderView::section{background-color: %1; font: bold; } QHeaderView{background-color: transparent;}");
 //      s=s.arg(palette().highlight().color().lighter(200).name());
