@@ -21,7 +21,10 @@ class albumView :public QAbstractItemView
         bool isExpanded(const QModelIndex & index) const;
         QRect visualRect ( const QModelIndex & index ) const;
         
-        QList<QUrl>  urlsFromIndex(const QModelIndex &index) const;
+        QSet<QUrl>  getChildrenUrls(const QModelIndex &parent) const;
+        
+        QList<QUrl> getUrls(const QModelIndexList &list) const;
+        
     protected:
         int horizontalOffset () const;
         int verticalOffset () const;
@@ -51,6 +54,7 @@ class albumView :public QAbstractItemView
         void writeSettings();
     private:
         void calculateRectsIfNecessary() const;
+        void contextMenuEvent(QContextMenuEvent *e);
 
         mutable bool hashIsDirty;
         mutable QHash<int,QRect> albumRects;
@@ -100,6 +104,11 @@ class albumView :public QAbstractItemView
         void selectionChanged ( const QItemSelection & selected, const QItemSelection & deselected );
         void doubleClickedSlot ( const QModelIndex &index );
         void sortModel ( int logicalIndex, Qt::SortOrder order );
+        
+        void editCurrent();
+        
+    signals:
+        void showContextMenu(QModelIndex,QModelIndexList);
 };
 
 #endif

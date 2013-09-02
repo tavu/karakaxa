@@ -71,6 +71,9 @@ class library :public core::abstractContent
         
         void artistUpdate();
         void albumUpdate();
+        
+    private slots:
+        void showContexMenuSlot(QModelIndex index, QModelIndexList list);
 
 };
 

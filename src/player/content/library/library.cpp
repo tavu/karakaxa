@@ -70,6 +70,8 @@ library::library(QWidget *parent)
     
     connect(albumH,SIGNAL(updateNeeded() ),this,SLOT(albumUpdate() ) );
     connect(artistH,SIGNAL(updateNeeded() ),this,SLOT(artistUpdate()) );
+    
+    connect(view,SIGNAL(showContextMenu(QModelIndex,QModelIndexList)),this,SLOT(showContexMenuSlot(QModelIndex,QModelIndexList))); 
 }
 
 library::~library()
@@ -214,4 +216,29 @@ database::abstractQuery* library::searchQuery()
         searchQ->append(t);
     }
     return searchQ;
+}
+
+void library::showContexMenuSlot(QModelIndex index, QModelIndexList list)
+{
+    if(!index.isValid() )
+    {
+         return ;
+    }
+    
+//     qDebug()<<"LI "<<list.size();
+    
+    QUrl u=index.data(URL_ROLE).toUrl();    
+    QMenu *menu=new QMenu(this);
+    
+    QAction *act=new QAction(KIcon("document-edit"),tr("edit"),menu );
+    connect(act,SIGNAL(triggered(bool)),view,SLOT(editCurrent()) );
+    menu->addAction(act);
+    
+    QList<QUrl>urls=view->getUrls(list);
+    core::contentHdl->contextMenu(menu,KUrl(u),urls );
+    if(!menu->isEmpty() )
+    {
+        menu->exec( QCursor::pos() );
+    }
+    menu->deleteLater();
 }

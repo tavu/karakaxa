@@ -30,11 +30,11 @@ albumView::albumView(QString name,QWidget* parent): QAbstractItemView(parent)
     setSelectionBehavior(QAbstractItemView::SelectRows);
     header=new albumViewHeader(viewport() );
     header->setVisible(false);
-//     QRect r=viewportRectForRow(headerRect(-1));
+    QRect r=viewportRectForRow(headerRect(-1));
     readSettings();
 
 
-//     header->setGeometry(r);
+    header->setGeometry(r);
     header->setNotHide(Basic::TITLE);
 
     header->setMovable(true);
@@ -870,6 +870,29 @@ void albumView::paintHeader(QPainter *painter,QRect &rect, int logicalIndex)
     painter->restore();
 }
 
+QList< QUrl > albumView::getUrls(const QModelIndexList& list) const
+{
+    QSet<QUrl> urlSet;
+    
+    foreach(QModelIndex index,list)
+    {        
+        if(isAlbum(index))
+        {
+            QSet<QUrl> l=getChildrenUrls(index);
+            urlSet.unite(l);
+        }
+        else
+        {
+            QUrl u=index.data(URL_ROLE).toUrl();
+            if(u.isValid() )
+            {
+                urlSet.insert(u);
+            }
+        }
+    }
+    return urlSet.toList();
+}
+
 
 void albumView::startDrag(Qt::DropActions supportedActions)
 {
@@ -877,14 +900,11 @@ void albumView::startDrag(Qt::DropActions supportedActions)
 
     QList<QUrl> urls;
         
-    urls=views::treeView:: getUrls(list);
+    urls=getUrls(list);
 
     if(urls.isEmpty() )
     {
-        foreach(QModelIndex index,list)
-        {
-            urls.append( urlsFromIndex(index) );
-        }
+        return ;
     }
 
     QMimeData *mimeData = new QMimeData;
@@ -934,12 +954,13 @@ void albumView::mouseReleaseEvent(QMouseEvent* event)
     }
 }
 
-QList<QUrl> albumView::urlsFromIndex(const QModelIndex& parent) const
+QSet<QUrl> albumView::getChildrenUrls(const QModelIndex& parent) const
 {
-    QList<QUrl> l;
+    QSet<QUrl> l;
     
     if(model()==0)
         return l;
+    
     if(!model()->hasChildren(parent))
     {
         return l;
@@ -956,7 +977,7 @@ QList<QUrl> albumView::urlsFromIndex(const QModelIndex& parent) const
 
         if(u.isValid() )
         {
-            l.append(u);
+            l.insert(u);
         }
     }
     return l;
@@ -972,7 +993,7 @@ void albumView::doubleClickedSlot(const QModelIndex &index)
         row=index.row();
     }
     
-    QList<QUrl> urls=urlsFromIndex(parent);
+    QList<QUrl> urls=getChildrenUrls(parent).toList();
     
     core::nplList list;
     foreach(QUrl u,urls)
@@ -1023,3 +1044,12 @@ void albumView::readSettings()
     _headerState=group.readEntry( "state", QByteArray() );
 }
 
+void albumView::contextMenuEvent(QContextMenuEvent *e)
+{
+    emit showContextMenu(indexAt(e->pos() ),selectedIndexes() );
+}
+
+void albumView::editCurrent()
+{
+    edit( currentIndex() );
+}
