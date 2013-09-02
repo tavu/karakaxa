@@ -20,6 +20,8 @@ class tagItem :public standardItem
         virtual QVariant data (int column, int role = Qt::UserRole + 1 ) const ;
         virtual void update();
         
+        void sort(int column, Qt::SortOrder order = Qt::AscendingOrder );
+        
         virtual Qt::ItemFlags flags ( int column) const;
         
         virtual database::abstractQuery* filter() const;
@@ -32,13 +34,14 @@ class tagItem :public standardItem
         inline tagItem* parentItem() const;
         
         virtual int nextData() const;
-        
+        void insert(int row, standardItem *item);
 //         virtual void appendData(int);
         
         standardItem* newItemInstance(audioFiles::tagInfo &info);
-        bool populate(int type);
+        bool populate();
         bool _isDirty;
         int _sort;
+        Qt::SortOrder _sortOrder;
 };
 
     

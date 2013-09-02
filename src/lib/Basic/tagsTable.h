@@ -22,6 +22,7 @@ enum tagsEnum
     COUNTER         ,
     
     //non visible types
+    ID,
     ALBUM_ID,
     ALBUM_ARTIST,
     FILES,

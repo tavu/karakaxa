@@ -42,15 +42,9 @@ library::library(QWidget *parent)
     artistV->setModel(artistM);
     stack->addWidget(artistV);    
     
-//     view=new views::treeView(this);
-    view= new albumView("albumViewLibrary",this);
-//     view->setHeaderHidden(true);
-//     view->setItemDelegate(new albumDelegate(this) );
 
-//     view->setFrameShadow(QFrame::Plain);
-//     view->setStyleSheet("QAbstractItemView {background-color: transparent; }");
-    
-//     view->setUniformRowHeights(false);
+    view= new albumView("albumViewLibrary",this);
+
     albumTrackM=new standardModel(this);
     albumTrackM->setProperty(SPAN_PROP,true);
     view->setModel(albumTrackM);
@@ -150,20 +144,10 @@ void library::toolBarInit()
 
 void library::search(const QString & text)
 {        
-    if(text.isEmpty() )
-    {
-        artistH->setCustomFilter(0);
-    }
-    else
-    {
-        database::matchQuery searchQ(database::OR);
-        foreach(int i,searchTagL)
-        {
-            database::tagQuery *t=new database::tagQuery(i,database::CONTAINS,text);
-            searchQ.append(t);
-        }
-        artistH->setCustomFilter(&searchQ);
-    }
+    database::abstractQuery *q=searchQuery();
+    artistH->setCustomFilter(q);
+    if(q!=0)
+        delete q;
     
     if(onArtist())
     {
@@ -214,4 +198,20 @@ void library::artistUpdate()
     {
         artistH->update();
     }
+}
+
+database::abstractQuery* library::searchQuery()
+{
+    QString text=searchLine->text();
+    if(text.isEmpty())
+        return 0;
+    
+    database::matchQuery *searchQ=new database::matchQuery (database::OR);
+    
+    foreach(int i,searchTagL)
+    {
+        database::tagQuery *t=new database::tagQuery(i,database::CONTAINS,text);
+        searchQ->append(t);
+    }
+    return searchQ;
 }

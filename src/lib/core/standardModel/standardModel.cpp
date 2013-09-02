@@ -68,6 +68,28 @@ QModelIndex standardModel::index(int row, int column, const QModelIndex& parent)
     return createIndex(row,column,item);
 }
 
+void standardModel::sort(int column, Qt::SortOrder order)
+{
+    QVariant v=property(SORT_INDEX.toAscii());
+    standardItem *item=0;
+    QModelIndex index;
+    if(v.canConvert<QModelIndex>() )
+    {
+        item=itemFromIndex(v.value<QModelIndex>() );
+    }
+    else
+    {
+        item=head;
+    }
+    
+    setProperty(SORT_INDEX.toAscii(),QVariant());
+    
+    if(item!=0)
+    {
+        item->sort(column,order);
+    }
+}
+
 
 bool standardModel::removeRows (int row, int count, const QModelIndex & parent )
 {    
@@ -134,7 +156,7 @@ bool standardModel::canFetchMore ( const QModelIndex &parent ) const
 {
     if(!parent.isValid() )
     {
-	return false;
+	return head->canFetchMore();
     }
     standardItem *item=(standardItem*)parent.internalPointer();
     
@@ -145,7 +167,8 @@ void standardModel::fetchMore(const QModelIndex &index)
 {
     if(!index.isValid() )
     {
-	return ;
+	head->fetchMore();
+        return;
     }
     standardItem *item=(standardItem*)index.internalPointer();
     
@@ -647,6 +670,13 @@ standardItem* standardItem::headItem() const
     return _model->headItem();
 }
 
+//by default does nothing.
+void standardItem::sort(int column, Qt::SortOrder order)
+{
+    return ;
+}
 
+
+const QString standardModel::SORT_INDEX=QString("SortIndex");
 const int standardItem::StandardType=QStandardItem::UserType;            
 const int standardItem::typeRole=Qt::UserRole+2; 

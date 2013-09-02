@@ -55,6 +55,7 @@ class albumView :public QAbstractItemView
         mutable bool hashIsDirty;
         mutable QHash<int,QRect> albumRects;
         mutable QSet<int> expanded;
+        mutable QSet<int> storeExpanded;
 
         int albumOffset;
         int rowHeight;
@@ -86,6 +87,7 @@ class albumView :public QAbstractItemView
         inline void updateScrollBars() const;
 
         albumViewHeader *header;
+        QByteArray _headerState;
 
 
     protected slots:
@@ -97,6 +99,7 @@ class albumView :public QAbstractItemView
         void hideHeader();
         void selectionChanged ( const QItemSelection & selected, const QItemSelection & deselected );
         void doubleClickedSlot ( const QModelIndex &index );
+        void sortModel ( int logicalIndex, Qt::SortOrder order );
 };
 
 #endif

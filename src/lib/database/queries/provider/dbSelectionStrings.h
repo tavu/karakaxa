@@ -9,7 +9,7 @@
 namespace database
 {
     QString selectionColumns(QString ,int);
-    QString selectionStr(int tag,const abstractQuery *q,QString &table);
+    QString selectionStr(int tag,const abstractQuery *q,QString &table,QString &joinTable);
     
     audioFiles::tagInfo infoFromQuery(int t,const QSqlQuery &q);
     

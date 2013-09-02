@@ -9,7 +9,6 @@ namespace database
 {
     class abstractQuery :public QObject
     {
-
         public:
             abstractQuery(QObject *parent=0) :QObject(parent){};
             virtual ~abstractQuery(){};

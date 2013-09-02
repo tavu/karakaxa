@@ -1,6 +1,7 @@
 #include"tagItemHead.h" 
 #include <viewsFunc.h>
 #include<database/database.h>
+#include<views/models/urlRole.h>
 views::tagItemHead::tagItemHead(QObject *parent)   :tagItem() ,_customFilter(0)
 {   
     setParent(parent);
@@ -17,11 +18,24 @@ views::tagItemHead::~tagItemHead()
 
 QVariant views::tagItemHead::headerData(int section, Qt::Orientation orientation, int role) const
 {
-    if( orientation==Qt::Horizontal && role == Qt::DisplayRole )
+    if( orientation!=Qt::Horizontal)
+        return QVariant();
+    
+    if(role == Qt::DisplayRole )
     {
         QString s=views::tagName(section);
         return QVariant(s);
     }
+    
+    if(role == TAG_ROLE)
+    {
+        if(section>0 && section<Basic::FRAME_NUM)
+            return QVariant(section);
+        
+        return QVariant(Basic::INVALID);
+    }
+    
+    
     return standardItem::headerData(section, orientation, role);
 }
 
@@ -125,6 +139,6 @@ void views::tagItemHead::updateIfDirty()
     }
     if(_isDirty)
     {
-        populate(nextData());
+        populate();
     }
 }

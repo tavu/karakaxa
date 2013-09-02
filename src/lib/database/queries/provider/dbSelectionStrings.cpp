@@ -48,6 +48,7 @@ audioFiles::tagInfo database::infoFromQuery(int t, const QSqlQuery& q)
             info.setProperty(ALBUM,q.value(0));
             info.setProperty(ALBUM_ARTIST,q.value(1));
             info.setProperty(IMAGE,q.value(2));
+            info.setProperty(ID,q.value(3));
             return info;
         }
         case FILES:
@@ -167,7 +168,7 @@ QString database::tagFromTrackView(int t)
     return QString();
 }
 
-QString database::selectionStr(int tag,const abstractQuery *q,QString &table)
+QString database::selectionStr(int tag,const abstractQuery *q,QString &table,QString &joinTable)
 {
     using namespace Basic;
     
@@ -191,6 +192,7 @@ QString database::selectionStr(int tag,const abstractQuery *q,QString &table)
         if(filters.size()!=0)
         {
             join=QString(" INNER JOIN trackView ON trackView.albumArtist=albumArtist.artist AND trackView.album=albumArtist.album ");
+            joinTable="trackView";
         }
         
     }
@@ -205,6 +207,7 @@ QString database::selectionStr(int tag,const abstractQuery *q,QString &table)
         {
             table=QString("trackView");
         }
+        joinTable=QString();
     }
     
     if(table.isEmpty())
@@ -231,7 +234,7 @@ QString database::selectionColumns(QString table ,int tag)
     using namespace Basic;
     if(tag==ALBUM)
     {
-        return QString("albumArtist.album,albumArtist.artist,albumArtist.image " );
+        return QString("albumArtist.album,albumArtist.artist,albumArtist.image,albumArtist.id " );
     }
      
     if(tag==ALBUM_ARTIST)

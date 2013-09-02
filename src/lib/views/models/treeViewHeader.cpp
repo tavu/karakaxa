@@ -52,6 +52,7 @@ void views::treeViewHeader::createMenu()
 
 void views::treeViewHeader::mousePressEvent(QMouseEvent *e)
 {
+    QHeaderView::mousePressEvent(e);
     if (e->button() == Qt::RightButton)
     {
         columnClicked=logicalIndexAt (e->pos());
@@ -61,10 +62,10 @@ void views::treeViewHeader::mousePressEvent(QMouseEvent *e)
         delete menu;
         menu=0;
     }
-    else
-    {
-        QHeaderView::mousePressEvent(e);
-    }
+//     else
+//     {
+//         QHeaderView::mousePressEvent(e);
+//     }
 
 }
 
@@ -84,7 +85,6 @@ void views::treeViewHeader::selectColumnW()
     QVBoxLayout *layout = new QVBoxLayout(f);
     Bgroup->setExclusive (false);
 
-    qDebug()<<"COLUMNS "<<columnNum;
     
     QString name;
     for (int i=0;i<columnNum;i++)

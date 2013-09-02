@@ -13,6 +13,7 @@
 #include<core/nowPlayList/nplaylist.h>
 #include<core/engine/engine.h>
 
+#include<views/models/urlRole.h>
 #define DECOR_SIZE QSize(80,80)
 
 albumView::albumView(QString name,QWidget* parent): QAbstractItemView(parent)
@@ -29,10 +30,16 @@ albumView::albumView(QString name,QWidget* parent): QAbstractItemView(parent)
     setSelectionBehavior(QAbstractItemView::SelectRows);
     header=new albumViewHeader(viewport() );
     header->setVisible(false);
-    QRect r=viewportRectForRow(headerRect(-1));
-    header->setGeometry(r);
+//     QRect r=viewportRectForRow(headerRect(-1));
+    readSettings();
+
+
+//     header->setGeometry(r);
     header->setNotHide(Basic::TITLE);
-    
+
+    header->setMovable(true);
+    header->setClickable(true);
+
     setEditTriggers(QAbstractItemView::SelectedClicked);
     
     setSelectionMode(QAbstractItemView::ExtendedSelection);
@@ -53,6 +60,8 @@ albumView::albumView(QString name,QWidget* parent): QAbstractItemView(parent)
     connect(header,SIGNAL(geometriesChanged()),this,SLOT(columnsUpdated()) );
     connect(header,SIGNAL(sectionResized(int,int,int)),this,SLOT(columnsUpdated()) );
     connect(header,SIGNAL(sectionMoved(int,int,int)),this,SLOT(columnsUpdated()) );
+    connect(header,SIGNAL(sortIndicatorChanged(int,Qt::SortOrder)),this,SLOT(sortModel(int,Qt::SortOrder)));
+    
     connect(this,SIGNAL(doubleClicked(const QModelIndex&)),this,SLOT(doubleClickedSlot(const QModelIndex&)));
     
     setObjectName(name);    
@@ -60,7 +69,6 @@ albumView::albumView(QString name,QWidget* parent): QAbstractItemView(parent)
 
 albumView::~albumView()
 {
-    qDebug()<<"write";
     writeSettings();
 }
 
@@ -68,17 +76,37 @@ albumView::~albumView()
 void albumView::setModel(QAbstractItemModel* m)
 {
     if(model()!=0)
-        disconnect(model());
+    {
+        disconnect(model());        
+        _headerState=header->saveState();
+    }
+    else
+    {
+        readSettings();
+    }
         
     QAbstractItemView::setModel(m);
     connect(m,SIGNAL(modelReset() ),this,SLOT(resetSlot()) );
     connect(m,SIGNAL(layoutAboutToBeChanged()),this,SLOT(resetSlot()) );
-    
     header->setModel(m);         
-    header->setMovable(true);
-
-    readSettings();
+    header->restoreState(_headerState);
+    
     columnsUpdated();
+    
+    if(m->canFetchMore(QModelIndex() ))
+    {
+        m->fetchMore(QModelIndex());
+    }
+    
+    for(int row=0;row<m->rowCount();row++)
+    {
+        QModelIndex in=m->index(row,0);
+        if(isExpanded(in))
+        {
+            m->fetchMore(in);
+        }
+    }
+    
 }
 
 
@@ -249,9 +277,9 @@ void albumView::calculateRectsIfNecessary() const
     for (int row = 0; row < model()->rowCount(); ++row) 
     {        
         int height=0;
-        if(expanded.contains(row))
-        {
-            QModelIndex index=model()->index(row,0);
+        QModelIndex index=model()->index(row,0);
+        if(expanded.contains(index.data(ID_ROLE).toInt()))
+        {            
             int rowCount=model()->rowCount(index);            
             height=(rowCount+2)*rowHeight +albumInfoHeight;//one extra row for the header
         
@@ -401,18 +429,31 @@ QRect albumView::albumRect(const QModelIndex& index) const
 }
 
 void albumView::rowsInserted(const QModelIndex &parent, int start,int end)
-{    
-    hashIsDirty = true; 
+{   
+    QAbstractItemView::rowsInserted(parent,start,end); 
 //     return ;
-    QAbstractItemView::rowsInserted(parent,start,end);    
+    hashIsDirty = true; 
+    calculateRectsIfNecessary();
     
-    if(isAlbum(parent))
+    if(isAlbum(parent) && isExpanded(parent))
     {
-        calculateRectsIfNecessary();
+        
         for(int i=start;i<=end;i++)
         {
             QModelIndex index=model()->index(i,Basic::RATING,parent);
             openPersistentEditor(index);
+        }
+    }
+    else
+    {
+        for(int i=start;i<=end;i++)
+        {
+            QModelIndex index=model()->index(i,0,parent);
+            int id=index.data(ID_ROLE).toInt();
+            if(storeExpanded.contains(id) )
+            {
+                setExpanded(index,true);
+            }
         }
     }
 }
@@ -420,7 +461,23 @@ void albumView::rowsInserted(const QModelIndex &parent, int start,int end)
 void albumView::rowsAboutToBeRemoved(const QModelIndex &parent,int start, int end)
 {
     hashIsDirty = true;
-    expanded.clear();
+//     expanded.clear();
+    
+    if(!parent.isValid())
+    {
+        for(int i=start;i<=end;i++)
+        {
+            QModelIndex index=model()->index(i,0);
+            int id=index.data(ID_ROLE).toInt();
+            
+            if(expanded.contains(id))
+            {
+                expanded.remove(id);
+                storeExpanded.insert(id);
+            }
+        }
+    }
+    
     QAbstractItemView::rowsAboutToBeRemoved(parent, start, end);
 }
 
@@ -449,20 +506,17 @@ void albumView::drawChildren(const QModelIndex& index, QPainter* p)
     if(!isExpanded(index))
         return ;
 
-        
-    if( !header->isVisible() || headerRow!=index.row() ||true)
-    {
-        for(int i=0;i<model()->columnCount(index); i++)
-        {
-            if(header->isSectionHidden(i))
-                continue; 
+    
+    for(int i=0;i<model()->columnCount(index); i++)
+    {    
+        if(header->isSectionHidden(i))
+            continue; 
                         
-            QRect r=itemRect(-1,i,index.row());
-            r=viewportRectForRow(r);
-            paintHeader(p,r,i);
-        }
+        QRect r=itemRect(-1,i,index.row());
+        r=viewportRectForRow(r);
+        paintHeader(p,r,i);
     }
-
+    
     QRect r=headerRect(index.row());
     r=viewportRectForRow(r);
 
@@ -592,15 +646,18 @@ void albumView::setExpanded(const QModelIndex& index, bool expanded)
     hashIsDirty=true;
     if(expanded)
     {
-        this->expanded.insert(index.row());
+        this->expanded.insert(index.data(ID_ROLE).toInt());
         if(model()->canFetchMore(index))
         {
             model()->fetchMore(index);
         }
     }
     else
-    {
-        this->expanded.remove(index.row());
+    {   
+        int id=index.data(ID_ROLE).toInt();
+        this->expanded.remove(id);
+        storeExpanded.remove(id);
+        
     }
     updateGeometries();
 }
@@ -621,7 +678,7 @@ bool albumView::isExpanded(const QModelIndex& index) const
         return false;
     
 //     calculateRectsIfNecessary();
-    return expanded.contains(index.row() );
+    return expanded.contains(index.data(ID_ROLE).toInt() );
 }
 
 
@@ -728,7 +785,7 @@ QStyleOptionViewItemV4 albumView::styleOptions(const QModelIndex& index) const
 void albumView::resetSlot()
 {
     albumRects.clear();
-    expanded.clear();
+//     expanded.clear();
     hashIsDirty=true;   
 }
 
@@ -736,6 +793,9 @@ void albumView::resetSlot()
 void albumView::mouseMoveEvent(QMouseEvent* event)
 {
     QAbstractItemView::mouseMoveEvent(event);
+    //TODO more efficient method
+    if(model()==0)
+        return;
     
     int i;    
     for( i=0;i<model()->rowCount();i++)
@@ -744,11 +804,12 @@ void albumView::mouseMoveEvent(QMouseEvent* event)
         r=viewportRectForRow(r);
         if(r.contains(event->pos()) )
         {
+            QModelIndex index=model()->index(i,0);
             headerRow=i;
-//             header->move(r.topLeft());
-//             header->resize(r.size());
+            header->setRootIndex(index);
             header->setGeometry(r);
             header->setVisible(true);
+            update();
             break;
         }
     }
@@ -792,6 +853,11 @@ void albumView::paintHeader(QPainter *painter,QRect &rect, int logicalIndex)
 {
     painter->save();
     rect.setX(rect.x()+2);
+    if(logicalIndex==header->sortIndicatorSection() )
+    {
+        rect.setWidth(rect.width()-20);
+    }
+    
     QString text=model()->headerData(logicalIndex,Qt::Horizontal).toString();
     QFont f=painter->font();
     f.setBold(true);
@@ -859,7 +925,6 @@ void albumView::mouseReleaseEvent(QMouseEvent* event)
     if(event->button()==Qt::LeftButton) 
     {
         QModelIndex index=indexAt(event->pos());
-        qDebug()<<index;
         if(!current.isValid() || current==index )
         {
             setExpanded(index,!isExpanded(index));
@@ -897,13 +962,12 @@ QList<QUrl> albumView::urlsFromIndex(const QModelIndex& parent) const
 
 void albumView::doubleClickedSlot(const QModelIndex &index)
 {
-    qDebug()<<"EDF";
-    int row=index.row();
+    int row=0;
     QModelIndex parent;
     if(!isAlbum(index))
     {
         parent=index.parent();
-        row=0;
+        row=index.row();
     }
     
     QList<QUrl> urls=urlsFromIndex(parent);
@@ -928,6 +992,12 @@ void albumView::doubleClickedSlot(const QModelIndex &index)
     
 }
 
+void albumView::sortModel(int logicalIndex, Qt::SortOrder order)
+{
+    model()->sort(logicalIndex,order);
+}
+
+
 void albumView::writeSettings()
 {
     if (objectName().isEmpty() )
@@ -935,7 +1005,6 @@ void albumView::writeSettings()
         return ;
     }
 
-    qDebug()<<"WRITE";
     KSharedConfigPtr config=core::config->configFile();
     KConfigGroup group( config, objectName() );
     group.writeEntry( "state", QVariant(header->saveState() ));
@@ -949,7 +1018,6 @@ void albumView::readSettings()
     
     KSharedConfigPtr config=core::config->configFile();
     KConfigGroup group( config, objectName() );
-    bool b=header->restoreState(group.readEntry( "state", QByteArray() ) );
-        qDebug()<<"RESTORE FAILED "<<b;
+    _headerState=group.readEntry( "state", QByteArray() );
 }
 

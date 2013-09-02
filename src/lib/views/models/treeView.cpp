@@ -379,7 +379,7 @@ QList<QUrl> views::treeView::getUrls(const QModelIndexList &list)
 
     if(list.isEmpty() )
     {
-	   return urls;
+        return urls;
     }
 
     int k=list.at(0).column();
@@ -388,7 +388,7 @@ QList<QUrl> views::treeView::getUrls(const QModelIndexList &list)
     {
 	   if(index.column()==k)
 	   {
-          reorderL.insert(index.row() );
+                reorderL.insert(index.row() );
 		  QUrl u=index.data(URL_ROLE).toUrl();
 
 		  if(u.isValid() )

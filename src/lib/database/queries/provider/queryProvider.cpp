@@ -46,7 +46,8 @@ int database::queryProvider::select(abstractQuery* q,int order,Qt::SortOrder sor
 
 int database::queryProvider::doSelect(abstractQuery* q,QList<int> order,Qt::SortOrder sortOrder)
 {    
-    QString selectStr=selectionStr(_type,q,table);
+    QString joinTable;
+    QString selectStr=selectionStr(_type,q,table,joinTable);
     QString qStr=selectStr;
     int ret;
     QSqlDatabase dBase=db()->getDatabase();            
@@ -60,7 +61,15 @@ int database::queryProvider::doSelect(abstractQuery* q,QList<int> order,Qt::Sort
                 qDebug()<<"not a valid query ";
                 return Basic::UNOWN;
             }
-            qStr.append( " where " + q->text(table) );
+            
+            if(!joinTable.isEmpty())
+            {
+                qStr.append( " where " + q->text(joinTable) );
+            }
+            else
+            {
+                qStr.append( " where " + q->text(table) );
+            }
         }
         
         if(order.size()!=0)
@@ -82,7 +91,7 @@ int database::queryProvider::doSelect(abstractQuery* q,QList<int> order,Qt::Sort
 
         }
                 
-        qDebug()<<qStr;
+//         qDebug()<<qStr;
         if(!quer.exec( qStr ) )
         {    
             qDebug()<<quer.lastError().text();

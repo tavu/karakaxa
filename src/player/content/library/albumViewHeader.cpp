@@ -5,8 +5,12 @@
 albumViewHeader::albumViewHeader(QWidget* parent) :views::treeViewHeader(parent)
 {
 //     setStyleSheet("QHeaderView::section {alignment: left; font: bold; }" );
-    pal=palette();
+
      setDefaultAlignment(Qt::AlignLeft|Qt::AlignTop);
+     setSortIndicatorShown(true);
+     setClickable(true);
+     setSelectionMode(QAbstractItemView::NoSelection);
+//      setResizeMode(QHeaderView::Fixed);
 //      QString s=QString("QHeaderView::section{background-color: %1; font: bold; } QHeaderView{background-color: transparent;}");
 //      s=s.arg(palette().highlight().color().lighter(200).name());
 // //      s=s.arg("transparent");
@@ -18,7 +22,7 @@ albumViewHeader::albumViewHeader(QWidget* parent) :views::treeViewHeader(parent)
 //     p.setColor(QPalette::Button,c);
     
     setStyleSheet("QHeaderView::section{ font: bold; } QHeaderView{background-color: transparent;} ");
-    
+//     connect(this,SIGNAL(sectionPressed(int)),this,SLOT(sortModel(int)));
 //     setAutoFillBackground(false);
 }
 
@@ -30,6 +34,23 @@ void albumViewHeader::paintSection(QPainter* painter, const QRect& _rect, int lo
     painter->setFont(f);
 //     QHeaderView::paintSection(painter,_rect,logicalIndex);
     QStyleOptionHeader opt;
+    
+    if(logicalIndex==sortIndicatorSection())
+    {    
+        if(sortIndicatorOrder()==Qt::AscendingOrder)
+        {
+            opt.sortIndicator=QStyleOptionHeader::SortUp;
+        }
+        else
+        {
+            opt.sortIndicator=QStyleOptionHeader::SortDown;
+        }
+//         opt.decorationAlignment=Qt::AlignRight|Qt::AlignHCenter;
+        opt.rect=_rect;
+        opt.rect.setX(_rect.x()+_rect.width() -20);
+        opt.rect.setHeight(_rect.height() - 5);
+        style()->drawPrimitive(QStyle::QStyle::PE_IndicatorHeaderArrow, &opt, painter);
+    }
     opt.rect=_rect;
     opt.rect.setX(_rect.x()+_rect.width());
     opt.rect.setHeight(_rect.height() - 5);
@@ -37,9 +58,4 @@ void albumViewHeader::paintSection(QPainter* painter, const QRect& _rect, int lo
     style()->drawPrimitive(QStyle::PE_IndicatorDockWidgetResizeHandle, &opt, painter);
     painter->restore();
     return ;
-}
-
-void albumViewHeader::leaveEvent(QEvent* event)
-{
-    QWidget::leaveEvent(event);
 }

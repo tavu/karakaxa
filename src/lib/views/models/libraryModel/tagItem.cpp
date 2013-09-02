@@ -11,12 +11,14 @@
 
 views::tagItem::tagItem(audioFiles::tagInfo &info) :standardItem(),_info(info)
 {
-    _sort=Basic::INVALID;
+    _sort=-1;
+    _sortOrder=Qt::AscendingOrder;
 }
 
 views::tagItem::tagItem() :standardItem()
 {
-    _sort=Basic::INVALID;
+    _sort=-1;
+    _sortOrder=Qt::AscendingOrder;
 }
 
 views::tagItem::~tagItem()
@@ -24,6 +26,32 @@ views::tagItem::~tagItem()
     clear();
 }
 
+void views::tagItem::sort(int column, Qt::SortOrder order)
+{
+
+//     _sort=headItem()->headerData(column,Qt::Horizontal,TAG_ROLE).toInt();
+    _sort=column;
+    _sortOrder=order;
+
+    if(rowCount()==0)
+        return;
+
+    
+    int d=nextData();
+        
+    if(d==Basic::FILES && rowCount()!=0)
+    {
+        clear();     
+        populate();
+    }
+    else   
+    {   
+        foreach(standardItem *item, children)
+        {
+            item->sort(column,order);
+        }
+    }
+}
 
 
 bool views::tagItem::canFetchMore() const
@@ -48,19 +76,21 @@ void views::tagItem::fetchMore()
     {
         return ;
     }    
-    int t=nextData();
-    if(t==Basic::INVALID)
-    {
-        return ;
-    }
+
     
-    populate(t);
+    populate();
 //     
 //     appendData(t);
 }
 
-bool views::tagItem::populate(int type)
+bool views::tagItem::populate()
 {
+    int type=nextData();
+    if(type==Basic::INVALID)
+    {
+        return false;
+    }
+    
     if(type<0||type>Basic::FILES)
     {
         qDebug()<<"invalid type:"<<type;
@@ -82,20 +112,20 @@ bool views::tagItem::populate(int type)
     }
       */  
     int sort;
-    if(_sort!=Basic::INVALID)
+    if(type==Basic::FILES)
     {
-        sort=_sort;
-    }
-    else if(type==Basic::FILES)
-    {
-        sort=Basic::TRACK;
+        sort=headItem()->headerData(_sort,Qt::Horizontal,TAG_ROLE).toInt();
+        if(sort==Basic::INVALID)
+        {
+            sort=Basic::TRACK;
+        }
     }
     else
     {
         sort=type;
     }
-        
-    if(pr->select(f,sort) !=Basic::OK )
+    
+    if(pr->select(f,sort,_sortOrder) !=Basic::OK )
     {
         qDebug()<<"query data provider returned false";
         qDebug()<<pr->lastErrorStr();
@@ -130,7 +160,6 @@ database::abstractQuery* views::tagItem::filter() const
     if(parent!=0)
     {
         parentQ=parent->filter();
-        qDebug()<<"PARENT "<<parent->_info.type();
     }
     
     database::matchQuery *match=new database::matchQuery(database::AND);
@@ -156,6 +185,23 @@ int views::tagItem::columnCount() const
 
 QVariant views::tagItem::data(int column, int role) const
 {
+    if(role==TAG_ROLE)
+    {
+        if(column==0)
+        {
+            return QVariant(_info.type());
+        }
+        else
+        {
+            return QVariant(Basic::INVALID);
+        }
+    }
+    
+    if(role==ID_ROLE)
+    {
+        return QVariant(_info.property(Basic::ID) );
+    }
+    
     if(column!=0)
     {
         return QVariant();
@@ -176,6 +222,8 @@ QVariant views::tagItem::data(int column, int role) const
         }
         return views::decor->tagIcon(_info.type());
     }
+    
+    
     return QVariant();
 }
 
@@ -213,5 +261,11 @@ standardItem* views::tagItem::newItemInstance(audioFiles::tagInfo &info)
 Qt::ItemFlags views::tagItem::flags(int column) const
 {
     return standardItem::flags(column)& ~Qt::ItemIsEditable;
+}
+
+void views::tagItem::insert(int row, standardItem* item)
+{
+    standardItem::insert(row, item);
+    item->sort(_sort,_sortOrder);
 }
 

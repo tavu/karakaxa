@@ -35,7 +35,7 @@ namespace database
             bool match(const audioFiles::audioFile &f) const;
             abstractQuery * clone()
             {
-                return new matchQuery(this);
+                return new matchQuery(this,parent());
             }
 
             void clear();

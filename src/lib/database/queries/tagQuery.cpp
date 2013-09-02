@@ -28,6 +28,7 @@ database::tagQuery::tagQuery(int t,equal e,QVariant var,bool n,QObject *parent)
 database::tagQuery::tagQuery(database::tagQuery* t, QObject* parent)
         :abstractQuery(parent)
 {
+    qDebug()<<"ERD";
     tag=t->tag;
     eq=t->eq;
     value=t->value;

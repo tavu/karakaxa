@@ -33,7 +33,14 @@ class tagItemHead :public tagItem
         
         void setCustomFilter(database::abstractQuery* q)
         {
-            _customFilter=q->clone();
+            if(_customFilter!=0)
+                delete _customFilter;
+            
+            _isDirty=true;
+            if(q!=0)
+                _customFilter=q->clone();
+            else
+                _customFilter=0;
         }
         
         virtual database::abstractQuery* filter() const

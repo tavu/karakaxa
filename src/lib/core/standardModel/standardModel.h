@@ -9,7 +9,7 @@
   this is a model representation whitch every item represent a multiple columns row.
 */
 class standardModel;
-
+Q_DECLARE_METATYPE ( QModelIndex)
 class standardItem :public QObject
 {
     Q_OBJECT    
@@ -27,6 +27,7 @@ class standardItem :public QObject
       virtual bool canFetchMore () const;      
       virtual void fetchMore ();
       
+      virtual void sort(int column, Qt::SortOrder order = Qt::AscendingOrder );
       /*Return true if this item has children.
        *The item could have no children but this function it is posible
        *to return true if the item can fetch more children
@@ -98,7 +99,7 @@ class standardItem :public QObject
       }
       
       
-      void insert(int row,standardItem *item);
+      virtual void insert(int row,standardItem *item);
       
       QVector<standardItem *>children;
       standardModel *_model;
@@ -153,6 +154,8 @@ class standardModel :public QAbstractItemModel
 
         virtual QModelIndex index ( int row, int column, const QModelIndex & parent = QModelIndex() ) const;
 
+        virtual void sort ( int column, Qt::SortOrder order = Qt::AscendingOrder );
+        
         QVariant headerData ( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const
         {
             return head->headerData(section,orientation,role);
@@ -184,6 +187,8 @@ class standardModel :public QAbstractItemModel
 // 	    emit layoutChanged ();
 // 	}
 // 	
+        static const QString SORT_INDEX;
+        
     private:
         void emitDataChanged(const QModelIndex & topLeft, const QModelIndex & bottomRight);
 	

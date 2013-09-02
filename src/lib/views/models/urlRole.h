@@ -6,5 +6,6 @@
 	#define SPAND_ROLE URL_ROLE+3
 	#define OPACITY_ROLE URL_ROLE+4
 	#define BOLD_ROLE URL_ROLE+5
+	#define ID_ROLE URL_ROLE+6//a unique value
 	#define SPAN_PROP "spanChildren"
 #endif

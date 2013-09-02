@@ -59,6 +59,8 @@ class library :public core::abstractContent
         inline bool onArtist();
         inline bool onAlbum();
         
+        inline database::abstractQuery* searchQuery();
+        
         QString artistName;
 
     public slots:

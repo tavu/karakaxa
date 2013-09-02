@@ -17,9 +17,6 @@ database::matchQuery::matchQuery(matchQuery* mq,QObject *parent)
     }
 }
 
-
-
-
 bool database::matchQuery::match(const audioFiles::audioFile& f) const
 {
     bool ret=false;
