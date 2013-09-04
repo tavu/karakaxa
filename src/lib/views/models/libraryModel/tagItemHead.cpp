@@ -139,6 +139,6 @@ void views::tagItemHead::updateIfDirty()
     }
     if(_isDirty)
     {
-        populate();
+        update();
     }
 }

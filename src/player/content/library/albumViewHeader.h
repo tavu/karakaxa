@@ -7,9 +7,10 @@ class albumViewHeader :public views::treeViewHeader
     Q_OBJECT
     public:
         albumViewHeader(QWidget *parent=0);
-             
+        QSize sizeHint() const;
     protected:
-        void paintSection ( QPainter * painter, const QRect & rect, int logicalIndex ) const;          
+        void paintSection ( QPainter * painter, const QRect & rect, int logicalIndex ) const;   
+
 };
 
 #endif

@@ -18,7 +18,7 @@ views::treeViewHeader::treeViewHeader(QWidget *parent)
 //     treeV=parent;
     setMovable(true);
 
-    setStretchLastSection(true);
+//     setStretchLastSection(true);
     setHighlightSections(true);
     setDefaultAlignment(Qt::AlignLeft);
     setMouseTracking(true);
@@ -120,12 +120,12 @@ void views::treeViewHeader::toggleHideColumn(int i)
 {
     setSectionHidden(i,!isSectionHidden(i));
 }
-
+/*
 QSize views::treeViewHeader::sizeHint () const
 {
     return QSize(25,25);
 }
-
+*/
 void views::treeViewHeader::setNotHide(int num)
 {
     notHid=num;

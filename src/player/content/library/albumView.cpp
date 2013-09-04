@@ -13,8 +13,12 @@
 #include<core/nowPlayList/nplaylist.h>
 #include<core/engine/engine.h>
 
+
+
 #include<views/models/urlRole.h>
+
 #define DECOR_SIZE QSize(80,80)
+#define HEADER_OFFSET albumOffset + albumWidth
 
 albumView::albumView(QString name,QWidget* parent): QAbstractItemView(parent)
 {
@@ -30,15 +34,20 @@ albumView::albumView(QString name,QWidget* parent): QAbstractItemView(parent)
     setSelectionBehavior(QAbstractItemView::SelectRows);
     header=new albumViewHeader(viewport() );
     header->setVisible(false);
-    QRect r=viewportRectForRow(headerRect(-1));
+//     QRect r=viewportRectForRow(headerRect(-1));
+    
     readSettings();
-
-
-    header->setGeometry(r);
+    columnResizeTimer.setInterval(500);
+    columnResizeTimer.setSingleShot(true);
+//     header->setGeometry(r);
+//     header->move(r.topLeft());
+//     header->setFixedHeight(r.height());
+//     header->move(r.topLeft());
     header->setNotHide(Basic::TITLE);
 
     header->setMovable(true);
     header->setClickable(true);
+    header->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
 
     setEditTriggers(QAbstractItemView::SelectedClicked);
     
@@ -52,16 +61,17 @@ albumView::albumView(QString name,QWidget* parent): QAbstractItemView(parent)
     verticalScrollBar()->setRange(0, 0);
     setAutoFillBackground(true);
     verticalScrollBar()->setPageStep(rowHeight*10);
-     horizontalScrollBar()->setPageStep(500);
+    horizontalScrollBar()->setPageStep(500);
     
     connect(horizontalScrollBar(),SIGNAL(valueChanged(int)),this,SLOT(hideHeader()) );
     connect(verticalScrollBar(),SIGNAL(valueChanged(int)),this,SLOT(hideHeader()) );
     
     connect(header,SIGNAL(geometriesChanged()),this,SLOT(columnsUpdated()) );
-    connect(header,SIGNAL(sectionResized(int,int,int)),this,SLOT(columnsUpdated()) );
+    connect(header,SIGNAL(sectionResized(int,int,int)),this,SLOT(columnResized(int)) );
     connect(header,SIGNAL(sectionMoved(int,int,int)),this,SLOT(columnsUpdated()) );
     connect(header,SIGNAL(sortIndicatorChanged(int,Qt::SortOrder)),this,SLOT(sortModel(int,Qt::SortOrder)));
     
+    connect(&columnResizeTimer,SIGNAL(timeout()),this,SLOT(columnsUpdated()) );
     connect(this,SIGNAL(doubleClicked(const QModelIndex&)),this,SLOT(doubleClickedSlot(const QModelIndex&)));
     
     setObjectName(name);    
@@ -85,11 +95,19 @@ void albumView::setModel(QAbstractItemModel* m)
         readSettings();
     }
         
+    hashIsDirty=true;
     QAbstractItemView::setModel(m);
     connect(m,SIGNAL(modelReset() ),this,SLOT(resetSlot()) );
     connect(m,SIGNAL(layoutAboutToBeChanged()),this,SLOT(resetSlot()) );
+    
     header->setModel(m);         
     header->restoreState(_headerState);
+//     header->setResizeMode()
+    header->stretchSectionCount();
+    
+    QRect r=viewportRectForRow(headerRect(-1));
+    header->setGeometry(r);
+    header->setStretchLastSection(false);
     
     columnsUpdated();
     
@@ -298,7 +316,7 @@ void albumView::calculateRectsIfNecessary() const
         albumR.setX(0);
         albumR.setY(prevHeight +albumOffset  );
         
-        albumR.setWidth(qMax(viewport()->width(),header->length() ) );        
+        albumR.setWidth(qMax(viewport()->width(),header->length()+HEADER_OFFSET ) );        
         albumR.setHeight(height);
         albumRects[row]=albumR;
         prevHeight=albumR.y()+albumR.height();
@@ -306,7 +324,7 @@ void albumView::calculateRectsIfNecessary() const
     
     verticalScrollBar()->setRange(0, qMax(0, prevHeight -viewport()->height() ) );
 //     horizontalScrollBar()->setRange(0, width());
-    updateScrollBars();
+//     updateScrollBars();
     
     hashIsDirty=false;
     viewport()->update();
@@ -367,13 +385,16 @@ QRect albumView::itemsRect(int parentRow) const
 
 QRect albumView::headerRect(int row) const
 {    
+//     qDebug()<<"W "<<header->width();
     if(row==-1)
     {
         QRect r;
-        r.setX(albumOffset + albumWidth);
+        r.setX(r.x()+HEADER_OFFSET);
         r.setY(albumInfoHeight );
         r.setHeight(rowHeight);
-//         r.setWidth(viewport()->width());
+//         r.setWidth(r.width());
+//         r.setWidth(albumOffset + albumWidth+r.width());
+//         r.setWidth(header->sizeHint().width());
         return r;
     }
     
@@ -386,27 +407,31 @@ QRect albumView::headerRect(int row) const
     r.setX(r.x() + albumOffset + albumWidth);
     r.setY(r.y()+albumInfoHeight );
     r.setHeight(rowHeight);
-//     r.setWidth(viewport()->width());
+//     r.setWidth(r.width());
+//     r.setWidth(albumOffset + albumWidth+r.width());
+//     r.setWidth(header->sizeHint().width());
+//     r.setWidth(header->sizeHint().width());
     return r;
 }
 
 
 QRect albumView::itemRect(const QModelIndex& index) const
 {
+    /*
     QRect r=itemsRect(index.parent().row() );
 
     int width=header->sectionSize(index.column());
-    r.setY(r.y()+(index.row())*rowHeight);
+    r.setY(r.y()+index.row()*rowHeight);
     r.setX(header->sectionViewportPosition(index.column()) +r.x() );
     r.setHeight(rowHeight);
     r.setWidth(width);
-    
+    */
     return itemRect(index.row(),index.column(),index.parent().row() );
 }
 
 QRect albumView::itemRect(int row, int column, int parentR) const
 {
-    QRect r=itemsRect(parentR );
+    QRect r=itemsRect(parentR);
 
     int width=header->sectionSize(column);
     r.setY(r.y()+row*rowHeight);
@@ -485,6 +510,7 @@ void albumView::rowsAboutToBeRemoved(const QModelIndex &parent,int start, int en
 
 void albumView::paintEvent(QPaintEvent* e)
 {
+//     qDebug()<<"PAINT";
     calculateRectsIfNecessary();
     mousePoint=viewport()-> mapFromGlobal(QCursor::pos());
     hoverIndex=indexAt(mousePoint);
@@ -810,6 +836,7 @@ void albumView::mouseMoveEvent(QMouseEvent* event)
             headerRow=i;
             header->setRootIndex(index);
             header->setGeometry(r);
+//             header->move(r.topLeft());
             header->setVisible(true);
             update();
             break;
@@ -839,15 +866,23 @@ bool albumView::isAlbum(const QModelIndex& index) const
 
 void albumView::columnsUpdated()
 {
+//     qDebug()<<"IPPP "<<header->stretchSectionCount();
+//     header->setFixedWidth(header->sizeHint().width());
     hashIsDirty=true;
 //     calculateRectsIfNecessary();
     updateGeometries ();
     updateScrollBars();
 }
 
+void albumView::columnResized(int i)
+{
+    hashIsDirty=true;
+    columnResizeTimer.start();
+}
+
 void albumView::updateScrollBars() const
 {
-     horizontalScrollBar()->setRange(0, qMax(0, header->length()-viewport()->width() ) );
+     horizontalScrollBar()->setRange(0, qMax(0, HEADER_OFFSET+header->length() -viewport()->width() ) );
 //     verticalScrollBar()->setRange(0, qMax(0, prevHeight -viewport()->height() ) );
 }
 
@@ -1046,6 +1081,7 @@ void albumView::readSettings()
 
 void albumView::contextMenuEvent(QContextMenuEvent *e)
 {
+    QAbstractItemView::contextMenuEvent(e);
     emit showContextMenu(indexAt(e->pos() ),selectedIndexes() );
 }
 

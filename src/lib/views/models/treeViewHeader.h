@@ -17,7 +17,7 @@ class treeViewHeader :public QHeaderView
 
 	void setNotHide(int n);
 	int notHide();
-	QSize sizeHint() const;
+// 	QSize sizeHint() const;
         void paintSection ( QPainter * painter, const QRect & rect, int logicalIndex ) const;   
     protected:
 	QMenu *menu;

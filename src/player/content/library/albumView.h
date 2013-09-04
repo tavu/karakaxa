@@ -5,7 +5,7 @@
 #include "albumViewHeader.h"
 #include<QHash>
 #include<QSet>
-
+ #include <QTimer>
 
 class albumView :public QAbstractItemView
 {
@@ -68,6 +68,7 @@ class albumView :public QAbstractItemView
         int albumWidth;
         int space;
 
+        QTimer columnResizeTimer;
         QRect headerRect(int row) const;
         QRect itemsRect(int parentRow) const;
         QRect itemRect(const QModelIndex &index) const;
@@ -100,11 +101,13 @@ class albumView :public QAbstractItemView
         void updateGeometries();
         void resetSlot();
         void columnsUpdated();
+        void columnResized(int i);
         void hideHeader();
         void selectionChanged ( const QItemSelection & selected, const QItemSelection & deselected );
         void doubleClickedSlot ( const QModelIndex &index );
         void sortModel ( int logicalIndex, Qt::SortOrder order );
         
+    public slots:
         void editCurrent();
         
     signals:

@@ -226,12 +226,12 @@ void library::showContexMenuSlot(QModelIndex index, QModelIndexList list)
     }
     
 //     qDebug()<<"LI "<<list.size();
-    
+    _editIndex=index;
     QUrl u=index.data(URL_ROLE).toUrl();    
     QMenu *menu=new QMenu(this);
     
     QAction *act=new QAction(KIcon("document-edit"),tr("edit"),menu );
-    connect(act,SIGNAL(triggered(bool)),view,SLOT(editCurrent()) );
+    connect(act,SIGNAL(triggered(bool)),this,SLOT(editIndex())) ;
     menu->addAction(act);
     
     QList<QUrl>urls=view->getUrls(list);
@@ -241,4 +241,10 @@ void library::showContexMenuSlot(QModelIndex index, QModelIndexList list)
         menu->exec( QCursor::pos() );
     }
     menu->deleteLater();
+}
+
+void library::editIndex()
+{
+    view->edit(_editIndex);
+    _editIndex=QModelIndex();
 }

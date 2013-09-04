@@ -25,6 +25,8 @@ albumViewHeader::albumViewHeader(QWidget* parent) :views::treeViewHeader(parent)
     setStyleSheet("QHeaderView::section{ font: bold; } QHeaderView{background-color: transparent;} ");
 //     connect(this,SIGNAL(sectionPressed(int)),this,SLOT(sortModel(int)));
 //     setAutoFillBackground(false);
+    
+//     setOffsetToLastSection();
 }
 
 void albumViewHeader::paintSection(QPainter* painter, const QRect& _rect, int logicalIndex) const
@@ -59,4 +61,9 @@ void albumViewHeader::paintSection(QPainter* painter, const QRect& _rect, int lo
     style()->drawPrimitive(QStyle::PE_IndicatorDockWidgetResizeHandle, &opt, painter);
     painter->restore();
     return ;
+}
+QSize albumViewHeader::sizeHint() const
+{
+    return views::treeViewHeader::sizeHint();
+//     return QSize(25,1500);
 }

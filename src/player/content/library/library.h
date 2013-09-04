@@ -35,7 +35,7 @@ class library :public core::abstractContent
         QStackedWidget *stack;
 //         views::treeView *view;
         albumView *view;
-        QListView       *artistV;
+        QListView *artistV;
         QLabel *artistL;
         
         QAction     *backAction;
@@ -62,6 +62,8 @@ class library :public core::abstractContent
         inline database::abstractQuery* searchQuery();
         
         QString artistName;
+        
+        QModelIndex _editIndex;
 
     public slots:
         void search(const QString& text);
@@ -74,6 +76,7 @@ class library :public core::abstractContent
         
     private slots:
         void showContexMenuSlot(QModelIndex index, QModelIndexList list);
+        void editIndex();
 
 };
 
